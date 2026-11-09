@@ -29,3 +29,10 @@ export function caseFor(zLeansLeft: boolean, yLeansLeft: boolean): RebalanceCase
   if (zLeansLeft) return yLeansLeft ? REBALANCE_CASES[0] : REBALANCE_CASES[2]
   return yLeansLeft ? REBALANCE_CASES[3] : REBALANCE_CASES[1]
 }
+
+export type Lean = 'left-heavy' | 'right-heavy'
+
+/** Which way a node with an out-of-range balance factor is heavy. */
+export function leanOf(balance: number): Lean {
+  return balance > 0 ? 'left-heavy' : 'right-heavy'
+}

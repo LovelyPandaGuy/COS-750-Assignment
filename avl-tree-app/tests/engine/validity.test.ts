@@ -38,3 +38,9 @@ describe('FR-ENG-05: AVL validity check', () => {
     expect(checkAvl(lying)).toEqual({ valid: true })
   })
 })
+
+describe('FR-ENG-05: lowest offender', () => {
+  it('reports the descendant when an ancestor and descendant both break the rule', () => {
+    expect(checkAvl(build([1, 2, 3, 4, 5]))).toEqual({ valid: false, node: 3 })
+  })
+})
