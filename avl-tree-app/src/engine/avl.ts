@@ -1,6 +1,6 @@
 import { caseFor, type RebalanceCase } from './conventions'
 import { rotateLeft, rotateRight } from './rotations'
-import { balanceFactorOf, makeNode, type Key, type Tree } from './tree'
+import { balanceFactorOf, makeNode, type Key, type Tree, type TreeNode } from './tree'
 
 /** A rebalance that happened: its case and the key of the unbalanced node z. */
 export interface Rebalance {
@@ -62,4 +62,53 @@ export function avlInsert(tree: Tree, key: Key): AvlInsertResult {
   const rebuilt = goLeft ? makeNode(tree.key, r.tree, tree.right) : makeNode(tree.key, tree.left, r.tree)
   const fixed = rebalance(rebuilt)
   return { tree: fixed.tree, inserted: true, rebalance: r.rebalance ?? fixed.rebalance }
+}
+
+// Result shape is an assumption until add-operation-trace (add-avl-delete
+// proposal, open question 4).
+export interface AvlDeleteResult {
+  tree: Tree
+  deleted: boolean
+  /** Every rebalance performed, lowest node first. */
+  rebalances: Rebalance[]
+}
+
+function minKey(tree: TreeNode): Key {
+  let node = tree
+  while (node.left !== null) node = node.left
+  return node.key
+}
+
+/**
+ * AVL delete: BST delete (two children take the in-order successor, SE 6.4),
+ * then rebalance at every node on the way back up. Unlike insert, a rotation
+ * can shorten its subtree, so the walk never stops early and one delete can
+ * report several rebalances.
+ */
+export function avlDelete(tree: Tree, key: Key): AvlDeleteResult {
+  if (tree === null) return { tree: null, deleted: false, rebalances: [] }
+
+  let rebuilt: TreeNode
+  let below: Rebalance[]
+  if (key < tree.key || key > tree.key) {
+    const goLeft = key < tree.key
+    const r = avlDelete(goLeft ? tree.left : tree.right, key)
+    if (!r.deleted) return { tree, deleted: false, rebalances: [] }
+    below = r.rebalances
+    rebuilt = goLeft ? makeNode(tree.key, r.tree, tree.right) : makeNode(tree.key, tree.left, r.tree)
+  } else if (tree.left === null || tree.right === null) {
+    return { tree: tree.left ?? tree.right, deleted: true, rebalances: [] }
+  } else {
+    const successor = minKey(tree.right)
+    const r = avlDelete(tree.right, successor)
+    below = r.rebalances
+    rebuilt = makeNode(successor, tree.left, r.tree)
+  }
+
+  const fixed = rebalance(rebuilt)
+  return {
+    tree: fixed.tree,
+    deleted: true,
+    rebalances: fixed.rebalance === null ? below : [...below, fixed.rebalance],
+  }
 }

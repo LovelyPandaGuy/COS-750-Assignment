@@ -69,16 +69,30 @@ The engine SHALL delete as in a BST, then walk back up the path and rebalance at
 
 #### Scenario: Delete needing two rebalancing steps
 - **WHEN** a hand-worked example that needs two rebalancing steps is deleted
-- **THEN** both steps appear in the trace with their case labels
+- **THEN** both steps are reported with their case labels
 - **AND** every balance factor is -1, 0 or +1 afterwards
 
 ### Requirement: Search with a trace
-The engine SHALL implement search in loop and recursive forms, record each node visited and each comparison, and report the number of steps for found and not-found keys.
+The engine SHALL implement search in loop and recursive forms, record each node visited and each comparison, and report the number of steps for found and not-found keys. The number of steps SHALL be the number of nodes visited.
 
 #### Scenario: Found and not found
 - **WHEN** a present key and a missing key are searched
 - **THEN** the trace matches the hand-worked examples
 - **AND** the step count equals the number of nodes visited
+
+#### Scenario: Step counts for the root, a leaf and a missing key
+- **GIVEN** the AVL tree built from 20, 10, 30, 5, 15
+- **WHEN** keys 20, 5 and 12 are searched
+- **THEN** the step counts are 1, 3 and 3
+
+#### Scenario: Step count against height
+- **WHEN** keys 1 to 15 are inserted by AVL insert and every key from 0 to 16 is searched
+- **THEN** each step count is at most the tree's height plus one under the conventions module
+- **AND** searching key 15 in the plain chain built from 1 to 15 takes 15 steps
+
+#### Scenario: Result agrees with plain search
+- **WHEN** any key is searched in any tree in either form
+- **THEN** the found result equals the result of the plain search
 
 ### Requirement: Validity check
 The engine SHALL report whether a tree is a valid AVL tree and, if not, the first node that breaks the rule. The check SHALL use real subtree heights, not stored ones, and SHALL name the lowest offending node when several break the rule.
@@ -193,3 +207,111 @@ The engine SHALL provide a report on any tree that lists every BST-order violati
 #### Scenario: Analysis does not modify the tree
 - **WHEN** a tree is analysed
 - **THEN** the original tree equals a deep copy taken beforehand
+
+### Requirement: Search trace steps
+Each step of a search trace SHALL carry its index in order from 0, a kind, the keys involved, the tree before and after, and a pseudocode line. For each node visited the trace SHALL hold a compare step, then either a found step or a descend step. A search that ends at an empty subtree SHALL end with a not-found step. (FR-ENG-06 in part, FR-ENG-09)
+
+#### Scenario: Found key
+- **GIVEN** the AVL tree built from 20, 10, 30, 5, 15
+- **WHEN** key 15 is searched
+- **THEN** the steps are, in order: compare 20, descend from 20 to 10, compare 10, descend from 10 to 15, compare 15, found 15
+- **AND** their indexes are 0 to 5
+
+#### Scenario: Missing key
+- **GIVEN** the same tree
+- **WHEN** key 12 is searched
+- **THEN** the steps are compare 20, descend 20 to 10, compare 10, descend 10 to 15, compare 15, descend from 15 with no target, not-found at 15
+
+#### Scenario: Root key
+- **WHEN** key 20 is searched in the same tree
+- **THEN** the steps are compare 20, found 20
+
+#### Scenario: Empty tree
+- **WHEN** any key is searched in the empty tree
+- **THEN** the only step is not-found with no keys, and the step count is 0
+
+#### Scenario: Before and after
+- **WHEN** any search is traced
+- **THEN** every step's before and after are the searched tree, unchanged, and no step has a rebalance case
+
+### Requirement: Pseudocode line maps
+The engine SHALL define, for the loop form and the recursive form of search, the pseudocode line each kind of step corresponds to, and each step's pseudocode line SHALL come from that map. The numbering follows the ID's pseudocode. (FR-ENG-09, FR-VIS-04) [OPEN] the line layout needs checking against the ID PDF (proposal, question 1).
+
+#### Scenario: Loop form lines
+- **WHEN** key 12 is searched in the loop form in the tree above
+- **THEN** compare steps use the equality-test line, descend-left steps use the go-left line, descend-right steps use the go-right line, and the not-found step uses the final return line
+
+#### Scenario: Recursive form lines
+- **WHEN** the same search is made in the recursive form
+- **THEN** the compare and found steps use the equality-test line, descend steps use the matching recursive-call line, and the not-found step uses the empty-subtree test line
+
+#### Scenario: Forms differ only in lines
+- **WHEN** the same key is searched in both forms in any tree
+- **THEN** the steps have the same kinds, keys and indexes, and differ only in pseudocode lines
+
+### Requirement: AVL delete rebalancing cases
+After deleting a key, the engine SHALL rebalance at each node on the deletion path whose balance factor is +2 or -2, from the lowest upward. It SHALL choose a single rotation when the taller child leans the same way as the node or is balanced, and a double rotation when it leans the other way. It SHALL report each rebalance with its case and the key of the unbalanced node, in the order performed. (FR-ENG-08, SE §6.4)
+
+#### Scenario: Delete needing no rebalance
+- **GIVEN** a tree with root 20 and children 10 and 30
+- **WHEN** key 10 is deleted
+- **THEN** the tree has root 20 with right child 30 only and no rebalance is reported
+
+#### Scenario: Single rotation, same direction
+- **GIVEN** a tree with root 15, left child 10, and right child 20 whose right child is 30
+- **WHEN** key 10 is deleted
+- **THEN** the right-leaning imbalance at 15 is fixed by one left rotation, the result has root 20 with children 15 and 30, and one rebalance of case RR at node 15 is reported
+
+#### Scenario: Double rotation
+- **GIVEN** a tree with root 20, left child 10 and right child 30 whose left child is 25
+- **WHEN** key 10 is deleted
+- **THEN** the result has root 25 with children 20 and 30, and one rebalance of case RL at node 20 is reported
+
+#### Scenario: Double rotation, mirror
+- **GIVEN** a tree with root 20, left child 10 whose right child is 15, and right child 30
+- **WHEN** key 30 is deleted
+- **THEN** the result has root 15 with children 10 and 20, and one rebalance of case LR at node 20 is reported
+
+#### Scenario: Tie case, right-heavy
+- **GIVEN** a tree with root 20, left child 10, and right child 30 with children 25 and 35
+- **WHEN** key 10 is deleted
+- **THEN** the taller child 30 is balanced, a single left rotation is used, the result has root 30 with left child 20 (whose right child is 25) and right child 35, and one rebalance of case RR at node 20 is reported
+
+#### Scenario: Tie case, left-heavy
+- **GIVEN** a tree with root 20, right child 30, and left child 10 with children 5 and 15
+- **WHEN** key 30 is deleted
+- **THEN** a single right rotation is used, the result has root 10 with left child 5 and right child 20 (whose left child is 15), and one rebalance of case LL at node 20 is reported
+
+### Requirement: Delete may rebalance more than once
+The engine SHALL continue up the deletion path after a rebalance, because a rotation can shorten its subtree, and SHALL report every rebalance performed. (FR-ENG-08)
+
+#### Scenario: Two rebalancing steps
+- **GIVEN** the tree with root 8; left child 5 (children 2 and 6, where 2 has children 1 and 3, 3 has right child 4, and 6 has right child 7); right child 10 (children 9 and 11, where 11 has right child 12)
+- **WHEN** key 9 is deleted
+- **THEN** two rebalances are reported in order: RR at node 10, then LL at node 8
+- **AND** the result has root 5 with left child 2 and right child 8, where 8 has children 6 and 11
+
+### Requirement: Two-children delete with rebalancing
+When the deleted node has two children, the engine SHALL replace its key with its in-order successor, remove the successor from the right subtree, and rebalance along the whole path including the node itself. (FR-ENG-08, SE §6.4)
+
+#### Scenario: Delete the root
+- **GIVEN** a tree with root 20, left child 10, and right child 30 with children 25 and 35
+- **WHEN** key 20 is deleted
+- **THEN** the root is 25, the in-order sequence is 10, 25, 30, 35 and no rebalance is reported
+
+### Requirement: AVL delete invariants
+After any AVL delete the tree SHALL be a valid AVL tree, its in-order sequence SHALL be the original keys without the deleted key, stored heights SHALL equal real heights, and the number of rebalances SHALL not exceed the number of nodes on the deletion path. The input tree SHALL not be modified. (FR-ENG-08, NFR-08)
+
+#### Scenario: Property over random trees
+- **GIVEN** random AVL trees built by AVL insert (fast-check) and a random key to delete, present or not
+- **WHEN** the key is deleted
+- **THEN** the result satisfies all of the invariants above, and `deleted` is true exactly when the key was present
+
+#### Scenario: Delete until empty
+- **GIVEN** an AVL tree of 1 to 15
+- **WHEN** its keys are deleted one by one in a seeded random order
+- **THEN** the tree is a valid AVL tree after every delete and is empty at the end
+
+#### Scenario: Missing key and empty tree
+- **WHEN** a key that is not in the tree, or any key in the empty tree, is deleted
+- **THEN** the tree is unchanged, `deleted` is false and no rebalance is reported
