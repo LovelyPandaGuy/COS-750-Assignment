@@ -1,0 +1,22 @@
+// The only place the height convention, balance-factor definition and case
+// names are defined (D2, FR-ENG-10). Nothing else hard-codes them.
+
+/** Height of the empty tree, counted in edges. */
+export const EMPTY_HEIGHT = -1
+
+/** Height of a leaf: one edge above the empty tree. */
+export const LEAF_HEIGHT = EMPTY_HEIGHT + 1
+
+/** Rebalancing case names. Lecturer to confirm (D2). */
+export const REBALANCE_CASES = ['LL', 'RR', 'LR', 'RL'] as const
+export type RebalanceCase = (typeof REBALANCE_CASES)[number]
+
+/** Height of a node given its children's heights (use EMPTY_HEIGHT for none). */
+export function nodeHeight(leftHeight: number, rightHeight: number): number {
+  return Math.max(leftHeight, rightHeight) + 1
+}
+
+/** Balance factor = height(left) - height(right). */
+export function balanceFactor(leftHeight: number, rightHeight: number): number {
+  return leftHeight - rightHeight
+}

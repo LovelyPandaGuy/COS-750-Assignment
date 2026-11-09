@@ -1,32 +1,30 @@
 schema: spec-driven
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+context: |
+  Project: AVL Primer, a pre-lecture web app that teaches second-year CS students AVL trees with no assumed knowledge, embedded checks and scaffolding that responds to the checks. React, TypeScript, Vite, Vitest, fast-check. No backend and no network calls after first load.
+  Sources of truth, in order: docs/decisions.md (D1 to D16), docs/source/ID-content.pdf (modules C1 to C9, LO1 to LO9), the SE document requirement IDs (FR-xxx-nn, NFR-nn), then the design.
+  Conventions (D2): leaf height 0, empty tree height -1, balance factor = height(left) minus height(right), all held in src/engine/conventions.ts.
+  Scope (D3, D4, D16): search and deletion are in scope; tree editing works by touch, pointer and keyboard; localStorage for progress, SQLite (sqlite-wasm) for the event log only.
+  Learning-design rules: low anxiety (no red or fail wording for wrong answers), colour never the only signal, every answer shown to a student is computed by the engine, content beyond the ID is flagged for the user.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - List open questions first, each tied to a decision in docs/decisions.md.
+    - Name the FR or LO IDs the change serves.
+    - State what is out of scope.
+  specs:
+    - Every requirement uses SHALL and has at least one scenario.
+    - Write scenarios from the SE acceptance criteria so each can be tested without a human.
+    - Mark anything that depends on an unresolved decision with [OPEN] and the question.
+  tasks:
+    - Keep a change to about ten tasks. If it needs more, propose a split.
+    - Write tests first: the first task group is the failing tests.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+operations:
+  apply:
+    guidance:
+      - Tests are written by the test-writer subagent before implementation starts.
+      - Never edit a test to make it pass; report it instead.
+  archive:
+    guidance:
+      - The user archives. Agents do not.
