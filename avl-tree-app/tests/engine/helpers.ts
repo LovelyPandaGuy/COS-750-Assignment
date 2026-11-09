@@ -11,3 +11,16 @@ export function inOrder(tree: Tree): Key[] {
 }
 
 export const leaf = (key: Key) => makeNode(key, null, null)
+
+/** Shorthand node builder for expected shapes: n(2, n(1), n(3)). */
+export const n = (key: Key, left: Tree = null, right: Tree = null) => makeNode(key, left, right)
+
+/** Deep-freeze a tree so any mutation throws in strict mode. */
+export function deepFreeze<T extends Tree>(tree: T): T {
+  if (tree !== null) {
+    deepFreeze(tree.left)
+    deepFreeze(tree.right)
+    Object.freeze(tree)
+  }
+  return tree
+}

@@ -7,7 +7,12 @@ export const EMPTY_HEIGHT = -1
 /** Height of a leaf: one edge above the empty tree. */
 export const LEAF_HEIGHT = EMPTY_HEIGHT + 1
 
-/** Rebalancing case names. Lecturer to confirm (D2). */
+/**
+ * Rebalancing case names. Lecturer to confirm (D2).
+ * The order is a contract: the engine reads them by position as
+ * [left-left, right-right, left-right, right-left], so renaming a case is an
+ * edit here only.
+ */
 export const REBALANCE_CASES = ['LL', 'RR', 'LR', 'RL'] as const
 export type RebalanceCase = (typeof REBALANCE_CASES)[number]
 

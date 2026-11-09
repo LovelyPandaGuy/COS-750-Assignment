@@ -1,11 +1,11 @@
 import { makeNode, type Key, type Tree } from './tree'
+import { INSERT_PSEUDOCODE_LINE, recorder, type OperationResult } from './trace'
+import { locate, rebuildPath } from './path'
 
-// Result shapes are deliberately small: add-operation-trace will widen them
-// with a `trace` field (proposal, open question 2).
-export interface InsertResult {
-  tree: Tree
+export interface InsertResult extends OperationResult {
   inserted: boolean
 }
+// Delete and search traces arrive with FR-ENG-08 and FR-ENG-09.
 export interface DeleteResult {
   tree: Tree
   deleted: boolean
@@ -14,20 +14,17 @@ export interface SearchResult {
   found: boolean
 }
 
-/** Plain BST insert, no rebalancing. A duplicate key leaves the tree unchanged. */
+/**
+ * Plain BST insert, no rebalancing (FR-ENG-07). A duplicate key leaves the
+ * tree unchanged. The trace is compare steps, then insert (or found).
+ */
 export function insert(tree: Tree, key: Key): InsertResult {
-  if (tree === null) return { tree: makeNode(key, null, null), inserted: true }
-  if (key === tree.key) return { tree, inserted: false }
-  if (key < tree.key) {
-    const r = insert(tree.left, key)
-    return r.inserted
-      ? { tree: makeNode(tree.key, r.tree, tree.right), inserted: true }
-      : { tree, inserted: false }
-  }
-  const r = insert(tree.right, key)
-  return r.inserted
-    ? { tree: makeNode(tree.key, tree.left, r.tree), inserted: true }
-    : { tree, inserted: false }
+  const rec = recorder(tree, INSERT_PSEUDOCODE_LINE)
+  const { path, found } = locate(tree, key, rec)
+  if (found) return { tree, trace: rec.steps, inserted: false }
+  const result = rebuildPath(path, makeNode(key, null, null))
+  rec.step('insert', [key], result)
+  return { tree: result, trace: rec.steps, inserted: true }
 }
 
 /** BST search. Traces and step counts arrive with FR-ENG-09. */
