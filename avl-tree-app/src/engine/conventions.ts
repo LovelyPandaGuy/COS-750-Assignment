@@ -20,3 +20,12 @@ export function nodeHeight(leftHeight: number, rightHeight: number): number {
 export function balanceFactor(leftHeight: number, rightHeight: number): number {
   return leftHeight - rightHeight
 }
+
+/**
+ * Case name for an imbalance. z is the unbalanced node, y its taller child.
+ * Same direction gives LL or RR, opposite directions give LR or RL.
+ */
+export function caseFor(zLeansLeft: boolean, yLeansLeft: boolean): RebalanceCase {
+  if (zLeansLeft) return yLeansLeft ? REBALANCE_CASES[0] : REBALANCE_CASES[2]
+  return yLeansLeft ? REBALANCE_CASES[3] : REBALANCE_CASES[1]
+}
