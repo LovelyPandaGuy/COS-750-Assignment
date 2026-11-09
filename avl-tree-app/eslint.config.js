@@ -19,4 +19,17 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ['src/engine/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['react', 'react-dom', 'react-dom/*', 'react-router-dom', '**/components/*', '**/pages/*'], message: 'The engine must not import UI code (NFR-07).' },
+          ],
+        },
+      ],
+    },
+  },
 ])
