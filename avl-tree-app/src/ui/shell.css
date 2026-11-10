@@ -1,0 +1,85 @@
+/* Shell styles. Tokens only. Focus ring comes from tokens.css. */
+.skip-link {
+  position: absolute;
+  inset-inline-start: -10000px;
+  top: 0;
+}
+.skip-link:focus {
+  inset-inline-start: var(--space-4);
+  top: var(--space-2);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding-inline: var(--space-4);
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  font-weight: 700;
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.topbar-title { font: var(--type-body); font-weight: 700; }
+.topbar-breadcrumb { color: var(--text-secondary); }
+.topbar-spacer { flex: 1; }
+.topbar-status {
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  font: var(--type-label);
+  color: var(--text-secondary);
+}
+.topbar-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.topbar-action,
+.aa-button {
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding-inline: var(--space-3);
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+.topbar-action:hover,
+.aa-button:hover {
+  text-decoration: underline;
+  background: var(--action-primary-tint);
+}
+
+.aa-menu { position: relative; }
+.aa-panel {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 100%;
+  margin-top: var(--space-2);
+  z-index: 5;
+  width: max-content;
+  max-width: min(320px, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-4);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+.aa-panel p { margin: 0; }
+
+.app-main {
+  max-width: var(--reading-column);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  padding-block: var(--space-6);
+}
