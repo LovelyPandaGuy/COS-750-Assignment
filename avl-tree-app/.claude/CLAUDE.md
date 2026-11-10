@@ -6,8 +6,8 @@ A web app that teaches second-year CS students AVL trees before the lecture, wit
 
 1. `docs/decisions.md` (D1 to D16). If it conflicts with anything else, it wins.
 2. `docs/source/ID-content.pdf`: the instructional design content (modules C1 to C9, LO1 to LO9). Instructional content comes from here and nowhere else.
-3.  `docs/source/SE-Document.pdf`: The SE document (Google Doc, v1.1): requirement IDs (FR-xxx-nn, NFR-nn) and acceptance criteria.
-4. The Claude Design wireframes and design system: layout, tokens, components.
+3. The SE document (Google Doc, v1.1): requirement IDs (FR-xxx-nn, NFR-nn) and acceptance criteria.
+4. The design: `docs/design/INDEX.md` (start here), the source files in `docs/design/source/`, the per-screen specs in `docs/design/screens/`, and the tokens in `src/ui/tokens.css`. Layout, tokens and components come from these only; do not invent styles. Refresh with `/design-import <link>`.
 
 If two sources disagree and `docs/decisions.md` does not settle it, write `[OPEN]` with the question and stop that piece of work. Never guess.
 

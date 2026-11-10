@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<title>AVL Primer — Low-fi wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f0eee9;font-family:system-ui,sans-serif;color:#1f1f1f}
+a{color:#1f1f1f}a:hover{color:#000}
+.dv-turn{padding:40px 44px 32px;border-bottom:1px solid rgba(0,0,0,.08);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 20px}
+.dv-tid{font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1a1a1a;color:#fff;border-radius:4px;text-decoration:none}
+.dv-tname{font:600 13px/1.2 system-ui,sans-serif;color:#1a1a1a}
+.dv-opts{display:flex;flex-wrap:wrap;gap:40px 28px;align-items:flex-start;width:2790px}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px}
+.dv-oid{font:600 10.5px ui-monospace,Menlo,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1a1a1a;border-radius:5px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:8px;font:400 13px/1.3 system-ui,sans-serif;color:rgba(0,0,0,.6)}
+.dv-card{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
+.dv-opt:target .dv-oid{background:#1f1f1f;color:#fff}
+.dv-next{margin:28px 0 0;font:13px/1.5 system-ui,sans-serif;color:rgba(0,0,0,.55)}
+.wf{width:1366px;height:768px;background:#fff;font:16px/1.35 'Kalam',cursive;color:#1f1f1f;display:flex;flex-direction:column;overflow:hidden}
+.bar{position:relative;height:58px;flex:none;border-bottom:2px solid #1f1f1f;display:flex;align-items:flex-end;gap:14px;padding:0 20px 8px}
+.c{position:relative;border:1.5px dashed #8a8a8a;border-radius:8px;padding:30px 14px 12px}
+.t{position:absolute;top:-1px;left:-1px;font:600 11px/1 ui-monospace,Menlo,monospace;background:#1f1f1f;color:#fff;padding:4px 7px;border-radius:8px 0 8px 0;letter-spacing:.02em;white-space:nowrap}
+.b{display:inline-flex;align-items:center;gap:6px;border:2px solid #1f1f1f;border-radius:8px;padding:4px 14px;background:#fff;white-space:nowrap}
+.bp{background:#1f1f1f;color:#fff}
+.bg{border-style:dashed;color:#444}
+.pill{display:inline-flex;align-items:center;gap:5px;border:1.5px solid #1f1f1f;border-radius:99px;padding:0 10px;font-size:14px;white-space:nowrap}
+.ln{height:9px;background:#dcdcdc;border-radius:4px}
+.k{flex:none;display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid #1f1f1f;font:700 11px ui-monospace,monospace;color:#1f1f1f}
+.mut{color:#555}
+.h1{font-size:34px;line-height:1.1;font-weight:700}
+.h2{font-size:22px;line-height:1.2;font-weight:700}
+.code{font:13.5px/1.8 ui-monospace,Menlo,monospace;white-space:pre}
+.hl{background:#1f1f1f;color:#fff}
+.row{display:flex;align-items:center;gap:10px}
+.col{display:flex;flex-direction:column;gap:10px}
+.kbd{font:11px ui-monospace,monospace;border:1px solid #1f1f1f;border-bottom-width:2px;border-radius:4px;padding:0 4px}
+.ph{display:flex;align-items:center;justify-content:center;text-align:center;border:1.5px solid #999;border-radius:6px;background:repeating-linear-gradient(45deg,#f4f4f4 0 8px,#e9e9e9 8px 16px);font:12px ui-monospace,monospace;color:#444}
+.opt{display:flex;align-items:center;gap:10px;border:2px solid #1f1f1f;border-radius:8px;padding:7px 12px}
+.notes{width:1366px;padding:14px 20px 18px;border-top:1px solid #ddd;background:#fafaf8;font:13.5px/1.5 system-ui,sans-serif;color:#333;display:grid;grid-template-columns:1fr 1fr;gap:6px 28px}
+.notes div{display:flex;gap:8px;align-items:flex-start}
+.notes .k{width:19px;height:19px;font-size:10px}
+svg text{font-family:'Kalam',cursive}
+</style>
+</helmet>
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">AVL primer — low-fidelity wireframes (1366×768, grayscale). Dark tags = React component names. Numbered circles map to notes under each frame.</span></div>
+<div class="dv-opts">
+
+<!-- 1a FLOW -->
+<div class="dv-opt" id="1a"><div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Screen flow — how the screens connect</div>
+<div class="dv-card" style="width:2760px">
+<div style="position:relative;width:2760px;height:600px;font:17px/1.3 'Kalam',cursive">
+<svg width="2760" height="600" style="position:absolute;inset:0" fill="none" stroke="#1f1f1f" stroke-width="2">
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1f1f1f" stroke="none"></path></marker></defs>
+<line x1="260" y1="240" x2="356" y2="175" marker-end="url(#ah)"></line>
+<polyline points="260,290 1356,290" marker-end="url(#ah)" stroke-dasharray="7 5"></polyline>
+<line x1="600" y1="165" x2="696" y2="165" marker-end="url(#ah)"></line>
+<line x1="940" y1="145" x2="1036" y2="85" marker-end="url(#ah)"></line>
+<line x1="940" y1="190" x2="1356" y2="245" marker-end="url(#ah)"></line>
+<line x1="1180" y1="122" x2="1420" y2="216" marker-end="url(#ah)"></line>
+<line x1="1620" y1="250" x2="1746" y2="220" marker-end="url(#ah)"></line>
+<line x1="1930" y1="220" x2="1946" y2="220" marker-end="url(#ah)"></line>
+<line x1="2130" y1="220" x2="2146" y2="220" marker-end="url(#ah)"></line>
+<line x1="2200" y1="262" x2="2080" y2="336" marker-end="url(#ah)"></line>
+<line x1="2120" y1="370" x2="2166" y2="370" marker-end="url(#ah)"></line>
+<polyline points="2060,336 2060,300 2180,262" stroke-dasharray="7 5" marker-end="url(#ah)"></polyline>
+<polyline points="2250,180 2250,90 1490,90 1490,216" marker-end="url(#ah)"></polyline>
+<line x1="1490" y1="324" x2="1490" y2="426" marker-end="url(#ah)"></line>
+<line x1="1510" y1="426" x2="1510" y2="324" marker-end="url(#ah)"></line>
+<line x1="2360" y1="270" x2="2436" y2="270" marker-end="url(#ah)"></line>
+<polyline points="2570,322 2570,560 1650,560 1650,300 1624,300" stroke-dasharray="7 5" marker-end="url(#ah)"></polyline>
+<polyline points="2260,405 2260,470 2440,470 2500,326" stroke-dasharray="3 4" marker-end="url(#ah)"></polyline>
+</svg>
+<div style="position:absolute;left:276px;top:186px;font-size:14px">first visit</div>
+<div style="position:absolute;left:700px;top:296px;font-size:14px">returning: “Resume” (saved on device)</div>
+<div style="position:absolute;left:960px;top:80px;font-size:14px">any “needs review”</div>
+<div style="position:absolute;left:1060px;top:216px;font-size:14px">all secure → start at U1</div>
+<div style="position:absolute;left:1520px;top:62px;font-size:14px">unit done → back to hub, next unit unlocked as “current”</div>
+<div style="position:absolute;left:1522px;top:360px;font-size:14px">any time</div>
+<div style="position:absolute;left:2090px;top:282px;font-size:14px">retry</div>
+<div style="position:absolute;left:2120px;top:296px;font-size:14px">wrong</div>
+<div style="position:absolute;left:2368px;top:240px;font-size:14px">after U5</div>
+<div style="position:absolute;left:1900px;top:565px;font-size:14px">“review this outcome” → jumps to that unit</div>
+<div style="position:absolute;left:2280px;top:476px;font-size:14px">flagged questions feed the list</div>
+<div style="position:absolute;left:40px;top:220px;width:220px;height:90px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>1 · Start</b><br>purpose · start/resume · privacy · reset</div>
+<div style="position:absolute;left:360px;top:120px;width:240px;height:90px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>2 · Diagnostic</b><br>~6 Qs, 1 per screen, skippable</div>
+<div style="position:absolute;left:700px;top:120px;width:240px;height:90px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>2b · Diagnostic result</b><br>secure / needs review per sub-skill</div>
+<div style="position:absolute;left:1040px;top:40px;width:140px;height:82px;border:2px dashed #1f1f1f;border-radius:8px;padding:10px"><b>U0 primer</b><br>conditional</div>
+<div style="position:absolute;left:1360px;top:216px;width:260px;height:108px;border:3px solid #1f1f1f;border-radius:8px;padding:10px"><b>3 · Unit hub</b><br>ProgressMap · guided path (default) · reorder activities</div>
+<div style="position:absolute;left:1360px;top:430px;width:260px;height:84px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>6 · Sandbox</b><br>insert 1–99 · rebalancing on/off</div>
+<div style="position:absolute;left:1720px;top:130px;width:660px;height:300px;border:2px dashed #8a8a8a;border-radius:10px"></div>
+<div style="position:absolute;left:1736px;top:138px;font:600 12px ui-monospace,monospace">EACH UNIT U0–U5 · default order, student may reorder</div>
+<div style="position:absolute;left:1750px;top:180px;width:180px;height:82px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>4 · Explore</b><br>predict → watch / do</div>
+<div style="position:absolute;left:1950px;top:180px;width:180px;height:82px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>4 · Worked ex.</b><br>step through</div>
+<div style="position:absolute;left:2150px;top:180px;width:210px;height:82px;border:2px solid #1f1f1f;border-radius:8px;padding:10px"><b>5 · Check</b><br>correct → next item</div>
+<div style="position:absolute;left:1940px;top:336px;width:180px;height:70px;border:2px solid #1f1f1f;border-radius:8px;padding:8px"><b>Scaffold</b><br>hint → worked → guided</div>
+<div style="position:absolute;left:2170px;top:336px;width:190px;height:70px;border:2px solid #1f1f1f;border-radius:8px;padding:8px"><b>Retry cap (3)</b><br>→ add to lecture Qs</div>
+<div style="position:absolute;left:2440px;top:216px;width:260px;height:106px;border:3px solid #1f1f1f;border-radius:8px;padding:10px"><b>7 · Readiness summary</b><br>per-outcome status · lecture Qs · print / save</div>
+</div>
+</div></div>
+
+<!-- 1b START -->
+<div class="dv-opt" id="1b"><div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Screen 1 · Start</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees · pre-lecture primer</b><span style="flex:1"></span><span class="b">Aa · Display &amp; read-aloud</span></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 440px;gap:40px;padding:44px 70px">
+<div class="c col" style="gap:20px;padding:44px 32px 28px"><span class="t">StartPanel</span>
+<div class="h1">Get ready for your AVL trees lecture</div>
+<div style="font-size:20px;max-width:640px">A 20–30 minute warm-up. You'll see why search trees need balancing and how AVL trees fix themselves — so the lecture makes sense first time.</div>
+<div class="col" style="gap:4px;font-size:17px"><div>— 6 short units, one idea at a time</div><div>— Practice is private, retryable and never graded</div><div>— You finish with a list of questions to bring to the lecture</div></div>
+<div class="row" style="margin-top:6px"><span class="b bp" style="font-size:19px;padding:8px 20px">Start with a 3-minute warm-up check</span><span class="k">1</span></div>
+<div class="c row" style="justify-content:space-between"><span class="t">ResumeCard · only if saved progress</span><div><b>Welcome back.</b> You stopped at U3 · Check (2 of 3).</div><div class="row"><span class="b">Resume</span><span class="k">2</span></div></div>
+</div>
+<div class="col" style="gap:18px">
+<div class="ph" style="height:200px">hero diagram:<br>chain-shaped BST vs balanced tree</div>
+<div class="c" style="font-size:17px"><span class="t">PrivacyNotice</span><div class="row" style="align-items:flex-start"><span style="font-size:22px">🔒︎</span><div><b>Stored on this device only.</b> No account, nothing sent anywhere. Your answers are never graded or ranked.</div><span class="k">3</span></div></div>
+<div class="c col"><span class="t">ResetProgressLink + ConfirmDialog</span><div class="row"><u>Reset my progress</u><span class="k">4</span></div>
+<div style="border:2px solid #1f1f1f;border-radius:8px;padding:12px;box-shadow:4px 4px 0 #ccc"><b>Delete saved progress on this device?</b><div class="mut" style="font-size:15px">Your answers and lecture questions will be removed. This can't be undone.</div><div class="row" style="justify-content:flex-end;margin-top:8px"><span class="b">Cancel</span><span class="b bp">Reset</span></div></div></div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>First visit → Diagnostic. Copy frames it as a warm-up, not a test.</span></div>
+<div><span class="k">2</span><span>ResumeCard reads browser storage; hidden on first visit. Resume goes to the Unit hub with the current activity focused.</span></div>
+<div><span class="k">3</span><span>Privacy notice is always visible on Start (not behind a link).</span></div>
+<div><span class="k">4</span><span>Reset is a deliberate two-step (link → ConfirmDialog, focus trapped, Esc cancels).</span></div>
+</div>
+</div></div>
+
+<!-- 1c DIAGNOSTIC Q -->
+<div class="dv-opt" id="1c"><div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Screen 2 · Diagnostic question (one per screen)</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees · pre-lecture primer</b><span class="mut">› Warm-up check</span><span style="flex:1"></span><span class="pill">Private · not graded</span><span class="b">Aa</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:18px;padding:26px 120px">
+<div class="c row" style="justify-content:space-between"><span class="t">DiagnosticStepper</span><div>Question 3 of 6 · <b>Searching a BST</b></div><div class="row" style="gap:6px"><span class="pill">BST terms</span><span class="pill">BST terms</span><span class="pill" style="background:#1f1f1f;color:#fff">Search ●</span><span class="pill">Insert</span><span class="pill">Insert</span><span class="pill">Height</span></div><span class="k">1</span></div>
+<div class="c" style="flex:1;display:grid;grid-template-columns:400px 1fr;gap:30px"><span class="t">QuestionItem · type=multiple-choice</span>
+<div class="c" style="padding-top:28px"><span class="t">TreeView · read-only</span>
+<svg width="360" height="230" viewBox="0 0 360 230" fill="#fff" stroke="#1f1f1f" stroke-width="2"><line x1="180" y1="35" x2="95" y2="110"></line><line x1="180" y1="35" x2="265" y2="110"></line><line x1="95" y1="110" x2="45" y2="190"></line><line x1="95" y1="110" x2="145" y2="190"></line><line x1="265" y1="110" x2="215" y2="190"></line><line x1="265" y1="110" x2="315" y2="190"></line>
+<circle cx="180" cy="35" r="20"></circle><circle cx="95" cy="110" r="20"></circle><circle cx="265" cy="110" r="20"></circle><circle cx="45" cy="190" r="20"></circle><circle cx="145" cy="190" r="20"></circle><circle cx="215" cy="190" r="20"></circle><circle cx="315" cy="190" r="20"></circle>
+<g fill="#1f1f1f" stroke="none" font-size="16" text-anchor="middle"><text x="180" y="41">50</text><text x="95" y="116">30</text><text x="265" y="116">70</text><text x="45" y="196">20</text><text x="145" y="196">40</text><text x="215" y="196">60</text><text x="315" y="196">80</text></g></svg>
+<div class="mut" style="font-size:13px;font-family:ui-monospace,monospace">[Describe tree ▾] “Root 50. Left 30 (children 20, 40)…”</div>
+</div>
+<div class="col" style="gap:12px">
+<div class="h2">You search this tree for <u>45</u>. Which nodes do you visit, in order?</div>
+<div class="opt"><span class="kbd">A</span>50 → 30 → 40</div>
+<div class="opt"><span class="kbd">B</span>50 → 70 → 60</div>
+<div class="opt"><span class="kbd">C</span>50 → 30 → 20</div>
+<div class="opt"><span class="kbd">D</span>All seven nodes</div>
+<div class="c row" style="margin-top:6px;flex-wrap:wrap"><span class="t">ConfidenceRating · optional</span><span>How sure are you?</span><span class="b">Guessing</span><span class="b">Fairly sure</span><span class="b">Certain</span><span class="k">2</span></div>
+</div>
+</div>
+<div class="row" style="justify-content:space-between"><span class="b bg">Skip — I haven't learned this yet</span><span class="k">3</span><span style="flex:1"></span><span class="b bp">Next question →</span></div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Stepper shows the sub-skill being checked, not a running score. No right/wrong shown per item during the diagnostic (keeps it quick and low-stakes).</span></div>
+<div><span class="k">2</span><span>Confidence is optional; used later to flag “confident but wrong”. Radio group, arrow-key operable.</span></div>
+<div><span class="k">3</span><span>Skip counts as “needs review” for that sub-skill — no penalty wording.</span></div>
+<div><span class="k">·</span><span>Keyboard: A–D or arrows to pick, Enter = next. Tree has a text description toggle for screen readers.</span></div>
+</div>
+</div></div>
+
+<!-- 1d DIAGNOSTIC RESULT -->
+<div class="dv-opt" id="1d"><div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Screen 2b · Diagnostic result → routes to U0 or U1</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees · pre-lecture primer</b><span class="mut">› Warm-up check › Result</span><span style="flex:1"></span><span class="pill">Private · not graded</span><span class="b">Aa</span></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 430px;gap:36px;padding:34px 80px">
+<div class="c col" style="gap:14px"><span class="t">DiagnosticResult · SkillStatusList</span>
+<div class="h1" style="font-size:30px">Here's where you're starting from</div>
+<div class="mut">Not a mark — just what to look at before the AVL material.</div>
+<div class="opt" style="justify-content:space-between"><span>BST terms (root, leaf, subtree)</span><span class="pill">✓ Secure</span></div>
+<div class="opt" style="justify-content:space-between"><span>Searching a BST</span><span class="pill">✓ Secure</span></div>
+<div class="opt" style="justify-content:space-between;border-style:dashed"><span>Inserting into a BST</span><span class="pill" style="border-style:dashed">◐ Needs review</span></div>
+<div class="opt" style="justify-content:space-between;border-style:dashed"><span>Tree height <span class="mut">(skipped)</span></span><span class="pill" style="border-style:dashed">◐ Needs review</span></div>
+<div class="row"><span class="k">1</span><span class="mut" style="font-size:14px">Status = icon + word + border style. Never colour alone.</span></div>
+</div>
+<div class="col" style="gap:16px">
+<div class="c col"><span class="t">RouteRecommendation</span>
+<div class="h2">Suggested: a 5-minute primer first</div>
+<div>U0 covers BST insert and tree height — both are used in every later unit.</div>
+<span class="b bp" style="justify-content:center">Start primer (U0)</span>
+<span class="b bg" style="justify-content:center">Skip primer, go to U1</span>
+<span class="k">2</span>
+</div>
+<div class="c col" style="font-size:15px"><span class="t">Variant · all secure</span><div>“You're ready for U1.” → single button <b>Start U1</b>; U0 shown as optional in the hub.</div></div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>One row per sub-skill: secure / needs review. No total score, no percentage.</span></div>
+<div><span class="k">2</span><span>Routing: any “needs review” → recommend U0 (student can still skip). All secure → U1; U0 stays available but optional.</span></div>
+</div>
+</div></div>
+
+<!-- 1e HUB -->
+<div class="dv-opt" id="1e"><div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Screen 3 · Unit hub with progress map</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees · pre-lecture primer</b><span class="mut">› Your path</span><span style="flex:1"></span><span class="pill">Saved on this device</span><span class="b">Sandbox</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:18px;padding:22px 40px">
+<div class="c"><span class="t">ProgressMap</span>
+<div class="row" style="gap:0;align-items:stretch">
+<div class="col" style="gap:4px;width:170px;border:2px solid #1f1f1f;border-radius:8px;padding:8px;background:#ececec"><b>U0 Primer</b><span class="pill">✓ Done</span></div><div style="width:24px;border-top:2px solid #1f1f1f;align-self:center"></div>
+<div class="col" style="gap:4px;width:170px;border:2px solid #1f1f1f;border-radius:8px;padding:8px;background:#ececec"><b>U1 Why balance</b><span class="pill">✓ Done</span></div><div style="width:24px;border-top:2px solid #1f1f1f;align-self:center"></div>
+<div class="col" style="gap:4px;width:200px;border:4px solid #1f1f1f;border-radius:8px;padding:8px"><b>U2 Rotations</b><span class="pill" style="background:#1f1f1f;color:#fff">▶ You are here · 1/3</span></div><div style="width:24px;border-top:2px dashed #1f1f1f;align-self:center"></div>
+<div class="col" style="gap:4px;width:170px;border:2px dashed #1f1f1f;border-radius:8px;padding:8px"><b>U3 AVL rule</b><span class="pill" style="border-style:dashed">○ Up next</span></div><div style="width:24px;border-top:2px dashed #1f1f1f;align-self:center"></div>
+<div class="col" style="gap:4px;width:170px;border:2px dashed #1f1f1f;border-radius:8px;padding:8px"><b>U4 Four cases</b><span class="pill" style="border-style:dashed">○ Later</span></div><div style="width:24px;border-top:2px dashed #1f1f1f;align-self:center"></div>
+<div class="col" style="gap:4px;width:170px;border:2px dashed #1f1f1f;border-radius:8px;padding:8px"><b>U5 Together</b><span class="pill" style="border-style:dashed">○ Later</span></div><div style="width:24px;border-top:2px dashed #1f1f1f;align-self:center"></div>
+<div class="col" style="gap:4px;width:130px;border:2px dashed #1f1f1f;border-radius:8px;padding:8px"><b>Summary</b><span class="mut" style="font-size:14px">readiness</span></div>
+<span class="k" style="margin-left:8px;align-self:center">1</span>
+</div></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 360px;gap:24px">
+<div class="c col" style="gap:14px"><span class="t">UnitCard · current</span>
+<div class="row" style="justify-content:space-between"><div class="h2">U2 · Rotations</div><span class="mut">about 5 min</span></div>
+<div style="font-size:18px">One idea: <b>a rotation changes the tree's shape, but never the in-order sequence.</b></div>
+<div class="c col" style="gap:8px"><span class="t">ActivityList · reorderable</span>
+<div class="opt" style="background:#ececec"><span>⋮⋮</span><span style="flex:1">1 · Explore — predict, then watch</span><span class="pill">✓ Done</span></div>
+<div class="opt" style="border-width:3px"><span>⋮⋮</span><span style="flex:1"><b>2 · Worked example</b></span><span class="pill" style="background:#1f1f1f;color:#fff">▶ Next</span><span class="b" style="padding:0 8px">↑</span><span class="b" style="padding:0 8px">↓</span></div>
+<div class="opt" style="border-style:dashed"><span>⋮⋮</span><span style="flex:1">3 · Check — 4 short questions</span><span class="pill" style="border-style:dashed">○ To do</span></div>
+<div class="row"><span class="k">2</span><span class="mut" style="font-size:14px">Drag handle or ↑/↓ buttons (keyboard). “Reset to default order”.</span></div>
+</div>
+<div class="row"><span class="b bp" style="padding:8px 20px">Continue: Worked example →</span><span class="k">3</span></div>
+</div>
+<div class="col" style="gap:16px">
+<div class="c col"><span class="t">PathModeToggle</span><div class="row"><span class="b bp">Guided path</span><span class="b">Choose my own</span></div><div class="mut" style="font-size:14px">Guided = recommended order. Own = any unit, with a note if a prerequisite isn't done.</div><span class="k">4</span></div>
+<div class="c col"><span class="t">SandboxCard</span><div>Try inserting your own keys.</div><span class="b">Open sandbox</span></div>
+<div class="c col"><span class="t">LectureQuestionsCard</span><div>2 questions saved for the lecture</div><u>View list</u></div>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Done / current / upcoming each use a different border (solid / thick / dashed), fill and word — not colour. Past = where you've been; “You are here”; dashed = where you're going.</span></div>
+<div><span class="k">2</span><span>Reordering is per unit and saved locally. Default order shown first.</span></div>
+<div><span class="k">3</span><span>One primary action. No points, streaks, or comparison anywhere.</span></div>
+<div><span class="k">4</span><span>Guided path is the default; units in “own” mode are never locked, only annotated.</span></div>
+</div>
+</div></div>
+
+<!-- 1f EXPLORE WATCH -->
+<div class="dv-opt" id="1f"><div class="dv-olabel"><a class="dv-oid" href="#1f">1f</a>Screen 4 · Explore / worked example — watch mode (core screen)</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U4 Four cases › Explore (1 of 3)</span><span style="flex:1"></span><span class="pill">Saved on this device</span><span class="b">Sandbox</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div class="c row" style="margin:10px 20px 0;padding:26px 12px 8px;flex:none"><span class="t">RepresentationSwitcher</span><span class="mut">Show:</span><span class="b bp">☑ Diagram</span><span class="b bp">☑ Text</span><span class="b bp">☑ Pseudocode</span><span class="b">☐ Read aloud 🔈︎</span><span style="width:24px"></span><span class="mut">Mode:</span><span class="b bp">Watch</span><span class="b">Do it yourself</span><span class="k">1</span><span style="flex:1"></span><span class="mut" style="font-size:14px">Insert 5 into an AVL tree</span></div>
+<div style="flex:1;display:grid;grid-template-columns:800px 1fr;gap:16px;padding:12px 20px 14px;min-height:0">
+<div class="col" style="gap:12px;min-height:0">
+<div class="c" style="flex:1;padding:28px 10px 6px"><span class="t">TreeView · role=img + live description</span>
+<svg width="770" height="370" viewBox="0 0 700 370" fill="#fff" stroke="#1f1f1f" stroke-width="2">
+<line x1="340" y1="50" x2="200" y2="140"></line><line x1="340" y1="50" x2="480" y2="140"></line><line x1="200" y1="140" x2="130" y2="230"></line><line x1="480" y1="140" x2="420" y2="230"></line><line x1="480" y1="140" x2="540" y2="230"></line><line x1="130" y1="230" x2="80" y2="320"></line>
+<circle cx="340" cy="50" r="22"></circle><circle cx="200" cy="140" r="30" stroke-dasharray="5 4"></circle><circle cx="200" cy="140" r="22" stroke-width="4"></circle><circle cx="480" cy="140" r="22"></circle><circle cx="130" cy="230" r="22"></circle><circle cx="420" cy="230" r="22"></circle><circle cx="540" cy="230" r="22"></circle><circle cx="80" cy="320" r="22"></circle>
+<rect x="40" y="96" width="122" height="24" rx="4" fill="#1f1f1f"></rect>
+<g fill="#1f1f1f" stroke="none"><g font-size="17" text-anchor="middle"><text x="340" y="56">40</text><text x="200" y="146" font-weight="700">20</text><text x="480" y="146">60</text><text x="130" y="236">10</text><text x="420" y="236">50</text><text x="540" y="236">70</text><text x="80" y="326">5</text></g>
+<g font-size="13"><text x="368" y="55">h4 · bf +1</text><text x="236" y="146" font-weight="700">h3 · bf +2</text><text x="508" y="145">h2 · bf 0</text><text x="158" y="235">h2 · bf +1</text><text x="448" y="235">h1 · bf 0</text><text x="568" y="235">h1 · bf 0</text><text x="108" y="325">h1 · bf 0  ← new</text></g>
+<text x="101" y="113" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">⚠ UNBALANCED</text></g>
+</svg>
+</div>
+<div class="c row" style="padding:28px 12px 10px;flex:none"><span class="t">StepControls</span><span class="b">⏮ Back</span><span class="b bp">▶ Play</span><span class="b">Step ⏭</span><span style="flex:1;height:8px;border:2px solid #1f1f1f;border-radius:4px;background:linear-gradient(90deg,#1f1f1f 50%,#fff 50%)"></span><span>Step 3 / 6</span><span class="mut">Speed</span><span class="b" style="padding:2px 8px">0.5×</span><span class="b bp" style="padding:2px 8px">1×</span><span class="b" style="padding:2px 8px">2×</span><span class="k">2</span></div>
+</div>
+<div class="col" style="gap:12px;min-height:0">
+<div class="c" style="padding:28px 0 8px"><span class="t">PseudocodePanel</span>
+<div class="code" style="padding:0 12px">insert(node, key):</div>
+<div class="code" style="padding:0 12px">  ...descend and attach new node</div>
+<div class="code" style="padding:0 12px">  node.height = 1 + max(h(L), h(R))</div>
+<div class="code hl" style="padding:0 12px">▶ bf = h(node.left) − h(node.right)</div>
+<div class="code" style="padding:0 12px">  if bf &gt; 1 and key &lt; node.left.key:</div>
+<div class="code" style="padding:0 12px">      return rotateRight(node)  # LL</div>
+<div class="code" style="padding:0 12px">  ...other three cases</div>
+<div class="row" style="padding:0 12px"><span class="k">3</span><span class="mut" style="font-size:13px">Current line = inverted + ▶ marker</span></div>
+</div>
+<div class="c col" style="gap:6px;flex:1"><span class="t">StepExplanation · aria-live</span>
+<div style="font-size:17px"><b>Step 3.</b> Walking back up from 5, node 20 now has height 3 and balance factor +2. That breaks the AVL rule (bf must be −1, 0 or +1).</div>
+<div class="mut" style="font-size:15px">20 is the lowest unbalanced node, so this is where we fix it.</div>
+<div class="row" style="margin-top:auto"><u style="font-size:14px">Describe the whole tree ▾</u><span class="k">4</span><span style="flex:1"></span><span class="b bg" style="font-size:14px">? Add to lecture questions</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Each representation toggles independently per concept (diagram, text, pseudocode, read-aloud). Watch ↔ Do it yourself is a separate switch. Framed as choices, not learning styles.</span></div>
+<div><span class="k">2</span><span>Keys: Space play/pause, ← → step, [ ] speed. Step back fully restores the previous tree state. Respects reduced-motion (steps snap).</span></div>
+<div><span class="k">3</span><span>Every node shows h and bf. Unbalanced node: thick + dashed double ring AND a “⚠ UNBALANCED” text label.</span></div>
+<div><span class="k">4</span><span>Text description updates per step: “Root 40 (height 4, bf +1). Left child 20 (height 3, bf +2, unbalanced)…”. Same layout serves the worked example (no predict prompt, more text).</span></div>
+</div>
+</div></div>
+
+<!-- 1g PREDICT -->
+<div class="dv-opt" id="1g"><div class="dv-olabel"><a class="dv-oid" href="#1g">1g</a>Screen 4 · state: “Predict first” before each replay</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U4 Four cases › Explore (1 of 3)</span><span style="flex:1"></span><span class="pill">Saved on this device</span><span class="b">Sandbox</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:grid;grid-template-columns:800px 1fr;gap:16px;padding:16px 20px">
+<div class="c" style="padding:28px 10px 6px"><span class="t">TreeView · selectable for prediction</span>
+<svg width="770" height="400" viewBox="0 0 700 370" fill="#fff" stroke="#1f1f1f" stroke-width="2">
+<line x1="340" y1="50" x2="200" y2="140"></line><line x1="340" y1="50" x2="480" y2="140"></line><line x1="200" y1="140" x2="130" y2="230"></line><line x1="480" y1="140" x2="420" y2="230"></line><line x1="480" y1="140" x2="540" y2="230"></line><line x1="130" y1="230" x2="80" y2="320" stroke-dasharray="5 5"></line>
+<circle cx="340" cy="50" r="22"></circle><circle cx="200" cy="140" r="22"></circle><circle cx="480" cy="140" r="22"></circle><circle cx="130" cy="230" r="22"></circle><circle cx="420" cy="230" r="22"></circle><circle cx="540" cy="230" r="22"></circle><circle cx="80" cy="320" r="22" stroke-dasharray="5 5"></circle>
+<g fill="#1f1f1f" stroke="none"><g font-size="17" text-anchor="middle"><text x="340" y="56">40</text><text x="200" y="146">20</text><text x="480" y="146">60</text><text x="130" y="236">10</text><text x="420" y="236">50</text><text x="540" y="236">70</text><text x="80" y="326">5?</text></g>
+<g font-size="13"><text x="368" y="55">h3 · bf 0</text><text x="228" y="145">h2 · bf +1</text><text x="508" y="145">h2 · bf 0</text><text x="158" y="235">h1 · bf 0</text><text x="448" y="235">h1 · bf 0</text><text x="568" y="235">h1 · bf 0</text><text x="108" y="325">about to insert</text></g></g>
+</svg>
+</div>
+<div class="c col" style="gap:14px;border:3px solid #1f1f1f"><span class="t">PredictPrompt · modal-less, replay disabled until answered or skipped</span>
+<div class="h2">Before you watch: predict</div>
+<div style="font-size:18px">We're about to insert <b>5</b>. Which node will be the first to become unbalanced?</div>
+<div class="mut" style="font-size:15px">Click a node in the tree, or pick here:</div>
+<div class="opt"><span class="kbd">1</span>10</div>
+<div class="opt" style="border-width:3px"><span class="kbd">2</span>20 <span class="pill" style="margin-left:auto">selected</span></div>
+<div class="opt"><span class="kbd">3</span>40</div>
+<div class="opt"><span class="kbd">4</span>None — it stays balanced</div>
+<div class="row"><span class="b bp">Lock in &amp; watch ▶</span><span class="b bg">Skip, just watch</span><span class="k">1</span></div>
+<div class="c" style="font-size:15px"><span class="t">PredictionReveal · after replay</span>“You predicted <b>20</b>. Step 3 shows 20 at bf +2 — matches.” <u>Replay that step</u><span class="k">2</span></div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Prompt appears before every replay (each new example and “replay”). Predictions are never scored or stored as marks.</span></div>
+<div><span class="k">2</span><span>Reveal compares prediction to what happened in neutral language and links to the relevant step.</span></div>
+</div>
+</div></div>
+
+<!-- 1h DIY -->
+<div class="dv-opt" id="1h"><div class="dv-olabel"><a class="dv-oid" href="#1h">1h</a>Screen 4 · state: “Do it yourself” — perform the rotation</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U4 Four cases › Explore (1 of 3)</span><span style="flex:1"></span><span class="pill">Saved on this device</span><span class="b">Sandbox</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div class="c row" style="margin:10px 20px 0;padding:26px 12px 8px;flex:none"><span class="t">RepresentationSwitcher</span><span class="mut">Show:</span><span class="b bp">☑ Diagram</span><span class="b bp">☑ Text</span><span class="b">☐ Pseudocode</span><span class="b">☐ Read aloud</span><span style="width:24px"></span><span class="mut">Mode:</span><span class="b">Watch</span><span class="b bp">Do it yourself</span></div>
+<div style="flex:1;display:grid;grid-template-columns:800px 1fr;gap:16px;padding:12px 20px 14px">
+<div class="col" style="gap:12px">
+<div class="c" style="position:relative;flex:1;padding:28px 10px 6px"><span class="t">TreeView · interactive</span>
+<svg width="770" height="360" viewBox="0 0 700 360" fill="#fff" stroke="#1f1f1f" stroke-width="2">
+<line x1="340" y1="50" x2="200" y2="140"></line><line x1="340" y1="50" x2="480" y2="140"></line><line x1="200" y1="140" x2="130" y2="230"></line><line x1="480" y1="140" x2="420" y2="230"></line><line x1="480" y1="140" x2="540" y2="230"></line><line x1="130" y1="230" x2="80" y2="320"></line>
+<circle cx="340" cy="50" r="22"></circle><rect x="166" y="106" width="68" height="68" rx="8" stroke-width="3"></rect><circle cx="200" cy="140" r="22" stroke-width="4"></circle><circle cx="480" cy="140" r="22"></circle><circle cx="130" cy="230" r="22"></circle><circle cx="420" cy="230" r="22"></circle><circle cx="540" cy="230" r="22"></circle><circle cx="80" cy="320" r="22"></circle>
+<g fill="#1f1f1f" stroke="none"><g font-size="17" text-anchor="middle"><text x="340" y="56">40</text><text x="200" y="146" font-weight="700">20</text><text x="480" y="146">60</text><text x="130" y="236">10</text><text x="420" y="236">50</text><text x="540" y="236">70</text><text x="80" y="326">5</text></g>
+<g font-size="13"><text x="368" y="55">h4 · bf +1</text><text x="200" y="96" text-anchor="middle" font-weight="700">SELECTED · ⚠ UNBALANCED</text><text x="508" y="145">h2 · bf 0</text><text x="158" y="235">h2 · bf +1</text><text x="448" y="235">h1 · bf 0</text><text x="568" y="235">h1 · bf 0</text><text x="108" y="325">h1 · bf 0</text><text x="242" y="146">h3 · bf +2</text></g></g>
+</svg>
+<div class="c col" style="position:absolute;left:300px;top:150px;width:250px;background:#fff;border:2px solid #1f1f1f;box-shadow:4px 4px 0 #ccc;gap:6px"><span class="t">RotationMenu</span><div><b>Node 20</b> — choose:</div><span class="b">↻ Rotate right at 20 <span class="kbd">R</span></span><span class="b">↺ Rotate left at 20 <span class="kbd">L</span></span><span class="b bg">Cancel <span class="kbd">Esc</span></span><span class="k">1</span></div>
+</div>
+<div class="c row" style="flex:none"><span class="t">InOrderStrip</span><span class="mut">In-order:</span><span class="code" style="font-size:16px;line-height:1.3">5 · 10 · 20 · 40 · 50 · 60 · 70</span><span class="mut" style="font-size:14px">— stays identical after any rotation</span><span class="k">2</span><span style="flex:1"></span><span class="b">↶ Undo</span><span class="b">Reset</span></div>
+</div>
+<div class="col" style="gap:12px">
+<div class="c col" style="gap:8px"><span class="t">TaskPrompt</span><div class="h2">Your turn</div><div style="font-size:17px">Rebalance the tree with <b>one</b> rotation. Select the node to rotate at, then choose the direction.</div></div>
+<div class="c col" style="gap:8px"><span class="t">FeedbackPanel · after action</span><div><b>✓ Balanced.</b> Rotating right at 20 lifted 10 up. Every node is now bf −1, 0 or +1.</div><div class="mut" style="font-size:15px">Notice the in-order sequence didn't change.</div><div style="border-top:1.5px dashed #999;padding-top:6px;font-size:15px"><b>If wrong rotation:</b> “That made 20's subtree lean the other way (bf −2). Undo and try the other direction.” — not counted against you.</div><span class="k">3</span></div>
+<div class="c col" style="gap:4px;font-size:14px"><span class="t">KeyboardHelp</span><div>Tab into tree · arrow keys move between nodes (↑ parent, ← → children)</div><div>Enter selects · R / L rotate · Ctrl+Z undo</div></div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Selection = thick square frame + “SELECTED” label. Menu also opens via Enter; announces “Node 20 selected, height 3, balance +2, unbalanced”.</span></div>
+<div><span class="k">2</span><span>InOrderStrip carries the U2 idea visually; in U2 it animates to prove nothing moved.</span></div>
+<div><span class="k">3</span><span>Interactive attempts in Explore are practice only — they never count toward readiness.</span></div>
+</div>
+</div></div>
+
+<!-- 1i CHECK correct -->
+<div class="dv-opt" id="1i"><div class="dv-olabel"><a class="dv-oid" href="#1i">1i</a>Screen 5 · Check — “identify the case” (MCQ), correct state</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U4 Four cases › Check (3 of 3)</span><span style="flex:1"></span><span class="pill">Private · retryable</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:18px 40px">
+<div class="c row" style="flex:none;padding:26px 12px 8px"><span class="t">CheckHeader</span><span>Question 1 of 4</span><span class="mut">· attempt 1 of 3</span><span class="row" style="gap:4px"><span class="k" style="background:#1f1f1f;color:#fff">1</span><span class="k" style="border-style:dashed">2</span><span class="k" style="border-style:dashed">3</span></span><span style="flex:1"></span><span class="mut" style="font-size:14px">Types this unit: multiple choice · compute bf · identify case · trace insert</span><span class="k">1</span></div>
+<div class="c" style="flex:1;display:grid;grid-template-columns:420px 1fr;gap:28px"><span class="t">QuestionItem · type=identify-case</span>
+<div class="c"><span class="t">TreeView · read-only</span>
+<svg width="380" height="300" viewBox="0 0 380 300" fill="#fff" stroke="#1f1f1f" stroke-width="2"><line x1="230" y1="50" x2="130" y2="140"></line><line x1="130" y1="140" x2="200" y2="230"></line>
+<circle cx="230" cy="50" r="30" stroke-dasharray="5 4"></circle><circle cx="230" cy="50" r="22" stroke-width="4"></circle><circle cx="130" cy="140" r="22"></circle><circle cx="200" cy="230" r="22"></circle>
+<rect x="40" y="38" width="122" height="24" rx="4" fill="#1f1f1f"></rect>
+<g fill="#1f1f1f" stroke="none"><g font-size="17" text-anchor="middle"><text x="230" y="56">30</text><text x="130" y="146">10</text><text x="200" y="236">20</text></g><g font-size="13"><text x="266" y="55">h3 · bf +2</text><text x="40" y="146">h2 · bf −1</text><text x="228" y="235">h1 · bf 0  ← new</text></g><text x="101" y="55" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">⚠ UNBALANCED</text></g></svg>
+</div>
+<div class="col" style="gap:10px">
+<div class="h2">20 was just inserted. Which rebalancing case is this?</div>
+<div class="row" style="gap:10px;flex-wrap:wrap"><div class="opt"><span class="kbd">A</span>LL</div><div class="opt"><span class="kbd">B</span>RR</div><div class="opt" style="border-width:4px"><span class="kbd">C</span><b>LR</b><span class="pill">✓ your answer</span></div><div class="opt"><span class="kbd">D</span>RL</div></div>
+<div class="row" style="font-size:15px"><span class="mut">How sure?</span><span class="b">Guessing</span><span class="b bp">Fairly sure</span><span class="b">Certain</span></div>
+<div class="c col" style="gap:6px;border:3px solid #1f1f1f"><span class="t">FeedbackPanel · state=correct · aria-live</span>
+<div class="h2">✓ Correct — it's LR</div>
+<div>The new key went <b>L</b>eft of 30, then <b>R</b>ight of 10. A zig-zag needs two rotations: left at 10, then right at 30.</div>
+<div class="row"><u style="font-size:15px">Watch the fix (opens step view)</u><span style="flex:1"></span><span class="b bp">Next question →</span></div><span class="k">2</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Attempt dots are the only “progress” shown — no score. All four question types share QuestionItem + FeedbackPanel; only the answer widget changes.</span></div>
+<div><span class="k">2</span><span>Correct feedback still explains <i>why</i> (reinforces the idea), then one primary action.</span></div>
+</div>
+</div></div>
+
+<!-- 1j WRONG + HINT -->
+<div class="dv-opt" id="1j"><div class="dv-olabel"><a class="dv-oid" href="#1j">1j</a>Screen 5 · state: wrong answer + explanation + scaffold level 1 (hint) — “compute the balance factor”</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U3 AVL rule › Check (3 of 3)</span><span style="flex:1"></span><span class="pill">Private · retryable</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:18px 40px">
+<div class="c row" style="flex:none;padding:26px 12px 8px"><span class="t">CheckHeader</span><span>Question 2 of 4</span><span class="mut">· attempt 1 of 3</span><span class="row" style="gap:4px"><span class="k" style="background:#1f1f1f;color:#fff">✗</span><span class="k" style="border-style:dashed">2</span><span class="k" style="border-style:dashed">3</span></span></div>
+<div style="flex:1;display:grid;grid-template-columns:360px 1fr 400px;gap:20px">
+<div class="c"><span class="t">TreeView</span>
+<svg width="320" height="260" viewBox="0 0 320 260" fill="#fff" stroke="#1f1f1f" stroke-width="2"><line x1="200" y1="50" x2="130" y2="130"></line><line x1="130" y1="130" x2="70" y2="210"></line><circle cx="200" cy="50" r="22" stroke-width="4"></circle><circle cx="130" cy="130" r="22"></circle><circle cx="70" cy="210" r="22"></circle>
+<g fill="#1f1f1f" stroke="none" font-size="17" text-anchor="middle"><text x="200" y="56">30</text><text x="130" y="136">20</text><text x="70" y="216">10</text><text x="262" y="56" font-size="14">bf = ?</text></g></svg>
+</div>
+<div class="c col" style="gap:12px"><span class="t">QuestionItem · type=compute-bf</span>
+<div class="h2">What is the balance factor of node 30?</div>
+<div class="mut" style="font-size:15px">bf = height(left subtree) − height(right subtree)</div>
+<div class="row"><span class="b">−</span><span style="border:2px solid #1f1f1f;border-radius:6px;padding:4px 18px;font-size:20px">−2</span><span class="b">+</span><span class="pill" style="border-style:dashed">✗ not quite</span></div>
+<div class="c col" style="gap:6px;border:3px solid #1f1f1f"><span class="t">FeedbackPanel · state=wrong</span>
+<div class="h2">✗ Not quite — the sign is flipped</div>
+<div>You entered −2. The <b>left</b> subtree of 30 has height 2, the right is empty (height 0). Left minus right = 2 − 0 = <b>+2</b>. A positive bf means “leans left”.</div><span class="k">1</span></div>
+<div class="row"><span class="b bp">Try again (attempt 2 of 3)</span><span class="k">2</span></div>
+</div>
+<div class="c col" style="gap:10px"><span class="t">ScaffoldLadder</span>
+<div class="opt" style="border-width:3px"><span class="k" style="background:#1f1f1f;color:#fff">1</span><b>Hint</b><span class="pill" style="margin-left:auto">open</span></div>
+<div style="border-left:3px solid #1f1f1f;margin-left:20px;padding:4px 10px;font-size:15px">Find the height of 20 first. Count nodes on the longest path down: 20 → 10.</div>
+<div class="opt" style="border-style:dashed"><span class="k">2</span>Worked example<span class="mut" style="margin-left:auto;font-size:14px">similar tree</span></div>
+<div class="opt" style="border-style:dashed"><span class="k">3</span>Guided step-through<span class="mut" style="margin-left:auto;font-size:14px">this tree</span></div>
+<div class="mut" style="font-size:14px">Each level unlocks after a wrong attempt, or open it yourself any time.</div><span class="k">3</span>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Wrong feedback names the likely misconception (sign convention) and shows the correct reasoning — not just “incorrect”.</span></div>
+<div><span class="k">2</span><span>Retry keeps the same question; the attempt count is shown so the cap is never a surprise.</span></div>
+<div><span class="k">3</span><span>ScaffoldLadder escalates hint → worked example → guided step-through. Status = numbered step + open/closed border + word.</span></div>
+</div>
+</div></div>
+
+<!-- 1k GUIDED -->
+<div class="dv-opt" id="1k"><div class="dv-olabel"><a class="dv-oid" href="#1k">1k</a>Screen 5 · state: scaffold level 3 — guided step-through</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U3 AVL rule › Check (3 of 3)</span><span style="flex:1"></span><span class="pill">Private · retryable</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;padding:18px 40px">
+<div class="c row" style="flex:none;padding:26px 12px 8px"><span class="t">CheckHeader</span><span>Question 2 of 4</span><span class="mut">· attempt 3 of 3</span><span class="row" style="gap:4px"><span class="k" style="background:#1f1f1f;color:#fff">✗</span><span class="k" style="background:#1f1f1f;color:#fff">✗</span><span class="k" style="border-width:3px">3</span></span></div>
+<div style="flex:1;display:grid;grid-template-columns:420px 1fr 300px;gap:20px">
+<div class="c"><span class="t">TreeView · step highlight</span>
+<svg width="380" height="300" viewBox="0 0 320 260" fill="#fff" stroke="#1f1f1f" stroke-width="2"><line x1="200" y1="50" x2="130" y2="130"></line><line x1="130" y1="130" x2="70" y2="210"></line><circle cx="200" cy="50" r="22"></circle><rect x="96" y="96" width="68" height="68" rx="8" stroke-width="3"></rect><circle cx="130" cy="130" r="22"></circle><circle cx="70" cy="210" r="22"></circle>
+<g fill="#1f1f1f" stroke="none" font-size="17" text-anchor="middle"><text x="200" y="56">30</text><text x="130" y="136">20</text><text x="70" y="216">10</text><text x="100" y="216" font-size="13" text-anchor="start">h1 ✓</text><text x="210" y="136" font-size="13">← now</text></g></svg>
+</div>
+<div class="c col" style="gap:12px"><span class="t">GuidedStepThrough</span>
+<div class="h2">Let's work it out together</div>
+<div class="opt" style="background:#ececec"><span class="k">1</span><span style="flex:1">Height of 10 (a leaf)?</span><span style="border:2px solid #1f1f1f;border-radius:6px;padding:0 12px">1</span><span class="pill">✓</span></div>
+<div class="opt" style="border-width:3px"><span class="k">2</span><span style="flex:1">Height of 20? (1 + taller child)</span><span style="border:2px solid #1f1f1f;border-radius:6px;padding:0 12px;min-width:46px">_</span><span class="b bp">Check</span></div>
+<div class="opt" style="border-style:dashed"><span class="k">3</span><span class="mut" style="flex:1">Height of 30's right subtree?</span></div>
+<div class="opt" style="border-style:dashed"><span class="k">4</span><span class="mut" style="flex:1">So bf(30) = ? − ? = ?</span></div>
+<div class="mut" style="font-size:15px">Steps are small and confirm each part. Mistakes inside guided steps don't use up attempts.</div>
+</div>
+<div class="c col" style="gap:10px"><span class="t">ScaffoldLadder</span>
+<div class="opt" style="background:#ececec"><span class="k">1</span>Hint<span class="pill" style="margin-left:auto">seen</span></div>
+<div class="opt" style="background:#ececec"><span class="k">2</span>Worked example<span class="pill" style="margin-left:auto">seen</span></div>
+<div class="opt" style="border-width:3px"><span class="k" style="background:#1f1f1f;color:#fff">3</span><b>Guided</b><span class="pill" style="margin-left:auto">open</span></div>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">·</span><span>Level 2 (worked example) reuses the Explore/worked-example layout (<a class="dv-oid" href="#1f">1f</a>) in a side drawer on a similar tree, so the student isn't just shown this answer.</span></div>
+<div><span class="k">·</span><span>After guided steps, the student submits the final answer as attempt 3; if still wrong → retry cap (<a class="dv-oid" href="#1l">1l</a>).</span></div>
+</div>
+</div></div>
+
+<!-- 1l RETRY CAP -->
+<div class="dv-opt" id="1l"><div class="dv-olabel"><a class="dv-oid" href="#1l">1l</a>Screen 5 · state: retry cap (3) reached → add to lecture questions</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U3 AVL rule › Check (3 of 3)</span><span style="flex:1"></span><span class="pill">Private · retryable</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:30px 60px">
+<div class="c col" style="gap:14px;border:3px solid #1f1f1f"><span class="t">FeedbackPanel · state=retry-cap</span>
+<div class="h1" style="font-size:28px">That's three goes — let's park this one</div>
+<div style="font-size:18px">Getting stuck here is normal. This is exactly the kind of thing the lecture is for.</div>
+<div class="c col" style="gap:6px"><span class="t">FullAnswer · collapsed by default</span><u>Show the full worked answer ▾</u><div class="mut" style="font-size:15px">h(20) = 2, right of 30 is empty (0) → bf(30) = 2 − 0 = +2 → unbalanced.</div></div>
+<div class="row" style="margin-top:auto"><span class="b">Move on to next question →</span><span class="b bg">Back to unit hub</span><span class="k">1</span></div>
+</div>
+<div class="c col" style="gap:12px"><span class="t">LectureQuestionDraft</span>
+<div class="h2">Add this to your lecture questions?</div>
+<div class="mut" style="font-size:15px">We drafted one from what tripped you up. Edit it in your own words.</div>
+<div style="border:2px solid #1f1f1f;border-radius:8px;padding:12px;min-height:110px;font-size:18px">Why is the balance factor left minus right — and does the sign matter when choosing a rotation?<span style="border-left:2px solid #1f1f1f;margin-left:2px"></span></div>
+<div class="row" style="font-size:15px"><span class="mut">Linked to:</span><span class="pill">U3 · balance factor</span><span class="pill">Q2</span></div>
+<div class="row"><span class="b bp">＋ Add to lecture questions</span><span class="b bg">No thanks</span><span class="k">2</span></div>
+<div class="mut" style="font-size:14px">Readiness for this outcome is set to “not yet” — you can retry later from the hub; the counter resets.</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Hard stop after 3 attempts: no further “Try again” on this screen, always a way forward. No loop.</span></div>
+<div><span class="k">2</span><span>Adding updates the TopBar count and the readiness summary list. Question text is editable.</span></div>
+</div>
+</div></div>
+
+<!-- 1m TRACE INSERT -->
+<div class="dv-opt" id="1m"><div class="dv-olabel"><a class="dv-oid" href="#1m">1m</a>Screen 5 · Check — “trace an insert” (student edits the tree)</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› U5 Together › Check (3 of 3)</span><span style="flex:1"></span><span class="pill">Private · retryable</span><span class="b">Lecture questions (3)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;padding:16px 40px">
+<div class="c row" style="flex:none;padding:26px 12px 8px"><span class="t">QuestionItem · type=trace-insert</span><div class="h2" style="font-size:20px">Insert <u>5</u> into this AVL tree, then rebalance if needed. Submit the final tree.</div><span style="flex:1"></span><span class="mut">attempt 1 of 3</span></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 330px;gap:18px;min-height:0">
+<div class="col" style="gap:10px">
+<div class="c row" style="flex:none;padding:26px 12px 8px"><span class="t">TreeEditorToolbar</span><span class="b bp">＋ Place key</span><span class="b">Select node</span><span class="b">↻ Rotate right</span><span class="b">↺ Rotate left</span><span class="b">↶ Undo</span><span class="b">Reset</span><span class="k">1</span></div>
+<div class="c" style="flex:1;padding:28px 10px 6px"><span class="t">TreeView · editable</span>
+<svg width="900" height="330" viewBox="0 0 700 300" fill="#fff" stroke="#1f1f1f" stroke-width="2">
+<line x1="350" y1="40" x2="220" y2="120"></line><line x1="350" y1="40" x2="480" y2="120"></line><line x1="220" y1="120" x2="150" y2="200"></line><line x1="150" y1="200" x2="100" y2="270" stroke-dasharray="5 5"></line>
+<circle cx="350" cy="40" r="22"></circle><circle cx="220" cy="120" r="22"></circle><circle cx="480" cy="120" r="22"></circle><circle cx="150" cy="200" r="22"></circle><circle cx="100" cy="270" r="22" stroke-width="3" stroke-dasharray="5 4"></circle>
+<g stroke="#999" stroke-dasharray="3 4"><circle cx="290" cy="200" r="14"></circle><circle cx="420" cy="200" r="14"></circle><circle cx="540" cy="200" r="14"></circle><circle cx="200" cy="270" r="14"></circle></g>
+<g fill="#1f1f1f" stroke="none"><g font-size="17" text-anchor="middle"><text x="350" y="46">30</text><text x="220" y="126">20</text><text x="480" y="126">40</text><text x="150" y="206">10</text><text x="100" y="276">5</text></g>
+<g font-size="12"><text x="378" y="45">h4 · bf +2</text><text x="248" y="125">h3 · bf +2</text><text x="508" y="125">h1 · bf 0</text><text x="178" y="205">h2 · bf +1</text><text x="128" y="275">placed by you</text><text x="270" y="228" fill="#555">empty slot</text></g></g>
+</svg>
+</div>
+</div>
+<div class="col" style="gap:12px">
+<div class="c col" style="gap:6px;font-size:15px"><span class="t">EditLog · text equivalent</span><div>1. Placed 5 as left child of 10</div><div class="mut">2. (next action…)</div><span class="k">2</span></div>
+<div class="c col" style="gap:6px;font-size:15px"><span class="t">LiveBalanceReadout</span><div>Unbalanced now: <b>20 (+2), 30 (+2)</b></div><div class="mut">Heights/bf update after each edit — can be switched off for a harder attempt.</div></div>
+<div class="c col" style="gap:6px;font-size:14px"><span class="t">KeyboardHelp</span><div>Tab to slot or node · Enter places key · R / L rotate selected · Ctrl+Z undo</div></div>
+<span class="b bp" style="justify-content:center;padding:8px">Submit final tree</span>
+</div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>“Draw or edit” is constrained to valid moves (place key in an empty slot, rotate at a node) so marking is reliable and fully keyboard operable — no freehand drawing.</span></div>
+<div><span class="k">2</span><span>EditLog is the screen-reader equivalent of the edited tree and lets feedback refer to a specific step (“step 2 rotated at 30 — the lowest unbalanced node is 20”).</span></div>
+</div>
+</div></div>
+
+<!-- 1n SANDBOX -->
+<div class="dv-opt" id="1n"><div class="dv-olabel"><a class="dv-oid" href="#1n">1n</a>Screen 6 · Sandbox — rebalancing OFF, sorted inserts build a chain</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› Sandbox</span><span style="flex:1"></span><span class="pill">Saved on this device</span><span class="b">← Back to path</span><span class="b">Lecture questions (2)</span><span class="b">Aa</span></div>
+<div style="flex:1;display:grid;grid-template-columns:330px 1fr;gap:18px;padding:16px 20px;min-height:0">
+<div class="col" style="gap:12px">
+<div class="c col" style="gap:8px"><span class="t">InsertControl</span><div class="row"><span style="border:2px solid #1f1f1f;border-radius:6px;padding:3px 10px;flex:1" class="mut">Key 1–99</span><span class="b bp">Insert</span></div><div class="row" style="flex-wrap:wrap;gap:6px"><span class="b">Insert 1…7 sorted</span><span class="b">Random key</span><span class="b">Clear</span></div><div class="mut" style="font-size:14px">Duplicates and out-of-range keys explained inline.</div></div>
+<div class="c col" style="gap:8px;border:3px solid #1f1f1f"><span class="t">RebalanceSwitch</span><div class="row"><span style="width:56px;height:28px;border:2px solid #1f1f1f;border-radius:99px;display:flex;align-items:center;padding:2px"><span style="width:20px;height:20px;border-radius:50%;background:#1f1f1f"></span></span><b>Rebalancing: OFF</b></div><div class="mut" style="font-size:14px">Plain BST. Turn ON to rebuild the same keys as an AVL tree.</div><span class="k">1</span></div>
+<div class="c col" style="gap:4px"><span class="t">TreeStats</span><div><b>7 / 15</b> nodes</div><div>Height <b>7</b> <span class="mut">(balanced would be 3)</span></div><div>Search for 7 visits <b>7</b> nodes</div><span class="k">2</span></div>
+<div class="c col" style="gap:4px;font-size:14px;flex:1"><span class="t">EventLog · aria-live</span><div>Inserted 7 → right of 6. No rebalancing (switched off).</div><div class="mut">Inserted 6 → right of 5…</div></div>
+</div>
+<div class="c" style="padding:28px 10px 6px"><span class="t">TreeView · sandbox</span>
+<svg width="980" height="560" viewBox="0 0 980 560" fill="#fff" stroke="#1f1f1f" stroke-width="2">
+<polyline points="80,50 210,125 340,200 470,275 600,350 730,425 860,500" fill="none"></polyline>
+<circle cx="80" cy="50" r="22"></circle><circle cx="210" cy="125" r="22"></circle><circle cx="340" cy="200" r="22"></circle><circle cx="470" cy="275" r="22"></circle><circle cx="600" cy="350" r="22"></circle><circle cx="730" cy="425" r="22"></circle><circle cx="860" cy="500" r="22"></circle>
+<g fill="#1f1f1f" stroke="none"><g font-size="17" text-anchor="middle"><text x="80" y="56">1</text><text x="210" y="131">2</text><text x="340" y="206">3</text><text x="470" y="281">4</text><text x="600" y="356">5</text><text x="730" y="431">6</text><text x="860" y="506">7</text></g>
+<g font-size="13"><text x="40" y="95">h7 · bf −6</text><text x="170" y="170">h6 · bf −5</text><text x="300" y="245">h5 · bf −4</text><text x="430" y="320">h4 · bf −3</text><text x="560" y="395">h3 · bf −2</text><text x="690" y="470">h2 · bf −1</text><text x="820" y="545">h1 · bf 0</text></g>
+<text x="420" y="80" font-size="18">“This is a linked list in disguise.”</text><text x="420" y="104" font-size="14" fill="#555">(5 nodes would be flagged ⚠ UNBALANCED if rebalancing were on)</text></g>
+</svg>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Switch state always in words (ON/OFF), plus thumb position. Toggling replays the same insert sequence so the two shapes can be compared.</span></div>
+<div><span class="k">2</span><span>At 15 nodes Insert disables with “Tree is full (15). Clear or remove to keep exploring.” Stats are descriptive, not points.</span></div>
+</div>
+</div></div>
+
+<!-- 1o READINESS -->
+<div class="dv-opt" id="1o"><div class="dv-olabel"><a class="dv-oid" href="#1o">1o</a>Screen 7 · Readiness summary</div>
+<div class="dv-card" style="width:1366px">
+<div class="wf">
+<div class="bar"><span class="t">AppShell · TopBar</span><b>AVL Trees</b><span class="mut">› Your readiness</span><span style="flex:1"></span><span class="pill">Saved on this device</span><span class="b">Sandbox</span><span class="b">Aa</span></div>
+<div style="flex:1;display:grid;grid-template-columns:1fr 470px;gap:22px;padding:18px 30px;min-height:0">
+<div class="c col" style="gap:8px"><span class="t">ReadinessSummary · OutcomeStatusTable</span>
+<div class="row" style="justify-content:space-between"><div class="h2">Ready for the lecture?</div><span class="k">1</span></div>
+<div class="row mut" style="font-size:14px;border-bottom:2px solid #1f1f1f;padding-bottom:4px"><span style="flex:1">Learning outcome</span><span style="width:140px">Status</span><span style="width:120px"></span></div>
+<div class="row" style="border-bottom:1px dashed #999;padding:5px 0"><span style="flex:1">Explain why an unbalanced BST is slow</span><span style="width:140px"><span class="pill">● Secure</span></span><span style="width:120px"></span></div>
+<div class="row" style="border-bottom:1px dashed #999;padding:5px 0"><span style="flex:1">Perform a left and right rotation</span><span style="width:140px"><span class="pill">● Secure</span></span><span style="width:120px"></span></div>
+<div class="row" style="border-bottom:1px dashed #999;padding:5px 0"><span style="flex:1">Compute height and balance factor</span><span style="width:140px"><span class="pill" style="border-style:dashed">◐ Developing</span></span><u style="width:120px">Review U3</u></div>
+<div class="row" style="border-bottom:1px dashed #999;padding:5px 0"><span style="flex:1">Identify and fix LL / RR / LR / RL</span><span style="width:140px"><span class="pill" style="border-style:dotted">○ Not yet</span></span><u style="width:120px">Review U4</u></div>
+<div class="row" style="border-bottom:1px dashed #999;padding:5px 0"><span style="flex:1">Trace an insert sequence; state the O(log n) guarantee</span><span style="width:140px"><span class="pill" style="border-style:dashed">◐ Developing</span></span><u style="width:120px">Review U5</u></div>
+<div class="c col" style="gap:6px;margin-top:8px"><span class="t">ConfidenceFlags</span><div><b>⚑ You were sure, but it didn't match</b> <span class="mut">— worth a second look</span></div>
+<div class="opt" style="font-size:15px"><span style="flex:1">U4 · Q3 Identify the case — you chose LL (“Certain”), it was LR</span><u>See why</u></div>
+<div class="opt" style="font-size:15px"><span style="flex:1">U3 · Q2 Balance factor sign — −2 (“Certain”), it was +2</span><u>See why</u></div><span class="k">2</span></div>
+</div>
+<div class="col" style="gap:12px">
+<div class="c col" style="gap:8px;flex:1"><span class="t">LectureQuestionsList</span>
+<div class="h2">Bring these to the lecture</div>
+<div class="opt" style="font-size:15px;align-items:flex-start"><span>☑</span><span style="flex:1">Why is bf left minus right — does the sign matter for choosing a rotation?</span><span class="mut">✎</span></div>
+<div class="opt" style="font-size:15px;align-items:flex-start"><span>☑</span><span style="flex:1">How do I tell LR from LL quickly?</span><span class="mut">✎</span></div>
+<div class="opt" style="font-size:15px;align-items:flex-start;border-style:dashed"><span>☑</span><span style="flex:1"><span class="mut">auto:</span> Not yet secure — fixing the four cases (U4)</span><span class="mut">✎</span></div>
+<div class="opt bg" style="font-size:15px">＋ Add your own question</div><span class="k">3</span>
+</div>
+<div class="c row" style="flex-wrap:wrap"><span class="t">ExportActions</span><span class="b bp">🖨︎ Print</span><span class="b">Save as PDF</span><span class="b">Copy as text</span><span class="k">4</span></div>
+</div>
+</div>
+</div>
+<div class="notes">
+<div><span class="k">1</span><span>Status per outcome uses symbol + word + border (solid / dashed / dotted). Evidence = latest check attempts only; no total mark.</span></div>
+<div><span class="k">2</span><span>Confident-but-wrong comes from the optional ConfidenceRating; framed as “worth a look”, not as a failure.</span></div>
+<div><span class="k">3</span><span>List auto-built from retry-cap drafts, confident-wrong items and “not yet” outcomes; all editable and removable.</span></div>
+<div><span class="k">4</span><span>Print view = questions + statuses only, plain text, one page. Nothing leaves the device unless the student exports it.</span></div>
+</div>
+</div></div>
+
+<!-- 1p ASSUMPTIONS -->
+<div class="dv-opt" id="1p"><div class="dv-olabel"><a class="dv-oid" href="#1p">1p</a>Assumptions &amp; open questions</div>
+<div class="dv-card" style="width:1366px">
+<div style="padding:30px 36px;display:grid;grid-template-columns:1fr 1fr;gap:40px;font:15px/1.55 system-ui,sans-serif;color:#222">
+<div><div style="font:700 22px 'Kalam',cursive;margin-bottom:8px">Assumptions I made</div>
+<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+<li>Balance factor = height(left) − height(right); a leaf has height 1, empty subtree height 0.</li>
+<li>Diagnostic has ~6 items (1–2 per sub-skill) and shows no per-item right/wrong; skip = “needs review”.</li>
+<li>Any “needs review” recommends U0, but the student can skip it. Units are never hard-locked.</li>
+<li>The worked example uses the same layout as Explore (<a class="dv-oid" href="#1f">1f</a>) with no predict prompt and fuller step text.</li>
+<li>Only Check answers feed readiness. Explore / Do-it-yourself / Sandbox are never recorded as performance.</li>
+<li>Readiness rule (draft): secure = correct on first or second attempt for all items of the outcome; developing = mixed; not yet = retry cap hit or unattempted.</li>
+<li>“Trace an insert” uses constrained edits (place key, rotate) rather than freehand drawing.</li>
+<li>Read-aloud uses the browser's built-in speech; a global “Aa” menu holds text size, read-aloud voice/speed and reduced motion.</li>
+<li>Tablet (≥1024 wide): right column stacks under the tree; same components.</li>
+</ol></div>
+<div><div style="font:700 22px 'Kalam',cursive;margin-bottom:8px">Questions before moving on</div>
+<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+<li>Is “left − right” the convention your lecturer uses? It drives every label and the misconception feedback.</li>
+<li>Should the diagnostic reveal answers at the end, or only the sub-skill status?</li>
+<li>Do you want deletion covered anywhere (U5 or Sandbox), or insert only?</li>
+<li>Does the retry cap apply per question (as drawn) or per check?</li>
+<li>Should lecture questions be exportable in a format the lecturer collects (e.g. copy to a forum), or private print only?</li>
+<li>Is the Sandbox reachable from the start, or only after U1 (where the chain idea is introduced)?</li>
+<li>Pseudocode: generic (as drawn) or the language your course uses (Java / Python)?</li>
+<li>Do you want 2–3 alternative layouts for the core screen (e.g. pseudocode under the tree, or tabs) before high-fi?</li>
+</ol></div>
+</div>
+</div></div>
+
+</div>
+<p class="dv-next">Try next: “answer the questions in <a class="dv-oid" href="#1p">1p</a> and refine” · “show 2–3 alternative layouts for the core screen <a class="dv-oid" href="#1f">1f</a>” · “add tablet versions of <a class="dv-oid" href="#1f">1f</a> and <a class="dv-oid" href="#1m">1m</a>”</p>
+</section>
+</x-dc>
+</body>
+</html>

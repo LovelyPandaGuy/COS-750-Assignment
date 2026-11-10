@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>AVL Primer — Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;500;700&amp;family=Atkinson+Hyperlegible+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#FAFAF7;color:#1B1F2A;font:16px/1.5 'Atkinson Hyperlegible Next',system-ui,sans-serif}
+a{color:#3340A0;text-underline-offset:3px}a:hover{color:#2A3588}
+</style>
+</helmet>
+<svg width="0" height="0" style="position:absolute">
+<filter id="protan"><feColorMatrix type="matrix" values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"></feColorMatrix></filter>
+<filter id="deutan"><feColorMatrix type="matrix" values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"></feColorMatrix></filter>
+<filter id="tritan"><feColorMatrix type="matrix" values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"></feColorMatrix></filter>
+</svg>
+
+<header style="position:sticky;top:0;z-index:5;background:#FFFFFF;border-bottom:1px solid #D5D9E2">
+<div style="max-width:1240px;margin:0 auto;padding:14px 32px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:10px"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3340A0" stroke-width="2"><circle cx="12" cy="5" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="18" r="2.5"></circle><path d="M10.5 7l-3 8.5M13.5 7l3 8.5"></path></svg><b style="font-size:18px">AVL Primer</b><span style="color:#4A5163">Design system · v0.1</span></div>
+<span style="flex:1"></span>
+<span style="color:#4A5163;font-size:14px">View as</span>
+<div role="radiogroup" aria-label="Vision simulation" style="display:flex;gap:4px;background:#EEF1F5;padding:4px;border-radius:8px;flex-wrap:wrap">
+<sc-for list="{{ visions }}" as="v" hint-placeholder-count="5"><button role="radio" aria-checked="{{ v.on }}" onClick="{{ v.pick }}" style="{{ v.style }}">{{ v.label }}</button></sc-for>
+</div>
+</div>
+</header>
+
+<div style="{{ filterStyle }}">
+<main style="max-width:1240px;margin:0 auto;padding:48px 32px 96px;display:flex;flex-direction:column;gap:72px">
+
+<section style="display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;align-items:end">
+<div style="display:flex;flex-direction:column;gap:14px;max-width:620px">
+<div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">FOUNDATIONS · COMPONENTS · CHECKS</div>
+<h1 style="margin:0;font-size:44px;line-height:1.12;font-weight:700;text-wrap:balance">A calm system for learning AVL trees before the lecture.</h1>
+<p style="margin:0;font-size:18px;line-height:1.55;color:#4A5163;text-wrap:pretty">Every token and component here follows four principles. Use the <b style="color:#1B1F2A">View as</b> control above to check the page in greyscale and under three colour-vision simulations.</p>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:4px"><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">01</span><b>Low anxiety</b><span style="font-size:15px;color:#4A5163">Wrong answers are information. “Not quite yet”, never red.</span></div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:4px"><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">02</span><b>Colour never alone</b><span style="font-size:15px;color:#4A5163">Every colour is paired with a word, icon or shape.</span></div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:4px"><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">03</span><b>Low load</b><span style="font-size:15px;color:#4A5163">One idea per screen. Reading column ≤ 66ch.</span></div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:4px"><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">04</span><b>Progress, not performance</b><span style="font-size:15px;color:#4A5163">Mastery per skill vs your own earlier attempt.</span></div>
+</div>
+</section>
+
+<section id="colour" style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">01 — COLOUR TOKENS</div><h2 style="margin:0;font-size:30px;line-height:1.2">Colour</h2><p style="margin:0;color:#4A5163;max-width:66ch">Token name, light value, dark value. Tints are for backgrounds only; foreground text on any tint passes 4.5:1 (see section 05).</p></div>
+
+<div style="display:flex;flex-direction:column;gap:12px"><h3 style="margin:0;font-size:20px">Neutrals &amp; action</h3>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:16px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#FAFAF7;border:1px solid #D5D9E2"></div><b style="font-size:15px">bg.page</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#FAFAF7 · ◐ #12151C</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#FFFFFF;border:1px solid #D5D9E2"></div><b style="font-size:15px">bg.surface</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#FFFFFF · ◐ #1B1F2A</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#1B1F2A"></div><b style="font-size:15px">text.primary</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#1B1F2A · ◐ #E8EAF0</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#4A5163"></div><b style="font-size:15px">text.secondary</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#4A5163 · ◐ #A9B0C0</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#D5D9E2"></div><b style="font-size:15px">border.subtle</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#D5D9E2 · ◐ #3A4152</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#767D8F"></div><b style="font-size:15px">border.control <span style="font-weight:400;color:#4A5163">new</span></b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#767D8F · ◐ #7F879A</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#3340A0"></div><b style="font-size:15px">action.primary</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#3340A0 · ◐ #9AA5FF</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#2A3588"></div><b style="font-size:15px">action.primary.hover</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#2A3588 · ◐ #B3BBFF</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#ECEEF9"></div><b style="font-size:15px">action.primary.tint</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">#ECEEF9 · ◐ #262C48</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:64px;border-radius:8px;background:#FAFAF7;border:1px solid #D5D9E2;display:flex;align-items:center;justify-content:center"><span style="width:64px;height:28px;border-radius:6px;background:#FFFFFF;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0"></span></div><b style="font-size:15px">focus.ring</b><span style="font:13px/1.4 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">2px gap + 2px #3340A0</span></div>
+</div></div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div><div style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">A</div><h3 style="margin:0;font-size:20px">Learning goals (Bloom level)</h3><p style="margin:2px 0 0;font-size:15px;color:#4A5163">Always shown with the word. Outline glyph adds a non-colour cue.</p></div>
+<div style="display:flex;flex-wrap:wrap;gap:8px">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#E6F4F2;color:#0F766E;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="2"></circle></svg>Remember</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#EAF0FD;color:#1D4ED8;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l5.5 5.5L7 12.5 1.5 7z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>Understand</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#F2ECFD;color:#6D28D9;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l6 10.5H1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Apply</span>
+</div>
+<div style="font:13px/1.6 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">bloom.remember #0F766E / tint #E6F4F2<br>bloom.understand #1D4ED8 / tint #EAF0FD<br>bloom.apply #6D28D9 / tint #F2ECFD</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div><div style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">B</div><h3 style="margin:0;font-size:20px">Mastery state per skill</h3><p style="margin:2px 0 0;font-size:15px;color:#4A5163">Fill level is the shape cue: full, half, empty.</p></div>
+<div style="display:flex;flex-wrap:wrap;gap:16px">
+<span style="display:inline-flex;align-items:center;gap:8px;font-weight:700;color:#0F766E"><svg width="22" height="22" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#0F766E"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Secure</span>
+<span style="display:inline-flex;align-items:center;gap:8px;font-weight:700;color:#92400E"><svg width="22" height="22" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#92400E" stroke-width="1.8"></circle><path d="M10 1.8a8.2 8.2 0 0 0 0 16.4z" fill="#92400E"></path></svg>Developing</span>
+<span style="display:inline-flex;align-items:center;gap:8px;font-weight:700;color:#475569"><svg width="22" height="22" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#475569" stroke-width="1.8"></circle></svg>Not yet</span>
+</div>
+<div style="font:13px/1.6 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">mastery.secure #0F766E / tint #E6F4F2<br>mastery.developing #92400E / tint #FBF1E6<br>mastery.notyet #475569 / tint #EEF1F5</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div><div style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">C</div><h3 style="margin:0;font-size:20px">Feedback</h3><p style="margin:2px 0 0;font-size:15px;color:#4A5163">Two calm panels. No red, no cross.</p></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div style="background:#E6F4F2;border:1px solid #9FD3CC;border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F766E" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><b>That's it</b></div>
+<div style="background:#EEF2F7;border:1px solid #B8C3D4;border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B5170" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><b>Not quite yet</b></div>
+</div>
+<div style="font:13px/1.6 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">feedback.correct bg #E6F4F2 · border #9FD3CC · icon #0F766E<br>feedback.notyet bg #EEF2F7 · border #B8C3D4 · icon #3B5170</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div><div style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">D</div><h3 style="margin:0;font-size:20px">Tree diagram roles</h3><p style="margin:2px 0 0;font-size:15px;color:#4A5163">Okabe–Ito-derived hues. Each role = colour + outline style + text tag.</p></div>
+<svg width="100%" height="104" viewBox="0 0 380 104" style="max-width:380px">
+<g font-family="Atkinson Hyperlegible Next" text-anchor="middle">
+<circle cx="45" cy="52" r="22" fill="#FFFFFF" stroke="#0072B2" stroke-width="3"></circle><text x="45" y="58" font-size="17" font-weight="700" fill="#1B1F2A">5</text><rect x="54" y="20" width="36" height="20" rx="10" fill="#0072B2"></rect><text x="72" y="34.5" font-size="13" font-weight="700" fill="#FFFFFF">new</text><text x="45" y="98" font-size="13" fill="#4A5163">New</text>
+<circle cx="140" cy="52" r="27" fill="none" stroke="#B34700" stroke-width="2"></circle><circle cx="140" cy="52" r="21" fill="#FFFFFF" stroke="#B34700" stroke-width="3"></circle><text x="140" y="58" font-size="17" font-weight="700" fill="#1B1F2A">20</text><rect x="152" y="14" width="22" height="20" rx="10" fill="#B34700"></rect><text x="163" y="28.5" font-size="13" font-weight="700" fill="#FFFFFF">z</text><text x="140" y="98" font-size="13" fill="#4A5163">Unbalanced</text>
+<circle cx="235" cy="52" r="22" fill="#FFFFFF" stroke="#8A5A00" stroke-width="3" stroke-dasharray="6 4"></circle><text x="235" y="58" font-size="17" font-weight="700" fill="#1B1F2A">10</text><rect x="246" y="20" width="22" height="20" rx="10" fill="#8A5A00"></rect><text x="257" y="34.5" font-size="13" font-weight="700" fill="#FFFFFF">y</text><text x="235" y="98" font-size="13" fill="#4A5163">Taller child</text>
+<circle cx="330" cy="52" r="22" fill="#FFFFFF" stroke="#00755A" stroke-width="2.5"></circle><text x="330" y="58" font-size="17" font-weight="700" fill="#1B1F2A">60</text><circle cx="348" cy="34" r="9" fill="#00755A"></circle><path d="M343.5 34.3l3 3 5-5.3" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><text x="330" y="98" font-size="13" fill="#4A5163">Balanced</text>
+</g></svg>
+<div style="font:13px/1.6 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">tree.new #0072B2 · tree.z #B34700 · tree.y #8A5A00<br>tree.balanced #00755A · tree.neutral #4A5163</div>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:20px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:center">
+<div><div style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">E</div><h3 style="margin:0;font-size:20px">Representations share one neutral treatment</h3><p style="margin:2px 0 0;font-size:15px;color:#4A5163;max-width:60ch">Diagram, read aloud, pseudocode and do-it-yourself are told apart by icon and label only. They are ways for everyone to see the same idea, not a sorting of students into learning styles, so none gets its own colour.</p></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #D5D9E2;border-radius:8px;background:#FFFFFF;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2"><circle cx="12" cy="5" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="18" r="2.5"></circle><path d="M10.5 7l-3 8.5M13.5 7l3 8.5"></path></svg>Diagram</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #D5D9E2;border-radius:8px;background:#FFFFFF;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z M16 9a4 4 0 0 1 0 6 M18.5 6.5a7.5 7.5 0 0 1 0 11"></path></svg>Read aloud</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #D5D9E2;border-radius:8px;background:#FFFFFF;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"></path></svg>Pseudocode</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid #D5D9E2;border-radius:8px;background:#FFFFFF;font-weight:500"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 11h16M4 16h10"></path></svg>Text</span>
+</div>
+</div>
+</section>
+
+<section id="type" style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:32px">
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">02 — TYPOGRAPHY</div><h2 style="margin:0;font-size:30px;line-height:1.2">Atkinson Hyperlegible Next + Mono</h2><p style="margin:0;color:#4A5163;max-width:60ch">Designed for low-vision readers by the Braille Institute: distinct I / l / 1 and 0 / O, which matters when reading keys and balance factors. The Mono pair keeps the same letterforms in pseudocode.</p></div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:8px 20px">
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid #D5D9E2"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">display · 40/48 · 700</span><span style="font-size:40px;line-height:1.2;font-weight:700">Why balance?</span></div>
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid #D5D9E2"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">h1 · 30/38 · 700</span><span style="font-size:30px;line-height:1.27;font-weight:700">Rotations keep order</span></div>
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid #D5D9E2"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">h2 · 22/30 · 700</span><span style="font-size:22px;line-height:1.36;font-weight:700">Which node is unbalanced?</span></div>
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid #D5D9E2"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">body-lg · 18/28</span><span style="font-size:18px;line-height:1.55">Node 20 now leans left by two. That breaks the AVL rule.</span></div>
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid #D5D9E2"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">body · 16/24 (min)</span><span style="font-size:16px;line-height:1.5">A rotation changes the shape, never the in-order sequence.</span></div>
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0;border-bottom:1px solid #D5D9E2"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">label · 14/20 · 700</span><span style="font-size:14px;line-height:1.43;font-weight:700">Question 2 of 4 · attempt 1 of 3</span></div>
+<div style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 0"><span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">mono · 15/24</span><span style="font:15px/1.6 'Atkinson Hyperlegible Mono',monospace">bf = h(node.left) − h(node.right)</span></div>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">Labels at 14px are for metadata only (counters, tags, diagram annotations); running text never drops below 16px.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">03 — SPACE · SHAPE · ICONS</div><h2 style="margin:0;font-size:30px;line-height:1.2">Shape</h2></div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:flex-end;gap:10px"><span style="width:4px;height:4px;background:#3340A0"></span><span style="width:8px;height:8px;background:#3340A0"></span><span style="width:12px;height:12px;background:#3340A0"></span><span style="width:16px;height:16px;background:#3340A0"></span><span style="width:24px;height:24px;background:#3340A0"></span><span style="width:32px;height:32px;background:#3340A0"></span><span style="width:48px;height:48px;background:#3340A0"></span><span style="width:64px;height:64px;background:#3340A0"></span></div>
+<span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">space · 4 8 12 16 24 32 48 64</span>
+<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+<div style="width:72px;height:52px;border:1px solid #D5D9E2;border-radius:4px;display:flex;align-items:center;justify-content:center;font:12px 'Atkinson Hyperlegible Mono',monospace">r 4</div>
+<div style="width:72px;height:52px;border:1px solid #D5D9E2;border-radius:8px;display:flex;align-items:center;justify-content:center;font:12px 'Atkinson Hyperlegible Mono',monospace;font-weight:600">r 8 ★</div>
+<div style="width:72px;height:52px;border:1px solid #D5D9E2;border-radius:99px;display:flex;align-items:center;justify-content:center;font:12px 'Atkinson Hyperlegible Mono',monospace">pill</div>
+<div style="width:72px;height:52px;border:1px solid #D5D9E2;border-radius:8px;box-shadow:0 1px 2px rgba(27,31,42,.06);display:flex;align-items:center;justify-content:center;font:12px 'Atkinson Hyperlegible Mono',monospace">e 1</div>
+<div style="width:72px;height:52px;border:1px solid #D5D9E2;border-radius:8px;box-shadow:0 6px 20px rgba(27,31,42,.10);display:flex;align-items:center;justify-content:center;font:12px 'Atkinson Hyperlegible Mono',monospace">e 2</div>
+</div>
+<span style="font:13px/1.5 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">radius 8 default · 4 small · pill for chips<br>e1 cards (rare) · e2 popovers / menus only</span>
+<div style="display:flex;gap:14px;flex-wrap:wrap;color:#1B1F2A;padding-top:6px;border-top:1px solid #D5D9E2">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l11-7z"></path></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M5 5v14l9-7z"></path><rect x="16" y="5" width="3" height="14" rx="1"></rect></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5v14l-9-7z"></path><rect x="5" y="5" width="3" height="14" rx="1"></rect></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 10V4.5a1.5 1.5 0 0 1 3 0V11M15 10.5V7a1.5 1.5 0 0 1 3 0v6.5A7.5 7.5 0 0 1 10.5 21h0A6 6 0 0 1 5.4 18L3.2 14.3a1.5 1.5 0 0 1 2.5-1.6L9 15V11"></path></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"></path></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+</div>
+<span style="font:13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">icons · 24 grid · 2px stroke · round joins</span>
+</div>
+</div>
+</section>
+
+<section id="components" style="display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">04 — COMPONENTS</div><h2 style="margin:0;font-size:30px;line-height:1.2">Components &amp; states</h2><p style="margin:0;color:#4A5163;max-width:66ch">States shown side by side: default, hover, focus, selected, disabled and “not quite yet”. Focus is always the same 2px indigo ring with a 2px gap, so it survives every background.</p></div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">Button</code><span style="color:#4A5163;font-size:15px">Primary (one per screen) · Secondary · Quiet</span></div>
+<div style="display:grid;grid-template-columns:110px repeat(5,minmax(0,1fr));gap:14px 12px;align-items:center;font-size:14px">
+<span></span><span style="color:#4A5163">Default</span><span style="color:#4A5163">Hover</span><span style="color:#4A5163">Focus</span><span style="color:#4A5163">Pressed</span><span style="color:#4A5163">Disabled</span>
+<b>Primary</b>
+<span style="justify-self:start;padding:10px 18px;border-radius:8px;background:#3340A0;color:#FFFFFF;font-weight:700;font-size:16px">Continue</span>
+<span style="justify-self:start;padding:10px 18px;border-radius:8px;background:#2A3588;color:#FFFFFF;font-weight:700;font-size:16px;text-decoration:underline;text-underline-offset:3px">Continue</span>
+<span style="justify-self:start;padding:10px 18px;border-radius:8px;background:#3340A0;color:#FFFFFF;font-weight:700;font-size:16px;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0">Continue</span>
+<span style="justify-self:start;padding:10px 18px;border-radius:8px;background:#222C73;color:#FFFFFF;font-weight:700;font-size:16px">Continue</span>
+<span style="justify-self:start;padding:10px 18px;border-radius:8px;background:#E4E6EC;color:#5E6577;font-weight:700;font-size:16px">Continue</span>
+<b>Secondary</b>
+<span style="justify-self:start;padding:9px 17px;border-radius:8px;background:#FFFFFF;border:1px solid #767D8F;color:#1B1F2A;font-weight:700;font-size:16px">Replay</span>
+<span style="justify-self:start;padding:9px 17px;border-radius:8px;background:#ECEEF9;border:1px solid #3340A0;color:#1B1F2A;font-weight:700;font-size:16px">Replay</span>
+<span style="justify-self:start;padding:9px 17px;border-radius:8px;background:#FFFFFF;border:1px solid #767D8F;color:#1B1F2A;font-weight:700;font-size:16px;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0">Replay</span>
+<span style="justify-self:start;padding:9px 17px;border-radius:8px;background:#E4E7F7;border:1px solid #3340A0;color:#1B1F2A;font-weight:700;font-size:16px">Replay</span>
+<span style="justify-self:start;padding:9px 17px;border-radius:8px;background:#F3F4F6;border:1px dashed #C2C7D2;color:#5E6577;font-weight:700;font-size:16px">Replay</span>
+<b>Quiet</b>
+<span style="justify-self:start;padding:9px 4px;color:#3340A0;font-weight:700;font-size:16px">Skip, just watch</span>
+<span style="justify-self:start;padding:9px 4px;color:#2A3588;font-weight:700;font-size:16px;text-decoration:underline;text-underline-offset:3px">Skip, just watch</span>
+<span style="justify-self:start;padding:9px 4px;color:#3340A0;font-weight:700;font-size:16px;border-radius:4px;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0">Skip, just watch</span>
+<span style="justify-self:start;padding:9px 4px;color:#222C73;font-weight:700;font-size:16px">Skip, just watch</span>
+<span style="justify-self:start;padding:9px 4px;color:#5E6577;font-weight:700;font-size:16px">Skip, just watch</span>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">Hover adds an underline (non-colour cue). Disabled keeps a readable label and is paired with a reason on screen (“Answer first to see the replay”).</p>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">OutcomeChip</code>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#F2ECFD;color:#6D28D9;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l6 10.5H1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Apply</span><span style="font-size:15px">Fix an LR imbalance with two rotations</span></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap;font-size:13px;color:#4A5163;align-items:center">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#EAF0FD;color:#1D4ED8;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l5.5 5.5L7 12.5 1.5 7z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>Understand</span>default
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#EAF0FD;color:#1D4ED8;font-weight:700;font-size:14px;box-shadow:inset 0 0 0 1.5px #1D4ED8"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l5.5 5.5L7 12.5 1.5 7z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>Understand</span>hover
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#EAF0FD;color:#1D4ED8;font-weight:700;font-size:14px;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l5.5 5.5L7 12.5 1.5 7z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>Understand</span>focus
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">Interactive only on the Readiness summary (opens the outcome). Elsewhere it is a static tag.</p>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">MasteryBadge</code>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:99px;background:#E6F4F2;color:#0F766E;font-weight:700;font-size:15px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#0F766E"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Secure</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:99px;background:#FBF1E6;color:#92400E;font-weight:700;font-size:15px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#92400E" stroke-width="1.8"></circle><path d="M10 1.8a8.2 8.2 0 0 0 0 16.4z" fill="#92400E"></path></svg>Developing</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:99px;background:#EEF1F5;color:#475569;font-weight:700;font-size:15px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#475569" stroke-width="1.8"></circle></svg>Not yet</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px;font-size:15px;flex-wrap:wrap"><span style="color:#4A5163">With change:</span><span style="display:inline-flex;align-items:center;gap:4px;color:#475569"><svg width="16" height="16" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#475569" stroke-width="2"></circle></svg>Not yet</span><span aria-hidden="true">→</span><span style="display:inline-flex;align-items:center;gap:4px;color:#92400E;font-weight:700"><svg width="16" height="16" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#92400E" stroke-width="2"></circle><path d="M10 1.8a8.2 8.2 0 0 0 0 16.4z" fill="#92400E"></path></svg>Developing</span><span style="color:#4A5163">since your last try</span></div>
+<p style="margin:0;font-size:14px;color:#4A5163">Compact (icon + word) in tables; never icon-only. Change is shown against the student's own earlier attempt, never a class average.</p>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">TreeView</code><span style="color:#4A5163;font-size:15px">Mid-rebalance: inserted 5, node 20 is z, 10 is y</span></div>
+<div role="img" aria-label="AVL tree. Root 40, height 4, bf +1. Left child 20, height 3, bf +2, unbalanced, z. 20's left child 10, height 2, bf +1, taller child y. 10's left child 5, height 1, bf 0, new. Right of root: 60 balanced, children 50 and 70 balanced." style="background:#FAFAF7;border:1px solid #D5D9E2;border-radius:8px;padding:8px">
+<svg width="100%" viewBox="0 0 640 330" style="display:block">
+<g stroke="#4A5163" stroke-width="2"><line x1="330" y1="52" x2="200" y2="132"></line><line x1="330" y1="52" x2="470" y2="132"></line><line x1="200" y1="132" x2="120" y2="212"></line><line x1="470" y1="132" x2="410" y2="212"></line><line x1="470" y1="132" x2="540" y2="212"></line><line x1="120" y1="212" x2="70" y2="290"></line></g>
+<g font-family="Atkinson Hyperlegible Next" text-anchor="middle">
+<circle cx="330" cy="52" r="22" fill="#FFFFFF" stroke="#4A5163" stroke-width="2"></circle><text x="330" y="58" font-size="17" font-weight="700" fill="#1B1F2A">40</text>
+<circle cx="200" cy="132" r="28" fill="none" stroke="#B34700" stroke-width="2"></circle><circle cx="200" cy="132" r="22" fill="#FFFFFF" stroke="#B34700" stroke-width="3"></circle><text x="200" y="138" font-size="17" font-weight="700" fill="#1B1F2A">20</text><rect x="212" y="94" width="22" height="20" rx="10" fill="#B34700"></rect><text x="223" y="108.5" font-size="13" font-weight="700" fill="#FFFFFF">z</text>
+<circle cx="470" cy="132" r="22" fill="#FFFFFF" stroke="#00755A" stroke-width="2.5"></circle><text x="470" y="138" font-size="17" font-weight="700" fill="#1B1F2A">60</text><circle cx="488" cy="114" r="9" fill="#00755A"></circle><path d="M483.5 114.3l3 3 5-5.3" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="120" cy="212" r="22" fill="#FFFFFF" stroke="#8A5A00" stroke-width="3" stroke-dasharray="6 4"></circle><text x="120" y="218" font-size="17" font-weight="700" fill="#1B1F2A">10</text><rect x="131" y="180" width="22" height="20" rx="10" fill="#8A5A00"></rect><text x="142" y="194.5" font-size="13" font-weight="700" fill="#FFFFFF">y</text>
+<circle cx="410" cy="212" r="22" fill="#FFFFFF" stroke="#00755A" stroke-width="2.5"></circle><text x="410" y="218" font-size="17" font-weight="700" fill="#1B1F2A">50</text><circle cx="428" cy="194" r="9" fill="#00755A"></circle><path d="M423.5 194.3l3 3 5-5.3" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="540" cy="212" r="22" fill="#FFFFFF" stroke="#00755A" stroke-width="2.5"></circle><text x="540" y="218" font-size="17" font-weight="700" fill="#1B1F2A">70</text><circle cx="558" cy="194" r="9" fill="#00755A"></circle><path d="M553.5 194.3l3 3 5-5.3" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="70" cy="290" r="22" fill="#FFFFFF" stroke="#0072B2" stroke-width="3"></circle><text x="70" y="296" font-size="17" font-weight="700" fill="#1B1F2A">5</text><rect x="80" y="258" width="36" height="20" rx="10" fill="#0072B2"></rect><text x="98" y="272.5" font-size="13" font-weight="700" fill="#FFFFFF">new</text>
+</g>
+<g font-family="Atkinson Hyperlegible Mono" font-size="13" fill="#4A5163">
+<text x="360" y="57">h4 · bf +1</text>
+<text x="236" y="143" fill="#B34700" font-weight="600">h3 · bf +2</text>
+<text x="500" y="143">h2 · bf 0</text>
+<text x="20" y="252">h2 · bf +1</text>
+<text x="440" y="252">h1 · bf 0</text><text x="570" y="252">h1</text><text x="570" y="268">bf 0</text>
+<text x="102" y="300">h1 · bf 0</text>
+</g>
+</svg>
+</div>
+<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:#4A5163"><span><b style="color:#1B1F2A">Neutral</b> · solid grey ring</span><span><b style="color:#1B1F2A">z</b> · double ring</span><span><b style="color:#1B1F2A">y</b> · dashed ring</span><span><b style="color:#1B1F2A">new</b> · tag</span><span><b style="color:#1B1F2A">Balanced</b> · check badge</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<b>Node anatomy &amp; states</b>
+<svg width="100%" viewBox="0 0 300 120" style="max-width:300px">
+<g font-family="Atkinson Hyperlegible Next" text-anchor="middle">
+<circle cx="40" cy="44" r="22" fill="#FFFFFF" stroke="#4A5163" stroke-width="2"></circle><text x="40" y="50" font-size="17" font-weight="700" fill="#1B1F2A">30</text><text x="40" y="96" font-size="13" fill="#4A5163">default</text>
+<circle cx="115" cy="44" r="22" fill="#ECEEF9" stroke="#3340A0" stroke-width="2"></circle><text x="115" y="50" font-size="17" font-weight="700" fill="#1B1F2A">30</text><text x="115" y="96" font-size="13" fill="#4A5163">hover</text>
+<circle cx="190" cy="44" r="22" fill="#FFFFFF" stroke="#4A5163" stroke-width="2"></circle><circle cx="190" cy="44" r="27" fill="none" stroke="#3340A0" stroke-width="2"></circle><text x="190" y="50" font-size="17" font-weight="700" fill="#1B1F2A">30</text><text x="190" y="96" font-size="13" fill="#4A5163">focus</text>
+<rect x="238" y="16" width="56" height="56" rx="10" fill="#ECEEF9" stroke="#3340A0" stroke-width="2.5"></rect><circle cx="266" cy="44" r="20" fill="#FFFFFF" stroke="#4A5163" stroke-width="2"></circle><text x="266" y="50" font-size="17" font-weight="700" fill="#1B1F2A">30</text><text x="266" y="96" font-size="13" fill="#4A5163">selected</text>
+</g></svg>
+<ul style="margin:0;padding-left:18px;font-size:15px;color:#4A5163;display:flex;flex-direction:column;gap:4px">
+<li>Key inside (17px bold); <code style="font-family:'Atkinson Hyperlegible Mono',monospace">h · bf</code> beside it in mono.</li>
+<li>The unbalanced node's annotation takes the z colour and weight.</li>
+<li>Selected = rounded square frame (shape change, not just colour) and is announced: “Node 30 selected”.</li>
+<li>Keyboard: ↑ parent, ← → children, Enter select.</li>
+<li>Reduced motion: nodes snap between steps; no slide.</li>
+</ul>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">StepControls</code>
+<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+<span aria-label="Step back" style="width:44px;height:44px;border-radius:8px;border:1px solid #767D8F;display:inline-flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="#1B1F2A"><path d="M19 5v14l-9-7z"></path><rect x="5" y="5" width="3" height="14" rx="1"></rect></svg></span>
+<span style="height:44px;padding:0 18px;border-radius:8px;background:#3340A0;color:#FFFFFF;display:inline-flex;align-items:center;gap:8px;font-weight:700"><svg width="18" height="18" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M7 5v14l11-7z"></path></svg>Play</span>
+<span aria-label="Step forward" style="width:44px;height:44px;border-radius:8px;border:1px solid #767D8F;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0"><svg width="20" height="20" viewBox="0 0 24 24" fill="#1B1F2A"><path d="M5 5v14l9-7z"></path><rect x="16" y="5" width="3" height="14" rx="1"></rect></svg></span>
+<div style="flex:1;min-width:120px;display:flex;flex-direction:column;gap:4px"><div style="height:6px;border-radius:3px;background:#E4E6EC;position:relative"><div style="position:absolute;inset:0 50% 0 0;background:#3340A0;border-radius:3px"></div></div><span style="font-size:14px;color:#4A5163">Step 3 of 6</span></div>
+<div role="radiogroup" aria-label="Speed" style="display:flex;background:#EEF1F5;border-radius:8px;padding:3px;gap:2px;font-size:14px;font-weight:700"><span style="padding:6px 10px;border-radius:6px">0.5×</span><span style="padding:6px 10px;border-radius:6px;background:#FFFFFF;box-shadow:0 1px 2px rgba(27,31,42,.12),inset 0 0 0 1.5px #3340A0">1×</span><span style="padding:6px 10px;border-radius:6px">2×</span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;font-size:14px;color:#4A5163">
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="height:40px;padding:0 14px;border-radius:8px;background:#3340A0;color:#FFFFFF;display:inline-flex;align-items:center;gap:6px;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF"><rect x="6" y="5" width="4" height="14" rx="1"></rect><rect x="14" y="5" width="4" height="14" rx="1"></rect></svg>Pause</span>Playing</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="width:40px;height:40px;border-radius:8px;border:1px solid #3340A0;background:#ECEEF9;display:inline-flex;align-items:center;justify-content:center;text-decoration:underline"><svg width="18" height="18" viewBox="0 0 24 24" fill="#1B1F2A"><path d="M5 5v14l9-7z"></path><rect x="16" y="5" width="3" height="14" rx="1"></rect></svg></span>Hover</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="width:40px;height:40px;border-radius:8px;border:1px dashed #C2C7D2;background:#F3F4F6;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="#5E6577"><path d="M19 5v14l-9-7z"></path><rect x="5" y="5" width="3" height="14" rx="1"></rect></svg></span>Disabled (step 1)</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="display:flex;gap:4px"><span style="font:12px 'Atkinson Hyperlegible Mono',monospace;border:1px solid #767D8F;border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:#1B1F2A">Space</span><span style="font:12px 'Atkinson Hyperlegible Mono',monospace;border:1px solid #767D8F;border-bottom-width:2px;border-radius:4px;padding:1px 5px;color:#1B1F2A">← →</span></span>Keys</div>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">44px targets. Play/Pause swaps icon <i>and</i> label. Stepping back restores the exact prior tree.</p>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">PseudocodePanel</code>
+<div style="border:1px solid #D5D9E2;border-radius:8px;padding:10px 0;font:15px/1.75 'Atkinson Hyperlegible Mono',monospace;background:#FAFAF7">
+<div style="display:grid;grid-template-columns:36px 20px 1fr;padding:0 12px 0 0"><span style="color:#4A5163;text-align:right;padding-right:8px">1</span><span></span><span>insert(node, key):</span></div>
+<div style="display:grid;grid-template-columns:36px 20px 1fr;padding:0 12px 0 0"><span style="color:#4A5163;text-align:right;padding-right:8px">2</span><span></span><span>  attach key as a leaf</span></div>
+<div style="display:grid;grid-template-columns:36px 20px 1fr;padding:0 12px 0 0"><span style="color:#4A5163;text-align:right;padding-right:8px">3</span><span></span><span>  node.h = 1 + max(h(L), h(R))</span></div>
+<div aria-current="step" style="display:grid;grid-template-columns:36px 20px 1fr;padding:0 12px 0 0;background:#E4E7F7;box-shadow:inset 3px 0 0 #3340A0;font-weight:600"><span style="color:#1B1F2A;text-align:right;padding-right:8px">4</span><span style="color:#3340A0">▶</span><span>  bf = h(node.left) − h(node.right)</span></div>
+<div style="display:grid;grid-template-columns:36px 20px 1fr;padding:0 12px 0 0"><span style="color:#4A5163;text-align:right;padding-right:8px">5</span><span></span><span>  if bf &gt; 1 and key &lt; node.left.key:</span></div>
+<div style="display:grid;grid-template-columns:36px 20px 1fr;padding:0 12px 0 0"><span style="color:#4A5163;text-align:right;padding-right:8px">6</span><span></span><span>    return rotateRight(node)   # LL</span></div>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">Current line = tint + left bar + ▶ + semibold (four cues). Screen readers hear “Line 4 of 6, current”. Syntax is not colour-coded.</p>
+</div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">RepresentationSwitcher</code><span style="color:#4A5163;font-size:15px">Independent toggles + Watch / Do it yourself mode</span></div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+<span style="font-size:14px;color:#4A5163">Show</span>
+<span aria-pressed="true" style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#ECEEF9;border:1.5px solid #3340A0;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3340A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2"><circle cx="12" cy="5" r="2.5"></circle><circle cx="6" cy="18" r="2.5"></circle><circle cx="18" cy="18" r="2.5"></circle><path d="M10.5 7l-3 8.5M13.5 7l3 8.5"></path></svg>Diagram</span>
+<span aria-pressed="true" style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#ECEEF9;border:1.5px solid #3340A0;font-weight:700"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3340A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5"></path></svg>Pseudocode</span>
+<span aria-pressed="false" style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#FFFFFF;border:1px solid #767D8F;font-weight:500"><span style="width:16px;height:16px;border:1.5px solid #767D8F;border-radius:4px"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z M16 9a4 4 0 0 1 0 6 M18.5 6.5a7.5 7.5 0 0 1 0 11"></path></svg>Read aloud</span>
+<span style="width:1px;height:28px;background:#D5D9E2;margin:0 6px"></span>
+<span style="font-size:14px;color:#4A5163">Mode</span>
+<div role="radiogroup" style="display:flex;background:#EEF1F5;border-radius:8px;padding:3px;gap:2px"><span style="height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:6px;background:#FFFFFF;box-shadow:0 1px 2px rgba(27,31,42,.12),inset 0 0 0 1.5px #3340A0;font-weight:700"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>Watch</span><span style="height:36px;display:inline-flex;align-items:center;gap:6px;padding:0 12px;border-radius:6px;font-weight:500;color:#1B1F2A"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F2A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 10V4.5a1.5 1.5 0 0 1 3 0V11M15 10.5V7a1.5 1.5 0 0 1 3 0v6.5A7.5 7.5 0 0 1 10.5 21h0A6 6 0 0 1 5.4 18L3.2 14.3a1.5 1.5 0 0 1 2.5-1.6L9 15V11"></path></svg>Do it yourself</span></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;font-size:14px;color:#4A5163">
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#FFFFFF;border:1px solid #767D8F;font-weight:500;color:#1B1F2A"><span style="width:16px;height:16px;border:1.5px solid #767D8F;border-radius:4px"></span>Text</span>Default (off)</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#F4F5FB;border:1px solid #3340A0;font-weight:500;color:#1B1F2A;text-decoration:underline;text-underline-offset:3px"><span style="width:16px;height:16px;border:1.5px solid #3340A0;border-radius:4px"></span>Text</span>Hover</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#FFFFFF;border:1px solid #767D8F;font-weight:500;color:#1B1F2A;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0"><span style="width:16px;height:16px;border:1.5px solid #767D8F;border-radius:4px"></span>Text</span>Focus</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#ECEEF9;border:1.5px solid #3340A0;font-weight:700;color:#1B1F2A"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3340A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Text</span>Selected (on)</div>
+<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start"><span style="height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 12px;border-radius:8px;background:#F3F4F6;border:1px dashed #C2C7D2;font-weight:500;color:#5E6577"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E6577" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>Pseudocode</span>Disabled: “Not used in U0”</div>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">At least one of Diagram / Text stays on. Choices are remembered per concept, on this device.</p>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">ProgressMap</code><span style="color:#4A5163;font-size:15px">Completion is neutral ink; mastery appears only as a small badge under finished units</span></div>
+<ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0">
+<li style="display:flex;flex-direction:column;gap:6px;position:relative"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#4A5163"></circle><path d="M8.5 14.3l3.5 3.5 7-7.3" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex:1;height:2px;background:#4A5163"></span></div><b style="font-size:15px">U0 Primer</b><span style="font-size:14px;color:#4A5163">Done</span><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#0F766E;font-weight:700"><svg width="14" height="14" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#0F766E"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#FFFFFF" stroke-width="2.4"></path></svg>Secure</span></li>
+<li style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#4A5163"></circle><path d="M8.5 14.3l3.5 3.5 7-7.3" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="flex:1;height:2px;background:#4A5163"></span></div><b style="font-size:15px">U1 Why balance</b><span style="font-size:14px;color:#4A5163">Done</span><span style="display:inline-flex;align-items:center;gap:4px;font-size:13px;color:#92400E;font-weight:700"><svg width="14" height="14" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#92400E" stroke-width="2"></circle><path d="M10 1.8a8.2 8.2 0 0 0 0 16.4z" fill="#92400E"></path></svg>Developing</span></li>
+<li aria-current="step" style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#FFFFFF" stroke="#3340A0" stroke-width="3"></circle><circle cx="14" cy="14" r="5" fill="#3340A0"></circle></svg><span style="flex:1;height:0;border-top:2px dashed #767D8F"></span></div><b style="font-size:15px;color:#3340A0">U2 Rotations</b><span style="font-size:14px;color:#1B1F2A;font-weight:700">You are here · 1 of 3</span></li>
+<li style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#FFFFFF" stroke="#767D8F" stroke-width="2" stroke-dasharray="4 3"></circle></svg><span style="flex:1;height:0;border-top:2px dashed #767D8F"></span></div><b style="font-size:15px">U3 AVL rule</b><span style="font-size:14px;color:#4A5163">Up next</span></li>
+<li style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#FFFFFF" stroke="#767D8F" stroke-width="2" stroke-dasharray="4 3"></circle></svg><span style="flex:1;height:0;border-top:2px dashed #767D8F"></span></div><b style="font-size:15px">U4 Four cases</b><span style="font-size:14px;color:#4A5163">Later</span></li>
+<li style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="12" fill="#FFFFFF" stroke="#767D8F" stroke-width="2" stroke-dasharray="4 3"></circle></svg><span style="flex:1;height:0;border-top:2px dashed #767D8F"></span></div><b style="font-size:15px">U5 Together</b><span style="font-size:14px;color:#4A5163">Later</span></li>
+<li style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center"><svg width="28" height="28" viewBox="0 0 28 28"><rect x="2" y="2" width="24" height="24" rx="6" fill="#FFFFFF" stroke="#767D8F" stroke-width="2" stroke-dasharray="4 3"></rect></svg></div><b style="font-size:15px">Readiness</b><span style="font-size:14px;color:#4A5163">Summary</span></li>
+</ol>
+<div style="display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:#4A5163"><span>Hover: unit name underlines, tooltip shows activities left.</span><span>Focus: ring around the step marker + label.</span><span>Never locked — later units say “Recommended after U2”.</span></div>
+</div>
+
+<div style="display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">QuestionItem</code><span style="color:#4A5163;font-size:15px">Answer option states</span></div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#F2ECFD;color:#6D28D9;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l6 10.5H1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Apply</span><span style="font-size:14px;color:#4A5163;font-weight:700">Question 1 of 4 · attempt 1 of 3</span></div>
+<div style="font-size:20px;line-height:1.4;font-weight:700;max-width:52ch">20 was just inserted. Which rebalancing case is this?</div>
+<div style="display:grid;grid-template-columns:minmax(0,1fr) 120px;gap:8px 14px;align-items:center">
+<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #D5D9E2;border-radius:8px;background:#FFFFFF"><span style="width:20px;height:20px;border-radius:50%;border:2px solid #767D8F"></span><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">A</span>LL — single right rotation</div><span style="font-size:14px;color:#4A5163">Default</span>
+<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #3340A0;border-radius:8px;background:#F4F5FB"><span style="width:20px;height:20px;border-radius:50%;border:2px solid #3340A0"></span><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">B</span>RR — single left rotation</div><span style="font-size:14px;color:#4A5163">Hover</span>
+<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid #D5D9E2;border-radius:8px;background:#FFFFFF;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0"><span style="width:20px;height:20px;border-radius:50%;border:2px solid #767D8F"></span><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">C</span>LR — left, then right</div><span style="font-size:14px;color:#4A5163">Focus</span>
+<div aria-checked="true" style="display:flex;align-items:center;gap:12px;padding:11px 13px;border:2px solid #3340A0;border-radius:8px;background:#ECEEF9;font-weight:700"><span style="width:20px;height:20px;border-radius:50%;border:2px solid #3340A0;display:flex;align-items:center;justify-content:center"><span style="width:10px;height:10px;border-radius:50%;background:#3340A0"></span></span><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace;color:#1B1F2A">C</span>LR — left, then right</div><span style="font-size:14px;color:#4A5163">Selected</span>
+<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px dashed #C2C7D2;border-radius:8px;background:#F3F4F6;color:#5E6577"><span style="width:20px;height:20px;border-radius:50%;border:2px solid #C2C7D2"></span><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace">D</span>RL — right, then left</div><span style="font-size:14px;color:#4A5163">Disabled (after submit)</span>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border:2px solid #0F766E;border-radius:8px;background:#E6F4F2;font-weight:700"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#0F766E"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace">C</span>LR — left, then right<span style="margin-left:auto;font-size:14px;color:#0F766E">Correct answer</span></div><span style="font-size:14px;color:#4A5163">Correct</span>
+<div style="display:flex;align-items:center;gap:12px;padding:11px 13px;border:2px dashed #3B5170;border-radius:8px;background:#EEF2F7;font-weight:700"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B5170" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><span style="font:600 13px 'Atkinson Hyperlegible Mono',monospace">A</span>LL — single right rotation<span style="margin-left:auto;font-size:14px;color:#3B5170">Your answer</span></div><span style="font-size:14px;color:#4A5163">Not quite yet</span>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163">Not-quite-yet option: dashed border + bulb + “Your answer”. The correct option is only revealed on the retry cap, not on the first miss.</p>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">ConfidenceRating</code>
+<div style="font-size:15px">How sure are you? <span style="color:#4A5163">(optional)</span></div>
+<div role="radiogroup" style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="height:40px;display:inline-flex;align-items:center;gap:6px;padding:0 14px;border-radius:99px;border:1px solid #767D8F;background:#FFFFFF;font-weight:500"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="10" width="3" height="4" rx="1" fill="#1B1F2A"></rect><rect x="6.5" y="6" width="3" height="8" rx="1" fill="none" stroke="#767D8F"></rect><rect x="11" y="2" width="3" height="12" rx="1" fill="none" stroke="#767D8F"></rect></svg>Guessing</span>
+<span aria-checked="true" style="height:40px;display:inline-flex;align-items:center;gap:6px;padding:0 14px;border-radius:99px;border:2px solid #3340A0;background:#ECEEF9;font-weight:700"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="10" width="3" height="4" rx="1" fill="#1B1F2A"></rect><rect x="6.5" y="6" width="3" height="8" rx="1" fill="#1B1F2A"></rect><rect x="11" y="2" width="3" height="12" rx="1" fill="none" stroke="#767D8F"></rect></svg>Fairly sure</span>
+<span style="height:40px;display:inline-flex;align-items:center;gap:6px;padding:0 14px;border-radius:99px;border:1px solid #767D8F;background:#FFFFFF;font-weight:500;box-shadow:0 0 0 2px #FFFFFF,0 0 0 4px #3340A0"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="10" width="3" height="4" rx="1" fill="#1B1F2A"></rect><rect x="6.5" y="6" width="3" height="8" rx="1" fill="#1B1F2A"></rect><rect x="11" y="2" width="3" height="12" rx="1" fill="#1B1F2A"></rect></svg>Certain</span>
+</div>
+<span style="font-size:14px;color:#4A5163">Middle = selected · right = focus. Bars fill 1/2/3 so level reads without colour.</span>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:12px">
+<code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">ScaffoldPanel</code>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="border:2px solid #3340A0;border-radius:8px;background:#FFFFFF">
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px"><span style="width:26px;height:26px;border-radius:50%;background:#3340A0;color:#FFFFFF;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">1</span><b>Hint</b><span style="margin-left:auto;font-size:14px;color:#4A5163">Open ▴</span></div>
+<div style="padding:0 14px 12px 48px;font-size:15px">Find the height of 20 first: count nodes on the longest path down.</div></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #767D8F;border-radius:8px"><span style="width:26px;height:26px;border-radius:50%;border:2px solid #767D8F;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">2</span>Worked example<span style="margin-left:auto;font-size:14px;color:#4A5163">Similar tree ▾</span></div>
+<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px dashed #C2C7D2;border-radius:8px;background:#F3F4F6;color:#5E6577"><span style="width:26px;height:26px;border-radius:50%;border:2px dashed #C2C7D2;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:14px">3</span>Guided step-through<span style="margin-left:auto;font-size:14px">After try 2, or open now</span></div>
+</div>
+<span style="font-size:14px;color:#4A5163">Rungs: open (indigo, numbered fill) · available · waiting. Always openable early by choice.</span>
+</div>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px">
+<div style="display:flex;flex-direction:column;gap:10px"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">FeedbackPanel · correct</code>
+<div role="status" style="background:#E6F4F2;border:1px solid #9FD3CC;border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><svg width="24" height="24" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#0F766E"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg><b style="font-size:20px">That's it — it's LR</b></div>
+<p style="margin:0">The new key went left of 30, then right of 10. A zig-zag needs two rotations: left at 10, then right at 30.</p>
+<div style="display:flex;gap:10px;align-items:center;margin-top:4px"><span style="padding:9px 16px;border-radius:8px;background:#3340A0;color:#FFFFFF;font-weight:700">Next question</span><span style="color:#3340A0;font-weight:700">Watch the fix</span></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:10px"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">FeedbackPanel · not quite yet</code>
+<div role="status" style="background:#EEF2F7;border:1px solid #B8C3D4;border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3B5170" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><b style="font-size:20px">Not quite yet — check the sign</b></div>
+<p style="margin:0">You entered −2. Left of 30 has height 2, right is empty (0). Left minus right = <b>+2</b>, so it leans left.</p>
+<div style="display:flex;gap:10px;align-items:center;margin-top:4px"><span style="padding:9px 16px;border-radius:8px;background:#3340A0;color:#FFFFFF;font-weight:700">Try again</span><span style="font-size:14px;color:#4A5163">Attempt 2 of 3</span></div>
+</div></div>
+<div style="display:flex;flex-direction:column;gap:10px"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">FeedbackPanel · retry cap</code>
+<div role="status" style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+<div style="display:flex;align-items:center;gap:10px"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3340A0" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4z"></path></svg><b style="font-size:20px">Let's park this one</b></div>
+<p style="margin:0">Three tries is the limit here. This is exactly the kind of thing the lecture is for.</p>
+<div style="display:flex;gap:10px;align-items:center;margin-top:4px;flex-wrap:wrap"><span style="padding:9px 16px;border-radius:8px;background:#3340A0;color:#FFFFFF;font-weight:700">Add to my lecture questions</span><span style="color:#3340A0;font-weight:700">Move on</span></div>
+</div></div>
+</div>
+
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap"><code style="font:600 15px 'Atkinson Hyperlegible Mono',monospace">ReadinessSummary</code><span style="color:#4A5163;font-size:15px">Per-outcome row; change vs your own last attempt</span></div>
+<div role="table" style="display:flex;flex-direction:column">
+<div role="row" style="display:grid;grid-template-columns:minmax(0,2.2fr) 130px 160px 200px 120px;gap:12px;padding:8px 0;border-bottom:1px solid #767D8F;font-size:14px;font-weight:700;color:#4A5163"><span>Outcome</span><span>Level</span><span>Now</span><span>Since last time</span><span></span></div>
+<div role="row" style="display:grid;grid-template-columns:minmax(0,2.2fr) 130px 160px 200px 120px;gap:12px;padding:12px 0;border-bottom:1px solid #D5D9E2;align-items:center"><span>Compute height and balance factor</span><span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#EAF0FD;color:#1D4ED8;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l5.5 5.5L7 12.5 1.5 7z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>Understand</span></span><span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;color:#92400E"><svg width="18" height="18" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#92400E" stroke-width="1.8"></circle><path d="M10 1.8a8.2 8.2 0 0 0 0 16.4z" fill="#92400E"></path></svg>Developing</span><span style="font-size:15px;color:#4A5163">↑ up from Not yet</span><a href="#components" style="font-weight:700">Review U3</a></div>
+<div role="row" style="display:grid;grid-template-columns:minmax(0,2.2fr) 130px 160px 200px 120px;gap:12px;padding:12px 0;align-items:center"><span>Perform a left and right rotation</span><span><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#F2ECFD;color:#6D28D9;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l6 10.5H1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Apply</span></span><span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;color:#0F766E"><svg width="18" height="18" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#0F766E"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Secure</span><span style="font-size:15px;color:#4A5163">First try</span><span></span></div>
+</div>
+</div>
+</section>
+
+<section id="dark" style="display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">04B — DARK THEME</div><h2 style="margin:0;font-size:30px;line-height:1.2">Dark tokens, same roles</h2><p style="margin:0;color:#4A5163;max-width:66ch">Hues lighten so they hold contrast on dark surfaces; filled tags switch to dark text. Defined now, designed in detail after the light screens.</p></div>
+<div style="background:#12151C;border-radius:8px;padding:28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:20px;color:#E8EAF0">
+<div style="background:#1B1F2A;border:1px solid #3A4152;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<b>Mastery &amp; goals</b>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:99px;background:#16312F;color:#4FC3B5;font-weight:700;font-size:15px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#4FC3B5"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#12151C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg>Secure</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:99px;background:#33261A;color:#E3A76A;font-weight:700;font-size:15px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#E3A76A" stroke-width="1.8"></circle><path d="M10 1.8a8.2 8.2 0 0 0 0 16.4z" fill="#E3A76A"></path></svg>Developing</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px 4px 6px;border-radius:99px;background:#252B37;color:#A3AEC2;font-weight:700;font-size:15px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8.2" fill="none" stroke="#A3AEC2" stroke-width="1.8"></circle></svg>Not yet</span>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#16312F;color:#4FC3B5;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="2"></circle></svg>Remember</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#1C2845;color:#8AB0FF;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l5.5 5.5L7 12.5 1.5 7z" fill="none" stroke="currentColor" stroke-width="2"></path></svg>Understand</span>
+<span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:99px;background:#2A2340;color:#BFA2FF;font-weight:700;font-size:14px"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1.5l6 10.5H1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path></svg>Apply</span>
+</div>
+<div style="display:flex;gap:10px;align-items:center"><span style="padding:9px 16px;border-radius:8px;background:#9AA5FF;color:#12151C;font-weight:700">Continue</span><span style="padding:8px 15px;border-radius:8px;border:1px solid #7F879A;font-weight:700">Replay</span><span style="padding:8px 15px;border-radius:8px;border:1px solid #7F879A;font-weight:700;box-shadow:0 0 0 2px #1B1F2A,0 0 0 4px #9AA5FF">Focus</span></div>
+</div>
+<div style="background:#1B1F2A;border:1px solid #3A4152;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<b>Tree roles</b>
+<svg width="100%" viewBox="0 0 380 104" style="max-width:380px">
+<g font-family="Atkinson Hyperlegible Next" text-anchor="middle">
+<circle cx="45" cy="52" r="22" fill="#1B1F2A" stroke="#56B4E9" stroke-width="3"></circle><text x="45" y="58" font-size="17" font-weight="700" fill="#E8EAF0">5</text><rect x="54" y="20" width="36" height="20" rx="10" fill="#56B4E9"></rect><text x="72" y="34.5" font-size="13" font-weight="700" fill="#12151C">new</text><text x="45" y="98" font-size="13" fill="#A9B0C0">New</text>
+<circle cx="140" cy="52" r="27" fill="none" stroke="#F0884B" stroke-width="2"></circle><circle cx="140" cy="52" r="21" fill="#1B1F2A" stroke="#F0884B" stroke-width="3"></circle><text x="140" y="58" font-size="17" font-weight="700" fill="#E8EAF0">20</text><rect x="152" y="14" width="22" height="20" rx="10" fill="#F0884B"></rect><text x="163" y="28.5" font-size="13" font-weight="700" fill="#12151C">z</text><text x="140" y="98" font-size="13" fill="#A9B0C0">Unbalanced</text>
+<circle cx="235" cy="52" r="22" fill="#1B1F2A" stroke="#DDB04F" stroke-width="3" stroke-dasharray="6 4"></circle><text x="235" y="58" font-size="17" font-weight="700" fill="#E8EAF0">10</text><rect x="246" y="20" width="22" height="20" rx="10" fill="#DDB04F"></rect><text x="257" y="34.5" font-size="13" font-weight="700" fill="#12151C">y</text><text x="235" y="98" font-size="13" fill="#A9B0C0">Taller child</text>
+<circle cx="330" cy="52" r="22" fill="#1B1F2A" stroke="#3FC79A" stroke-width="2.5"></circle><text x="330" y="58" font-size="17" font-weight="700" fill="#E8EAF0">60</text><circle cx="348" cy="34" r="9" fill="#3FC79A"></circle><path d="M343.5 34.3l3 3 5-5.3" fill="none" stroke="#12151C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><text x="330" y="98" font-size="13" fill="#A9B0C0">Balanced</text>
+</g></svg>
+</div>
+<div style="background:#1B1F2A;border:1px solid #3A4152;border-radius:8px;padding:18px;display:flex;flex-direction:column;gap:10px">
+<b>Feedback</b>
+<div style="background:#16312F;border:1px solid #2D5C57;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px"><svg width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="#4FC3B5"></circle><path d="M5.5 10.3l3 3 6-6.3" fill="none" stroke="#12151C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg><b>That's it</b></div>
+<div style="background:#222A38;border:1px solid #435069;border-radius:8px;padding:12px 14px;display:flex;align-items:center;gap:10px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A9B8D0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg><b>Not quite yet</b><span style="color:#A9B0C0;font-size:15px">— check the sign</span></div>
+<div style="font:14px/1.75 'Atkinson Hyperlegible Mono',monospace;background:#12151C;border:1px solid #3A4152;border-radius:8px;padding:6px 0"><div style="padding:0 12px;color:#A9B0C0">  node.h = 1 + max(…)</div><div style="padding:0 12px;background:#272D45;box-shadow:inset 3px 0 0 #9AA5FF;font-weight:600">▶ bf = h(L) − h(R)</div></div>
+</div>
+</div>
+</section>
+
+<section id="contrast" style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-direction:column;gap:6px"><div style="font:600 13px/1 'Atkinson Hyperlegible Mono',monospace;letter-spacing:.06em;color:#4A5163">05 — CHECKS</div><h2 style="margin:0;font-size:30px;line-height:1.2">Contrast pairs</h2><p style="margin:0;color:#4A5163;max-width:70ch">Calculated live from the token values (WCAG 2.x relative luminance). Text needs 4.5:1; UI boundaries and focus need 3:1 (SC 1.4.11). {{ passSummary }}</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(560px,1fr));gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:8px 20px">
+<div style="display:grid;grid-template-columns:52px minmax(0,1fr) 72px 92px;gap:12px;padding:10px 0;border-bottom:1px solid #767D8F;font-size:14px;font-weight:700;color:#4A5163"><span>Light</span><span>Foreground on background</span><span>Ratio</span><span>Need</span></div>
+<sc-for list="{{ lightRows }}" as="r" hint-placeholder-count="20">
+<div style="display:grid;grid-template-columns:52px minmax(0,1fr) 72px 92px;gap:12px;padding:8px 0;border-bottom:1px solid #EEF0F4;align-items:center;font-size:15px">
+<span style="{{ r.sample }}">Aa</span>
+<span style="display:flex;flex-direction:column"><span>{{ r.label }}</span><span style="font:12px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">{{ r.hex }}</span></span>
+<b style="font-family:'Atkinson Hyperlegible Mono',monospace">{{ r.ratio }}</b>
+<span style="font-size:14px">{{ r.verdict }}</span>
+</div>
+</sc-for>
+</div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:8px 20px;align-self:start">
+<div style="display:grid;grid-template-columns:52px minmax(0,1fr) 72px 92px;gap:12px;padding:10px 0;border-bottom:1px solid #767D8F;font-size:14px;font-weight:700;color:#4A5163"><span>Dark</span><span>Foreground on background</span><span>Ratio</span><span>Need</span></div>
+<sc-for list="{{ darkRows }}" as="r" hint-placeholder-count="14">
+<div style="display:grid;grid-template-columns:52px minmax(0,1fr) 72px 92px;gap:12px;padding:8px 0;border-bottom:1px solid #EEF0F4;align-items:center;font-size:15px">
+<span style="{{ r.sample }}">Aa</span>
+<span style="display:flex;flex-direction:column"><span>{{ r.label }}</span><span style="font:12px 'Atkinson Hyperlegible Mono',monospace;color:#4A5163">{{ r.hex }}</span></span>
+<b style="font-family:'Atkinson Hyperlegible Mono',monospace">{{ r.ratio }}</b>
+<span style="font-size:14px">{{ r.verdict }}</span>
+</div>
+</sc-for>
+</div>
+</div>
+<p style="margin:0;font-size:14px;color:#4A5163;max-width:80ch">border.subtle (#D5D9E2, 1.4:1) is decorative only — card edges, dividers. Anything a student must find to operate (inputs, radios, toggles, step buttons) uses border.control. Disabled text (#5E6577) is kept readable even though WCAG exempts it.</p>
+</section>
+
+<section id="notes" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:20px">
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:10px">
+<h3 style="margin:0;font-size:20px">Additions to your spec</h3>
+<ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:#1B1F2A;font-size:15px">
+<li><b>border.control #767D8F</b> — your border #D5D9E2 is only 1.4:1, below the 3:1 needed for control boundaries.</li>
+<li><b>Primary hover / pressed / tint</b> (#2A3588, #222C73, #ECEEF9) and a <b>code highlight</b> tint (#E4E7F7).</li>
+<li><b>Tints</b> for Bloom, mastery and feedback backgrounds; every foreground on them passes 4.5:1.</li>
+<li><b>Not-quite-yet icon colour #3B5170</b> (blue-grey) and correct-panel border #9FD3CC.</li>
+<li>Bloom chips carry a <b>shape glyph</b> (circle / diamond / triangle) as well as the word.</li>
+<li>A <b>neutral tree node</b> (#4A5163) for nodes not yet checked during a step.</li>
+</ul>
+</div>
+<div style="background:#FFFFFF;border:1px solid #D5D9E2;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:10px">
+<h3 style="margin:0;font-size:20px">Assumptions — please confirm</h3>
+<ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:15px">
+<li>Font: Atkinson Hyperlegible Next + Mono (free, Google Fonts). Easy to swap.</li>
+<li>Progress map completion uses neutral ink, not the mastery colours, so “done” is never confused with “secure”.</li>
+<li>On a first miss, the correct option is not revealed; it is shown at the retry cap (3 tries).</li>
+<li>Remember and Secure share teal #0F766E as specified; they never sit side by side without their word/shape, so this shouldn't confuse.</li>
+<li>Dark theme hues are my proposal; light is the priority for the screens.</li>
+</ul>
+</div>
+</section>
+
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;vision&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Normal&quot;,&quot;Greyscale&quot;,&quot;Protanopia&quot;,&quot;Deuteranopia&quot;,&quot;Tritanopia&quot;],&quot;default&quot;:&quot;Normal&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { vision: null };
+  lum(h){h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16)/255).map(v=>v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4)).reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);}
+  cr(a,b){const x=this.lum(a),y=this.lum(b);return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);}
+  rows(list){return list.map(([label,fg,bg,need])=>{const r=this.cr(fg,bg);const ok=r>=need;return {label,hex:fg+' on '+bg,ratio:r.toFixed(2)+':1',verdict:(ok?'✓ Pass ':'Below ')+need+':1'+(need===3?' (UI)':''),ok,sample:{color:fg,background:bg,fontWeight:700,borderRadius:6,padding:'4px 0',textAlign:'center',border:'1px solid #D5D9E2'}};});}
+  renderVals(){
+    const v=this.state.vision??this.props.vision??'Normal';
+    const opts=['Normal','Greyscale','Protanopia','Deuteranopia','Tritanopia'];
+    const filters={Normal:'none',Greyscale:'grayscale(1)',Protanopia:'url(#protan)',Deuteranopia:'url(#deutan)',Tritanopia:'url(#tritan)'};
+    const light=this.rows([
+      ['text.primary on page','#1B1F2A','#FAFAF7',4.5],['text.primary on surface','#1B1F2A','#FFFFFF',4.5],
+      ['text.secondary on page','#4A5163','#FAFAF7',4.5],['text.secondary on surface','#4A5163','#FFFFFF',4.5],
+      ['white on action.primary','#FFFFFF','#3340A0',4.5],['white on primary.hover','#FFFFFF','#2A3588',4.5],
+      ['link (primary) on page','#3340A0','#FAFAF7',4.5],['text on primary.tint (selected)','#1B1F2A','#ECEEF9',4.5],
+      ['Remember on its tint','#0F766E','#E6F4F2',4.5],['Understand on its tint','#1D4ED8','#EAF0FD',4.5],['Apply on its tint','#6D28D9','#F2ECFD',4.5],
+      ['Secure on surface','#0F766E','#FFFFFF',4.5],['Developing on its tint','#92400E','#FBF1E6',4.5],['Not yet on its tint','#475569','#EEF1F5',4.5],
+      ['text on correct panel','#1B1F2A','#E6F4F2',4.5],['text on not-quite-yet panel','#1B1F2A','#EEF2F7',4.5],['bulb icon on not-quite-yet','#3B5170','#EEF2F7',3],
+      ['text on code highlight','#1B1F2A','#E4E7F7',4.5],
+      ['tree.new on surface','#0072B2','#FFFFFF',3],['tree.z annotation on page','#B34700','#FAFAF7',4.5],['tree.y on surface','#8A5A00','#FFFFFF',3],['tree.balanced on surface','#00755A','#FFFFFF',3],
+      ['white tag text on new','#FFFFFF','#0072B2',4.5],['white tag text on z','#FFFFFF','#B34700',4.5],['white tag text on y','#FFFFFF','#8A5A00',4.5],
+      ['border.control on surface','#767D8F','#FFFFFF',3],['focus ring on page','#3340A0','#FAFAF7',3],['disabled text on disabled bg','#5E6577','#F3F4F6',4.5]
+    ]);
+    const dark=this.rows([
+      ['text.primary on page','#E8EAF0','#12151C',4.5],['text.primary on surface','#E8EAF0','#1B1F2A',4.5],['text.secondary on surface','#A9B0C0','#1B1F2A',4.5],
+      ['page text on action.primary','#12151C','#9AA5FF',4.5],['Secure / Remember on tint','#4FC3B5','#16312F',4.5],['Developing on tint','#E3A76A','#33261A',4.5],['Not yet on tint','#A3AEC2','#252B37',4.5],
+      ['Understand on tint','#8AB0FF','#1C2845',4.5],['Apply on tint','#BFA2FF','#2A2340',4.5],['text on not-quite-yet panel','#E8EAF0','#222A38',4.5],['text on code highlight','#E8EAF0','#272D45',4.5],
+      ['tree.new on surface','#56B4E9','#1B1F2A',3],['tree.z on surface','#F0884B','#1B1F2A',4.5],['tree.y on surface','#DDB04F','#1B1F2A',3],['tree.balanced on surface','#3FC79A','#1B1F2A',3],
+      ['dark tag text on z','#12151C','#F0884B',4.5],['border.control on surface','#7F879A','#1B1F2A',3],['focus ring on surface','#9AA5FF','#1B1F2A',3]
+    ]);
+    const all=[...light,...dark];const pass=all.filter(r=>r.ok).length;
+    return {
+      visions: opts.map(o=>({label:o,on:o===v,pick:()=>this.setState({vision:o}),style:{border:0,cursor:'pointer',font:"inherit",fontSize:14,fontWeight:o===v?700:500,padding:'6px 12px',borderRadius:6,background:o===v?'#FFFFFF':'transparent',color:'#1B1F2A',boxShadow:o===v?'0 1px 2px rgba(27,31,42,.12), inset 0 0 0 1.5px #3340A0':'none'}})),
+      filterStyle:{filter:filters[v]},
+      lightRows:light, darkRows:dark,
+      passSummary: pass+' of '+all.length+' pairs pass.'
+    };
+  }
+}
+</script>
+</body>
+</html>

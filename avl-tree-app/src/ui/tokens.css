@@ -1,0 +1,146 @@
+/*
+ * AVL Primer design tokens.
+ * Source: docs/design/source/AVL Primer Design System.dc.html (v0.1), sections 01-05.
+ * Nothing here is invented. Where the design system states no value, a comment says so.
+ * Components use these variables only; no hard-coded colours, sizes or spacing (CLAUDE.md).
+ * Fonts: Atkinson Hyperlegible Next and Mono, self-hosted (the app makes no network calls). See docs/design/INDEX.md.
+ */
+
+:root {
+  color-scheme: light dark;
+
+  /* ---- Colour: neutrals and action ---- */
+  --bg-page: #FAFAF7;
+  --bg-surface: #FFFFFF;
+  --text-primary: #1B1F2A;
+  --text-secondary: #4A5163;
+  --border-subtle: #D5D9E2;      /* decorative only (1.4:1): card edges, dividers */
+  --border-control: #767D8F;     /* anything a student must find to operate (3:1) */
+  --action-primary: #3340A0;
+  --action-primary-hover: #2A3588;
+  --action-primary-pressed: #222C73;
+  --action-primary-tint: #ECEEF9;
+  --code-highlight: #E4E7F7;
+  --disabled-text: #5E6577;
+  --disabled-bg: #F3F4F6;
+  --focus-ring-color: #3340A0;
+  --focus-ring-width: 2px;
+  --focus-ring-gap: 2px;
+
+  /* ---- Learning goals (Bloom). Always shown with the word and a glyph ---- */
+  --bloom-remember: #0F766E;   --bloom-remember-tint: #E6F4F2;   /* circle */
+  --bloom-understand: #1D4ED8; --bloom-understand-tint: #EAF0FD; /* diamond */
+  --bloom-apply: #6D28D9;      --bloom-apply-tint: #F2ECFD;      /* triangle */
+
+  /* ---- Mastery per skill. Fill level is the shape cue: full, half, empty ---- */
+  --mastery-secure: #0F766E;     --mastery-secure-tint: #E6F4F2;
+  --mastery-developing: #92400E; --mastery-developing-tint: #FBF1E6;
+  --mastery-notyet: #475569;     --mastery-notyet-tint: #EEF1F5;
+
+  /* ---- Feedback: two calm panels. No red, no cross ---- */
+  --feedback-correct-bg: #E6F4F2;
+  --feedback-correct-border: #9FD3CC;
+  --feedback-correct-icon: #0F766E;
+  --feedback-notyet-bg: #EEF2F7;
+  --feedback-notyet-border: #B8C3D4;
+  --feedback-notyet-icon: #3B5170;
+
+  /* ---- Tree diagram roles (Okabe-Ito derived). Each role = colour + outline style + text tag ---- */
+  --tree-new: #0072B2;       /* tag "new" */
+  --tree-z: #B34700;         /* double ring: lowest unbalanced node */
+  --tree-y: #8A5A00;         /* dashed ring: taller child of z */
+  --tree-balanced: #00755A;  /* check badge */
+  --tree-neutral: #4A5163;   /* solid grey ring: not yet checked in this step */
+
+  /* ---- Type ---- */
+  --font-sans: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+  --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
+  /* size / line-height, weight */
+  --type-display: 700 40px/48px var(--font-sans);
+  --type-h1: 700 30px/38px var(--font-sans);
+  --type-h2: 700 22px/30px var(--font-sans);
+  --type-body-lg: 400 18px/28px var(--font-sans);
+  --type-body: 400 16px/24px var(--font-sans);   /* minimum for running text */
+  --type-label: 700 14px/20px var(--font-sans);  /* metadata only: counters, tags, diagram annotations */
+  --type-mono: 400 15px/24px var(--font-mono);
+  --reading-column: 66ch;
+
+  /* ---- Space, shape ---- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --radius-sm: 4px;
+  --radius-md: 8px;              /* default */
+  --radius-pill: 999px;
+  /* The design system names e1 (cards, rare) and e2 (popovers and menus only) but gives no values. */
+  /* --elevation-1: [OPEN] */
+  /* --elevation-2: [OPEN] */
+
+  /* ---- Targets ---- */
+  --target-min: 44px;
+}
+
+/* Dark theme: same roles. Defined in the design system, detailed screens to follow. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) { /* mirrored by [data-theme='dark'] below; keep the two blocks identical */
+    --bg-page: #12151C;
+    --bg-surface: #1B1F2A;
+    --text-primary: #E8EAF0;
+    --text-secondary: #A9B0C0;
+    --border-subtle: #3A4152;
+    --border-control: #7F879A;
+    --action-primary: #9AA5FF;
+    --action-primary-hover: #B3BBFF;
+    --action-primary-tint: #262C48;
+    --code-highlight: #272D45;
+    --focus-ring-color: #9AA5FF;
+    --bloom-remember: #4FC3B5;   --bloom-remember-tint: #16312F;
+    --bloom-understand: #8AB0FF; --bloom-understand-tint: #1C2845;
+    --bloom-apply: #BFA2FF;      --bloom-apply-tint: #2A2340;
+    --mastery-secure: #4FC3B5;     --mastery-secure-tint: #16312F;
+    --mastery-developing: #E3A76A; --mastery-developing-tint: #33261A;
+    --mastery-notyet: #A3AEC2;     --mastery-notyet-tint: #252B37;
+    --feedback-notyet-bg: #222A38;
+    --tree-new: #56B4E9;
+    --tree-z: #F0884B;
+    --tree-y: #DDB04F;
+    --tree-balanced: #3FC79A;
+    /* Dark values the design system does not state (confirm before use):
+       disabled text/bg, feedback-correct bg/border/icon, feedback-notyet border/icon, tree-neutral,
+       action-primary-pressed. */
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg-page: #12151C;
+  --bg-surface: #1B1F2A;
+  --text-primary: #E8EAF0;
+  --text-secondary: #A9B0C0;
+  --border-subtle: #3A4152;
+  --border-control: #7F879A;
+  --action-primary: #9AA5FF;
+  --action-primary-hover: #B3BBFF;
+  --action-primary-tint: #262C48;
+  --code-highlight: #272D45;
+  --focus-ring-color: #9AA5FF;
+  --bloom-remember: #4FC3B5;   --bloom-remember-tint: #16312F;
+  --bloom-understand: #8AB0FF; --bloom-understand-tint: #1C2845;
+  --bloom-apply: #BFA2FF;      --bloom-apply-tint: #2A2340;
+  --mastery-secure: #4FC3B5;     --mastery-secure-tint: #16312F;
+  --mastery-developing: #E3A76A; --mastery-developing-tint: #33261A;
+  --mastery-notyet: #A3AEC2;     --mastery-notyet-tint: #252B37;
+  --feedback-notyet-bg: #222A38;
+  --tree-new: #56B4E9;
+  --tree-z: #F0884B;
+  --tree-y: #DDB04F;
+  --tree-balanced: #3FC79A;
+}
+
+/* One focus style everywhere: 2px ring with a 2px gap, survives every background. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-gap);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
