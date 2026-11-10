@@ -1,6 +1,16 @@
 import { caseFor, type RebalanceCase } from './conventions'
 import { rotateLeft, rotateRight } from './rotations'
-import { balanceFactorOf, makeNode, type Key, type Tree, type TreeNode } from './tree'
+import type { TraceKind, TraceStep } from './trace'
+import {
+  balanceFactorOf,
+  makeNode,
+  refreshHeight,
+  replaceAt,
+  subtreeAt,
+  type Key,
+  type Tree,
+  type TreeNode,
+} from './tree'
 
 /** A rebalance that happened: its case and the key of the unbalanced node z. */
 export interface Rebalance {
@@ -62,6 +72,97 @@ export function avlInsert(tree: Tree, key: Key): AvlInsertResult {
   const rebuilt = goLeft ? makeNode(tree.key, r.tree, tree.right) : makeNode(tree.key, tree.left, r.tree)
   const fixed = rebalance(rebuilt)
   return { tree: fixed.tree, inserted: true, rebalance: r.rebalance ?? fixed.rebalance }
+}
+
+// Insert pseudocode lines: the five steps of the ID's C6 outline (1 BST insert,
+// 2 update heights going up, 3 find the lowest unbalanced node, 4 work out the
+// case, 5 rotate). The ID has no line-level insert pseudocode, so this layout
+// is an assumption to confirm (add-avl-insert-trace proposal, question 1).
+// Line 4 has no step of its own: the case is carried by the imbalance step.
+export const INSERT_LINES = {
+  compare: 1,
+  descend: 1,
+  found: 1,
+  insert: 1,
+  'update-height': 2,
+  imbalance: 3,
+  rotation: 5,
+} as const satisfies Partial<Record<TraceKind, number>>
+
+type InsertStepKind = keyof typeof INSERT_LINES
+
+export interface AvlInsertTraceResult extends AvlInsertResult {
+  trace: TraceStep[]
+}
+
+/**
+ * AVL insert with a trace (SE §6.4). Walk down (compare, then descend, per
+ * node), insert the leaf or stop at a duplicate (found), then walk back up:
+ * one update-height per ancestor until the lowest unbalanced node z or the
+ * root, then imbalance [z, y] and one rotation [at, pivot] per single
+ * rotation. Snapshots are whole trees; ancestors keep their old stored
+ * heights until their own update-height step.
+ */
+export function avlInsertTrace(tree: Tree, key: Key): AvlInsertTraceResult {
+  const trace: TraceStep[] = []
+  let current = tree
+
+  const push = (kind: InsertStepKind, nodes: Key[], after: Tree = current, rebalanceCase?: RebalanceCase) => {
+    const step: TraceStep = {
+      index: trace.length,
+      kind,
+      nodes,
+      before: current,
+      after,
+      pseudocodeLine: INSERT_LINES[kind],
+    }
+    if (rebalanceCase !== undefined) step.rebalanceCase = rebalanceCase
+    trace.push(step)
+    current = after
+  }
+
+  // Walk down, recording the path.
+  const path: Key[] = []
+  let node: Tree = tree
+  while (node !== null) {
+    path.push(node.key)
+    push('compare', [node.key])
+    if (key === node.key) {
+      push('found', [node.key])
+      return { tree, inserted: false, rebalance: null, trace }
+    }
+    const next: Tree = key < node.key ? node.left : node.right
+    push('descend', next === null ? [node.key] : [node.key, next.key])
+    node = next
+  }
+  push('insert', [key], replaceAt(current, key, () => makeNode(key, null, null)))
+
+  // Walk back up: update heights, stop at the first (lowest) imbalance.
+  for (let i = path.length - 1; i >= 0; i--) {
+    const at = path[i]
+    push('update-height', [at], replaceAt(current, at, refreshHeight))
+    const z = subtreeAt(current, at) as TreeNode
+    const fixed = rebalance(z)
+    if (fixed.rebalance === null) continue
+
+    const found = fixed.rebalance
+    const zLeansLeft = balanceFactorOf(z) > 0
+    const y = (zLeansLeft ? z.left : z.right) as TreeNode
+    push('imbalance', [z.key, y.key], current, found.case)
+
+    const towardZ = zLeansLeft ? rotateRight : rotateLeft
+    const awayFromZ = zLeansLeft ? rotateLeft : rotateRight
+    const yLeansAway = zLeansLeft ? balanceFactorOf(y) < 0 : balanceFactorOf(y) > 0
+    if (yLeansAway) {
+      const x = (zLeansLeft ? y.right : y.left) as TreeNode
+      push('rotation', [y.key, x.key], replaceAt(current, y.key, awayFromZ), found.case)
+      push('rotation', [z.key, x.key], replaceAt(current, z.key, towardZ), found.case)
+    } else {
+      push('rotation', [z.key, y.key], replaceAt(current, z.key, towardZ), found.case)
+    }
+    return { tree: current, inserted: true, rebalance: found, trace }
+  }
+  return { tree: current, inserted: true, rebalance: null, trace }
 }
 
 // Result shape is an assumption until add-operation-trace (add-avl-delete
