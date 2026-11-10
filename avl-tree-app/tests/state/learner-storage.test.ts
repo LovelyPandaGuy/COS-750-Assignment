@@ -389,3 +389,79 @@ describe('NFR-05: stored-data inventory', () => {
     }
   })
 })
+
+// ---------- regressions from the fresh-context review ----------
+
+describe('FR-ONB-03: round-trip edge cases (review)', () => {
+  it('a sub-skill named "__proto__" survives a round trip', () => {
+    const backend = memoryBackend()
+    const saved = sampleState({
+      subSkillStatus: Object.fromEntries([['__proto__', 'secure']]) as LearnerState['subSkillStatus'],
+    })
+    createLearnerStorage(backend).save(saved)
+    const { state, status } = createLearnerStorage(backend).load()
+    expect(status).toBe('restored')
+    expect(Object.keys(state.subSkillStatus)).toEqual(['__proto__'])
+    expect(state).toEqual(saved)
+  })
+
+  it('the round-trip property holds on the seed the review found (124854234)', () => {
+    fc.assert(
+      fc.property(stateArb, (s) => {
+        const backend = memoryBackend()
+        createLearnerStorage(backend).save(s)
+        const { status } = createLearnerStorage(backend).load()
+        expect(status).toBe('restored')
+      }),
+      { seed: 124854234, numRuns: 200 },
+    )
+  })
+
+  it('an attempt with an undefined answer does not wipe progress', () => {
+    const backend = memoryBackend()
+    const saved = sampleState()
+    saved.attempts[1] = { ...saved.attempts[1], answer: undefined }
+    createLearnerStorage(backend).save(saved)
+    const { state, status } = createLearnerStorage(backend).load()
+    expect(status).toBe('restored')
+    expect(state.attempts).toHaveLength(2)
+    expect(state.attempts[1].answer).toBeUndefined()
+  })
+})
+
+describe('NFR-06: robustness edge cases (review)', () => {
+  it('an attempt time that is not a date is corrupt', () => {
+    const backend = memoryBackend()
+    const raw = JSON.parse(JSON.stringify(sampleState())) as { attempts: { at: string }[] }
+    raw.attempts[0].at = 'yesterday-ish'
+    backend.setItem(LEARNER_KEY, JSON.stringify(raw))
+    expect(createLearnerStorage(backend).load().status).toBe('reset-corrupt')
+  })
+
+  it('after falling back to memory, storage is not retried', () => {
+    const { backend, control } = fillableBackend()
+    const store = createLearnerStorage(backend)
+    const first = store.load().state
+    const storedBefore = backend.getItem(LEARNER_KEY)
+    control.full = true
+    store.save(sampleState({ profileId: first.profileId, currentModule: 'C5' }))
+    control.full = false
+    store.save(sampleState({ profileId: first.profileId, currentModule: 'C6' }))
+    expect(store.isPersistent()).toBe(false)
+    expect(backend.getItem(LEARNER_KEY)).toBe(storedBefore)
+    expect(store.load().state.currentModule).toBe('C6')
+  })
+
+  it('load and reset do not throw when crypto is missing', () => {
+    const original = globalThis.crypto
+    Object.defineProperty(globalThis, 'crypto', { value: undefined, configurable: true })
+    try {
+      const store = createLearnerStorage(memoryBackend())
+      expect(() => store.load()).not.toThrow()
+      expect(() => store.reset()).not.toThrow()
+      expect(store.load().state.profileId.length).toBeGreaterThan(0)
+    } finally {
+      Object.defineProperty(globalThis, 'crypto', { value: original, configurable: true })
+    }
+  })
+})

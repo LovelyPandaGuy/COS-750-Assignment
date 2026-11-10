@@ -8,19 +8,19 @@
 
 ## 2. Learner state model
 
-- [ ] 2.1 Add `src/state/learnerState.ts` with the SE §6.3 `LearnerState` and `Attempt` types, `SCHEMA_VERSION = 1`, the `C1`..`C9` module IDs, `freshLearnerState(id)` and nickname normalisation (trim, cap 24, blank to none); verify `npm run typecheck` passes and the first-launch shape assertions pass once 2.2 lands.
-- [ ] 2.2 Add `parseLearnerState(unknown)` to the same file: field-by-field validation that returns a new object with only model fields, or `null`; verify the tampered-fields, unknown-version and only-model-fields scenarios pass in isolation.
+- [x] 2.1 Add `src/state/learnerState.ts` with the SE §6.3 `LearnerState` and `Attempt` types, `SCHEMA_VERSION = 1`, the `C1`..`C9` module IDs, `freshLearnerState(id)` and nickname normalisation (trim, cap 24, blank to none); verify `npm run typecheck` passes and the first-launch shape assertions pass once 2.2 lands.
+- [x] 2.2 Add `parseLearnerState(unknown)` to the same file: field-by-field validation that returns a new object with only model fields, or `null`; verify the tampered-fields, unknown-version and only-model-fields scenarios pass in isolation.
 
 ## 3. Storage adapter
 
-- [ ] 3.1 Add `src/state/storage.ts` with `KeyValueBackend`, `memoryBackend()`, `browserBackend()` (guarded `window.localStorage` access), the `avl-primer:` prefix and `STORAGE_INVENTORY`; verify the inventory description scenario passes.
-- [ ] 3.2 Add `createLearnerStorage(backend, options)` with `load()` returning `{ state, status }` and `save(state)` (JSON, normalised fields), using `crypto.randomUUID` by default; verify the first-launch, round-trip, last-save-wins, nickname and corrupt-data scenarios pass, including both property tests.
-- [ ] 3.3 Add the memory fallback (wrap every backend call, switch once on failure, `isPersistent()`) and `reset()` (remove every prefixed key, save a fresh state with a new ID); verify the unavailable-storage, reset and every-written-key-is-listed scenarios pass, so the whole `learner-storage.test.ts` passes.
+- [x] 3.1 Add `src/state/storage.ts` with `KeyValueBackend`, `memoryBackend()`, `browserBackend()` (guarded `window.localStorage` access), the `avl-primer:` prefix and `STORAGE_INVENTORY`; verify the inventory description scenario passes.
+- [x] 3.2 Add `createLearnerStorage(backend, options)` with `load()` returning `{ state, status }` and `save(state)` (JSON, normalised fields), using `crypto.randomUUID` by default; verify the first-launch, round-trip, last-save-wins, nickname and corrupt-data scenarios pass, including both property tests.
+- [x] 3.3 Add the memory fallback (wrap every backend call, switch once on failure, `isPersistent()`) and `reset()` (remove every prefixed key, save a fresh state with a new ID); verify the unavailable-storage, reset and every-written-key-is-listed scenarios pass, so the whole `learner-storage.test.ts` passes.
 
 ## 4. Review
 
-- [ ] 4.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`; verify all pass, no new `[OPEN]` markers in `src/`, no new dependencies in `package.json`, and no file under `src/engine/` changed.
-- [ ] 4.2 Fresh-context review of the diff against the spec delta, SE §6.3, D16, NFR-05 and NFR-06; verify the report is a pass or its findings are resolved. (No UI, so no a11y check.)
+- [x] 4.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`; verify all pass, no new `[OPEN]` markers in `src/`, no new dependencies in `package.json`, and no file under `src/engine/` changed.
+- [x] 4.2 Fresh-context review of the diff against the spec delta, SE §6.3, D16, NFR-05 and NFR-06; verify the report is a pass or its findings are resolved. (No UI, so no a11y check.)
 
 ## Workflow follow-up
 
