@@ -1,0 +1,71 @@
+/* Tree view. Tokens only. The focus ring comes from tokens.css. */
+.tree-view { display: flex; flex-direction: column; gap: var(--space-2); }
+
+.tree-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.tree-scroll svg { display: block; }
+
+.tree-edge { stroke: var(--border-control); stroke-width: 2; fill: none; }
+
+[data-role] { --role-color: var(--tree-neutral); }
+[data-role='new'] { --role-color: var(--tree-new); }
+[data-role='z'] { --role-color: var(--tree-z); }
+[data-role='y'] { --role-color: var(--tree-y); }
+[data-role='balanced'] { --role-color: var(--tree-balanced); }
+
+.tree-hit { fill: transparent; }
+.tree-node-fill { fill: var(--bg-surface); }
+.tree-ring { fill: none; stroke: var(--role-color); stroke-width: 2; }
+[data-ring='dashed'] .tree-ring { stroke-dasharray: 5 4; }
+[data-ring='dotted'] .tree-ring { stroke-dasharray: 1 5; stroke-linecap: round; stroke-width: 3; }
+[data-ring='thick'] .tree-ring { stroke-width: 4; }
+.tree-ring-inner { fill: none; stroke: var(--role-color); stroke-width: 2; }
+
+.tree-key { font: var(--type-body); font-weight: 700; fill: var(--text-primary); text-anchor: middle; dominant-baseline: central; }
+.tree-metrics,
+.tree-flag,
+.tree-tag { font: var(--type-label); text-anchor: middle; }
+.tree-metrics { font-family: var(--font-mono); fill: var(--text-primary); }
+.tree-flag { fill: var(--tree-z); }
+.tree-tag { fill: var(--role-color); }
+
+.tree-badge-ring { fill: var(--bg-surface); stroke: var(--tree-balanced); stroke-width: 2; }
+.tree-badge-check { fill: none; stroke: var(--tree-balanced); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.tree-selected-frame {
+  fill: none;
+  stroke: var(--action-primary);
+  stroke-width: 3;
+  rx: var(--radius-md);
+  ry: var(--radius-md);
+}
+
+.tree-describe-button {
+  align-self: flex-start;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding-inline: var(--space-3);
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+.tree-describe-button:hover { text-decoration: underline; background: var(--action-primary-tint); }
+.tree-description { margin: 0; color: var(--text-primary); }
+
+.tree-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
