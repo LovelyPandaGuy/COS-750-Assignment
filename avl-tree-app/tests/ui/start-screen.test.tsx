@@ -170,7 +170,7 @@ describe('NFR-06 message when progress is not saved', () => {
 describe('CLAUDE.md copy comes from content', () => {
   const sources = [
     'src/pages/Start.tsx',
-    'src/pages/ModulePlaceholder.tsx',
+    'src/pages/Module.tsx',
     'src/components/ResumeCard.tsx',
     'src/components/ConfirmDialog.tsx',
     'src/components/StorageNotice.tsx',

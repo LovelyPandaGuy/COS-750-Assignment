@@ -115,3 +115,17 @@ describe('NFR-04 / FR-VIS-10 stylesheet wiring', () => {
     expect(readFileSync('src/ui/AppShell.tsx', 'utf8')).toMatch(/import\s+['"]\.\/shell\.css['"]/);
   });
 });
+
+// Spec: add-routing-and-screen-skeleton / app-shell, "TopBar content comes from its props" (link action).
+describe('NFR-02 TopBar link action', () => {
+  it('renders an action with an href as a link and one without as a button', () => {
+    const calls: string[] = [];
+    render(<TopBar title="t" actions={[{ label: 'Sandbox', href: '#/sandbox' }, { label: 'Other', onClick: () => calls.push('x') }]} />);
+    const link = screen.getByRole('link', { name: 'Sandbox' });
+    expect(link.tagName).toBe('A');
+    expect(link).toHaveAttribute('href', '#/sandbox');
+    expect(screen.queryByRole('button', { name: 'Sandbox' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Other' }));
+    expect(calls).toEqual(['x']);
+  });
+});
