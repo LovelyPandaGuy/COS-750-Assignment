@@ -18,7 +18,12 @@ export function TopBar({ title, breadcrumb, status, actions }: TopBarProps) {
       <span className="topbar-title">{title}</span>
       {breadcrumb && <span className="topbar-breadcrumb">{breadcrumb}</span>}
       <span className="topbar-spacer" />
-      {status && <span className="topbar-status">{status}</span>}
+      {status && (
+        // Polite live region so a change, such as saving stopping mid-session, is announced (WCAG 4.1.3).
+        <span className="topbar-status" aria-live="polite" aria-atomic="true">
+          {status}
+        </span>
+      )}
       {actions && actions.length > 0 && (
         <div className="topbar-actions">
           {actions.map((a) => (

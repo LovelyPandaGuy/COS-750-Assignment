@@ -18,7 +18,7 @@ rules:
     - Mark anything that depends on an unresolved decision with [OPEN] and the question.
   tasks:
     - Keep a change to about ten tasks. If it needs more, propose a split.
-    - Write tests first: the first task group is the failing tests.
+    - "Write tests first: the first task group is the failing tests."
 
 operations:
   apply:
