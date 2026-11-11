@@ -1,0 +1,142 @@
+/* Start screen, ResumeCard, StorageNotice and ConfirmDialog. Tokens only. Focus ring comes from tokens.css. */
+
+/* Wireframe 1b is a full-width two-column screen, wider than the shell's reading column.
+   Side padding is about 5% of the width, as in the wireframe (70px at 1366px). */
+.app-main:has(> .start-page) {
+  max-width: none;
+  padding-inline: max(var(--space-4), 5vw);
+}
+
+/* StartPanel (flexible) beside a narrow column (440px in the wireframe). The two wrap into one
+   column when there is no room, so phones need no breakpoint (D3). */
+.start-page {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+.start-aside {
+  flex: 1 1 18rem;
+  max-width: 27.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.start-panel {
+  flex: 999 1 30rem;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  padding: var(--space-7) var(--space-6) var(--space-6);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.start-panel h1 { margin: 0; }
+.start-intro { margin: 0; max-width: var(--reading-column); font: var(--type-body-lg); }
+.start-bullets {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+  list-style-type: '\2014\00a0'; /* the wireframe's dash bullets */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* ResumeCard is a row inside the StartPanel: words on the left, Resume on the right. */
+.resume-card {
+  align-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+.resume-card-text { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 var(--space-2); }
+.resume-card h2 { margin: 0; font: var(--type-body); font-weight: 700; }
+.resume-card p { margin: 0; }
+
+.dialog {
+  padding: var(--space-5);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+
+.button-primary,
+.button-secondary {
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding-inline: var(--space-5);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+.button-primary {
+  background: var(--action-primary);
+  color: var(--bg-surface);
+  border: 1px solid var(--action-primary);
+}
+.button-primary:hover { background: var(--action-primary-hover); }
+/* The wireframe's Start button is larger than the others. */
+.button-large { font: var(--type-body-lg); font-weight: 700; padding-block: var(--space-2); }
+.button-primary:active { background: var(--action-primary-pressed); }
+.button-secondary {
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border: 1px solid var(--border-control);
+}
+.button-secondary:hover { background: var(--action-primary-tint); }
+
+/* Looks like a quiet link, behaves as a button (it opens a dialog, it does not navigate). */
+.link-button {
+  min-height: var(--target-min);
+  padding-inline: 0;
+  background: none;
+  border: 0;
+  color: var(--action-primary);
+  font: var(--type-body);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Calm status lines: surface and control border, never the not-yet colours. */
+.storage-notice { display: flex; flex-direction: column; gap: var(--space-2); align-self: stretch; }
+.storage-notice-line {
+  display: flex;
+  gap: var(--space-3);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+.storage-notice-icon { font-weight: 700; color: var(--action-primary); }
+
+/* No scrim token exists, so the backdrop covers the page with the page colour (no shadow, e2 is [OPEN] in tokens.css). */
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  overflow-y: auto; /* reflow: a tall dialog scrolls instead of being cut off (WCAG 1.4.10) */
+  padding: var(--space-4);
+  background: var(--bg-page);
+}
+/* margin: auto centres without clipping the top when the dialog is taller than the viewport. */
+.dialog { max-width: var(--reading-column); margin: auto; }
+.dialog h2 { margin-top: 0; }
+.dialog-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: flex-end; }
