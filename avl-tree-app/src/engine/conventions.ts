@@ -30,6 +30,11 @@ export function caseFor(zLeansLeft: boolean, yLeansLeft: boolean): RebalanceCase
   return yLeansLeft ? REBALANCE_CASES[3] : REBALANCE_CASES[1]
 }
 
+/** True when a balance factor breaks the AVL rule (below -1 or above +1). */
+export function isOutOfBalance(balance: number): boolean {
+  return balance < -1 || balance > 1
+}
+
 export type Lean = 'left-heavy' | 'right-heavy'
 
 /** Which way a node with an out-of-range balance factor is heavy. */
