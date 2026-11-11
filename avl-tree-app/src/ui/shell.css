@@ -60,6 +60,13 @@
   background: var(--action-primary-tint);
 }
 
+a.topbar-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
 .aa-menu { position: relative; }
 .aa-panel {
   position: absolute;

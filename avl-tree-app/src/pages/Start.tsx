@@ -7,6 +7,7 @@ import { ResumeCard } from '../components/ResumeCard'
 import { StorageNotice } from '../components/StorageNotice'
 import { useLearner } from '../state/LearnerContext'
 import { hasProgress } from '../state/learnerReducer'
+import { paths } from '../routes'
 
 /** Screen 1, Start (wireframe 1b): first visit, return visit and reset (FR-ONB-01, -03, -04). */
 export function Start() {
@@ -45,13 +46,13 @@ export function Start() {
           {progress ? (
             <ResumeCard
               module={learner.currentModule}
-              onResume={() => navigate(`/module/${learner.currentModule}`, { state: { focusHeading: true } })}
+              onResume={() => navigate(paths.module(learner.currentModule))}
             />
           ) : (
             <button
               type="button"
               className="button-primary button-large"
-              onClick={() => navigate('/module/C1', { state: { focusHeading: true } })}
+              onClick={() => navigate(paths.module('C1'))}
             >
               {startCopy.startButton}
             </button>
