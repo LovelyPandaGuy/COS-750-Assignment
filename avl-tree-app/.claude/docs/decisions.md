@@ -20,6 +20,7 @@ Status: **settled** = decided by the user; **default** = the recommended default
 | D14 | C9 mechanics | Missed outcomes return once. The student must write one question for the lecture. The summary can be printed, saved or copied. | default |
 | D15 | Checks per module | The ID lists checks only for C2, C3 and C6. Add short checks (2 or 3 items) to C4, C5 and C8 so scaffolding can help before C9. | default |
 | D16 | Storage | localStorage behind a StorageAdapter for progress and settings. SQLite (sqlite-wasm, in the browser, no server) for the event log only, exportable as a .sqlite file. JSON export is the fallback if the browser cannot run it. Spike S3 confirms browser support. | settled (9 Nov) |
+| D17 | Tree layout (spike S1 not run) | In-order layout: x by in-order position, y by depth. Nodes 44 units across (the 44 px target), slot spacing 56, level spacing 96 (room for the h, bf and Unbalanced lines under a node). Trees keep their natural size and scroll sideways in a focusable region; no shrinking, so text and targets stay readable at 360 px. Node keys use `--type-body` bold (16 px) until the design adds a 17 px token. Revisit if a compact layout is wanted. | default (10 Nov, add-tree-view) |
 
 ## Open questions for the lecturer
 

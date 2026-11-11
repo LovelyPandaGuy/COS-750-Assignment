@@ -1,0 +1,67 @@
+/* Predict first and Do it yourself. Tokens only. The focus ring comes from tokens.css. */
+.practice, .predict { display: flex; flex-direction: column; gap: var(--space-4); max-width: 100%; }
+.practice h3, .predict h3 { font: var(--type-h2); margin: 0; }
+.practice p, .predict p { margin: 0; font: var(--type-body); }
+
+.practice-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding-inline: var(--space-4);
+  background: var(--bg-surface);
+  color: var(--action-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  font-weight: 700;
+  cursor: pointer;
+}
+.practice-button:hover:not(:disabled) { background: var(--action-primary-tint); text-decoration: underline; }
+.practice-button[data-primary] { background: var(--action-primary); color: var(--bg-surface); border-color: var(--action-primary); }
+.practice-button[data-primary]:hover:not(:disabled) { background: var(--action-primary-hover); }
+.practice-button:disabled { background: var(--disabled-bg); color: var(--disabled-text); border-color: var(--border-subtle); cursor: not-allowed; }
+
+.practice-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.practice-group { border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.practice-group legend { font: var(--type-body); font-weight: 700; padding: 0; margin-bottom: var(--space-2); }
+
+.practice-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  font: var(--type-body);
+  cursor: pointer;
+}
+.practice-option:has(input:checked) { background: var(--action-primary-tint); border-color: var(--action-primary); font-weight: 700; }
+.practice-option input { width: var(--space-5); height: var(--space-5); margin: 0; }
+
+.practice-strip { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); }
+.practice-strip ol { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; padding: 0; list-style: none; font: var(--type-mono); }
+.practice-strip li + li::before { content: '·'; margin-inline-end: var(--space-2); color: var(--text-secondary); }
+.practice-strip-note { color: var(--text-secondary); }
+
+.practice-feedback,
+.practice-reveal {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--feedback-notyet-border);
+  border-radius: var(--radius-md);
+  background: var(--feedback-notyet-bg);
+}
+.practice-feedback:empty { display: none; }
+.practice-feedback[data-kind='balanced'],
+.practice-reveal[data-kind='match'] { background: var(--feedback-correct-bg); border-color: var(--feedback-correct-border); }
+.practice-icon { font-weight: 700; margin-inline-end: var(--space-2); color: var(--feedback-notyet-icon); }
+[data-kind='balanced'] .practice-icon,
+[data-kind='match'] .practice-icon { color: var(--feedback-correct-icon); }
+
+.practice-updates, .practice-help, .predict-note { color: var(--text-secondary); font: var(--type-body); }
+.practice-menu { display: flex; flex-wrap: wrap; gap: var(--space-2); }
