@@ -73,3 +73,43 @@
 .practice-panel-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .practice-hints { margin: 0; padding-left: var(--space-5); font: var(--type-body); }
 .practice-complete { font-weight: 700; }
+
+/* C8 drawings (add-module-c8-choosing): sorted array and comparison table. Both scroll sideways at
+   narrow widths instead of shrinking (D17). Probes are marked by a dashed outline and text. */
+.array-scroll,
+.compare-scroll {
+  overflow-x: auto;
+  max-width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.array-cells { display: flex; gap: var(--space-1); margin: 0; padding: var(--space-3); list-style: none; }
+.array-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--target-min);
+  min-height: var(--target-min);
+  padding: var(--space-1);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-sm);
+}
+.array-cell[data-probe] { border-style: dashed; border-color: var(--tree-z); border-width: 3px; }
+.array-key { font: var(--type-body); font-weight: 700; color: var(--text-primary); }
+.array-probe { font: var(--type-label); color: var(--text-secondary); white-space: nowrap; }
+.compare-table { border-collapse: collapse; font: var(--type-body); color: var(--text-primary); }
+.compare-table caption { font: var(--type-label); color: var(--text-secondary); text-align: left; padding: var(--space-2) var(--space-3); }
+.compare-table th,
+.compare-table td { padding: var(--space-2) var(--space-3); border-top: 1px solid var(--border-subtle); text-align: left; white-space: nowrap; }
+.compare-table thead th { font: var(--type-label); font-weight: 700; }
+.compare-table tbody th { font-weight: 700; }
+
+/* C8 scenario practice: native radios in a fieldset, each row at least the 44 px target. */
+.scenario-text { font: var(--type-body); margin: 0; }
+.scenario-options { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.scenario-options legend { font: var(--type-body); font-weight: 700; padding: 0 var(--space-1); }
+.scenario-option { display: flex; align-items: center; gap: var(--space-3); min-height: var(--target-min); font: var(--type-body); cursor: pointer; }
+.scenario-option input { width: var(--space-5); height: var(--space-5); margin: 0; }
+.scenario-feedback { align-self: stretch; }

@@ -4,7 +4,12 @@
 // Sign and side wording comes from the conventions wording (D19).
 import type { Key } from '../../engine/tree'
 import type { BalanceFactorResult, RotationHintFacts, SpotResult } from '../../modules/practice'
+import { answersOf, reasonOf, STRUCTURE_IDS, type Scenario, type StructureId } from '../../modules/compare'
 import type { ConventionsWording } from './conventionsWording'
+import { NEEDS, STRUCTURES } from './structures'
+
+/** The needs of a scenario, as one phrase. */
+const needList = (sc: Scenario) => sc.needs.map((n) => NEEDS[n].label).join('; ')
 
 /** A height as displayed: 0, 1, −1. */
 const h = (n: number) => (n < 0 ? `−${-n}` : String(n))
@@ -77,6 +82,32 @@ export const practiceModuleCopy = {
         `Node ${f.z} is out of balance and its taller child is node ${f.y}. This is the ${w.caseName(f.case)} case: ${f.rotations
           .map((r, i) => `${i === 0 ? 'rotate' : 'then'} ${w.sideWord(r.dir)} at ${r.at}`)
           .join(', ')}.`,
+    ],
+  },
+
+  // C8 scenario practice (add-module-c8-choosing). [beyond ID] all wording. The answer and each
+  // reason are computed from the structure record; nothing here names an answer.
+  scenario: {
+    legend: 'Which structure fits best?',
+    feedbackLabel: 'Feedback',
+    choose: 'Choose a structure first, then press Check.',
+    newScenario: 'New scenario',
+    done: 'Press Next when you are ready.',
+    why: {
+      right: (answer: StructureId, sc: Scenario): string =>
+        `The ${STRUCTURES[answer].name} meets every need here: ${needList(sc)}.`,
+      notYet: (choice: StructureId, sc: Scenario): string => {
+        const need = reasonOf(sc, choice)
+        return need === null ? '' : `${NEEDS[need].unmet(STRUCTURES[choice].name)} This situation needs ${NEEDS[need].label}.`
+      },
+    },
+    hints: [
+      (sc: Scenario): string => `List what the situation needs: ${needList(sc)}. Then check each structure against that list.`,
+      (sc: Scenario): string => {
+        const answer = answersOf(sc)[0]
+        const out = STRUCTURE_IDS.filter((s) => s !== answer).map((s) => `the ${STRUCTURES[s].name} misses ${NEEDS[reasonOf(sc, s)!].label}`)
+        return `Rule them out one by one: ${out.join('; ')}.`
+      },
     ],
   },
 } as const

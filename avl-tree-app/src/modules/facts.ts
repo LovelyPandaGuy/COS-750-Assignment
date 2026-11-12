@@ -8,7 +8,9 @@ import { searchTrace } from '../engine/search'
 import { balanceFactorOf, height, type Key, type Tree } from '../engine/tree'
 import { rotateAt } from '../practice/rotate'
 import { generateFillInTree, generateRootLooksFine, generateRotationProblem, rotationsFor } from './generators'
-import type { RotationSpec, Step, TreeSource } from './schema'
+import { SCENARIOS } from '../content/modules/structures'
+import { answersOf, binarySearchProbes, reasonOf, STRUCTURE_IDS, type NeedId, type StructureId } from './compare'
+import type { ArraySpec, RotationSpec, Step, TreeSource } from './schema'
 
 export interface NodeFacts {
   height: number
@@ -60,9 +62,31 @@ export interface BoundFacts {
   worst: number
 }
 
+export interface ArrayFacts {
+  id: string
+  /** The keys in increasing order, as the array holds them. */
+  sorted: Key[]
+  searchKey: Key
+  /** The key at each binary search probe, in order. */
+  probes: Key[]
+  probeCount: number
+  found: boolean
+}
+
+export interface ScenarioFacts {
+  id: string
+  needs: NeedId[]
+  /** The one structure that meets every need; null only for an invalid scenario (the validator reports it). */
+  answer: StructureId | null
+  /** Every other structure, with the first need it does not meet. */
+  ruledOut: { structure: StructureId; need: NeedId }[]
+}
+
 export interface StepFacts {
   figures: Record<string, FigureFacts>
   bounds: BoundFacts[]
+  arrays: Record<string, ArrayFacts>
+  scenarios: Record<string, ScenarioFacts>
 }
 
 export interface BuiltTree {
@@ -186,7 +210,34 @@ export function computeFacts(step: Step, seed = 0): StepFacts {
     const { keys, tree, problems } = buildTree(f.source, seed)
     figures[f.id] = figureFacts(f.id, tree, keys, f.searchKey, problems)
   }
-  return { figures, bounds: (step.bounds ?? []).map(searchBounds) }
+  const arrays: Record<string, ArrayFacts> = {}
+  for (const a of step.arrays ?? []) arrays[a.id] = arrayFacts(a)
+  const scenarios: Record<string, ScenarioFacts> = {}
+  for (const id of step.scenario === undefined ? [] : [step.scenario]) {
+    const f = scenarioFacts(id)
+    if (f !== null) scenarios[id] = f
+  }
+  return { figures, bounds: (step.bounds ?? []).map(searchBounds), arrays, scenarios }
+}
+
+export function arrayFacts(spec: ArraySpec): ArrayFacts {
+  // Duplicate keys are dropped: an array of keys holds each key once.
+  const sorted = [...new Set(spec.keys)].sort((a, b) => a - b)
+  const { probes, found } = binarySearchProbes(sorted, spec.searchKey)
+  return { id: spec.id, sorted, searchKey: spec.searchKey, probes, probeCount: probes.length, found }
+}
+
+/** Answer and reasons for a scenario in the record, or null when the id is unknown. */
+export function scenarioFacts(id: string): ScenarioFacts | null {
+  const sc = SCENARIOS[id]
+  if (sc === undefined) return null
+  const answers = answersOf(sc)
+  const answer = answers.length === 1 ? answers[0] : null
+  const ruledOut = STRUCTURE_IDS.filter((s) => s !== answer).flatMap((structure) => {
+    const need = reasonOf(sc, structure)
+    return need === null ? [] : [{ structure, need }]
+  })
+  return { id, needs: [...sc.needs], answer, ruledOut }
 }
 
 /** True when the root's balance factor is allowed. */
