@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useCallback, useState, type ReactNode } from 'react'
 import { HashRouter, Navigate, Route, Routes, useHref, useNavigate, useParams } from 'react-router-dom'
 import { AppShell } from './ui/AppShell'
 import type { TopBarAction } from './ui/TopBar'
@@ -8,6 +8,9 @@ import { activityLabel, breadcrumb, screenCopy } from './content/screens'
 import { startCopy } from './content/start'
 import { LearnerProvider, useLearner } from './state/LearnerContext'
 import { bootLearner, type Booted } from './state/boot'
+import { createSettingsStorage } from './state/storage'
+import { ThemeProvider, useTheme } from './ui/ThemeContext'
+import { DEFAULT_THEME } from './ui/theme'
 import { ACTIVITIES_BY_MODULE, parseActivity, parseModuleId, paths, patterns } from './routes'
 import { useScreen } from './useScreen'
 import { Activity } from './pages/Activity'
@@ -99,14 +102,28 @@ export function AppRoutes() {
 /** Loaded once per page when App is rendered without an injected start (tests of the shell). */
 let fallbackBoot: Booted | null = null
 
-export function App({ storage, initial }: Partial<Booted>) {
+export function App({ storage, initial, settings, initialTheme }: Partial<Booted>) {
   const booted = storage && initial ? { storage, initial } : (fallbackBoot ??= bootLearner())
+  // Settings come with the boot; a test that injects only learner storage gets session-only settings.
+  const [themeSettings] = useState(() => settings ?? (storage && initial ? createSettingsStorage(null) : fallbackBoot!.settings))
+  const [startTheme] = useState(() => initialTheme ?? themeSettings.load().theme)
   return (
     <HashRouter>
-      <LearnerProvider storage={booted.storage} initial={booted.initial}>
-        <AppRoutes />
-      </LearnerProvider>
+      <ThemeProvider settings={themeSettings} initial={startTheme}>
+        <ThemedLearner storage={booted.storage} initial={booted.initial} />
+      </ThemeProvider>
     </HashRouter>
+  )
+}
+
+/** Reset clears the settings key with the rest, so the theme goes back to the default at once (decision 7). */
+function ThemedLearner({ storage, initial }: Pick<Booted, 'storage' | 'initial'>) {
+  const theme = useTheme()
+  const onReset = useCallback(() => theme?.setTheme(DEFAULT_THEME, { save: false }), [theme])
+  return (
+    <LearnerProvider storage={storage} initial={initial} onReset={onReset}>
+      <AppRoutes />
+    </LearnerProvider>
   )
 }
 

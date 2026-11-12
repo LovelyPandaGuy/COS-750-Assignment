@@ -6,6 +6,7 @@ import { App } from '../../src/App';
 import { AaMenu } from '../../src/ui/AaMenu';
 
 // Spec: add-design-tokens-and-shell / app-shell, "Aa menu stub". Requirement IDs: NFR-02, NFR-05, FR-VIS-10.
+// The panel's Dark theme switch (add-dark-mode-toggle) is tested in theme-switch.test.tsx.
 const btn = () => screen.getByRole('button', { name: 'Display and read-aloud settings' });
 
 afterEach(() => vi.restoreAllMocks());

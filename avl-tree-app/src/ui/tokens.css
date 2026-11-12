@@ -81,7 +81,9 @@
 
 /* Dark theme: same roles. Defined in the design system, detailed screens to follow. */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) { /* mirrored by [data-theme='dark'] below; keep the two blocks identical */
+  /* Unused while the app always sets data-theme on <html> (add-dark-mode-toggle: no "match my device").
+     Kept identical to [data-theme='dark'] below so a design import stays a straight copy. */
+  :root:not([data-theme='light']) {
     --bg-page: #12151C;
     --bg-surface: #1B1F2A;
     --text-primary: #E8EAF0;
@@ -133,6 +135,20 @@
   --tree-z: #F0884B;
   --tree-y: #DDB04F;
   --tree-balanced: #3FC79A;
+}
+
+:root[data-theme='dark'] { /* ASSUMED dark values (add-dark-mode-toggle, D18): the design system states none.
+     Each reuses a stated dark value, copying the relationship the light theme already has
+     (design.md decision 2). Replace this block on /design-import. */
+  --feedback-correct-bg: #16312F;      /* = mastery-secure-tint (light correct-bg equals it too) */
+  --feedback-correct-border: #4FC3B5;  /* = mastery-secure */
+  --feedback-correct-icon: #4FC3B5;    /* = mastery-secure (light correct-icon equals it too) */
+  --feedback-notyet-border: #7F879A;   /* = border-control */
+  --feedback-notyet-icon: #A3AEC2;     /* = mastery-notyet */
+  --tree-neutral: #A9B0C0;             /* = text-secondary (light tree-neutral equals it too) */
+  --disabled-text: #A9B0C0;            /* = text-secondary */
+  --disabled-bg: #12151C;              /* = bg-page */
+  --action-primary-pressed: #B3BBFF;   /* = action-primary-hover */
 }
 
 /* One focus style everywhere: 2px ring with a 2px gap, survives every background. */

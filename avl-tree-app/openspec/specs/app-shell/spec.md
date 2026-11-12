@@ -20,17 +20,6 @@ The app SHALL load `src/ui/tokens.css` and every UI stylesheet and component SHA
 - **WHEN** `src/main.tsx` is read
 - **THEN** it imports `./ui/tokens.css` before any other stylesheet
 
-### Requirement: Light theme is pinned
-Until the dark-theme gaps in the design are settled, the app SHALL render in the light theme regardless of the operating-system setting. (Design INDEX "Design-system gaps"; SE section 9, dark theme is cut first)
-
-#### Scenario: Theme attribute
-- **WHEN** `index.html` is read
-- **THEN** the `<html>` element has `data-theme="light"`
-
-#### Scenario: Contrast still holds
-- **WHEN** the existing contrast tests run against `tokens.css`
-- **THEN** every light pair still meets its ratio (NFR-02)
-
 ### Requirement: One focus style
 Every focusable element SHALL show the same focus indicator: a 2 px ring in `--focus-ring-color` with a 2 px gap. No component stylesheet SHALL remove or replace it. (Design system; NFR-02 keyboard operation and non-text contrast)
 
@@ -104,7 +93,7 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** it is an `<a>` with that `href` and the action's label, not a button, and an action without an `href` is still a button that calls its handler on click
 
 ### Requirement: Aa menu stub
-The TopBar SHALL contain an Aa button that opens and closes a small panel of display settings. In this change the panel holds one line of placeholder copy and no working controls. The button SHALL have a 44 px target, an accessible name that is more than "Aa", and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10)
+The TopBar SHALL contain an Aa button that opens and closes a small panel of display settings. The panel SHALL hold the "Dark theme" switch (capability `display-theme`) and one line of placeholder copy for the settings still to come. The button SHALL have a 44 px target, an accessible name that is more than "Aa", and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10, D26)
 
 #### Scenario: Button name and state
 - **WHEN** `App` renders
@@ -112,7 +101,7 @@ The TopBar SHALL contain an Aa button that opens and closes a small panel of dis
 
 #### Scenario: Open by pointer or keyboard
 - **WHEN** the button is activated by click, then separately by Enter and by Space
-- **THEN** `aria-expanded` becomes `true` and the panel is visible with its copy
+- **THEN** `aria-expanded` becomes `true` and the panel is visible with the "Dark theme" switch and the placeholder copy
 
 #### Scenario: Close with Escape
 - **GIVEN** the panel is open and focus is inside it or on the button
@@ -125,12 +114,12 @@ The TopBar SHALL contain an Aa button that opens and closes a small panel of dis
 - **THEN** the panel closes
 
 #### Scenario: Nothing is stored or fetched
-- **WHEN** the menu is opened and closed
+- **WHEN** the menu is opened and closed without using the switch
 - **THEN** `localStorage` is unchanged and no network request is made (NFR-05, CLAUDE.md guardrails)
 
 #### Scenario: Stub copy is content
 - **WHEN** the component source is read
-- **THEN** the button name and panel line come from `src/content/shell.ts`, not from the component
+- **THEN** the button name, the switch label and the panel line come from `src/content/shell.ts`, not from the component
 
 #### Scenario: Accessible when open
 - **WHEN** the panel is open

@@ -72,3 +72,45 @@ describe('design token contrast (NFR-02, WCAG 2.2 AA)', () => {
     expect(ratio(dark[fg], dark[bg])).toBeGreaterThanOrEqual(need);
   });
 });
+
+// ---- add-dark-mode-toggle / display-theme: "Dark tokens are complete", "Both themes meet contrast" ----
+// The nine dark values the design system does not state live in one block that opens with an
+// ASSUMED comment (design decision 2). Parity and contrast read the dark rules without the light fallback.
+const ASSUMED_START = /^:root\[data-theme='dark'\]\s*\{\s*\/\*\s*ASSUMED/m;
+const GAP_TOKENS = [
+  'disabled-text', 'disabled-bg',
+  'feedback-correct-bg', 'feedback-correct-border', 'feedback-correct-icon',
+  'feedback-notyet-border', 'feedback-notyet-icon',
+  'tree-neutral', 'action-primary-pressed',
+];
+const assumedBlock = () => vars(block(ASSUMED_START));
+const darkOwn = () => ({ ...vars(block(/^:root\[data-theme='dark'\]\s*\{\s*--/m)), ...assumedBlock() });
+
+const newDarkPairs: Pair[] = [
+  ['text-primary', 'feedback-correct-bg', 4.5], ['feedback-correct-icon', 'feedback-correct-bg', 3], ['feedback-correct-border', 'bg-surface', 3],
+  ['feedback-notyet-icon', 'feedback-notyet-bg', 3], ['feedback-notyet-border', 'bg-surface', 3],
+  ['disabled-text', 'disabled-bg', 4.5],
+  ['bg-surface', 'action-primary-pressed', 4.5],
+  ['tree-neutral', 'bg-surface', 3],
+];
+
+describe('NFR-02 D18 dark tokens are complete', () => {
+  it('every light colour token has a dark value', () => {
+    const own = darkOwn();
+    for (const name of Object.keys(light)) expect(own[name], name).toBeDefined();
+  });
+
+  it('the assumed block sets exactly the nine gap tokens, each reusing an existing dark value', () => {
+    const assumed = assumedBlock();
+    expect(Object.keys(assumed).sort()).toEqual([...GAP_TOKENS].sort());
+    const stated = new Set(Object.values(vars(block(/^:root\[data-theme='dark'\]\s*\{\s*--/m))));
+    for (const [name, value] of Object.entries(assumed)) expect(stated.has(value), `${name} ${value}`).toBe(true);
+  });
+
+  it.each(newDarkPairs)('dark: %s on %s needs %d:1', (fg, bg, need) => {
+    const own = darkOwn();
+    expect(own[fg], fg).toBeDefined();
+    expect(own[bg], bg).toBeDefined();
+    expect(ratio(own[fg], own[bg])).toBeGreaterThanOrEqual(need);
+  });
+});
