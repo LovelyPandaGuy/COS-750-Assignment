@@ -30,23 +30,23 @@
 
 ## 2. Model
 
-- [ ] 2.1 Add `src/assessment/types.ts`, `instantiate.ts` and `mark.ts` (design decisions 2 to 4), plus `RETRY_CAP` in `src/modules/config.ts` and `attempt.ts` (decision 7). Verify the determinism, variant, option, number, tree and attempt tests pass, using the test fixtures.
-- [ ] 2.2 Export `statesConvention` and `numbersIn` from `src/modules/validate.ts` without changing its behaviour. Add `src/assessment/validate.ts` (decision 8). Verify the validator scenarios pass and every existing module validator test still passes.
+- [x] 2.1 Add `src/assessment/types.ts`, `instantiate.ts` and `mark.ts` (design decisions 2 to 4), plus `RETRY_CAP` in `src/modules/config.ts` and `attempt.ts` (decision 7). Verify the determinism, variant, option, number, tree and attempt tests pass, using the test fixtures.
+- [x] 2.2 Export `statesConvention` and `numbersIn` from `src/modules/validate.ts` without changing its behaviour. Add `src/assessment/validate.ts` (decision 8). Verify the validator scenarios pass and every existing module validator test still passes.
 
 ## 3. Kinds (implementer)
 
-- [ ] 3.1 Kinds for C2 to C4: `bst-height`, `sorted-search`, `node-height`, `balance-factor`, `is-avl`, `search-visits`. Verify each answer matches a direct engine call over seeds 0 to 99.
-- [ ] 3.2 Kinds for C5 and C6: `rotation-result`, `rotations-needed`, `lowest-unbalanced`, `rebalance-case`, `insert-final-tree`, with the known wrong trees for marking. Verify that no case name appears outside `conventions.ts` and that the tree-marking tests pass on real instances.
-- [ ] 3.3 Kinds for C7 and C8: `delete-rebalances` and `delete-root`, each with a bounded search and a pinned fallback, and `scenario-choice` over `answersOf` and `reasonOf`. Verify the fallback tests pass.
+- [x] 3.1 Kinds for C2 to C4: `bst-height`, `sorted-search`, `node-height`, `balance-factor`, `is-avl`, `search-visits`. Verify each answer matches a direct engine call over seeds 0 to 99.
+- [x] 3.2 Kinds for C5 and C6: `rotation-result`, `rotations-needed`, `lowest-unbalanced`, `rebalance-case`, `insert-final-tree`, with the known wrong trees for marking. Verify that no case name appears outside `conventions.ts` and that the tree-marking tests pass on real instances.
+- [x] 3.3 Kinds for C7 and C8: `delete-rebalances` and `delete-root`, each with a bounded search and a pinned fallback, and `scenario-choice` over `answersOf` and `reasonOf`. Verify the fallback tests pass.
 
 ## 4. Content (content-author)
 
-- [ ] 4.1 Add `src/content/questions/outcomes.ts` (levels from the ID, marked `ID`), `subSkills.ts` (14 entries) and `misconceptions.ts` (18 entries marked `beyond ID`, plus the 7 need tags from `NEEDS`). Verify the record tests pass.
-- [ ] 4.2 Add `src/content/questions/checks.ts` with the 16 items from design decision 5. Each item has a stem, option labels where needed, `why.correct`, `why.other` for number items, and a `why` for every misconception its kind can produce. All convention wording goes through `ConventionsWording`. Mark each new sentence `[beyond ID]`. Verify `question-bank.test.ts` and `validateBank` pass.
+- [x] 4.1 Add `src/content/questions/outcomes.ts` (levels from the ID, marked `ID`), `subSkills.ts` (14 entries) and `misconceptions.ts` (18 entries marked `beyond ID`, plus the 7 need tags from `NEEDS`). Verify the record tests pass.
+- [x] 4.2 Add `src/content/questions/checks.ts` with the 16 items from design decision 5. Each item has a stem, option labels where needed, `why.correct`, `why.other` for number items, and a `why` for every misconception its kind can produce. All convention wording goes through `ConventionsWording`. Mark each new sentence `[beyond ID]`. Verify `question-bank.test.ts` and `validateBank` pass.
 
 ## 5. Review
 
-- [ ] 5.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`, and verify they pass. Also check that:
+- [x] 5.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`, and verify they pass. Also check that:
   - there are no new `[OPEN]` markers
   - no file under `src/content/questions/` imports an engine function, only types
   - `src/assessment/` has no React import
