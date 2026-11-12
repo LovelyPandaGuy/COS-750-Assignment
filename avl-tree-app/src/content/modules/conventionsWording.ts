@@ -9,6 +9,7 @@ import {
   EMPTY_HEIGHT,
   LEAF_HEIGHT,
   leanOf,
+  type RebalanceCase,
   type Side,
 } from '../../engine/conventions'
 
@@ -24,6 +25,8 @@ export interface ConventionsWording {
   sideWord: (side: Side) => string
   /** A number as the app displays it: +2, 0, −1. */
   num: (n: number) => string
+  /** The course's name for a rebalancing case (D19, lecturer question 2). */
+  caseName: (c: RebalanceCase) => string
 }
 
 const SIDE_WORD: Record<Side, string> = { left: 'left', right: 'right' }
@@ -50,5 +53,7 @@ export function conventionsWording(order: readonly [Side, Side] = BALANCE_FACTOR
     heightRule: `A leaf has height ${count(LEAF_HEIGHT)} and an empty tree has height ${count(EMPTY_HEIGHT)}.`,
     sideWord: (side) => SIDE_WORD[side],
     num,
+    // Identity over REBALANCE_CASES today; a different naming from the lecturer changes only this line.
+    caseName: (c) => c,
   }
 }

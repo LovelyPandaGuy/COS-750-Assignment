@@ -1,6 +1,8 @@
 // Marking for the C3 practice activities (design decision 8). Pure; every value comes from the
 // engine. Nothing here is stored: practice never counts toward readiness (wireframe 1p).
 import { analyseTree } from '../engine/analyse'
+import { avlInsertTrace } from '../engine/avl'
+import type { RebalanceCase } from '../engine/conventions'
 import { balanceFactorOf, height, subtreeAt, type Key, type Tree } from '../engine/tree'
 
 export type BalanceFactorResult = {
@@ -57,4 +59,32 @@ export function parseWhole(text: string): number | null {
 /** Every key in the tree, in order. */
 export function treeKeys(tree: Tree): Key[] {
   return tree === null ? [] : [...treeKeys(tree.left), tree.key, ...treeKeys(tree.right)]
+}
+
+// ---- Rotation practice hints (add-modules-c5-c6, design decision 6) ----
+
+export interface RotationHintFacts {
+  /** The lowest unbalanced node after the plain BST insert. */
+  z: Key
+  /** Its taller child. */
+  y: Key
+  case: RebalanceCase
+  /** Each single rotation the engine uses, in order. */
+  rotations: { dir: 'left' | 'right'; at: Key }[]
+}
+
+/** Read z, y, the case and each rotation from the engine's insert trace. Practice problems always need one. */
+export function rotationHintFacts(base: Tree, key: Key): RotationHintFacts {
+  const { trace } = avlInsertTrace(base, key)
+  const imbalance = trace.find((s) => s.kind === 'imbalance')
+  if (imbalance === undefined || imbalance.rebalanceCase === undefined) throw new RangeError(`inserting ${key} needs no rotation`)
+  const [z, y] = imbalance.nodes
+  const rotations = trace
+    .filter((s) => s.kind === 'rotation')
+    .map((s) => {
+      const [at, pivot] = s.nodes
+      // A rotation [at, pivot] is a right rotation when the pivot is smaller (trace.ts, replay).
+      return { dir: pivot < at ? ('right' as const) : ('left' as const), at }
+    })
+  return { z, y, case: imbalance.rebalanceCase, rotations }
 }

@@ -3,7 +3,7 @@
 // Low-anxiety rules: verdicts are "That's right" or "Not quite yet"; no red, no cross, no judging words.
 // Sign and side wording comes from the conventions wording (D19).
 import type { Key } from '../../engine/tree'
-import type { BalanceFactorResult, SpotResult } from '../../modules/practice'
+import type { BalanceFactorResult, RotationHintFacts, SpotResult } from '../../modules/practice'
 import type { ConventionsWording } from './conventionsWording'
 
 /** A height as displayed: 0, 1, −1. */
@@ -65,6 +65,18 @@ export const practiceModuleCopy = {
     hints: [
       (_f: SpotHintFacts, w: ConventionsWording) => `Work up from the leaves. Every node's balance factor must be ${w.rangeText}.`,
       (f: SpotHintFacts, w: ConventionsWording) => `The node you are looking for is in the ${w.sideWord(f.side)} subtree of the root.`,
+    ],
+  },
+
+  // C5 rotation practice (add-modules-c5-c6). Node keys, directions and the case come from the engine.
+  rotate: {
+    hints: [
+      (_f: RotationHintFacts, w: ConventionsWording) =>
+        `Find the lowest node whose balance factor is not ${w.rangeText}. The fix starts at that node or at its taller child.`,
+      (f: RotationHintFacts, w: ConventionsWording) =>
+        `Node ${f.z} is out of balance and its taller child is node ${f.y}. This is the ${w.caseName(f.case)} case: ${f.rotations
+          .map((r, i) => `${i === 0 ? 'rotate' : 'then'} ${w.sideWord(r.dir)} at ${r.at}`)
+          .join(', ')}.`,
     ],
   },
 } as const

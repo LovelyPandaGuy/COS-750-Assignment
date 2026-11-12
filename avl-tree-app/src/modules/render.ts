@@ -1,5 +1,5 @@
 // A step rendered to text with its facts, for the player and the validator.
-import { conventionsWording } from '../content/modules/conventionsWording'
+import { conventionsWording, type ConventionsWording } from '../content/modules/conventionsWording'
 import { computeFacts, type StepFacts } from './facts'
 import type { Step } from './schema'
 
@@ -12,8 +12,12 @@ export interface RenderedStep {
   facts: StepFacts
 }
 
-export function renderStep(step: Step, seed = 0, facts: StepFacts = computeFacts(step, seed)): RenderedStep {
-  const w = conventionsWording()
+export function renderStep(
+  step: Step,
+  seed = 0,
+  facts: StepFacts = computeFacts(step, seed),
+  w: ConventionsWording = conventionsWording(),
+): RenderedStep {
   return {
     heading: step.heading,
     paragraphs: step.text(facts, w),

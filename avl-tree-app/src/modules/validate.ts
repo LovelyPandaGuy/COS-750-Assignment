@@ -1,11 +1,12 @@
 // The content validator (design decision 3). Pure: a test runs it over every registered module.
+import { analyseTree } from '../engine/analyse'
 import { BALANCE_RANGE, EMPTY_HEIGHT, LEAF_HEIGHT } from '../engine/conventions'
-import { conventionsWording } from '../content/modules/conventionsWording'
+import { conventionsWording, type ConventionsWording } from '../content/modules/conventionsWording'
 import { rootInRange, type FigureFacts, type StepFacts } from './facts'
 import { renderStep } from './render'
 import { STEP_ACTIVITIES, activityOf, type ClaimKind, type GagneEvent, type ModuleContent, type Step } from './schema'
 
-export type ProblemKind = 'order' | 'activity' | 'claim' | 'number' | 'wording'
+export type ProblemKind = 'order' | 'activity' | 'source' | 'claim' | 'number' | 'wording'
 
 export interface Problem {
   kind: ProblemKind
@@ -65,12 +66,29 @@ const CLAIM: Record<ClaimKind, (f: FigureFacts) => boolean> = {
   'not-perfect': (f) => !f.isPerfect,
   'root-in-range': rootInRange,
   'one-violation': (f) => f.violations.length === 1,
+  bst: (f) => analyseTree(f.tree).orderViolations.length === 0,
+}
+
+const sameOrder = (a: FigureFacts, b: FigureFacts) => a.inOrder.length === b.inOrder.length && a.inOrder.every((k, i) => k === b.inOrder[i])
+
+/** Rotations in a figure's source that the engine could not perform. */
+function sourceProblems(step: Step, facts: StepFacts): Problem[] {
+  return Object.values(facts.figures).flatMap((f) =>
+    f.sourceProblems.map((m): Problem => ({ kind: 'source', step: step.id, value: f.id, message: `figure ${f.id}: ${m}` })),
+  )
 }
 
 function claimProblems(step: Step, facts: StepFacts): Problem[] {
   return (step.claims ?? []).flatMap((c): Problem[] => {
     const f = facts.figures[c.figure]
     if (f === undefined) return [{ kind: 'claim', step: step.id, value: c.figure, message: `claim on unknown figure ${c.figure}` }]
+    if (c.is === 'same-order') {
+      const other = facts.figures[c.as]
+      if (other === undefined) return [{ kind: 'claim', step: step.id, value: c.as, message: `claim on unknown figure ${c.as}` }]
+      return sameOrder(f, other)
+        ? []
+        : [{ kind: 'claim', step: step.id, value: c.is, message: `figure ${c.figure} does not have the same in-order keys as figure ${c.as}` }]
+    }
     return CLAIM[c.is](f) ? [] : [{ kind: 'claim', step: step.id, value: c.is, message: `figure ${c.figure} is not ${c.is.toUpperCase()}` }]
   })
 }
@@ -79,7 +97,8 @@ function claimProblems(step: Step, facts: StepFacts): Problem[] {
 function factNumbers(facts: StepFacts, into: Set<number>): Set<number> {
   const add = (...ns: (number | null | undefined)[]) => ns.forEach((n) => typeof n === 'number' && into.add(n))
   for (const f of Object.values(facts.figures)) {
-    add(f.height, f.nodeCount, f.rootKey, f.rootBalance, f.searchKey, f.searchSteps, ...f.keys, ...f.violations)
+    add(f.height, f.nodeCount, f.rootKey, f.rootBalance, f.searchKey, f.searchSteps, f.avlRootKey, ...f.keys, ...f.violations)
+    for (const r of f.rebalances) add(r.key, r.node, r.rotations)
     for (const [key, n] of Object.entries(f.nodes)) add(Number(key), n.height, n.balanceFactor, n.leftHeight, n.rightHeight)
   }
   for (const b of facts.bounds) add(b.n, b.best, b.worst)
@@ -92,9 +111,16 @@ const NUMBER = /[−-]?\d[\d,]*(?:\.\d+)?/g
 /** The conventions wording may say what content may not; remove it before scanning. */
 function stripWording(text: string): string {
   const w = conventionsWording()
-  const known = [w.formula, w.rangeText, w.heightRule, ...[-3, -2, -1, 0, 1, 2, 3].map(w.leanPhrase)]
+  const known = [w.formula, w.rangeText, w.heightRule, ...[-3, -2, -1, 0, 1, 2, 3].map(w.leanPhrase), CASE_MARK]
   return known.reduce((t, s) => t.split(s).join(' '), text)
 }
+
+/**
+ * Case names reach text only through the wording (D19). The validator renders with a marker in
+ * place of each case name and strips it, so a name typed into content is still caught.
+ */
+const CASE_MARK = '\u27e8case\u27e9'
+const VALIDATION_WORDING: ConventionsWording = { ...conventionsWording(), caseName: () => CASE_MARK }
 
 export function numbersIn(text: string): number[] {
   const cleaned = stripWording(text).replace(IDS, ' ').replace(/log2/g, ' ')
@@ -140,9 +166,9 @@ function wordingProblems(step: Step, texts: string[]): Problem[] {
 export function validateModule(content: ModuleContent): Problem[] {
   const problems = [...orderProblems(content.steps), ...activityProblems(content.steps)]
   for (const step of content.steps) {
-    const r = renderStep(step)
+    const r = renderStep(step, 0, undefined, VALIDATION_WORDING)
     const texts = [r.heading, ...r.paragraphs, ...(r.rule === null ? [] : [r.rule]), ...r.labels]
-    problems.push(...claimProblems(step, r.facts), ...numberProblems(step, texts, r.facts), ...wordingProblems(step, texts))
+    problems.push(...sourceProblems(step, r.facts), ...claimProblems(step, r.facts), ...numberProblems(step, texts, r.facts), ...wordingProblems(step, texts))
   }
   return problems
 }
