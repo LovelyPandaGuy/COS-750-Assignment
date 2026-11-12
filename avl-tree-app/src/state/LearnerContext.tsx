@@ -21,10 +21,12 @@ const Ctx = createContext<LearnerSession | null>(null)
 export interface LearnerProviderProps {
   storage: StorageAdapter
   initial: LoadResult
+  /** Called after stored data is cleared, so other session state can return to its default. */
+  onReset?: () => void
   children?: ReactNode
 }
 
-export function LearnerProvider({ storage, initial, children }: LearnerProviderProps) {
+export function LearnerProvider({ storage, initial, onReset, children }: LearnerProviderProps) {
   const [state, dispatch] = useReducer(learnerReducer, undefined, () => ({
     learner: initial.state,
     loadStatus: initial.status,
@@ -47,7 +49,8 @@ export function LearnerProvider({ storage, initial, children }: LearnerProviderP
     saved.current = learner
     dispatch({ type: 'reset', learner })
     dispatch({ type: 'persistence', persistent: storage.isPersistent() })
-  }, [storage])
+    onReset?.()
+  }, [storage, onReset])
 
   const value = useMemo<LearnerSession>(
     () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset }),

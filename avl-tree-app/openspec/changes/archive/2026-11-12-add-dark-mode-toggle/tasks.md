@@ -31,21 +31,21 @@
 
 ## 2. Tokens and theme module
 
-- [ ] 2.1 Add the assumed dark block to `src/ui/tokens.css` (design decision 2) and update the `prefers-color-scheme` block's comment (decision 3). Add `src/ui/theme.ts` (`THEMES`, `DEFAULT_THEME`, `applyTheme`, `parseTheme`). Verify the parity, assumed-block and contrast tests pass in both themes.
+- [x] 2.1 Add the assumed dark block to `src/ui/tokens.css` (design decision 2) and update the `prefers-color-scheme` block's comment (decision 3). Add `src/ui/theme.ts` (`THEMES`, `DEFAULT_THEME`, `applyTheme`, `parseTheme`). Verify the parity, assumed-block and contrast tests pass in both themes.
 
 ## 3. Storage and boot
 
-- [ ] 3.1 Add `SETTINGS_KEY`, the inventory entry and `createSettingsStorage` to `src/state/storage.ts` (decision 4). Verify the settings storage, inventory and reset tests pass, and that every `learner-storage` test still passes.
-- [ ] 3.2 Return `settings` and `initialTheme` from `bootLearner()`, and call `applyTheme` in `src/main.tsx` before render (decision 5). Verify the boot test passes.
+- [x] 3.1 Add `SETTINGS_KEY`, the inventory entry and `createSettingsStorage` to `src/state/storage.ts` (decision 4). Verify the settings storage, inventory and reset tests pass, and that every `learner-storage` test still passes.
+- [x] 3.2 Return `settings` and `initialTheme` from `bootLearner()`, and call `applyTheme` in `src/main.tsx` before render (decision 5). Verify the boot test passes.
 
 ## 4. UI
 
-- [ ] 4.1 Add `ThemeProvider` and the optional `settings`/`initialTheme` props to `App`, and `onReset` to `LearnerProvider` (decisions 6 and 7). Verify the reset-to-light test and all existing learner-session and start-screen tests pass.
-- [ ] 4.2 Add `src/ui/ThemeSwitch.tsx` and render it in `AaMenu`. The switch label and the new placeholder line come from `src/content/shell.ts`. Style the switch from tokens in `src/ui/shell.css`. Verify the theme-switch and Aa menu tests pass.
+- [x] 4.1 Add `ThemeProvider` and the optional `settings`/`initialTheme` props to `App`, and `onReset` to `LearnerProvider` (decisions 6 and 7). Verify the reset-to-light test and all existing learner-session and start-screen tests pass.
+- [x] 4.2 Add `src/ui/ThemeSwitch.tsx` and render it in `AaMenu`. The switch label and the new placeholder line come from `src/content/shell.ts`. Style the switch from tokens in `src/ui/shell.css`. Verify the theme-switch and Aa menu tests pass.
 
 ## 5. Review
 
-- [ ] 5.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`. Verify:
+- [x] 5.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`. Verify:
   - all of them pass
   - there are no new `[OPEN]` markers
   - `localStorage` is still referenced only in `src/state/storage.ts`

@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { shellCopy } from '../content/shell'
+import { ThemeSwitch } from './ThemeSwitch'
 
-/** Stub: opens a panel with one line of copy. No working controls yet. */
+/** Opens a panel of display settings: the Dark theme switch (add-dark-mode-toggle) and a line for those still to come. */
 export function AaMenu() {
   const [open, setOpen] = useState(false)
   const panelId = useId()
@@ -42,6 +43,7 @@ export function AaMenu() {
       </button>
       {open && (
         <div id={panelId} className="aa-panel" role="region" aria-label={shellCopy.aaButtonName} tabIndex={-1}>
+          <ThemeSwitch />
           <p>{shellCopy.aaPanelLine}</p>
         </div>
       )}

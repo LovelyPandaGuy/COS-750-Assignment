@@ -3,6 +3,7 @@
  * storage (NFR-05). Load never throws; bad stored data gives a fresh state
  * (NFR-06); blocked or full storage falls back to memory for the session.
  */
+import { parseTheme, type Theme } from '../ui/theme'
 import { freshLearnerState, normaliseNickname, parseLearnerState, type LearnerState } from './learnerState'
 
 /** The subset of the Web Storage API the app needs. */
@@ -16,6 +17,8 @@ export interface KeyValueBackend {
 
 export const APP_PREFIX = 'avl-primer:'
 export const LEARNER_KEY = `${APP_PREFIX}learner`
+/** Display settings (add-dark-mode-toggle). Holds only the theme. */
+export const SETTINGS_KEY = `${APP_PREFIX}settings`
 
 export interface StoredKey {
   key: string
@@ -28,6 +31,10 @@ export const STORAGE_INVENTORY: readonly StoredKey[] = [
     key: LEARNER_KEY,
     description:
       'Your progress: a random profile ID, your optional nickname, the module you are on, the modules you have finished, your answers with confidence and hints used, and how secure each skill is. It stays in this browser and is never sent anywhere.',
+  },
+  {
+    key: SETTINGS_KEY,
+    description: 'Your display choice: the light or dark theme. It stays in this browser and is never sent anywhere.',
   },
 ]
 
@@ -202,6 +209,53 @@ export function createLearnerStorage(
 
     isPersistent() {
       return persistent
+    },
+  }
+}
+
+// ---- Display settings (add-dark-mode-toggle, design decision 4) ----
+
+export interface Settings {
+  theme: Theme
+}
+
+export interface SettingsStorage {
+  /** Never throws; a missing or damaged value gives the default theme. */
+  load(): Settings
+  /** Never throws; when storage fails the choice is kept in memory for the session. */
+  save(settings: Settings): void
+}
+
+/** Settings over a backend (null means none available). The learner reset removes this key too. */
+export function createSettingsStorage(backend: KeyValueBackend | null): SettingsStorage {
+  let memory: Settings | null = null
+  let persistent = backend !== null
+
+  return {
+    load() {
+      if (memory !== null) return { ...memory }
+      if (!persistent || backend === null) return { theme: parseTheme(undefined) }
+      try {
+        const raw = backend.getItem(SETTINGS_KEY)
+        const parsed: unknown = raw === null ? null : JSON.parse(raw)
+        const theme = parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as { theme?: unknown }).theme : undefined
+        return { theme: parseTheme(theme) }
+      } catch {
+        return { theme: parseTheme(undefined) }
+      }
+    },
+    save(settings) {
+      const value: Settings = { theme: parseTheme(settings.theme) }
+      if (persistent && backend !== null) {
+        try {
+          backend.setItem(SETTINGS_KEY, JSON.stringify(value))
+          memory = null
+          return
+        } catch {
+          persistent = false
+        }
+      }
+      memory = value
     },
   }
 }
