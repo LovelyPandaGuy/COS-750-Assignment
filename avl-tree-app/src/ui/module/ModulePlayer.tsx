@@ -7,14 +7,18 @@ import { variantSeed } from '../../engine/generate'
 import type { Key } from '../../engine/tree'
 import { PRACTICE_HINTS } from '../../modules/config'
 import { computeFacts } from '../../modules/facts'
-import { practiceProblem } from '../../modules/generators'
+import type { StructureId } from '../../modules/compare'
+import { pickScenario, practiceProblem } from '../../modules/generators'
 import { renderStep } from '../../modules/render'
 import { SKIPPABLE_EVENTS, stepsFor, type ModuleContent, type Step, type StepActivity } from '../../modules/schema'
 import { ACTIVITIES_BY_MODULE, paths } from '../../routes'
 import { TreeView } from '../tree/TreeView'
+import { ArrayView } from './ArrayView'
+import { ComparisonTable } from './ComparisonTable'
 import { ControlStrip } from './ControlStrip'
 import { BalanceFactorFill } from './practice/BalanceFactorFill'
 import { RotatePractice } from './practice/RotatePractice'
+import { ScenarioPractice } from './practice/ScenarioPractice'
 import { SpotTheProblem } from './practice/SpotTheProblem'
 
 interface PracticeState {
@@ -22,8 +26,13 @@ interface PracticeState {
   answered: Key[]
   solved: boolean
   hintsUsed: number
+  /** Scenario practice: the structure chosen, and the one checked (add-module-c8-choosing). */
+  choice?: StructureId
+  checked?: StructureId
+  /** The scenario showing before New scenario, so the next pick differs. */
+  avoid?: string
 }
-const FRESH: PracticeState = { regen: 0, answered: [], solved: false, hintsUsed: 0 }
+const FRESH: PracticeState = { regen: 0, answered: [], solved: false, hintsUsed: 0, choice: undefined, checked: undefined, avoid: undefined }
 
 export interface ModulePlayerProps {
   content: ModuleContent
@@ -100,6 +109,14 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
             ))}
           </div>
         )}
+        {(step.arrays?.length ?? 0) > 0 && (
+          <div className="module-figures">
+            {(step.arrays ?? []).map((a) => (
+              <ArrayView key={a.id} keys={facts.arrays[a.id].sorted} probes={facts.arrays[a.id].probes} label={a.label} />
+            ))}
+          </div>
+        )}
+        {step.table === 'structures' && <ComparisonTable />}
         {r.paragraphs.map((text, i) => (
           <p key={i}>{text}</p>
         ))}
@@ -123,6 +140,25 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
             onNewTree={() => update({ ...FRESH, regen: p.regen + 1 })}
           />
         )}
+        {step.practice === 'scenario' &&
+          (() => {
+            const pick = pickScenario(step, seed, p.avoid)
+            return (
+              <ScenarioPractice
+                key={seed}
+                scenario={pick.scenario}
+                order={pick.order}
+                choice={p.choice}
+                checked={p.checked}
+                onChoose={(choice) => update({ choice, checked: undefined })}
+                onCheck={(checked) => update({ checked })}
+                onTryAgain={() => update({ checked: undefined })}
+                onNew={() => update({ ...FRESH, regen: p.regen + 1, avoid: pick.scenario })}
+                onReview={review}
+                hintsUsed={p.hintsUsed}
+              />
+            )
+          })()}
         {step.practice === 'spot-the-problem' && (
           <SpotTheProblem
             key={seed}

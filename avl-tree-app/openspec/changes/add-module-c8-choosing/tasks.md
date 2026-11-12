@@ -31,23 +31,23 @@
 
 ## 2. Framework logic
 
-- [ ] 2.1 Add `src/modules/compare.ts`: the structure, cost, need and scenario types, `binarySearchProbes`, `answerOf`, `reasonOf` and `structureSummary` inputs. Extend `src/modules/schema.ts` with `arrays`, `table`, `scenario`, `scenarios` and the `scenario` practice kind. Extend `src/modules/facts.ts` with array and scenario facts. Verify the probe and answer tests pass on fixtures.
-- [ ] 2.2 Extend `src/modules/validate.ts`: `scenario` problems (no or several answers, unknown need, a named structure or Red-Black), array numbers in the fact numbers, and scenario text in the number and D19 scans. Verify the validator tests pass on their fixtures, and that the C2, C3 and C5 tests still pass.
-- [ ] 2.3 Add `pickScenario(step, seed)` to `src/modules/generators.ts` (seeded scenario and Fisher-Yates option order; New scenario always changes the scenario when there is more than one). Verify the seeded-choice tests pass.
+- [x] 2.1 Add `src/modules/compare.ts`: the structure, cost, need and scenario types, `binarySearchProbes`, `answerOf`, `reasonOf` and `structureSummary` inputs. Extend `src/modules/schema.ts` with `arrays`, `table`, `scenario`, `scenarios` and the `scenario` practice kind. Extend `src/modules/facts.ts` with array and scenario facts. Verify the probe and answer tests pass on fixtures.
+- [x] 2.2 Extend `src/modules/validate.ts`: `scenario` problems (no or several answers, unknown need, a named structure or Red-Black), array numbers in the fact numbers, and scenario text in the number and D19 scans. Verify the validator tests pass on their fixtures, and that the C2, C3 and C5 tests still pass.
+- [x] 2.3 Add `pickScenario(step, seed)` to `src/modules/generators.ts` (seeded scenario and Fisher-Yates option order; New scenario always changes the scenario when there is more than one). Verify the seeded-choice tests pass.
 
 ## 3. Content (content-author, flagged for G3)
 
-- [ ] 3.1 Write `src/content/modules/structures.ts`: the four entries, the need labels and unmet sentences, the record summary, and at least six scenarios whose answers cover all four structures. Mark every entry `[ID]` or `[beyond ID]`. Verify the record and scenario tests pass.
-- [ ] 3.2 Write `src/content/modules/c8.ts` (the ID's C8 bullets, `RACE_KEYS`, each string beyond the ID marked) and register C8 in `src/modules/registry.ts`. Add the scenario feedback, hints and New scenario label to `src/content/modules/practice.ts`. Verify the C8 tests, the validator test over all registered modules and the calm-wording scan pass.
+- [x] 3.1 Write `src/content/modules/structures.ts`: the four entries, the need labels and unmet sentences, the record summary, and at least six scenarios whose answers cover all four structures. Mark every entry `[ID]` or `[beyond ID]`. Verify the record and scenario tests pass.
+- [x] 3.2 Write `src/content/modules/c8.ts` (the ID's C8 bullets, `RACE_KEYS`, each string beyond the ID marked) and register C8 in `src/modules/registry.ts`. Add the scenario feedback, hints and New scenario label to `src/content/modules/practice.ts`. Verify the C8 tests, the validator test over all registered modules and the calm-wording scan pass.
 
 ## 4. UI
 
-- [ ] 4.1 Add `src/ui/module/ArrayView.tsx` and `src/ui/module/ComparisonTable.tsx` (tokens only, sideways scroll at 360 px, probe labels and yes or no in text). Render them from `ModulePlayer` for steps with `arrays` or `table`. Verify the array and table UI tests and axe pass.
-- [ ] 4.2 Add `src/ui/module/practice/ScenarioPractice.tsx` (a controlled fieldset of radios, Check, `PracticeFeedback`, New scenario). Add `choice` and `checked` to the player's `PracticeState`, and wire hints and Review through the existing control strip. Verify the C8 UI tests, the module-player tests and the C3 and C5 practice tests pass.
+- [x] 4.1 Add `src/ui/module/ArrayView.tsx` and `src/ui/module/ComparisonTable.tsx` (tokens only, sideways scroll at 360 px, probe labels and yes or no in text). Render them from `ModulePlayer` for steps with `arrays` or `table`. Verify the array and table UI tests and axe pass.
+- [x] 4.2 Add `src/ui/module/practice/ScenarioPractice.tsx` (a controlled fieldset of radios, Check, `PracticeFeedback`, New scenario). Add `choice` and `checked` to the player's `PracticeState`, and wire hints and Review through the existing control strip. Verify the C8 UI tests, the module-player tests and the C3 and C5 practice tests pass.
 
 ## 5. Review
 
-- [ ] 5.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`. Verify:
+- [x] 5.1 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`. Verify:
   - all of them pass
   - there are no new `[OPEN]` markers
   - there are no edits under `src/engine/`, `src/practice/` or `src/ui/practice/`

@@ -86,7 +86,7 @@ Two practice steps SHALL use the scenario practice step, each drawing from its o
 - **THEN** "I know this, skip" is not present
 
 ### Requirement: C8 closes with a summary
-The summary step SHALL restate the ID's C8 points: the four structures differ in what they make fast, an AVL tree pays an extra height in each node and rotation work for a guaranteed O(log2 n), and Red-Black trees exist. (ID C8, D10)
+The summary step SHALL restate the ID's C8 points: the four structures differ in what they make fast, and an AVL tree pays an extra height in each node and rotation work for a guaranteed O(log2 n). It SHALL say that other self-balancing trees exist without naming them, so Red-Black trees stay a single mention. (ID C8, D10)
 
 #### Scenario: Summary restates the trade-off
 - **WHEN** the C8 summary is rendered

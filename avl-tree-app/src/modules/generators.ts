@@ -7,7 +7,9 @@ import { caseFor, isOutOfBalance, REBALANCE_CASES, type RebalanceCase } from '..
 import { generateCaseSequence, generateInsertSequence, generateTree, variantSeed } from '../engine/generate'
 import { createRng } from '../engine/random'
 import { balanceFactorOf, type Key, type Tree } from '../engine/tree'
+import { STRUCTURE_IDS, type StructureId } from './compare'
 import { ROTATION_PRACTICE_KEYS } from './config'
+import type { Step } from './schema'
 
 const ATTEMPTS = 200
 /** Hand-checked: root 50 is in range, node 30 is the only node out of range. */
@@ -93,4 +95,30 @@ export function practiceProblem(source: { kind: string; generator?: string }, se
   if (source.generator === 'single-rotation') return generateRotationProblem(seed, 'single')
   if (source.generator === 'double-rotation') return generateRotationProblem(seed, 'double')
   return null
+}
+
+// ---- Scenario practice (add-module-c8-choosing, design decision 5) ----
+
+export interface ScenarioPick {
+  scenario: string
+  /** The four structures in the order the options are shown. */
+  order: StructureId[]
+}
+
+/**
+ * The scenario a practice step shows for this seed, and the option order (Fisher-Yates). When
+ * `avoid` is the scenario that was showing, the next one in the list is used instead, so New
+ * scenario always changes it when the step has more than one.
+ */
+export function pickScenario(step: Pick<Step, 'scenarios'>, seed: number, avoid?: string): ScenarioPick {
+  const list = step.scenarios ?? []
+  const rng = createRng(seed)
+  let i = list.length === 0 ? 0 : rng.int(0, list.length - 1)
+  if (list.length > 1 && list[i] === avoid) i = (i + 1) % list.length
+  const order: StructureId[] = [...STRUCTURE_IDS]
+  for (let j = order.length - 1; j > 0; j--) {
+    const k = rng.int(0, j)
+    ;[order[j], order[k]] = [order[k], order[j]]
+  }
+  return { scenario: list[i] ?? '', order }
 }

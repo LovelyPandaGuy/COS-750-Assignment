@@ -110,7 +110,9 @@ describe('LO9 comparison table', () => {
     const show = button(playerCopy.showRule)
     fireEvent.click(show)
     expect(show).toHaveAttribute('aria-expanded', 'true')
-    for (const id of STRUCTURE_IDS) expect(screen.getByText(new RegExp(STRUCTURES[id].name)).closest('.module-rule')).not.toBeNull()
+    const panel = document.getElementById(show.getAttribute('aria-controls')!)!
+    expect(panel).toBeVisible()
+    for (const id of STRUCTURE_IDS) expect(panel.textContent).toContain(STRUCTURES[id].name)
     expect(await axe(document.body)).toHaveNoViolations()
   })
 })
@@ -141,6 +143,25 @@ describe('LO9 scenario practice step', () => {
     expect(status().textContent).toMatch(/^(That's right|Not quite yet)/)
     expect(document.activeElement?.contains(status())).toBe(true)
     expect(chosen.checked).toBe(true)
+  })
+
+  it('focus stays on the option after Check twice with nothing chosen, then a choice', () => {
+    openPractice()
+    check()
+    check()
+    const r = radios()[2]
+    r.focus()
+    fireEvent.click(r)
+    expect(document.activeElement).toBe(r)
+  })
+
+  it('Try again returns focus to the chosen option', () => {
+    openPractice()
+    const sc = shownScenario()
+    choose(notAnswer(sc))
+    check()
+    fireEvent.click(within(status()).getByRole('button', { name: practiceModuleCopy.tryAgain }))
+    expect(document.activeElement).toBe(radioFor(notAnswer(sc)))
   })
 
   it('Not quite yet names a need the choice does not meet, and offers Try again and Review', () => {

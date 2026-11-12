@@ -68,7 +68,17 @@ export interface Allowance {
   reason: string
 }
 
-export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate'
+export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario'
+
+/** A sorted array drawn as a row of cells and searched with binary search (add-module-c8-choosing). */
+export interface ArraySpec {
+  id: string
+  /** Any order; the facts sort them. */
+  keys: readonly Key[]
+  searchKey: Key
+  /** Accessible name of the drawing. */
+  label: string
+}
 
 export interface Step {
   id: string
@@ -85,6 +95,14 @@ export interface Step {
   claims?: readonly Claim[]
   allow?: readonly Allowance[]
   practice?: PracticeKind
+  /** Sorted arrays to draw; their probe counts become facts. */
+  arrays?: readonly ArraySpec[]
+  /** Show the comparison table built from the structure record. */
+  table?: 'structures'
+  /** A scenario worked through on this step; its answer and reasons become facts. */
+  scenario?: string
+  /** Scenario practice draws one of these by seed. */
+  scenarios?: readonly string[]
 }
 
 export interface ModuleContent {

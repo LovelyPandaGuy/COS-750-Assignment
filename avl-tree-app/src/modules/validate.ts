@@ -2,11 +2,13 @@
 import { analyseTree } from '../engine/analyse'
 import { BALANCE_RANGE, EMPTY_HEIGHT, LEAF_HEIGHT } from '../engine/conventions'
 import { conventionsWording, type ConventionsWording } from '../content/modules/conventionsWording'
+import { NEEDS, SCENARIOS, STRUCTURES } from '../content/modules/structures'
+import { answersOf, NEED_IDS, STRUCTURE_IDS, type Scenario, type StructureRecord } from './compare'
 import { rootInRange, type FigureFacts, type StepFacts } from './facts'
 import { renderStep } from './render'
 import { STEP_ACTIVITIES, activityOf, type ClaimKind, type GagneEvent, type ModuleContent, type Step } from './schema'
 
-export type ProblemKind = 'order' | 'activity' | 'source' | 'claim' | 'number' | 'wording'
+export type ProblemKind = 'order' | 'activity' | 'source' | 'claim' | 'number' | 'wording' | 'scenario'
 
 export interface Problem {
   kind: ProblemKind
@@ -99,9 +101,11 @@ function factNumbers(facts: StepFacts, into: Set<number>): Set<number> {
   for (const f of Object.values(facts.figures)) {
     add(f.height, f.nodeCount, f.rootKey, f.rootBalance, f.searchKey, f.searchSteps, f.avlRootKey, ...f.keys, ...f.violations)
     for (const r of f.rebalances) add(r.key, r.node, r.rotations)
+    add(f.rebalances.length)
     for (const [key, n] of Object.entries(f.nodes)) add(Number(key), n.height, n.balanceFactor, n.leftHeight, n.rightHeight)
   }
   for (const b of facts.bounds) add(b.n, b.best, b.worst)
+  for (const a of Object.values(facts.arrays)) add(a.searchKey, a.probeCount, a.sorted.length, ...a.sorted)
   return into
 }
 
@@ -163,12 +167,73 @@ function wordingProblems(step: Step, texts: string[]): Problem[] {
   return problems
 }
 
+/** Words that would give a scenario's answer away (design decision 4). */
+function namePatterns(record: StructureRecord): RegExp[] {
+  const escape = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return [
+    ...STRUCTURE_IDS.map((id) => new RegExp(escape(record[id].name), 'i')),
+    /\b(?:BST|AVL)\b/i,
+    /\barrays?\b/i,
+    /\bhash/i,
+    /red-black/i,
+  ]
+}
+
+/**
+ * A scenario is valid when exactly one structure meets every need, every need is known, and its
+ * text names no structure (and no Red-Black tree). Its text also passes the number and D19 scans.
+ */
+export function validateScenarios(scenarios: readonly Scenario[], record: StructureRecord = STRUCTURES, step?: string): Problem[] {
+  const problems: Problem[] = []
+  const names = namePatterns(record)
+  const known = new Set<string>(NEED_IDS)
+  for (const sc of scenarios) {
+    const at = (message: string): Problem => ({ kind: 'scenario', ...(step !== undefined && { step }), value: sc.id, message })
+    const unknown = sc.needs.filter((n) => !known.has(n) || NEEDS[n] === undefined)
+    if (unknown.length > 0) {
+      problems.push(at(`scenario ${sc.id} lists unknown needs: ${unknown.join(', ')}`))
+      continue
+    }
+    const answers = answersOf(sc, record)
+    if (answers.length !== 1) {
+      const which = answers.length === 0 ? 'no structure' : answers.map((a) => record[a].name).join(' and ')
+      problems.push(at(`scenario ${sc.id} needs to have one answer; ${which} meets every need`))
+    }
+    if (names.some((re) => re.test(sc.text))) problems.push(at(`scenario ${sc.id} names a structure in its text`))
+  }
+  return problems
+}
+
+/** Scenarios a step uses: the worked one and the practice list. Unknown ids are problems. */
+function stepScenarioProblems(step: Step): Problem[] {
+  const ids = [...(step.scenario === undefined ? [] : [step.scenario]), ...(step.scenarios ?? [])]
+  const problems: Problem[] = []
+  const found: Scenario[] = []
+  for (const id of ids) {
+    const sc = SCENARIOS[id]
+    if (sc === undefined) problems.push({ kind: 'scenario', step: step.id, value: id, message: `unknown scenario ${id}` })
+    else found.push(sc)
+  }
+  if (step.practice === 'scenario' && ids.length === 0) {
+    problems.push({ kind: 'scenario', step: step.id, message: 'scenario practice lists no scenarios' })
+  }
+  const texts = found.map((sc) => sc.text)
+  const none: StepFacts = { figures: {}, bounds: [], arrays: {}, scenarios: {} }
+  return [...problems, ...validateScenarios(found, STRUCTURES, step.id), ...numberProblems(step, texts, none), ...wordingProblems(step, texts)]
+}
+
 export function validateModule(content: ModuleContent): Problem[] {
   const problems = [...orderProblems(content.steps), ...activityProblems(content.steps)]
   for (const step of content.steps) {
     const r = renderStep(step, 0, undefined, VALIDATION_WORDING)
     const texts = [r.heading, ...r.paragraphs, ...(r.rule === null ? [] : [r.rule]), ...r.labels]
-    problems.push(...sourceProblems(step, r.facts), ...claimProblems(step, r.facts), ...numberProblems(step, texts, r.facts), ...wordingProblems(step, texts))
+    problems.push(
+      ...sourceProblems(step, r.facts),
+      ...claimProblems(step, r.facts),
+      ...numberProblems(step, texts, r.facts),
+      ...wordingProblems(step, texts),
+      ...stepScenarioProblems(step),
+    )
   }
   return problems
 }
