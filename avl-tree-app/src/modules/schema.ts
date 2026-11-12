@@ -32,11 +32,19 @@ export const SKIPPABLE_EVENTS: readonly GagneEvent[] = ['content', 'example']
 /** D22: one primary representation per step. Pseudocode and animation are reserved for later modules. */
 export type Representation = 'diagram' | 'text'
 
-export type GeneratorName = 'fill-in' | 'root-looks-fine'
+export type GeneratorName = 'fill-in' | 'root-looks-fine' | 'single-rotation' | 'double-rotation'
+
+/** One single rotation at the node with key `at` (add-modules-c5-c6). */
+export interface RotationSpec {
+  dir: 'left' | 'right'
+  at: Key
+}
 
 export type TreeSource =
   | { kind: 'bst'; keys: readonly Key[] }
   | { kind: 'avl'; keys: readonly Key[] }
+  /** Keys into a plain BST, then each rotation in order, performed by the engine. */
+  | { kind: 'rotated'; keys: readonly Key[]; rotations: readonly RotationSpec[] }
   | { kind: 'practice'; generator: GeneratorName }
 
 export interface FigureSpec {
@@ -48,19 +56,19 @@ export interface FigureSpec {
   label: string
 }
 
-export type ClaimKind = 'avl' | 'not-avl' | 'perfect' | 'not-perfect' | 'root-in-range' | 'one-violation'
+export type ClaimKind = 'avl' | 'not-avl' | 'perfect' | 'not-perfect' | 'root-in-range' | 'one-violation' | 'bst'
 
-export interface Claim {
-  figure: string
-  is: ClaimKind
-}
+export type Claim =
+  | { figure: string; is: ClaimKind }
+  /** The figure has the same in-order key sequence as figure `as` of the same step. */
+  | { figure: string; is: 'same-order'; as: string }
 
 export interface Allowance {
   value: number
   reason: string
 }
 
-export type PracticeKind = 'fill-in-bf' | 'spot-the-problem'
+export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate'
 
 export interface Step {
   id: string

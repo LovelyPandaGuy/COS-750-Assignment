@@ -7,12 +7,14 @@ import { variantSeed } from '../../engine/generate'
 import type { Key } from '../../engine/tree'
 import { PRACTICE_HINTS } from '../../modules/config'
 import { computeFacts } from '../../modules/facts'
+import { practiceProblem } from '../../modules/generators'
 import { renderStep } from '../../modules/render'
-import { SKIPPABLE_EVENTS, stepsFor, type ModuleContent, type StepActivity } from '../../modules/schema'
+import { SKIPPABLE_EVENTS, stepsFor, type ModuleContent, type Step, type StepActivity } from '../../modules/schema'
 import { ACTIVITIES_BY_MODULE, paths } from '../../routes'
 import { TreeView } from '../tree/TreeView'
 import { ControlStrip } from './ControlStrip'
 import { BalanceFactorFill } from './practice/BalanceFactorFill'
+import { RotatePractice } from './practice/RotatePractice'
 import { SpotTheProblem } from './practice/SpotTheProblem'
 
 interface PracticeState {
@@ -39,13 +41,17 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
   const [ruleOpen, setRuleOpen] = useState(false)
   const [practice, setPractice] = useState<Record<string, PracticeState>>({})
   const [baseSeed] = useState(() => Date.now() >>> 0)
+  /** Rotation practice steps the student has left; they stay mounted (hidden) so Back keeps them. */
+  const [kept, setKept] = useState<string[]>([])
   const heading = useRef<HTMLHeadingElement>(null)
   const shown = useRef(index)
   const ruleId = useId()
 
   const step = steps[index]
-  const p = practice[step.id] ?? FRESH
-  const seed = variantSeed(baseSeed, index * 1000 + p.regen)
+  const stateOf = (s: Step) => practice[s.id] ?? FRESH
+  const seedOf = (s: Step) => variantSeed(baseSeed, steps.indexOf(s) * 1000 + stateOf(s).regen)
+  const p = stateOf(step)
+  const seed = seedOf(step)
   const r = renderStep(step, seed, computeFacts(step, seed))
   const facts = r.facts
 
@@ -56,6 +62,7 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
   }, [index])
 
   const go = (i: number) => {
+    if (step.practice === 'rotate') setKept((k) => (k.includes(step.id) ? k : [...k, step.id]))
     setRuleOpen(false)
     setIndex(i)
   }
@@ -76,6 +83,7 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
 
   const tree = Object.values(facts.figures)[0]?.tree ?? null
   const label = step.figures?.[0]?.label
+  const rotateSteps = steps.filter((s) => s.practice === 'rotate' && (s.id === step.id || kept.includes(s.id)))
 
   return (
     <div className="screen-stack module-player">
@@ -128,6 +136,20 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
           />
         )}
       </section>
+      {rotateSteps.map((s) => {
+        const problem = practiceProblem(s.figures?.[0]?.source ?? { kind: 'none' }, seedOf(s))
+        if (problem === null) return null
+        return (
+          <div key={`${s.id}-${seedOf(s)}`} hidden={s.id !== step.id}>
+            <RotatePractice
+              base={problem.base}
+              keyToInsert={problem.key}
+              hintsUsed={stateOf(s).hintsUsed}
+              onNewTree={() => update({ ...FRESH, regen: p.regen + 1 })}
+            />
+          </div>
+        )
+      })}
       <ControlStrip
         onBack={onBack}
         onNext={onNext}

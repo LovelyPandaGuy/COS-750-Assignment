@@ -3,11 +3,12 @@
 import { analyseTree } from '../engine/analyse'
 import { avlInsert } from '../engine/avl'
 import { insert } from '../engine/bst'
-import { isOutOfBalance } from '../engine/conventions'
+import { isOutOfBalance, type RebalanceCase } from '../engine/conventions'
 import { searchTrace } from '../engine/search'
 import { balanceFactorOf, height, type Key, type Tree } from '../engine/tree'
-import { generateFillInTree, generateRootLooksFine } from './generators'
-import type { Step, TreeSource } from './schema'
+import { rotateAt } from '../practice/rotate'
+import { generateFillInTree, generateRootLooksFine, generateRotationProblem, rotationsFor } from './generators'
+import type { RotationSpec, Step, TreeSource } from './schema'
 
 export interface NodeFacts {
   height: number
@@ -31,6 +32,24 @@ export interface FigureFacts {
   searchKey?: Key
   searchSteps?: number
   nodes: Record<Key, NodeFacts>
+  /** Keys in order (left subtree, node, right subtree). */
+  inOrder: Key[]
+  /** Every rebalance when the same keys go into an AVL tree, in insert order. */
+  rebalances: RebalanceFacts[]
+  /** Root of the AVL tree built from the same keys. */
+  avlRootKey: Key | null
+  /** Rotations in the source that could not be performed (shown by the validator). */
+  sourceProblems: string[]
+}
+
+export interface RebalanceFacts {
+  /** The key whose insert caused it. */
+  key: Key
+  /** The unbalanced node. */
+  node: Key
+  case: RebalanceCase
+  /** Single rotations used: 1 for a single rotation, 2 for a double. */
+  rotations: 1 | 2
 }
 
 export interface BoundFacts {
@@ -46,15 +65,67 @@ export interface StepFacts {
   bounds: BoundFacts[]
 }
 
-export function buildTree(source: TreeSource, seed = 0): { keys: Key[]; tree: Tree } {
+export interface BuiltTree {
+  keys: Key[]
+  tree: Tree
+  /** Rotations that could not be performed; empty for every other source. */
+  problems?: string[]
+}
+
+const plain = (keys: readonly Key[]): Tree => keys.reduce<Tree>((t, k) => insert(t, k).tree, null)
+
+/** Apply each rotation with the engine; one that cannot happen leaves the tree and is reported. */
+function rotate(tree: Tree, rotations: readonly RotationSpec[]): { tree: Tree; problems: string[] } {
+  const problems: string[] = []
+  for (const { dir, at } of rotations) {
+    const r = rotateAt(tree, at, dir)
+    if (r.ok === false) {
+      problems.push(r.reason === 'no-node' ? `rotate ${dir} at ${at}: ${at} is not in the tree` : `rotate ${dir} at ${at}: node ${at} has no ${r.side} child`)
+    } else tree = r.tree
+  }
+  return { tree, problems }
+}
+
+export function buildTree(source: TreeSource, seed = 0): BuiltTree {
   switch (source.kind) {
     case 'bst':
-      return { keys: [...source.keys], tree: source.keys.reduce<Tree>((t, k) => insert(t, k).tree, null) }
+      return { keys: [...source.keys], tree: plain(source.keys) }
     case 'avl':
       return { keys: [...source.keys], tree: source.keys.reduce<Tree>((t, k) => avlInsert(t, k).tree, null) }
+    case 'rotated': {
+      const { tree, problems } = rotate(plain(source.keys), source.rotations)
+      return { keys: [...source.keys], tree, problems }
+    }
     case 'practice':
-      return source.generator === 'fill-in' ? generateFillInTree(seed) : generateRootLooksFine(seed)
+      switch (source.generator) {
+        case 'fill-in':
+          return generateFillInTree(seed)
+        case 'root-looks-fine':
+          return generateRootLooksFine(seed)
+        case 'single-rotation':
+        case 'double-rotation': {
+          // The student sees the tree after the plain BST insert, before any rebalancing.
+          const p = generateRotationProblem(seed, source.generator === 'single-rotation' ? 'single' : 'double')
+          return { keys: p.keys, tree: insert(p.base, p.key).tree }
+        }
+      }
   }
+}
+
+/** Fold the keys into an AVL tree, keeping each rebalance the engine performs. */
+function avlFold(keys: readonly Key[]): { tree: Tree; rebalances: RebalanceFacts[] } {
+  const rebalances: RebalanceFacts[] = []
+  let tree: Tree = null
+  for (const key of keys) {
+    const r = avlInsert(tree, key)
+    tree = r.tree
+    if (r.rebalance !== null) rebalances.push({ key, node: r.rebalance.node, case: r.rebalance.case, rotations: rotationsFor(r.rebalance.case) })
+  }
+  return { tree, rebalances }
+}
+
+export function inOrderKeys(tree: Tree): Key[] {
+  return tree === null ? [] : [...inOrderKeys(tree.left), tree.key, ...inOrderKeys(tree.right)]
 }
 
 export function nodeCount(tree: Tree): number {
@@ -85,8 +156,9 @@ function nodesOf(tree: Tree, into: Record<Key, NodeFacts> = {}): Record<Key, Nod
   return into
 }
 
-export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key): FigureFacts {
+export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key, sourceProblems: string[] = []): FigureFacts {
   const analysis = analyseTree(tree)
+  const avl = avlFold(keys)
   return {
     id,
     tree,
@@ -100,6 +172,10 @@ export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key
     violations: analysis.balanceViolations.map((v) => v.key),
     ...(searchKey !== undefined && { searchKey, searchSteps: searchTrace(tree, searchKey).steps }),
     nodes: nodesOf(tree),
+    inOrder: inOrderKeys(tree),
+    rebalances: avl.rebalances,
+    avlRootKey: avl.tree?.key ?? null,
+    sourceProblems,
   }
 }
 
@@ -107,8 +183,8 @@ export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key
 export function computeFacts(step: Step, seed = 0): StepFacts {
   const figures: Record<string, FigureFacts> = {}
   for (const f of step.figures ?? []) {
-    const { keys, tree } = buildTree(f.source, seed)
-    figures[f.id] = figureFacts(f.id, tree, keys, f.searchKey)
+    const { keys, tree, problems } = buildTree(f.source, seed)
+    figures[f.id] = figureFacts(f.id, tree, keys, f.searchKey, problems)
   }
   return { figures, bounds: (step.bounds ?? []).map(searchBounds) }
 }
