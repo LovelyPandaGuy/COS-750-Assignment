@@ -46,17 +46,6 @@ When the learner has saved progress, the Start screen SHALL show the ResumeCard 
 - **WHEN** Resume is activated
 - **THEN** the module screen for `C4` is shown
 
-### Requirement: Module screen placeholder
-Until the module screens exist, each module ID `C1` to `C9` SHALL have a placeholder screen that shows only that module's D1 title as its heading. Any other module ID SHALL go to the Start screen. (D1; SE §6.5)
-
-#### Scenario: Known module
-- **WHEN** the module screen for each of `C1` to `C9` is opened directly
-- **THEN** its level-1 heading is that module's D1 title
-
-#### Scenario: Unknown module
-- **WHEN** the module screen for `C10` is opened directly
-- **THEN** the Start screen is shown
-
 ### Requirement: Reset asks first
 Activating the reset link SHALL open a confirmation dialog and SHALL NOT clear anything yet. The dialog SHALL be modal, SHALL be named by its title and described by its body text, and SHALL move focus to its Cancel button. (FR-ONB-04: reset needs a confirmation step; wireframe 1b note 4)
 

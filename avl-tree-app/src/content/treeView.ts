@@ -18,4 +18,9 @@ export const treeViewCopy = {
     [`height ${height}`, `balance factor ${bf}`, ...extras].join(', '),
   nodeName: (key: number, height: number, bf: string, extras: string[]) =>
     [`Node ${key}`, `height ${height}`, `balance factor ${bf}`, ...extras].join(', '),
+  // Hidden-balance mode for practice (add-modules-c2-c3): the height stays, the balance factor does not.
+  metricsHidden: (height: number) => `h${height} · bf ?`,
+  detailsHidden: (height: number, extras: string[]) => [`height ${height}`, 'balance factor hidden', ...extras].join(', '),
+  nodeNameHidden: (key: number, height: number, extras: string[]) =>
+    [`Node ${key}`, `height ${height}`, 'balance factor hidden', ...extras].join(', '),
 } as const
