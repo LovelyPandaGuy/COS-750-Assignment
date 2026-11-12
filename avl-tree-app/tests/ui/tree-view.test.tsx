@@ -237,3 +237,44 @@ describe('NFR-02 style comes from tokens', () => {
     expect(readFileSync('src/ui/tree/TreeView.tsx', 'utf8')).toMatch(/import\s+['"]\.\/tree-view\.css['"]/);
   });
 });
+
+// Spec: add-modules-c2-c3 / tree-view "Hidden balance factors for practice". FR-VIS-07.
+describe('FR-VIS-07 hidden balance factors for practice', () => {
+  const metrics = (c: HTMLElement, k: Key) => node(c, k).querySelector('.tree-metrics')!.textContent;
+
+  it('nothing leaks when no key is revealed', () => {
+    const { container } = render(<TreeView tree={chain3} hideBalance={{}} label="Practice tree" />);
+    for (const k of [30, 20, 10]) expect(metrics(container, k)).toMatch(/^h\d · bf \?$/);
+    expect(container.querySelectorAll('.tree-flag')).toHaveLength(0);
+    const text = describeTree(chain3, {}, {});
+    expect(text).not.toMatch(/unbalanced/i);
+    expect(text).not.toMatch(/balance factor [+−]?\d/);
+    expect(text).toMatch(/height 2/);
+    expect(container.querySelector('.tree-description')!.textContent).toBe(text);
+  });
+
+  it('a revealed node is drawn as usual', () => {
+    const { container } = render(<TreeView tree={chain3} hideBalance={{ reveal: [30] }} label="Practice tree" />);
+    expect(metrics(container, 30)).toBe('h2 · bf +2');
+    expect(node(container, 30).querySelector('.tree-flag')).toHaveTextContent('Unbalanced');
+    expect(metrics(container, 20)).toBe('h1 · bf ?');
+    expect(metrics(container, 10)).toBe('h0 · bf ?');
+  });
+
+  it('default rendering is unchanged', () => {
+    const { container } = render(<TreeView tree={chain3} label="Example tree" />);
+    expect(metrics(container, 30)).toBe('h2 · bf +2');
+    expect(describeTree(chain3, {})).toBe(describeTree(chain3, {}, undefined));
+  });
+
+  it('accessible in hidden mode', async () => {
+    const { container } = render(<TreeView tree={seven} interactive hideBalance={{}} label="Practice tree" />);
+    for (const item of screen.getAllByRole('treeitem')) {
+      const name = item.getAttribute('aria-label') ?? '';
+      expect(name).toMatch(/^Node \d+, height \d+/);
+      expect(name).toMatch(/hidden/);
+      expect(name).not.toMatch(/balance factor [+−]?\d/);
+    }
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});

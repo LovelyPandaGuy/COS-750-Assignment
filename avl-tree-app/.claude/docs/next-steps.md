@@ -1,15 +1,38 @@
-# Next steps (Phase 0)
+# Next steps (Phase 3: learning content)
 
-First proposals, in order, each run through the loop in CLAUDE.md:
+Phases 1 and 2 are built. Three changes are still open and should be finished and archived first: `add-avl-insert-trace` (8/9 tasks), `add-predict-and-do-it-yourself` (8/9) and `add-routing-and-screen-skeleton` (6/8). Plan: `.claude/docs/design/development_plan_(v1.1).md`.
 
-1. `add-conventions-and-bst`: tree type, BST insert/search/delete, height and balance factor (FR-ENG-01..03, 05).
-2. `add-avl-rebalancing`: rotations, LL/RR/LR/RL, AVL insert and delete, validity check (FR-ENG-04, 06..10).
-3. `add-operation-trace`: the trace contract (spike S2 first).
+Work with unknowns per D18: assume, record the assumption in `decisions.md`, keep it in one place, and keep going.
 
-Spikes before the UI changes: S1 tree layout, S2 trace contract, S3 browser features (touch editing, sqlite-wasm, localStorage).
+## Phase 3 changes, in order
 
-Verify (D13): "at most 28 steps for a million keys" (height <= 28, up to 29 nodes visited).
+| # | Change | Carry in from the 12 Nov consolidation |
+| --- | --- | --- |
+| 12 | `add-module-framework` | Step schema typed by Gagné event (D10) with `skippable` (content and worked example only), `primary` and `supporting` representations (D22). One entry-policy function: guided default, never locked, soft prerequisite note (D20). Recommend-and-choose after a check. Control strip layout (D23). No-op event sink emitting `route_recommended` and `route_chosen` (D28). Content validator also rejects sign, lean and case-name wording in content (D19). |
+| 13 | `add-modules-c2-c3` | Needs 12. All formula, sign and case wording from the conventions module (D19). C2's "height 2" and step counts come from the engine. |
+| 14 | `add-module-c4-search` | Step count and the million-key figure computed by the engine (D13). |
+| 15 | `add-modules-c5-c6` | Case and rotation names from the conventions module (D19). Practice hints and retries per D21. |
+| 16 | `add-sandbox` | No changes from the consolidation. |
+| 17 | `add-module-c8-choosing` | Wording per D19 and D27. |
+| 18 | `add-module-c7-delete` | Wording per D19; check optional (D4). |
 
-Questions for the lecturer are at the end of `docs/decisions.md`.
+## Later phases touched by the consolidation
 
-Not yet done: wireframes and the Claude Design artifact to the D2 convention and C1 to C9; regenerate the SE doc from specs; `npm run validate:content`.
+- 19 `add-question-model-and-bank`: attempt policy differs for practice and checks; record hints used (D21).
+- 20 `add-checks-and-feedback`: four-part feedback, "Not quite yet", no cross glyph (D27).
+- 21 `add-scaffold-ladder-and-retry-cap`: `RETRY_CAP` and `PRACTICE_HINTS` in one config; review offered when practice hints run out (D9, D21).
+- 22 `add-diagnostic-c1-and-routing`: emit route events (D28).
+- 24 `add-accessibility-settings-and-audit`: read-aloud is stretch (D26); add the colour-vision emulation check (D25).
+- 26 `add-event-log-and-export`: persist route events (D28).
+
+## Waiting on others
+
+- Lecturer: balance-factor sign, case and rotation names, pseudocode language, deletion cases, the height bound (`decisions.md`).
+- Presentation draft's author: the slide evidence for the sign (`decisions.md`).
+- Team: read-aloud as stretch, routing cut-offs, badges.
+
+## Not yet done
+
+- Wireframes and the Claude Design artifact to D2, C1 to C9 and the fixes listed in `design/INDEX.md` (items 1 to 14).
+- `.claude/agents/`: the six subagents named in `CLAUDE.md` are not defined in this repo.
+- Regenerate the SE document from the specs; `npm run validate:content`.

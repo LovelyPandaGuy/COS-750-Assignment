@@ -81,7 +81,7 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** the TopBar wraps (it does not set a fixed width wider than the viewport) and `main` has a side gutter of at least `--space-4`
 
 ### Requirement: TopBar content comes from its props
-`TopBar` SHALL show the app title, an optional breadcrumb, an optional status pill and an optional list of action buttons, then the Aa menu last. It SHALL render only the text it is given. The title SHALL NOT be a heading. (Wireframes 1b to 1o; NFR-02)
+`TopBar` SHALL show the app title, an optional breadcrumb, an optional status pill and an optional list of actions, then the Aa menu last. An action SHALL be a button that calls its handler, or, when it has an `href`, a link to that address. It SHALL render only the text it is given. The title SHALL NOT be a heading. (Wireframes 1b to 1o; NFR-02)
 
 #### Scenario: Slots render in order
 - **WHEN** `TopBar` renders with a title, a breadcrumb, a pill and two actions
@@ -96,8 +96,12 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** the only heading is the one in `main`
 
 #### Scenario: Action targets
-- **WHEN** an action button is rendered and its stylesheet rule is read
+- **WHEN** an action button or link is rendered and its stylesheet rule is read
 - **THEN** its `min-height` and `min-width` are `var(--target-min)` (D3)
+
+#### Scenario: Link action
+- **WHEN** an action with an `href` is rendered
+- **THEN** it is an `<a>` with that `href` and the action's label, not a button, and an action without an `href` is still a button that calls its handler on click
 
 ### Requirement: Aa menu stub
 The TopBar SHALL contain an Aa button that opens and closes a small panel of display settings. In this change the panel holds one line of placeholder copy and no working controls. The button SHALL have a 44 px target, an accessible name that is more than "Aa", and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10)

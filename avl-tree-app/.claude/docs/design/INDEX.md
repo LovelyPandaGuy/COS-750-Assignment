@@ -8,7 +8,8 @@ What the design is, where each piece lives, and what must change before code is 
 | --- | --- |
 | `source/AVL Primer Design System.dc.html` | Design system v0.1: colour, type, shape, components and states, dark theme, contrast checks |
 | `source/AVL Primer Wireframes.dc.html` | Low-fidelity wireframes, 1366×768, grayscale. Frames 1a to 1p. Dark tags are React component names; numbered circles map to the notes under each frame |
-| `../../src/ui/tokens.css` | The design system's tokens as CSS variables (light and dark). Components use these only |
+| `src/ui/tokens.css` (app root) | The design system's tokens as CSS variables (light and dark). Components use these only |
+| `development_plan_(v1.1).md` | Phases, gates and the numbered changes 1 to 27 |
 
 Original Claude Design project: `https://claude.ai/design/p/f6bc9423-7d01-49c7-afc5-6ca972add5c6` (exported 2026-11-04). Published copy: `https://claude.ai/artifact/MRc3Z7VWz5iEJR3ESkKNnR`.
 
@@ -46,7 +47,7 @@ Design-system components beyond the wireframes: Button (primary, secondary, quie
 
 ## What must change before the first UI proposal
 
-These are conflicts between the design and the decisions in `docs/decisions.md`. Fix them in the design, then re-run `/design-import`. Until then the `spec-writer` marks any affected requirement `[OPEN]`.
+These are conflicts between the design and the decisions in `.claude/docs/decisions.md`. Fix them in the design, then re-run `/design-import`. Until then the decision log wins: the `spec-writer` builds to the decision and lists the frame difference under "Assumed, not blocking" (D18), not as `[OPEN]`.
 
 1. **Height convention (D2).** The wireframes count a leaf as height 1 and an empty subtree as 0 (frame 1p assumption 1, and every `h` label). The decision is leaf 0, empty -1, balance factor = left minus right.
    - Every `h` label drops by 1. Every `bf` stays the same, because both sides shift together.
@@ -59,6 +60,14 @@ These are conflicts between the design and the decisions in `docs/decisions.md`.
 4. **Phones (D3).** Every frame is 1366×768; 1p mentions only a tablet layout. Tree editing must work by touch on phones. Add phone frames (390 wide) for at least 1f, 1h, 1m and 1n, and a tap-to-select then tap-to-place path alongside dragging.
 5. **Short checks in C4, C5 and C8 (D15).** The wireframes assume a check per unit; confirm each of those modules has its 2 to 3 items.
 6. **Open questions in 1p.** Questions 1, 3 and 4 are settled (D2, D4, D9). Update or remove them so nobody reopens them.
+7. **Start copy (1b, D24).** "A 20–30 minute warm-up", "6 short units" and "Start with a 3-minute warm-up check" become about an hour, nine short modules you can pause, and the C1 readiness check. The copy comes from content.
+8. **Retries (1j, D9).** Note 2 "Retry keeps the same question" becomes "a retry is a new variant of the same question (new seeded tree; options reshuffled)".
+9. **Feedback glyph and wording (1j, 1k, D27).** Drop the ✗ in the FeedbackPanel verdict and the CheckHeader attempt markers; use a neutral icon plus "Not quite yet". The FeedbackPanel holds four parts: verdict, why, review link, next step.
+10. **Sign and case wording (1f, 1j, 1l, D19).** The formula line, "a positive bf means leans left" and the drafted lecture question in 1l state the sign. In the build these come from the conventions module; the frames stay as illustrations.
+11. **Representations (1f, D22).** The RepresentationSwitcher's ticked boxes are per-step defaults from the module data, not all on at once. One primary representation per step.
+12. **Navigation (1e, D20).** Keep Guided path and Choose my own, never locked. Add "I know this, skip" on content and worked-example steps (not on checks) and a recommend-and-choose panel after a check.
+13. **Control strip (1f, D23).** Navigation on one side, learning aids (Show rule, Hint with remaining count) on the other, in the same place on every screen.
+14. **Read-aloud (1f, 1p, D26).** Stretch only; the toggle may stay hidden until change 24 builds it.
 
 ## Design-system gaps
 
@@ -74,3 +83,4 @@ These are conflicts between the design and the decisions in `docs/decisions.md`.
 - Touch targets are at least 44px. Running text is at least 16px; 14px is for metadata only.
 - Selected nodes use a rounded-square frame and are announced ("Node 30 selected"). Keyboard: up parent, left and right children, Enter select.
 - Reduced motion: steps snap, no sliding.
+- Colour-vision check (D25): in Chrome DevTools, Rendering, Emulate vision deficiencies, try protanopia, deuteranopia, tritanopia and achromatopsia; every node role and feedback state must still read from its label, number or shape.

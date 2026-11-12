@@ -1,0 +1,75 @@
+/* Step player, control strip and C3 practice (add-modules-c2-c3). Tokens only; focus ring from tokens.css. */
+.module-player { align-items: stretch; max-width: var(--reading-column); }
+.module-place { font: var(--type-label); color: var(--text-secondary); }
+.module-step { display: flex; flex-direction: column; gap: var(--space-4); }
+.module-step h2 { font: var(--type-h2); margin: 0; }
+.module-step p { font: var(--type-body); margin: 0; }
+.module-figures { display: flex; flex-wrap: wrap; gap: var(--space-5); }
+.module-rule {
+  padding: var(--space-4);
+  background: var(--action-primary-tint);
+  border-left: 4px solid var(--action-primary);
+  border-radius: var(--radius-sm);
+}
+
+/* Same place on every step: navigation on one side, learning aids on the other (D23). */
+.control-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+.control-strip-side { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.module-button {
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: 0 var(--space-4);
+  font: var(--type-body);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+.module-button-primary { color: var(--bg-surface); background: var(--action-primary); border: 2px solid var(--action-primary); }
+.module-button-primary:hover { background: var(--action-primary-hover); }
+.module-button-primary:active { background: var(--action-primary-pressed); }
+.module-button-secondary { color: var(--action-primary); background: var(--bg-surface); border: 2px solid var(--action-primary); }
+.module-button-secondary:hover { background: var(--action-primary-tint); }
+.module-button-quiet { color: var(--action-primary); background: transparent; border: 2px solid transparent; text-decoration: underline; }
+
+/* Practice */
+.practice { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-4); }
+.practice-form { display: flex; flex-direction: column; gap: var(--space-2); }
+.practice-form label { font: var(--type-body); font-weight: 700; }
+.practice-field { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.practice-input {
+  min-height: var(--target-min);
+  width: 6ch;
+  font: var(--type-body);
+  text-align: center;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+.practice-panel:empty { display: none; }
+.practice-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  font: var(--type-body);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--feedback-notyet-border);
+  background: var(--feedback-notyet-bg);
+}
+/* The verdict word carries the meaning; the border style differs too, so colour is never alone. */
+.practice-panel[data-verdict='right'] { border-style: solid; border-color: var(--feedback-correct-border); background: var(--feedback-correct-bg); }
+.practice-panel[data-verdict='not-yet'] { border-style: dashed; }
+.practice-panel-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.practice-hints { margin: 0; padding-left: var(--space-5); font: var(--type-body); }
+.practice-complete { font-weight: 700; }

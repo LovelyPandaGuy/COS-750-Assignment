@@ -2,7 +2,7 @@ import { useId, useRef, useState, type KeyboardEvent } from 'react'
 import './tree-view.css'
 import { treeViewCopy as copy } from '../../content/treeView'
 import type { Key, Tree } from '../../engine/tree'
-import { describeTree, describeTreeParts, nodeName, signed, type NodeRole, type Roles } from './describe'
+import { describeTree, describeTreeParts, nodeName, signed, type HideBalance, type NodeRole, type Roles } from './describe'
 import { NODE_DIAMETER, layoutTree } from './layout'
 
 export type { NodeRole }
@@ -18,6 +18,8 @@ export interface TreeViewProps {
   onSelect?: (key: Key) => void
   /** Accessible name, supplied by the screen. */
   label: string
+  /** Practice: hide balance factors and the Unbalanced flag, except on revealed keys. */
+  hideBalance?: HideBalance
 }
 
 const R = NODE_DIAMETER / 2
@@ -32,14 +34,14 @@ const NO_ROLES: Roles = {}
 /** Roving tabindex: only one node is a tab stop. */
 const OFF_TAB_STOP = -1
 
-export function TreeView({ tree, roles = NO_ROLES, interactive = false, selectedKey = null, onSelect, label }: TreeViewProps) {
+export function TreeView({ tree, roles = NO_ROLES, interactive = false, selectedKey = null, onSelect, label, hideBalance }: TreeViewProps) {
   const descId = useId()
   const [open, setOpen] = useState(false)
   const [focusKey, setFocusKey] = useState<Key | null>(null)
   const items = useRef(new Map<Key, SVGGElement>())
 
   const layout = layoutTree(tree)
-  const parts = describeTreeParts(tree, roles)
+  const parts = describeTreeParts(tree, roles, hideBalance)
   const partOf = new Map(parts.map((p) => [p.key, p]))
   const at = new Map(layout.nodes.map((n) => [n.key, n]))
   const rootKey = tree?.key ?? null
@@ -126,9 +128,9 @@ export function TreeView({ tree, roles = NO_ROLES, interactive = false, selected
                 )}
                 <text className="tree-key">{n.key}</text>
                 <text className="tree-metrics" y={R + 16}>
-                  {copy.metrics(part.height, signed(part.balanceFactor))}
+                  {part.hidden ? copy.metricsHidden(part.height) : copy.metrics(part.height, signed(part.balanceFactor))}
                 </text>
-                {part.unbalanced && (
+                {part.unbalanced && !part.hidden && (
                   <text className="tree-flag" y={R + 34}>
                     {copy.unbalancedFlag}
                   </text>
@@ -154,7 +156,7 @@ export function TreeView({ tree, roles = NO_ROLES, interactive = false, selected
         {copy.describeButton}
       </button>
       <p id={descId} className="tree-description" hidden={!open}>
-        {describeTree(tree, roles)}
+        {describeTree(tree, roles, hideBalance)}
       </p>
       <div className="tree-live" aria-live="polite">
         {interactive && selectedKey !== null ? copy.selected(selectedKey) : ''}

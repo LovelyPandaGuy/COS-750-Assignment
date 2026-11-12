@@ -16,6 +16,17 @@ export function nodeHeight(leftHeight: number, rightHeight: number): number {
   return Math.max(leftHeight, rightHeight) + 1
 }
 
+export type Side = 'left' | 'right'
+
+/**
+ * Which subtree's height comes first in the balance factor, then which second
+ * (D2, D19). Content builds its formula wording from this; it never types it.
+ */
+export const BALANCE_FACTOR_ORDER: readonly [Side, Side] = ['left', 'right']
+
+/** The balance factors the AVL rule allows (agrees with isOutOfBalance). */
+export const BALANCE_RANGE = [-1, 0, 1] as const
+
 /** Balance factor = height(left) - height(right). */
 export function balanceFactor(leftHeight: number, rightHeight: number): number {
   return leftHeight - rightHeight
