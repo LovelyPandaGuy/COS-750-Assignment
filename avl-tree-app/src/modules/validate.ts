@@ -8,7 +8,19 @@ import { rootInRange, type FigureFacts, type StepFacts } from './facts'
 import { renderStep } from './render'
 import { STEP_ACTIVITIES, activityOf, type ClaimKind, type GagneEvent, type ModuleContent, type Step } from './schema'
 
-export type ProblemKind = 'order' | 'activity' | 'source' | 'claim' | 'number' | 'wording' | 'scenario'
+export type ProblemKind =
+  | 'order'
+  | 'activity'
+  | 'source'
+  | 'claim'
+  | 'number'
+  | 'wording'
+  | 'scenario'
+  // the question bank (add-question-model-and-bank)
+  | 'tag'
+  | 'bank'
+  | 'option'
+  | 'misconception'
 
 export interface Problem {
   kind: ProblemKind
@@ -124,7 +136,8 @@ function stripWording(text: string): string {
  * place of each case name and strips it, so a name typed into content is still caught.
  */
 const CASE_MARK = '\u27e8case\u27e9'
-const VALIDATION_WORDING: ConventionsWording = { ...conventionsWording(), caseName: () => CASE_MARK }
+/** Wording whose case names are a marker, for validating rendered text (also used by the bank validator). */
+export const VALIDATION_WORDING: ConventionsWording = { ...conventionsWording(), caseName: () => CASE_MARK }
 
 export function numbersIn(text: string): number[] {
   const cleaned = stripWording(text).replace(IDS, ' ').replace(/log2/g, ' ')
@@ -157,12 +170,16 @@ const BANNED: readonly RegExp[] = [
   /\b(?:positive|negative)\b[^.]{0,60}\b(?:left|right)\b/i,
 ]
 
+/** True when text states sign, lean or case wording that is not the conventions wording's own (D19). */
+export function statesConvention(text: string): boolean {
+  const cleaned = stripWording(text)
+  return BANNED.some((re) => re.test(cleaned))
+}
+
 function wordingProblems(step: Step, texts: string[]): Problem[] {
   const problems: Problem[] = []
   for (const text of texts) {
-    const cleaned = stripWording(text)
-    const hit = BANNED.find((re) => re.test(cleaned))
-    if (hit) problems.push({ kind: 'wording', step: step.id, value: text, message: `"${text}" states sign, lean or case wording (D19)` })
+    if (statesConvention(text)) problems.push({ kind: 'wording', step: step.id, value: text, message: `"${text}" states sign, lean or case wording (D19)` })
   }
   return problems
 }
