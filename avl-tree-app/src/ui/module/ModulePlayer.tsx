@@ -10,12 +10,15 @@ import { computeFacts } from '../../modules/facts'
 import type { StructureId } from '../../modules/compare'
 import { pickScenario, practiceProblem } from '../../modules/generators'
 import { renderStep } from '../../modules/render'
+import { recommendRoute } from '../../navigation/policy'
+import { emitRouteEvent } from '../../navigation/routeEvents'
 import { SKIPPABLE_EVENTS, stepsFor, type ModuleContent, type Step, type StepActivity } from '../../modules/schema'
 import { ACTIVITIES_BY_MODULE, paths } from '../../routes'
 import { TreeView } from '../tree/TreeView'
 import { ArrayView } from './ArrayView'
 import { ComparisonTable } from './ComparisonTable'
 import { ControlStrip } from './ControlStrip'
+import { RouteChoice } from './RouteChoice'
 import { BalanceFactorFill } from './practice/BalanceFactorFill'
 import { RotatePractice } from './practice/RotatePractice'
 import { ScenarioPractice } from './practice/ScenarioPractice'
@@ -80,7 +83,15 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
     const after = list[list.indexOf(activity) + 1]
     navigate(after === undefined ? paths.hub() : paths.activity(content.id, after))
   }
-  const onNext = () => (index + 1 < steps.length ? go(index + 1) : nextActivity())
+  // The last step of the Check activity offers a route (D20); Next there counts as choosing the path (D28).
+  const recommended = activity === 'check' && index === steps.length - 1 ? recommendRoute(content.id) : null
+  const onNext = () => {
+    if (index + 1 < steps.length) return go(index + 1)
+    if (recommended !== null) {
+      emitRouteEvent({ type: 'route_chosen', from: content.id, recommended, chosen: 'path', at: new Date().toISOString() })
+    }
+    nextActivity()
+  }
   const onBack = () => (index > 0 ? go(index - 1) : navigate(paths.module(content.id)))
   const onSkip = () => {
     const j = steps.findIndex((s, i) => i > index && !SKIPPABLE_EVENTS.includes(s.event))
@@ -186,6 +197,14 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
           </div>
         )
       })}
+      {recommended !== null && (
+        <RouteChoice
+          key={step.id}
+          module={content.id}
+          recommended={recommended}
+          onChoose={(m) => navigate(paths.module(m))}
+        />
+      )}
       <ControlStrip
         onBack={onBack}
         onNext={onNext}

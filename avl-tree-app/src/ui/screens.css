@@ -44,3 +44,18 @@ a.button-primary { display: inline-flex; align-items: center; text-decoration: n
 .progress-item[data-status='summary'] { border: 2px dotted var(--border-control); }
 .progress-status { font: var(--type-label); color: var(--text-secondary); }
 .progress-optional { font: var(--type-label); color: var(--text-secondary); }
+
+/* Soft prerequisite note (D20): calm, not a warning colour; the symbol and words carry the meaning. */
+.prerequisite-note {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-control);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+}
