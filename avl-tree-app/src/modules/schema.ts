@@ -46,6 +46,8 @@ export type TreeSource =
   /** Keys into a plain BST, then each rotation in order, performed by the engine. */
   | { kind: 'rotated'; keys: readonly Key[]; rotations: readonly RotationSpec[] }
   | { kind: 'practice'; generator: GeneratorName }
+  /** Keys into a plain BST or an AVL tree, then each key in `remove` deleted by the engine (add-module-c7-delete). */
+  | { kind: 'deleted'; build: 'bst' | 'avl'; keys: readonly Key[]; remove: readonly Key[]; rebalance: boolean }
 
 export interface FigureSpec {
   id: string
@@ -56,7 +58,7 @@ export interface FigureSpec {
   label: string
 }
 
-export type ClaimKind = 'avl' | 'not-avl' | 'perfect' | 'not-perfect' | 'root-in-range' | 'one-violation' | 'bst'
+export type ClaimKind = 'avl' | 'not-avl' | 'perfect' | 'not-perfect' | 'root-in-range' | 'one-violation' | 'bst' | 'multi-rebalance'
 
 export type Claim =
   | { figure: string; is: ClaimKind }
@@ -68,7 +70,7 @@ export interface Allowance {
   reason: string
 }
 
-export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario' | 'trace-search'
+export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario' | 'trace-search' | 'after-delete'
 
 /** Pseudocode listings a step can show side by side (names in src/content/pseudocode.ts). */
 export type ListingName = 'searchLoop' | 'searchRecursive'

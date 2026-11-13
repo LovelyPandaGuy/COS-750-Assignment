@@ -1,11 +1,11 @@
 // Facts for a step, computed with the engine (design decision 2). Content only formats these;
 // it never types a height, a step count or a balance factor.
 import { analyseTree } from '../engine/analyse'
-import { avlInsert } from '../engine/avl'
-import { insert } from '../engine/bst'
+import { avlDelete, avlInsert } from '../engine/avl'
+import { insert, remove } from '../engine/bst'
 import { isOutOfBalance, type RebalanceCase } from '../engine/conventions'
 import { searchTrace } from '../engine/search'
-import { balanceFactorOf, height, type Key, type Tree } from '../engine/tree'
+import { balanceFactorOf, height, subtreeAt, type Key, type Tree } from '../engine/tree'
 import { rotateAt } from '../practice/rotate'
 import { generateFillInTree, generateRootLooksFine, generateRotationProblem, rotationsFor } from './generators'
 import { SCENARIOS } from '../content/modules/structures'
@@ -42,6 +42,18 @@ export interface FigureFacts {
   avlRootKey: Key | null
   /** Rotations in the source that could not be performed (shown by the validator). */
   sourceProblems: string[]
+  /** Each delete of a `deleted` source, in order. */
+  deletes?: DeleteFacts[]
+}
+
+export interface DeleteFacts {
+  key: Key
+  /** Children the node had before the delete. */
+  children: 0 | 1 | 2
+  /** Its in-order successor, which takes its place, when it had two children. */
+  successor: Key | null
+  /** Every rebalance the engine performed, lowest node first; empty without rebalancing. */
+  rebalances: { node: Key }[]
 }
 
 export interface RebalanceFacts {
@@ -96,6 +108,7 @@ export interface BuiltTree {
   tree: Tree
   /** Rotations that could not be performed; empty for every other source. */
   problems?: string[]
+  deletes?: DeleteFacts[]
 }
 
 const plain = (keys: readonly Key[]): Tree => keys.reduce<Tree>((t, k) => insert(t, k).tree, null)
@@ -112,8 +125,35 @@ function rotate(tree: Tree, rotations: readonly RotationSpec[]): { tree: Tree; p
   return { tree, problems }
 }
 
+/** Insert the keys, then delete each key with the engine, recording what each delete did. */
+function deleteFrom(source: Extract<TreeSource, { kind: 'deleted' }>): BuiltTree {
+  let tree = source.build === 'avl' ? source.keys.reduce<Tree>((t, k) => avlInsert(t, k).tree, null) : plain(source.keys)
+  const deletes: DeleteFacts[] = []
+  const problems: string[] = []
+  for (const key of source.remove) {
+    const node = subtreeAt(tree, key)
+    if (node === null) {
+      problems.push(`delete ${key}: ${key} is not in the tree`)
+      continue
+    }
+    const children = ((node.left === null ? 0 : 1) + (node.right === null ? 0 : 1)) as 0 | 1 | 2
+    let successor: Key | null = null
+    if (children === 2) {
+      let s = node.right!
+      while (s.left !== null) s = s.left
+      successor = s.key
+    }
+    const r = source.rebalance ? avlDelete(tree, key) : { ...remove(tree, key), rebalances: [] }
+    tree = r.tree
+    deletes.push({ key, children, successor, rebalances: r.rebalances.map((x) => ({ node: x.node })) })
+  }
+  return { keys: [...source.keys], tree, problems, deletes }
+}
+
 export function buildTree(source: TreeSource, seed = 0): BuiltTree {
   switch (source.kind) {
+    case 'deleted':
+      return deleteFrom(source)
     case 'bst':
       return { keys: [...source.keys], tree: plain(source.keys) }
     case 'avl':
@@ -198,7 +238,7 @@ function nodesOf(tree: Tree, into: Record<Key, NodeFacts> = {}): Record<Key, Nod
   return into
 }
 
-export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key, sourceProblems: string[] = []): FigureFacts {
+export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key, sourceProblems: string[] = [], deletes?: DeleteFacts[]): FigureFacts {
   const analysis = analyseTree(tree)
   const avl = avlFold(keys)
   return {
@@ -218,6 +258,7 @@ export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key
     rebalances: avl.rebalances,
     avlRootKey: avl.tree?.key ?? null,
     sourceProblems,
+    ...(deletes !== undefined && { deletes }),
   }
 }
 
@@ -225,8 +266,8 @@ export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key
 export function computeFacts(step: Step, seed = 0): StepFacts {
   const figures: Record<string, FigureFacts> = {}
   for (const f of step.figures ?? []) {
-    const { keys, tree, problems } = buildTree(f.source, seed)
-    figures[f.id] = figureFacts(f.id, tree, keys, f.searchKey, problems)
+    const { keys, tree, problems, deletes } = buildTree(f.source, seed)
+    figures[f.id] = figureFacts(f.id, tree, keys, f.searchKey, problems, deletes)
   }
   const arrays: Record<string, ArrayFacts> = {}
   for (const a of step.arrays ?? []) arrays[a.id] = arrayFacts(a)

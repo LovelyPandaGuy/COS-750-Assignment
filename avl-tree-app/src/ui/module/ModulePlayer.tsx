@@ -12,6 +12,7 @@ import { pickScenario, practiceProblem } from '../../modules/generators'
 import { renderStep } from '../../modules/render'
 import { recommendRoute } from '../../navigation/policy'
 import { drawSearchPractice } from '../../modules/searchPractice'
+import { drawDeletePractice } from '../../modules/deletePractice'
 import { pseudocode } from '../../content/pseudocode'
 import { replayCopy } from '../../content/replay'
 import { ReplayPlayer } from '../replay/ReplayPlayer'
@@ -26,6 +27,7 @@ import { ControlStrip } from './ControlStrip'
 import { RouteChoice } from './RouteChoice'
 import { BalanceFactorFill } from './practice/BalanceFactorFill'
 import { BeTheAlgorithm } from './practice/BeTheAlgorithm'
+import { FindAfterDelete } from './practice/FindAfterDelete'
 import { RotatePractice } from './practice/RotatePractice'
 import { ScenarioPractice } from './practice/ScenarioPractice'
 import { SpotTheProblem } from './practice/SpotTheProblem'
@@ -201,6 +203,23 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
                 searchKey={problem.key}
                 path={p.answered}
                 onPath={(answered) => update({ answered })}
+                solved={p.solved}
+                onSolved={() => update({ solved: true })}
+                hintsUsed={p.hintsUsed}
+                onReview={review}
+                onNewTree={() => update({ ...FRESH, regen: p.regen + 1 })}
+              />
+            )
+          })()}
+        {step.practice === 'after-delete' &&
+          (() => {
+            const problem = drawDeletePractice(seed)
+            return (
+              <FindAfterDelete
+                key={seed}
+                before={problem.before}
+                deletedKey={problem.key}
+                after={problem.after}
                 solved={p.solved}
                 onSolved={() => update({ solved: true })}
                 hintsUsed={p.hintsUsed}

@@ -81,6 +81,7 @@ const CLAIM: Record<ClaimKind, (f: FigureFacts) => boolean> = {
   'root-in-range': rootInRange,
   'one-violation': (f) => f.violations.length === 1,
   bst: (f) => analyseTree(f.tree).orderViolations.length === 0,
+  'multi-rebalance': (f) => (f.deletes?.[f.deletes.length - 1]?.rebalances.length ?? 0) >= 2,
 }
 
 const sameOrder = (a: FigureFacts, b: FigureFacts) => a.inOrder.length === b.inOrder.length && a.inOrder.every((k, i) => k === b.inOrder[i])
@@ -114,6 +115,7 @@ function factNumbers(facts: StepFacts, into: Set<number>): Set<number> {
     add(f.height, f.nodeCount, f.rootKey, f.rootBalance, f.searchKey, f.searchSteps, f.avlRootKey, ...f.keys, ...f.violations)
     for (const r of f.rebalances) add(r.key, r.node, r.rotations)
     add(f.rebalances.length)
+    for (const d of f.deletes ?? []) add(d.key, d.children, d.successor, d.rebalances.length, ...d.rebalances.map((r) => r.node))
     for (const [key, n] of Object.entries(f.nodes)) add(Number(key), n.height, n.balanceFactor, n.leftHeight, n.rightHeight)
   }
   for (const b of facts.bounds) add(b.n, b.best, b.worst, b.avlWorst)

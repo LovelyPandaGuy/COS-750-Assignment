@@ -5,6 +5,7 @@
 import type { Key } from '../../engine/tree'
 import type { BalanceFactorResult, RotationHintFacts, SpotResult } from '../../modules/practice'
 import type { PickResult, SearchMove } from '../../modules/searchPractice'
+import type { AfterDeleteResult } from '../../modules/deletePractice'
 import { answersOf, reasonOf, STRUCTURE_IDS, type Scenario, type StructureId } from '../../modules/compare'
 import type { ConventionsWording } from './conventionsWording'
 import { NEEDS, STRUCTURES } from './structures'
@@ -19,6 +20,11 @@ export interface FillInHintFacts {
   key: Key
   leftHeight: number
   rightHeight: number
+}
+
+export interface AfterDeleteHintFacts {
+  key: Key
+  side: 'left' | 'right' | null
 }
 
 export interface SpotHintFacts {
@@ -147,6 +153,30 @@ export const practiceModuleCopy = {
             return `${key} is at node ${m.at}.`
         }
       },
+    ],
+  },
+  /** C7 "find the unbalanced node after a delete" (add-module-c7-delete). [beyond ID]: the ID names no C7 activity. */
+  afterDelete: {
+    beforeLabel: 'Practice tree before the delete',
+    afterLabel: 'Practice tree after a plain BST delete, balance factors hidden',
+    deleted: (key: Key) => `${key} was deleted with a plain BST delete. Nothing has been rebalanced yet.`,
+    pickLabel: (key: Key | null) => (key === null ? 'Select a node in the tree after the delete.' : `Selected: node ${key}.`),
+    why: (r: AfterDeleteResult): string => {
+      switch (r.kind) {
+        case 'right':
+          return `Node ${r.answer} is the lowest node out of balance, so rebalancing starts there on the way back up.`
+        case 'higher':
+          return `Node ${r.picked} is out of balance too, but a lower node is as well. Rebalancing starts at the lowest one.`
+        case 'in-balance':
+          return `Node ${r.picked} is in balance. Look along the path from where the key was deleted up to the root.`
+      }
+    },
+    done: 'Press Next when you are ready.',
+    hints: [
+      (f: AfterDeleteHintFacts) =>
+        `Start where ${f.key} was removed and walk up toward the root. Work out each balance factor from the heights shown.`,
+      (f: AfterDeleteHintFacts) =>
+        f.side === null ? 'The node you are looking for is the root.' : `The node you are looking for is in the ${f.side} subtree of the root.`,
     ],
   },
 } as const

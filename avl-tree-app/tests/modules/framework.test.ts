@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import type { ModuleContent, Step } from '../../src/modules/schema'
+import type { ModuleContent, Step, TreeSource } from '../../src/modules/schema'
 import { EVENT_ACTIVITY, stepsFor } from '../../src/modules/schema'
 import { computeFacts, maxAvlHeight, searchBounds } from '../../src/modules/facts'
 import { validateModule } from '../../src/modules/validate'
@@ -250,5 +250,61 @@ describe('D13 AVL worst-case search bound for a size', () => {
   it('an empty tree has height -1 and no steps', () => {
     expect(maxAvlHeight(0)).toBe(-1)
     expect(searchBounds(0).avlWorst).toBe(0)
+  })
+})
+
+// Spec: add-module-c7-delete / module-framework delta. FR-ENG-03, FR-ENG-06, ID C7.
+describe('FR-ENG-06 delete figures and their facts', () => {
+  const RECAP = [50, 30, 70, 20, 40, 60, 80]
+  const MULTI = [8, 5, 11, 3, 7, 10, 12, 2, 4, 6, 9, 1]
+  const fig = (source: TreeSource) => computeFacts(step('d', 'content', { figures: [{ id: 't', source, label: 't' }] })).figures.t
+
+  it('two children: the successor takes its place', () => {
+    const f = fig({ kind: 'deleted', build: 'bst', keys: RECAP, remove: [50], rebalance: false })
+    expect(f.deletes).toEqual([{ key: 50, children: 2, successor: 60, rebalances: [] }])
+    expect(f.rootKey).toBe(60)
+    expect(f.inOrder).not.toContain(50)
+  })
+
+  it('rebalances are the engine ones, at 11 then 8, and the tree stays AVL', () => {
+    const f = fig({ kind: 'deleted', build: 'avl', keys: MULTI, remove: [12], rebalance: true })
+    expect(f.deletes![0].rebalances.map((r) => r.node)).toEqual([11, 8])
+    expect(f.isAvl).toBe(true)
+  })
+
+  it('without rebalancing nothing is recorded and 20 is out of balance', () => {
+    const f = fig({ kind: 'deleted', build: 'avl', keys: [20, 10, 30, 40], remove: [10], rebalance: false })
+    expect(f.deletes![0]).toMatchObject({ key: 10, children: 0, successor: null, rebalances: [] })
+    expect(f.violations).toEqual([20])
+  })
+
+  it('deleting a key that is not there is a source problem', () => {
+    const m = valid()
+    m.steps[3] = step('c', 'content', { figures: [{ id: 't', source: { kind: 'deleted', build: 'bst', keys: [1, 2], remove: [9], rebalance: false }, label: 't' }] })
+    expect(kinds(m)).toContain('source')
+  })
+
+  it('the multi-rebalance claim passes for two rebalances and is reported for one', () => {
+    const claimed = (keys: number[], remove: number) => {
+      const m = valid()
+      m.steps[3] = step('c', 'content', {
+        figures: [{ id: 't', source: { kind: 'deleted', build: 'avl', keys, remove: [remove], rebalance: true }, label: 't' }],
+        claims: [{ figure: 't', is: 'multi-rebalance' }],
+      })
+      return validateModule(m).filter((p) => p.kind === 'claim')
+    }
+    expect(claimed(MULTI, 12)).toEqual([])
+    const bad = claimed([20, 10, 30, 40], 10)
+    expect(bad).toHaveLength(1)
+    expect(bad[0].step).toBe('c')
+  })
+
+  it('delete numbers are accepted by the number check', () => {
+    const m = valid()
+    m.steps[3] = step('c', 'content', {
+      figures: [{ id: 't', source: { kind: 'deleted', build: 'bst', keys: RECAP, remove: [50], rebalance: false }, label: 't' }],
+      text: ({ figures: { t } }) => [`Deleting ${t.deletes![0].key}: it had ${t.deletes![0].children} children, so ${t.deletes![0].successor} moves up.`],
+    })
+    expect(kinds(m)).not.toContain('number')
   })
 })

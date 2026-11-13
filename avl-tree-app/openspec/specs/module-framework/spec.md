@@ -38,7 +38,7 @@ Each step SHALL belong to the activity its event maps to: hook, goals, recall an
 - **THEN** it reports an activity problem naming that step
 
 ### Requirement: Facts come from the engine
-A step SHALL name its trees by source (keys inserted into a plain BST, keys inserted into an AVL tree, or a seeded generator) and any search key or tree size. The framework SHALL build each tree and compute its facts with the engine: height, node count, keys, search step count for the named key, best and worst case search step counts for a size, the most nodes a search can visit in an AVL tree of that size, and AVL validity. Step text SHALL receive these facts and SHALL NOT contain them typed. (Guardrail, FR-ENG-03, D13)
+A step SHALL name its trees by source (keys inserted into a plain BST, keys inserted into an AVL tree, either of those followed by deletes with or without rebalancing, or a seeded generator) and any search key or tree size. The framework SHALL build each tree and compute its facts with the engine: height, node count, keys, search step count for the named key, best and worst case search step counts for a size, the most nodes a search can visit in an AVL tree of that size, AVL validity, and for each delete the key, its number of children, its in-order successor when it had two, and every rebalance with its node. Step text SHALL receive these facts and SHALL NOT contain them typed. (Guardrail, FR-ENG-03, FR-ENG-06, D13)
 
 #### Scenario: Chain facts
 - **GIVEN** a step whose tree is keys 10, 20, 30, 40, 50 into a plain BST, with search key 50
@@ -61,6 +61,21 @@ A step SHALL name its trees by source (keys inserted into a plain BST, keys inse
 #### Scenario: AVL worst case matches the minimum node counts
 - **WHEN** the AVL worst-case bound is computed for every n from 1 to 2,000
 - **THEN** for each n it is h + 1, where h is the largest height whose minimum AVL node count (1 for height 0, 2 for height 1, then the two before plus one) is at most n
+
+#### Scenario: Delete facts, two children
+- **GIVEN** a step whose tree is keys 50, 30, 70, 20, 40, 60, 80 into a plain BST, then 50 deleted without rebalancing
+- **WHEN** its facts are computed
+- **THEN** the delete of 50 had 2 children and its successor is 60, the root is 60 and 50 is not in the tree
+
+#### Scenario: Delete facts, rebalances
+- **GIVEN** a step whose tree is keys 8, 5, 11, 3, 7, 10, 12, 2, 4, 6, 9, 1 into an AVL tree, then 12 deleted with rebalancing
+- **WHEN** its facts are computed
+- **THEN** the delete records the engine's rebalances, at 11 and then at 8, and the tree is a valid AVL tree
+
+#### Scenario: Delete without rebalancing
+- **GIVEN** a step whose tree is keys 20, 10, 30, 40 into an AVL tree, then 10 deleted without rebalancing
+- **WHEN** its facts are computed
+- **THEN** no rebalance is recorded and node 20 is out of balance
 
 ### Requirement: Claims are checked against the engine
 A step MAY state boolean claims about its trees: is AVL, is perfect, root in range, has exactly one unbalanced node. The validator SHALL compute each claim with the engine and report any claim that is false.
@@ -181,3 +196,16 @@ A step SHALL be able to name pseudocode listings to show side by side, each with
 - **GIVEN** a step that names the loop and recursive search listings
 - **WHEN** it is shown
 - **THEN** both listings are present with their names, in that order, and no line is marked current
+
+### Requirement: Delete claims are checked
+A step MAY claim that a delete in one of its figures needs more than one rebalance. The validator SHALL compute the claim with the engine and report it when it is false. (ID C7)
+
+#### Scenario: True claim
+- **GIVEN** the two-rebalance delete of 12 above, claimed to need more than one rebalance
+- **WHEN** the validator checks it
+- **THEN** it reports no claim problem
+
+#### Scenario: False claim
+- **GIVEN** keys 20, 10, 30, 40 into an AVL tree, then 10 deleted with rebalancing, claimed to need more than one rebalance
+- **WHEN** the validator checks it
+- **THEN** it reports a claim problem naming the step
