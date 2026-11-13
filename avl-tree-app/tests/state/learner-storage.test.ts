@@ -5,7 +5,9 @@ import {
   SCHEMA_VERSION,
   type Attempt,
   type LearnerState,
+  type LectureQuestion,
 } from '../../src/state/learnerState'
+import { learnerReducer, type SessionState } from '../../src/state/learnerReducer'
 import {
   APP_PREFIX,
   LEARNER_KEY,
@@ -48,6 +50,7 @@ function sampleState(overrides: Partial<LearnerState> = {}): LearnerState {
       },
     ],
     subSkillStatus: { 'bf-compute': 'developing', 'height-count': 'secure' },
+    lectureQuestions: [],
     ...overrides,
   }
 }
@@ -62,6 +65,7 @@ function expectFresh(state: LearnerState) {
   expect(state.completedModules).toEqual([])
   expect(state.attempts).toEqual([])
   expect(state.subSkillStatus).toEqual({})
+  expect(state.lectureQuestions).toEqual([])
 }
 
 /** A backend whose every call throws, like blocked storage in some private modes. */
@@ -138,6 +142,17 @@ const attemptArb: fc.Arbitrary<Attempt> = fc
     { requiredKeys: ['questionId', 'at', 'answer', 'correct', 'hintsUsed'] },
   )
 
+const lectureQuestionArb: fc.Arbitrary<LectureQuestion> = fc.record(
+  {
+    questionId: fc.string({ minLength: 1 }),
+    module: moduleArb,
+    at: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()),
+    text: fc.string({ minLength: 1 }),
+    misconceptionId: fc.string({ minLength: 1 }),
+  },
+  { requiredKeys: ['questionId', 'module', 'at', 'text'] },
+)
+
 const stateArb: fc.Arbitrary<LearnerState> = fc.record(
   {
     schemaVersion: fc.constant(1),
@@ -148,8 +163,9 @@ const stateArb: fc.Arbitrary<LearnerState> = fc.record(
     completedModules: fc.uniqueArray(moduleArb),
     attempts: fc.array(attemptArb, { maxLength: 8 }),
     subSkillStatus: fc.dictionary(fc.string({ minLength: 1 }), statusArb),
+    lectureQuestions: fc.array(lectureQuestionArb, { maxLength: 4 }),
   },
-  { requiredKeys: ['schemaVersion', 'profileId', 'path', 'currentModule', 'completedModules', 'attempts', 'subSkillStatus'] },
+  { requiredKeys: ['schemaVersion', 'profileId', 'path', 'currentModule', 'completedModules', 'attempts', 'subSkillStatus', 'lectureQuestions'] },
 )
 
 function normaliseNickname(n: string | undefined): string | undefined {
@@ -197,6 +213,7 @@ describe('FR-ONB-02, NFR-05: no personal identifiers stored', () => {
         'profileId',
         'schemaVersion',
         'subSkillStatus',
+        'lectureQuestions',
       ].sort(),
     )
     expect(JSON.stringify(stored)).not.toContain('student@example.com')
@@ -463,5 +480,69 @@ describe('NFR-06: robustness edge cases (review)', () => {
     } finally {
       Object.defineProperty(globalThis, 'crypto', { value: original, configurable: true })
     }
+  })
+})
+
+// ---------- add-scaffold-ladder-and-retry-cap: lecture questions (FR-SCA-03, NFR-06, D9) ----------
+
+const LQ_WITH: LectureQuestion = {
+  questionId: 'chk3-bf',
+  module: 'C3',
+  at: '2026-11-13T10:00:00.000Z',
+  text: 'My answer subtracts the subtree heights in the other order. Could we go through this one?',
+  misconceptionId: 'M-BF-SIGN',
+}
+const LQ_WITHOUT: LectureQuestion = { questionId: 'chk6-tree', module: 'C6', at: '2026-11-13T10:05:00.000Z', text: 'Could we go through this one?' }
+
+describe('FR-SCA-03: lecture questions are stored', () => {
+  it('round trip with and without a misconception', () => {
+    const backend = memoryBackend()
+    const saved = sampleState({ lectureQuestions: [LQ_WITH, LQ_WITHOUT] })
+    createLearnerStorage(backend).save(saved)
+    const { state, status } = createLearnerStorage(backend).load()
+    expect(status).toBe('restored')
+    expect(state).toEqual(saved)
+  })
+
+  it('an older stored state without the field still loads', () => {
+    const backend = memoryBackend()
+    const raw = JSON.parse(JSON.stringify(sampleState())) as Record<string, unknown>
+    delete raw.lectureQuestions
+    backend.setItem(LEARNER_KEY, JSON.stringify(raw))
+    const { state, status } = createLearnerStorage(backend).load()
+    expect(status).toBe('restored')
+    expect(state.schemaVersion).toBe(1)
+    expect(state).toEqual(sampleState({ lectureQuestions: [] }))
+  })
+
+  const malformed: [string, (s: Record<string, unknown>) => void][] = [
+    ['lectureQuestions a string', (s) => (s.lectureQuestions = 'ask about rotations')],
+    ['an entry with module C10', (s) => (s.lectureQuestions = [{ ...LQ_WITH, module: 'C10' }])],
+    ['an entry with empty text', (s) => (s.lectureQuestions = [{ ...LQ_WITH, text: '' }])],
+    ['an entry with a numeric question ID', (s) => (s.lectureQuestions = [{ ...LQ_WITH, questionId: 7 }])],
+  ]
+
+  it.each(malformed)('malformed lecture question resets: %s', (_label, tamper) => {
+    const backend = memoryBackend()
+    const raw = JSON.parse(JSON.stringify(sampleState())) as Record<string, unknown>
+    tamper(raw)
+    backend.setItem(LEARNER_KEY, JSON.stringify(raw))
+    const result = createLearnerStorage(backend).load()
+    expect(result.status).toBe('reset-corrupt')
+    expectFresh(result.state)
+  })
+
+  it('recorded through the session', () => {
+    const before: SessionState = { learner: sampleState({ lectureQuestions: [LQ_WITHOUT] }), loadStatus: 'restored', persistent: true }
+    const after = learnerReducer(before, { type: 'lecture-question', question: LQ_WITH })
+    expect(after.learner.lectureQuestions).toEqual([LQ_WITHOUT, LQ_WITH])
+    expect({ ...after.learner, lectureQuestions: [] }).toEqual({ ...before.learner, lectureQuestions: [] })
+    expect(after.loadStatus).toBe('restored')
+    expect(after.persistent).toBe(true)
+  })
+
+  it('the inventory describes lecture questions', () => {
+    const learner = STORAGE_INVENTORY.find((e) => e.key === LEARNER_KEY)!
+    expect(learner.description).toMatch(/lecture/i)
   })
 })

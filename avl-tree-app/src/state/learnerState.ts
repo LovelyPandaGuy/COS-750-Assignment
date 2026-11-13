@@ -30,6 +30,16 @@ export interface Attempt {
   hintsUsed: number
 }
 
+/** A question the student wants to ask in the lecture, drafted at the retry cap (FR-SCA-03, D9). */
+export interface LectureQuestion {
+  questionId: string
+  module: ModuleId
+  /** ISO time it was drafted. */
+  at: string
+  text: string
+  misconceptionId?: string
+}
+
 export interface LearnerState {
   schemaVersion: number
   profileId: string
@@ -39,6 +49,7 @@ export interface LearnerState {
   completedModules: ModuleId[]
   attempts: Attempt[]
   subSkillStatus: Record<string, SubSkillStatus>
+  lectureQuestions: LectureQuestion[]
 }
 
 /** A fresh state for a new anonymous profile (FR-ONB-02). */
@@ -51,6 +62,7 @@ export function freshLearnerState(profileId: string): LearnerState {
     completedModules: [],
     attempts: [],
     subSkillStatus: {},
+    lectureQuestions: [],
   }
 }
 
@@ -88,6 +100,21 @@ function parseAttempt(raw: unknown): Attempt | null {
     attempt.misconceptionId = misconceptionId
   }
   return attempt
+}
+
+function parseLectureQuestion(raw: unknown): LectureQuestion | null {
+  if (!isObject(raw)) return null
+  const { questionId, module, at, text, misconceptionId } = raw
+  if (!isNonEmptyString(questionId)) return null
+  if (!isOneOf(MODULE_IDS, module)) return null
+  if (typeof at !== 'string' || Number.isNaN(Date.parse(at))) return null
+  if (!isNonEmptyString(text)) return null
+  const question: LectureQuestion = { questionId, module, at, text }
+  if (misconceptionId !== undefined) {
+    if (!isNonEmptyString(misconceptionId)) return null
+    question.misconceptionId = misconceptionId
+  }
+  return question
 }
 
 /**
@@ -128,6 +155,17 @@ export function parseLearnerState(raw: unknown): LearnerState | null {
   // instead of hitting the prototype setter.
   const subSkillStatus: Record<string, SubSkillStatus> = Object.fromEntries(statusEntries)
 
+  // Added after schema version 1 shipped: a state stored without it reads as an empty list (D18).
+  const lectureQuestions: LectureQuestion[] = []
+  if (raw.lectureQuestions !== undefined) {
+    if (!Array.isArray(raw.lectureQuestions)) return null
+    for (const q of raw.lectureQuestions) {
+      const question = parseLectureQuestion(q)
+      if (question === null) return null
+      lectureQuestions.push(question)
+    }
+  }
+
   const state: LearnerState = {
     schemaVersion: SCHEMA_VERSION,
     profileId: raw.profileId,
@@ -136,6 +174,7 @@ export function parseLearnerState(raw: unknown): LearnerState | null {
     completedModules,
     attempts,
     subSkillStatus,
+    lectureQuestions,
   }
   const nickname = normaliseNickname(raw.nickname as string | undefined)
   if (nickname !== undefined) state.nickname = nickname

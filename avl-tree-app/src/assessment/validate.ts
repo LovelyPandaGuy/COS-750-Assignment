@@ -1,7 +1,9 @@
 // The bank validator (add-question-model-and-bank, design decision 8; FR-ASM-02, FR-ASM-03, D19).
 // Pure and never throws: every problem is reported.
+import { conventionsWording } from '../content/modules/conventionsWording'
 import { MISCONCEPTIONS, type MisconceptionEntry } from '../content/questions/misconceptions'
 import { OUTCOMES, type OutcomeEntry } from '../content/questions/outcomes'
+import { GENERAL_HINTS, HINTS, type HintEntry } from '../content/questions/scaffolds'
 import { SUB_SKILLS, type SubSkillEntry } from '../content/questions/subSkills'
 import { BALANCE_RANGE, EMPTY_HEIGHT, LEAF_HEIGHT } from '../engine/conventions'
 import { numbersIn, statesConvention, VALIDATION_WORDING, type Problem } from '../modules/validate'
@@ -15,6 +17,9 @@ export interface BankRecords {
   outcomes: Record<LoId, OutcomeEntry>
   subSkills: Record<string, SubSkillEntry>
   misconceptions: Record<string, MisconceptionEntry>
+  /** Scaffold hints per misconception and per sub-skill (add-scaffold-ladder-and-retry-cap). */
+  hints?: Record<string, HintEntry>
+  generalHints?: Record<string, HintEntry>
 }
 
 export interface ValidateOptions {
@@ -24,7 +29,11 @@ export interface ValidateOptions {
 }
 
 const DEFAULT_SEEDS = Array.from({ length: 100 }, (_, i) => i)
-const DEFAULT_RECORDS: BankRecords = { outcomes: OUTCOMES, subSkills: SUB_SKILLS, misconceptions: MISCONCEPTIONS }
+const DEFAULT_RECORDS: BankRecords = { outcomes: OUTCOMES, subSkills: SUB_SKILLS, misconceptions: MISCONCEPTIONS, hints: HINTS, generalHints: GENERAL_HINTS }
+/** The text as whole words, any case: a short option such as a case name must not match inside another word. */
+const wholeWords = (text: string) => new RegExp(`(?<![\\w])${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w])`, 'i')
+/** A value left out of a rendered text. */
+const PLACEHOLDER = /\b(?:undefined|NaN|null)\b/
 /** D27: feedback never judges. */
 const JUDGING = /\b(?:wrong|fail\w*|incorrect)\b/i
 /** FR-ASM-01: modules with a check, and how many items each has. */
@@ -108,6 +117,45 @@ function instanceProblems(item: BankItem, inst: Instance, check: Instance, recor
   return out
 }
 
+/**
+ * Every hint the ladder can show for an instance (its sub-skill's general hint and one per
+ * misconception its kind produces), checked like the item's own text, plus: no placeholder and no
+ * answer. Missing hints are reported by validateBank's coverage pass, not here.
+ */
+function hintProblems(item: BankItem, kind: Kind, inst: Instance, records: BankRecords): Problem[] {
+  const out: Problem[] = []
+  const add = (pk: Problem['kind'], label: string, message: string, value?: string | number) => {
+    const p: Problem = { kind: pk, step: item.id, message: `${item.id} seed ${inst.seed} hint ${label}: ${message}` }
+    if (value !== undefined) p.value = value
+    out.push(p)
+  }
+  const hints = records.hints ?? HINTS
+  const general = records.generalHints ?? GENERAL_HINTS
+  const entries: [string, HintEntry | undefined][] = [[item.subSkill, general[item.subSkill]], ...kind.misconceptions.map((m): [string, HintEntry | undefined] => [m, hints[m]])]
+
+  const allowed = new Set<number>([LEAF_HEIGHT, EMPTY_HEIGHT, ...BALANCE_RANGE, ...inst.numbers])
+  const stemNumbers = new Set(numbersIn(inst.stem))
+  const correct = inst.options?.find((o) => o.correct)
+  for (const [label, entry] of entries) {
+    if (entry === undefined) continue
+    const text = entry.text(inst.facts, VALIDATION_WORDING)
+    const plain = entry.text(inst.facts, conventionsWording())
+    if (statesConvention(text)) add('wording', label, `"${text}" states sign, lean or case wording (D19)`, text)
+    if (JUDGING.test(text)) add('wording', label, `"${text}" uses judging words (D27)`, text)
+    if (PLACEHOLDER.test(plain)) add('wording', label, `"${plain}" has a placeholder`, plain)
+    const numbers = numbersIn(text)
+    for (const n of numbers) if (!allowed.has(n)) add('number', label, `${n} in "${text}" is not a fact of the instance`, n)
+    // D27, guardrail: a hint says where to look, never what the answer is.
+    if (typeof inst.answer === 'number' && numbers.includes(inst.answer) && !stemNumbers.has(inst.answer)) {
+      add('answer', label, `"${plain}" states the answer ${inst.answer}`, label)
+    }
+    if (correct !== undefined && typeof correct.value === 'string' && !inst.stem.includes(correct.text) && wholeWords(correct.text).test(plain)) {
+      add('answer', label, `"${plain}" contains the correct option "${correct.text}"`, label)
+    }
+  }
+  return out
+}
+
 /** Item-level checks: tags, explanations, and every instance over the seeds. */
 export function validateItems(items: readonly BankItem[], options: ValidateOptions = {}): Problem[] {
   const seeds = options.seeds ?? DEFAULT_SEEDS
@@ -137,6 +185,7 @@ export function validateItems(items: readonly BankItem[], options: ValidateOptio
         const inst = instantiate(item, seed, 0, { kinds })
         const check = instantiate(item, seed, 0, { kinds, wording: VALIDATION_WORDING })
         instanceProblems(item, inst, check, records).forEach(push)
+        hintProblems(item, kind, inst, records).forEach(push)
       } catch (e) {
         push({ kind: 'bank', step: item.id, value: seed, message: `${item.id} seed ${seed}: cannot be built (${(e as Error).message})` })
       }
@@ -174,6 +223,15 @@ export function validateBank(items: readonly BankItem[], options: ValidateOption
   }
   for (const m of Object.keys(records.misconceptions)) {
     if (!produced.has(m)) problems.push({ kind: 'misconception', value: m, message: `${m} is never produced by any item` })
+  }
+  // FR-SCA-02: every misconception and every sub-skill has a scaffold.
+  const hints = records.hints ?? HINTS
+  const general = records.generalHints ?? GENERAL_HINTS
+  for (const m of Object.keys(records.misconceptions)) {
+    if (hints[m] === undefined) problems.push({ kind: 'scaffold', value: m, message: `${m} has no hint` })
+  }
+  for (const s of Object.keys(records.subSkills)) {
+    if (general[s] === undefined) problems.push({ kind: 'scaffold', value: s, message: `sub-skill ${s} has no general hint` })
   }
   return problems
 }

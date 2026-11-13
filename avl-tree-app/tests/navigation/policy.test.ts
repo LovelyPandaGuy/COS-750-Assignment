@@ -17,6 +17,7 @@ const stateArb: fc.Arbitrary<LearnerState> = fc.record({
   completedModules: fc.uniqueArray(moduleArb),
   attempts: fc.constant([]),
   subSkillStatus: fc.constant({}),
+  lectureQuestions: fc.constant([]),
 })
 
 describe('D20 each module names one prerequisite', () => {

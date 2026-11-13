@@ -22,7 +22,7 @@ Work with unknowns per D18: assume, record the assumption in `decisions.md`, kee
 
 - 19 `add-question-model-and-bank`: attempt policy differs for practice and checks; record hints used (D21).
 - 20 `add-checks-and-feedback`: four-part feedback, "Not quite yet", no cross glyph (D27).
-- 21 `add-scaffold-ladder-and-retry-cap`: `RETRY_CAP` and `PRACTICE_HINTS` in one config; review offered when practice hints run out (D9, D21).
+- 21 `add-scaffold-ladder-and-retry-cap`: built 13 Nov before change 20, as logic only (D75 to D82): check-question session, ladder (hint, worked example, guided step-through), cap of 3 with a drafted lecture question, hints flagged for G3, `lectureQuestions` in learner state. Change 20 renders it.
 - 22 `add-diagnostic-c1-and-routing`: emit route events (D28).
 - 24 `add-accessibility-settings-and-audit`: read-aloud is stretch (D26); add the colour-vision emulation check (D25).
 - 26 `add-event-log-and-export`: persist route events (D28).

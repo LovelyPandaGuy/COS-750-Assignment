@@ -11,3 +11,9 @@ export const RETRY_CAP = 3
 
 /** Keys in a "be the algorithm" practice tree, drawn from 1 to 99 (add-module-c4-search, proposal item 5). */
 export const SEARCH_PRACTICE_KEYS = 7
+
+/**
+ * The scaffold ladder for a check question, in escalation order (FR-SCA-02, D9, D21). A wrong answer
+ * or a request opens the next rung; at RETRY_CAP every rung opens.
+ */
+export const SCAFFOLD_LADDER = ['hint', 'worked-example', 'guided'] as const
