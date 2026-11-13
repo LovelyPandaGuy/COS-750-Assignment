@@ -4,7 +4,8 @@
  * development double-render cannot turn "new" or "reset-corrupt" into "restored".
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
-import type { LearnerState } from './learnerState'
+import { OWN_LECTURE_QUESTION, OWN_QUESTION_MAX_LENGTH } from '../modules/config'
+import type { Attempt, LearnerPath, LearnerState, LectureQuestion, ModuleId } from './learnerState'
 import { learnerReducer, type SessionStatus } from './learnerReducer'
 import type { LoadResult, StorageAdapter } from './storage'
 
@@ -14,6 +15,16 @@ export interface LearnerSession {
   persistent: boolean
   /** Clear stored data and start again with a fresh profile (FR-ONB-04). */
   reset: () => void
+  /** Save one marked answer (add-checks-and-feedback). It never completes a module. */
+  recordAttempt: (attempt: Attempt) => void
+  /** Add a module to the completed ones; a repeat changes nothing. */
+  completeModule: (module: ModuleId) => void
+  /** Save a lecture question; a drafted one is kept once per item (add-scaffold-ladder-and-retry-cap). */
+  recordLectureQuestion: (question: LectureQuestion) => void
+  /** Set the learning path, and optionally the current module (skipping the diagnostic, FR-DIA-04). */
+  setPath: (path: LearnerPath, currentModule?: ModuleId) => void
+  /** Add one of the student's own lecture questions, stored as a lecture question with ID `own` (FR-RDY-02, D91); blank text changes nothing. */
+  addOwnQuestion: (text: string) => void
 }
 
 const Ctx = createContext<LearnerSession | null>(null)
@@ -52,9 +63,22 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
     onReset?.()
   }, [storage, onReset])
 
+  const recordAttempt = useCallback((attempt: Attempt) => dispatch({ type: 'attempt-recorded', attempt }), [])
+  const completeModule = useCallback((module: ModuleId) => dispatch({ type: 'module-completed', module }), [])
+
+  const recordLectureQuestion = useCallback((question: LectureQuestion) => dispatch({ type: 'lecture-question', question }), [])
+
+  const setPath = useCallback((path: LearnerPath, currentModule?: ModuleId) => dispatch({ type: 'path-set', path, currentModule }), [])
+
+  const addOwnQuestion = useCallback((text: string) => {
+    const trimmed = text.trim().slice(0, OWN_QUESTION_MAX_LENGTH)
+    if (trimmed === '') return
+    dispatch({ type: 'lecture-question', question: { questionId: OWN_LECTURE_QUESTION, module: 'C9', at: new Date().toISOString(), text: trimmed } })
+  }, [])
+
   const value = useMemo<LearnerSession>(
-    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset }),
-    [state, reset],
+    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion, setPath, addOwnQuestion }),
+    [state, reset, recordAttempt, completeModule, recordLectureQuestion, setPath, addOwnQuestion],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
@@ -64,4 +88,10 @@ export function useLearner(): LearnerSession {
   const session = useContext(Ctx)
   if (session === null) throw new Error('useLearner must be used inside LearnerProvider')
   return session
+}
+
+/** The session when there is one. Components that only read it for an extra (a route suggestion) use this, so they still render alone. */
+// eslint-disable-next-line react-refresh/only-export-components -- the hook belongs with its provider
+export function useOptionalLearner(): LearnerSession | null {
+  return useContext(Ctx)
 }

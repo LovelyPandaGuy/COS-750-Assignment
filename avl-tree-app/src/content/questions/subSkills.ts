@@ -1,9 +1,9 @@
 // Sub-skills, each tied to one outcome (SE glossary "Sub-skill"; assumed, proposal item 3). The IDs
 // follow the SE document's own example, identify-rebalance-case.
-import type { LoId } from '../../assessment/ids'
+import type { OutcomeTag } from '../../assessment/ids'
 
 export interface SubSkillEntry {
-  outcome: LoId
+  outcome: OutcomeTag
   /** Not used by the module checks; kept for a later bank. */
   reserved?: 'readiness'
 }
@@ -23,4 +23,9 @@ export const SUB_SKILLS: Record<string, SubSkillEntry> = {
   'rebalance-insert': { outcome: 'LO7' },
   'delete-rebalance': { outcome: 'LO8' },
   'choose-structure': { outcome: 'LO9' },
+  // The C1 prerequisite sub-skills (FR-DIA-01).
+  'bst-terminology': { outcome: 'PRE' },
+  'bst-insert': { outcome: 'PRE' },
+  'bst-search': { outcome: 'PRE' },
+  'tree-height': { outcome: 'PRE' },
 }

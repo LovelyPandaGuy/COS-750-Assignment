@@ -72,6 +72,31 @@ export function startCheck(item: BankItem, seed: number): CheckSession {
   return { itemId: item.id, seed, attempt: 0, rungs: 0, outcome: 'open' }
 }
 
+/**
+ * The session a reload returns to, rebuilt from the item's stored attempts (oldest first): each wrong
+ * attempt counts as an answer that opened one rung, a correct one closes the session. Help requested
+ * before a reload is not stored, so it is not restored. A capped session holds no draft here: the
+ * draft was stored when the cap was reached.
+ */
+export function resumeCheck(item: BankItem, seed: number, stored: readonly Attempt[]): CheckSession {
+  let session = startCheck(item, seed)
+  for (const a of stored) {
+    if (session.outcome !== 'open') break
+    if (a.correct) {
+      session = { ...session, outcome: 'correct' }
+      continue
+    }
+    const next: CheckSession = { ...session }
+    if (a.misconceptionId !== undefined) next.lastMisconception = a.misconceptionId as MisconceptionId
+    else delete next.lastMisconception
+    session =
+      session.attempt + 1 >= RETRY_CAP
+        ? { ...next, outcome: 'capped', rungs: TOP }
+        : { ...next, attempt: session.attempt + 1, rungs: Math.min(session.rungs + 1, TOP) }
+  }
+  return session
+}
+
 export function currentInstance(item: BankItem, session: CheckSession, options: ScaffoldOptions = {}): Instance {
   return instantiate(item, session.seed, session.attempt, { wording: options.wording })
 }

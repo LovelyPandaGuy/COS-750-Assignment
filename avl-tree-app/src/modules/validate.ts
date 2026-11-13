@@ -9,6 +9,7 @@ import { renderStep } from './render'
 import { STEP_ACTIVITIES, activityOf, type ClaimKind, type GagneEvent, type ModuleContent, type Step } from './schema'
 
 export type ProblemKind =
+  | 'scaffold'
   | 'order'
   | 'activity'
   | 'source'
@@ -245,9 +246,33 @@ function stepScenarioProblems(step: Step): Problem[] {
   return [...problems, ...validateScenarios(found, STRUCTURES, step.id), ...numberProblems(step, texts, none), ...wordingProblems(step, texts)]
 }
 
+/** Hook and goals once each, at least one recall, and the events in order; no check or summary needed (add-diagnostic-c1-and-routing). */
+function sequenceOrderProblems(steps: Step[]): Problem[] {
+  const problems: Problem[] = []
+  const count = (e: GagneEvent) => steps.filter((s) => s.event === e).length
+  for (const e of ['hook', 'goals'] as const) {
+    if (count(e) !== 1) problems.push({ kind: 'order', message: `${e} appears ${count(e)} times; it must appear exactly once` })
+  }
+  if (count('recall') === 0) problems.push({ kind: 'order', message: 'recall is missing; at least one is needed' })
+  for (let i = 0; i + 1 < steps.length; i++) {
+    const [a, b] = [steps[i], steps[i + 1]]
+    if (RANK[a.event] > RANK[b.event]) problems.push({ kind: 'order', step: a.id, message: `${a.id} (${a.event}) comes before ${b.id} (${b.event})` })
+  }
+  return problems
+}
+
+/** A short content sequence that is not a module, such as the BST refresher: the step rules, none of the activity rules. */
+export function validateSequence(content: ModuleContent): Problem[] {
+  return [...sequenceOrderProblems(content.steps), ...stepContentProblems(content.steps)]
+}
+
 export function validateModule(content: ModuleContent): Problem[] {
-  const problems = [...orderProblems(content.steps), ...activityProblems(content.steps)]
-  for (const step of content.steps) {
+  return [...orderProblems(content.steps), ...activityProblems(content.steps), ...stepContentProblems(content.steps)]
+}
+
+function stepContentProblems(steps: Step[]): Problem[] {
+  const problems: Problem[] = []
+  for (const step of steps) {
     const r = renderStep(step, 0, undefined, VALIDATION_WORDING)
     const texts = [r.heading, ...r.paragraphs, ...(r.rule === null ? [] : [r.rule]), ...r.labels]
     problems.push(
