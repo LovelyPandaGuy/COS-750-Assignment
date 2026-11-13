@@ -73,7 +73,11 @@ These are conflicts between the design and the decisions in `.claude/docs/decisi
 
 - Elevation values e1 and e2 are named but not specified (`tokens.css`: `[OPEN]`).
 - Dark theme: no values for disabled text and background, the correct-panel colours, the not-quite-yet border and icon, the neutral tree node, or pressed. Listed at the bottom of the dark block in `tokens.css`.
-- Fonts: the design uses Atkinson Hyperlegible Next and Mono from Google Fonts. The app makes no network calls after load, so self-host the font files in `src/ui/fonts/` and add `@font-face` rules. Not done yet.
+- Fonts: done (add-ui-foundation, D98): Atkinson Hyperlegible Next and Mono are self-hosted in `src/ui/fonts/` with `@font-face` rules.
+- Breakpoints: none stated; 390, 768 and 1366 assumed (D93).
+- Pressed for secondary and quiet buttons, chip hover: not stated; assumed (D94).
+- Bloom level analyse (LO7, LO9): no colour or glyph; OutcomeChip does not show it yet (D95).
+- TopBar progress area ("revealed structure"): not drawn; an empty slot for now (D92).
 
 ## Rules for agents
 

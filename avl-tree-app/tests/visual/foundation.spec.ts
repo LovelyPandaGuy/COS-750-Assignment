@@ -91,6 +91,8 @@ test('D3 a Button is activated by click, Enter and Space', async ({ page }) => {
   await expect(count).toHaveText('3');
 });
 
+// Playwright needs the fixtures argument destructured, even when no fixture is used.
+// eslint-disable-next-line no-empty-pattern
 test('the gallery is not part of the production build', async ({}, info) => {
   test.skip(info.project.name !== 'desktop', 'one build is enough');
   test.setTimeout(120_000);

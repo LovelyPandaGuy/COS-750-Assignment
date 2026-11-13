@@ -77,6 +77,11 @@
 
   /* ---- Targets ---- */
   --target-min: 44px;
+
+  /* ---- Layout widths (add-ui-foundation). Not variables: var() cannot be used inside @media.
+     Phone 390 px (default, no query), tablet from 768 px, desktop from 1366 px. Mobile first:
+     use only @media (min-width: 768px) and @media (min-width: 1366px). The source is
+     src/ui/breakpoints.ts; the style lint allows only these two queries. ---- */
 }
 
 /* Dark theme: same roles. Defined in the design system, detailed screens to follow. */
@@ -152,7 +157,9 @@
 }
 
 /* One focus style everywhere: 2px ring with a 2px gap, survives every background. */
-:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+/* [data-force='focus'] lets the development-only gallery show this ring without real focus (add-ui-foundation). */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible,
+[data-force='focus'] {
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-gap);
 }

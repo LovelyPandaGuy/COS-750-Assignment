@@ -84,7 +84,7 @@ This is what is already in place. For the motivation, see proposal.md, "Why".
    - `playwright.config.ts` defines three projects: 390×844, 768×1024 and 1366×768.
    - `webServer` runs `vite --port 5174 --strictPort`, and the baseURL is localhost.
    - A route handler fails any request to another origin. That is the no-network assertion.
-   - `toHaveScreenshot` uses `maxDiffPixelRatio: 0.01` and `animations: 'disabled'`.
+   - `toHaveScreenshot` uses `maxDiffPixelRatio: 0.001` (0.1%; 1% let a changed chip radius pass unnoticed) and `animations: 'disabled'`.
    - The light and dark shots are taken per width, plus one greyscale shot at 1366 px, using a `filter: grayscale(1)` style injected for that run.
    - Baselines live in `tests/visual/__screenshots__/` and are committed.
    - `vitest.config` excludes `tests/visual/**`, so `npm test` stays fast and needs no browser.
@@ -100,7 +100,7 @@ This is what is already in place. For the motivation, see proposal.md, "Why".
 - **Pixel baselines are brittle across OS and font hinting.** Mitigations:
   - self-hosted fonts
   - one OS for baselines (open question 6)
-  - a 1% tolerance
+  - a 0.1% tolerance
   - a separate script, so a flaky visual test never blocks `npm test`
   - If the developers' OSes differ, the follow-up is the Playwright Docker image.
 - **Contracts for 26 unbuilt components fix props before those components' own specs exist.** Mitigation: each contract holds only what its frame shows. A later change may widen a contract, which is a type change caught at every caller. The stub list test forces each real component to replace its stub.

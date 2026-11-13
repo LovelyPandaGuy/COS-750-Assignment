@@ -1,0 +1,9 @@
+/* Stub placeholders (add-ui-foundation). Tokens only. A dashed box says "not built yet" without content. */
+.stub {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  font: var(--type-label);
+  color: var(--text-secondary);
+  border: 1px dashed var(--border-control);
+  border-radius: var(--radius-md);
+}

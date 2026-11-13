@@ -1,0 +1,200 @@
+/*
+ * Base components (add-ui-foundation; design system section 04). Tokens only.
+ * The focus ring is the single rule in tokens.css; nothing here sets an outline.
+ * Each variant and state assigns a few custom properties (--btn-*, --chip-*, --badge-*), and the shared
+ * rule reads them, so a state cannot drift from its variant. [data-force] lets the development-only
+ * gallery show hover and pressed without a pointer; it shares the real state's selector list.
+ * No transitions: states snap, which also honours reduced motion (quality bar 9).
+ */
+
+/* ---- Button: primary (one per screen), secondary, quiet ---- */
+.btn {
+  --btn-bg: var(--bg-surface);
+  --btn-fg: var(--action-primary);
+  --btn-border: var(--border-control);
+  --btn-line: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: var(--space-2) var(--space-4);
+  font: var(--type-body);
+  font-weight: 700;
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  border: 2px solid var(--btn-border);
+  border-radius: var(--radius-md);
+  text-decoration: var(--btn-line);
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.btn-primary {
+  --btn-bg: var(--action-primary);
+  --btn-fg: var(--bg-surface);
+  --btn-border: var(--action-primary);
+}
+.btn-primary:hover:not(:disabled),
+.btn-primary[data-force='hover'] {
+  --btn-bg: var(--action-primary-hover);
+  --btn-border: var(--action-primary-hover);
+}
+.btn-primary:active:not(:disabled),
+.btn-primary[data-force='pressed'] {
+  --btn-bg: var(--action-primary-pressed);
+  --btn-border: var(--action-primary-pressed);
+}
+
+.btn-secondary {
+  --btn-bg: var(--bg-surface);
+  --btn-fg: var(--action-primary);
+  --btn-border: var(--border-control);
+}
+.btn-secondary:hover:not(:disabled),
+.btn-secondary[data-force='hover'] {
+  --btn-bg: var(--action-primary-tint);
+}
+/* [OPEN] The design system shows a pressed secondary but tokens.css has no value for it (assumed, D18). */
+.btn-secondary:active:not(:disabled),
+.btn-secondary[data-force='pressed'] {
+  --btn-bg: var(--action-primary-tint);
+  --btn-border: var(--action-primary);
+}
+
+/* Quiet: no box. Hover adds an underline, the non-colour cue the design system names. */
+.btn-quiet {
+  --btn-bg: none;
+  --btn-fg: var(--action-primary);
+  --btn-border: transparent;
+}
+.btn-quiet:hover:not(:disabled),
+.btn-quiet[data-force='hover'] {
+  text-decoration: underline;
+}
+/* [OPEN] Quiet pressed is not given a value (assumed, D18): the pressed ink, still underlined. */
+.btn-quiet:active:not(:disabled),
+.btn-quiet[data-force='pressed'] {
+  --btn-fg: var(--action-primary-pressed);
+  text-decoration: underline;
+}
+
+/* Disabled keeps a readable label and is paired with its reason on screen. */
+.btn:disabled {
+  --btn-bg: var(--disabled-bg);
+  --btn-fg: var(--disabled-text);
+  --btn-border: var(--border-subtle);
+  cursor: not-allowed;
+}
+.btn-quiet:disabled {
+  --btn-bg: none;
+  --btn-border: transparent;
+}
+.btn-reason {
+  font: var(--type-body);
+  color: var(--text-secondary);
+}
+
+/* ---- OutcomeChip: Bloom word + outline glyph, then the outcome ---- */
+.chip {
+  --chip-ink: var(--text-secondary);
+  --chip-tint: var(--bg-surface);
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  max-width: 100%;
+  padding: var(--space-1) var(--space-3);
+  font: var(--type-body);
+  color: var(--text-primary);
+  background: var(--chip-tint);
+  border: 1px solid var(--chip-ink);
+  /* The design system gives chips the pill radius, drawn for one line. Outcome text wraps on a phone
+     and in tables, and wrapped text collides with a pill's ends, so the chip uses the default radius. */
+  border-radius: var(--radius-md);
+  text-align: start;
+}
+.chip-remember { --chip-ink: var(--bloom-remember); --chip-tint: var(--bloom-remember-tint); }
+.chip-understand { --chip-ink: var(--bloom-understand); --chip-tint: var(--bloom-understand-tint); }
+.chip-apply { --chip-ink: var(--bloom-apply); --chip-tint: var(--bloom-apply-tint); }
+
+.chip-level {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font: var(--type-label);
+  color: var(--chip-ink);
+}
+.chip-glyph,
+.badge-icon {
+  flex: none;
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+/* Interactive only where it opens the outcome (the readiness summary); a static tag elsewhere. */
+.chip-interactive {
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+.chip-interactive:hover:not(:disabled),
+.chip-interactive[data-force='hover'] {
+  text-decoration: underline;
+}
+.chip-interactive:disabled {
+  --chip-ink: var(--disabled-text);
+  --chip-tint: var(--disabled-bg);
+  color: var(--disabled-text);
+  cursor: not-allowed;
+}
+
+/* ---- MasteryBadge: word + fill level (full, half, empty); never icon only ---- */
+/* The pill holds the icon and word only; a change line sits beside it, outside the tint, so the pill
+   never grows when the line wraps. */
+.badge {
+  --badge-ink: var(--text-secondary);
+  --badge-tint: var(--bg-surface);
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  font: var(--type-body);
+  color: var(--text-primary);
+}
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--badge-tint);
+  border-radius: var(--radius-pill);
+}
+.badge-secure { --badge-ink: var(--mastery-secure); --badge-tint: var(--mastery-secure-tint); }
+.badge-developing { --badge-ink: var(--mastery-developing); --badge-tint: var(--mastery-developing-tint); }
+.badge-not-yet { --badge-ink: var(--mastery-notyet); --badge-tint: var(--mastery-notyet-tint); }
+
+.badge-icon { color: var(--badge-ink); }
+.badge-word { font-weight: 700; }
+.badge-change {
+  font: var(--type-label);
+  color: var(--text-secondary);
+}
+/* Compact, for tables: same icon and word, no pill. */
+.badge-compact .badge-pill {
+  padding: 0;
+  background: none;
+}
+
+/* Text for screen readers only. */
+.base-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
