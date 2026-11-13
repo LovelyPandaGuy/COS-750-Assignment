@@ -1,0 +1,336 @@
+{
+  "heightOfLeaf": 0,
+  "heightOfEmptyTree": -1,
+  "balanceFactor": "height(right) - height(left)",
+  "validBalanceFactors": [
+    -1,
+    0,
+    1
+  ],
+  "unbalancedNode": "n",
+  "cases": {
+    "1": {
+      "code": "LL",
+      "side": "outside",
+      "insertedInto": "left subtree of n.left",
+      "fix": [
+        "rotateRight(n)"
+      ]
+    },
+    "2": {
+      "code": "LR",
+      "side": "inside",
+      "insertedInto": "right subtree of n.left",
+      "fix": [
+        "rotateLeft(n.left)",
+        "rotateRight(n)"
+      ]
+    },
+    "3": {
+      "code": "RL",
+      "side": "inside",
+      "insertedInto": "left subtree of n.right",
+      "fix": [
+        "rotateRight(n.right)",
+        "rotateLeft(n)"
+      ]
+    },
+    "4": {
+      "code": "RR",
+      "side": "outside",
+      "insertedInto": "right subtree of n.right",
+      "fix": [
+        "rotateLeft(n)"
+      ]
+    }
+  },
+  "deletion": "leaf nodes only",
+  "deletionRotation": {
+    "bfPlus2": {
+      "childBfAtLeast0": "rotateLeft(n)",
+      "childBfNegative": [
+        "rotateRight(n.right)",
+        "rotateLeft(n)"
+      ]
+    },
+    "bfMinus2": {
+      "childBfAtMost0": "rotateRight(n)",
+      "childBfPositive": [
+        "rotateLeft(n.left)",
+        "rotateRight(n)"
+      ]
+    },
+    "note": "Content for LO7 uses only examples that need at most one single rotation."
+  },
+  "keys": "Integers in most trees; capital letters in the examples taken from the COS212 slides (compared alphabetically).",
+  "labels": {
+    "caseName": {
+      "1": "Case 1 (LL)",
+      "2": "Case 2 (LR)",
+      "3": "Case 3 (RL)",
+      "4": "Case 4 (RR)"
+    },
+    "rotation": {
+      "single": "single rotation",
+      "double": "double rotation",
+      "LR": "Left-Right double rotation",
+      "RL": "Right-Left double rotation",
+      "left": "left rotation",
+      "right": "right rotation"
+    },
+    "branch": {
+      "left": "left branch",
+      "right": "right branch"
+    },
+    "bigO": "O(log n)",
+    "notation": "O(lg n) and O(log n) mean the same.",
+    "confidence": {
+      "sure": "Sure",
+      "unsure": "Not sure"
+    },
+    "found": "Found",
+    "notFound": "Not found",
+    "none": "None",
+    "ready": "Ready",
+    "revise": "Revise",
+    "secure": "Secure",
+    "needsReview": "Needs review",
+    "progress": "Lesson {current} of {total}"
+  },
+  "feedback": {
+    "parts": [
+      "verdict",
+      "reason",
+      "reviewLink",
+      "nextStep"
+    ],
+    "verdictCorrect": "That’s right.",
+    "verdictIncorrect": [
+      "Not quite.",
+      "Almost there."
+    ],
+    "reviewLink": "Review: {concept}",
+    "nextStepCorrect": "Continue",
+    "nextStepRetry": "Try again",
+    "nextStepNoRetriesLeft": "Continue",
+    "afterReattempt": "You can open the review for this idea at any time from the lesson list.",
+    "neverSay": [
+      "Wrong!",
+      "Incorrect!",
+      "Fail"
+    ]
+  },
+  "routing": {
+    "high": {
+      "message": "Ready for the next lesson.",
+      "default": "continue",
+      "options": [
+        "continue",
+        "challenge"
+      ],
+      "challengeLabel": "Try the challenge"
+    },
+    "middle": {
+      "message": "You’ve got the main idea. Review {missedConcept}?",
+      "default": "continue",
+      "options": [
+        "targeted-review",
+        "continue"
+      ]
+    },
+    "low": {
+      "message": "Let’s revisit {missedConcept}, with a worked example.",
+      "default": "review",
+      "options": [
+        "review",
+        "continue"
+      ]
+    },
+    "nudge": {
+      "afterSkips": 2,
+      "message": "This lesson builds on {missedConcept}, which you missed. A quick review might help."
+    },
+    "ladder": [
+      {
+        "level": 1,
+        "support": "static-hint",
+        "then": "new-question"
+      },
+      {
+        "level": 2,
+        "support": "worked-example",
+        "then": "new-question"
+      },
+      {
+        "level": 3,
+        "support": "step-through",
+        "then": "continue-and-add-lecture-question"
+      }
+    ],
+    "diagnostic": {
+      "minCorrect": 4,
+      "of": 5,
+      "pass": "c2",
+      "fail": "c1-refresher"
+    }
+  },
+  "captions": {
+    "search.compareLess": "{key} < {node}: go left.",
+    "search.compareGreater": "{key} > {node}: go right.",
+    "search.found": "{key} = {node}: found.",
+    "search.notFound": "The {side} branch of {node} is empty, so {key} is not in the tree.",
+    "insert.root": "The tree is empty, so {key} becomes the root.",
+    "insert.place": "{key} goes in the empty {side} branch of {parent}.",
+    "update": "Node {node}: bf = {hr} − {hl} = {bf}.",
+    "imbalance.insert": "Node {node} has balance factor {bf}: it is the first unbalanced node, n. Case {case} ({code}).",
+    "imbalance.delete": "Node {node} has balance factor {bf}: it is unbalanced.",
+    "rotate": "Rotate {child} around {about}: {dir} rotation about {about}.",
+    "delete.remove": "{key} is a leaf: remove it.",
+    "done": "Every node has a balance factor of −1, 0 or +1.",
+    "inorderCheck": "In-order before: {before}. After: {after}. The BST order is unchanged.",
+    "format": "Numbers use a true minus sign (−). A negative height inside a subtraction is bracketed: 3 − (−1)."
+  },
+  "pseudocode": {
+    "search-loop": [
+      "search(el)",
+      "  p = root",
+      "  while p is not null",
+      "    if element in node p equals el",
+      "      return element in node p  // el was found",
+      "    else if el < element in node p",
+      "      p = p.left",
+      "    else p = p.right",
+      "  return null  // el was not found"
+    ],
+    "search-recursive": [
+      "search(el, root)",
+      "  if root is null",
+      "    return null  // end of tree reached",
+      "  else if element in root equals el",
+      "    return element in root  // el was found",
+      "  else if el < element in root",
+      "    return search(el, root.left)",
+      "  else",
+      "    return search(el, root.right)"
+    ],
+    "lineForStep": {
+      "search-loop": {
+        "start": 2,
+        "loopTest": 3,
+        "compareEqual": 4,
+        "found": 5,
+        "compareLess": 6,
+        "goLeft": 7,
+        "goRight": 8,
+        "notFound": 9
+      },
+      "search-recursive": {
+        "emptyTest": 2,
+        "notFound": 3,
+        "compareEqual": 4,
+        "found": 5,
+        "compareLess": 6,
+        "goLeft": 7,
+        "goRight": 9
+      }
+    }
+  },
+  "concepts": {
+    "bst-basics": {
+      "label": "BST basics",
+      "screen": "c1-r01"
+    },
+    "height": {
+      "label": "height",
+      "screen": "c3-s04"
+    },
+    "lopsided-bst": {
+      "label": "why BSTs go lopsided",
+      "screen": "c2-s07"
+    },
+    "balance-factor": {
+      "label": "balance factors",
+      "screen": "c3-s05"
+    },
+    "avl-rule": {
+      "label": "the AVL rule",
+      "screen": "c3-s06"
+    },
+    "search": {
+      "label": "AVL search",
+      "screen": "c4-s04"
+    },
+    "search-cost": {
+      "label": "why search is O(log n)",
+      "screen": "c4-s07"
+    },
+    "rotation": {
+      "label": "rotations",
+      "screen": "c5-s04"
+    },
+    "four-cases": {
+      "label": "the four cases",
+      "screen": "c5-s06"
+    },
+    "insertion": {
+      "label": "insertion with rebalancing",
+      "screen": "c6-s04"
+    },
+    "deletion": {
+      "label": "leaf deletion",
+      "screen": "c7-s06"
+    },
+    "applications": {
+      "label": "choosing a structure",
+      "screen": "c8-s04"
+    }
+  },
+  "glossary": {
+    "root": "The top node of a tree. It has no parent.",
+    "leaf": "A node with no children.",
+    "height": "The number of edges on the longest path from a node down to a leaf. A leaf has height 0; an empty branch has height −1.",
+    "balance factor": "bf = height of the right branch − height of the left branch.",
+    "AVL tree": "A binary search tree in which every node has a balance factor of −1, 0 or +1.",
+    "n": "The first unbalanced node found on the way back up after an insertion.",
+    "rotation": "A local change that moves a child up around its parent without changing the in-order sequence.",
+    "single rotation": "One left or right rotation. Fixes the outside cases (1 and 4).",
+    "double rotation": "Two rotations: first about a child of n, then about n. Fixes the inside cases (2 and 3).",
+    "in-order traversal": "Visit the left subtree, then the node, then the right subtree. In a BST this lists the keys in sorted order.",
+    "outside case": "The new key went into the left subtree of n’s left child (Case 1) or the right subtree of n’s right child (Case 4).",
+    "inside case": "The new key went into the right subtree of n’s left child (Case 2) or the left subtree of n’s right child (Case 3).",
+    "O(log n)": "Grows like the number of times n can be halved. For 1,000,000 keys, log₂ n ≈ 20."
+  },
+  "questionTypes": {
+    "mcq": "Multiple choice; every wrong option names a misconception and has its own explanation.",
+    "case-id": "Multiple choice over the four cases; options and the correct case come from the engine.",
+    "enter-values": "The student enters heights or balance factors for the target nodes.",
+    "click-node": "The student clicks a node (target: first-unbalanced, all-violations or parent-of-new-key).",
+    "trace": "The student clicks the search path, then Found or Not found.",
+    "perform-rotation": "The student sees the tree right after the BST step and performs the rotation(s).",
+    "build-tree": "The student carries out the operation(s), including rebalancing, and builds the final tree."
+  },
+  "wrongAnswerPatterns": {
+    "goes-wrong-direction": "A trace step goes left for a larger key or right for a smaller key.",
+    "visits-extra-nodes": "A trace includes a node that is not on the search path.",
+    "rotated-at-root": "The student rotates about the root when n is lower down.",
+    "rotated-wrong-direction": "The student rotates the opposite way (left instead of right, or the reverse).",
+    "double-wrong-order": "For an inside case, the student rotates about n first, or about the wrong child.",
+    "rotated-again-above-n": "After fixing n, the student also rotates an ancestor of n."
+  },
+  "settings": {
+    "confetti": {
+      "default": "on",
+      "canTurnOff": true
+    },
+    "narration": {
+      "default": "off"
+    },
+    "textSize": {
+      "default": "normal",
+      "options": [
+        "normal",
+        "large"
+      ]
+    }
+  }
+}

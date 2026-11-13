@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "tools/build.py",
+  "counts": {
+    "lessons": 9,
+    "screens": 102,
+    "practiceTasks": 26,
+    "diagnostic": 10,
+    "checkQuestions": 21,
+    "reviewQuestions": 42,
+    "challenges": 7,
+    "readiness": 18,
+    "misconceptions": 34,
+    "scaffolds": 21
+  },
+  "files": [
+    "conventions.json",
+    "lessons/c1.json",
+    "lessons/c2.json",
+    "lessons/c3.json",
+    "lessons/c4.json",
+    "lessons/c5.json",
+    "lessons/c6.json",
+    "lessons/c7.json",
+    "lessons/c8.json",
+    "lessons/c9.json",
+    "questions/diagnostic.json",
+    "questions/checks.json",
+    "questions/readiness.json",
+    "misconceptions.json",
+    "scaffolds.json",
+    "rewards.json"
+  ]
+}

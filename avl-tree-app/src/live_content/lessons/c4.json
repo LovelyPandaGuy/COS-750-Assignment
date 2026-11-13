@@ -1,0 +1,404 @@
+{
+  "id": "c4",
+  "title": "Search (the algorithm)",
+  "outcomeIds": [
+    "LO3"
+  ],
+  "estimatedMinutes": 7,
+  "screens": [
+    {
+      "id": "c4-s01",
+      "type": "predict",
+      "gagneEvent": 1,
+      "merrillPhase": "problem",
+      "representation": "static-diagram",
+      "title": "How many steps?",
+      "text": "This AVL tree holds 16 keys. What is the most comparisons a search can need?",
+      "tree": {
+        "insert": [
+          3,
+          2,
+          1,
+          4,
+          5,
+          6,
+          7,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          8,
+          9
+        ]
+      },
+      "options": [
+        "4",
+        "5",
+        "16"
+      ],
+      "answer": "5",
+      "answerFrom": "engine",
+      "reveal": "5. The tree has height 4, so a search makes at most 5 comparisons, one per level, even though it holds 16 keys."
+    },
+    {
+      "id": "c4-s02",
+      "type": "objectives",
+      "gagneEvent": 2,
+      "merrillPhase": "problem",
+      "representation": "text",
+      "title": "Goal",
+      "text": "Trace a search in an AVL tree, and explain why it needs only O(log n) comparisons (LO3)."
+    },
+    {
+      "id": "c4-s03",
+      "type": "recall",
+      "gagneEvent": 3,
+      "merrillPhase": "activation",
+      "representation": "interactive-task",
+      "title": "Quick recall",
+      "task": {
+        "id": "c4-s03-task",
+        "set": "practice",
+        "lessonId": "c4",
+        "type": "mcq",
+        "outcomeId": "LO3",
+        "criteria": [
+          "LO3.1"
+        ],
+        "subSkill": "trace-search",
+        "level": "apply",
+        "concept": "search",
+        "stem": "In the BST lectures, how did search decide where to go next?",
+        "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
+        "options": [
+          {
+            "id": "a",
+            "text": "Visit the left subtree, then the node, then the right subtree",
+            "misconceptionId": "misc-search-is-traversal",
+            "explanation": "That is an in-order traversal, which visits every node. Search follows one path."
+          },
+          {
+            "id": "b",
+            "text": "Go to the child with the smaller balance factor",
+            "misconceptionId": "misc-search-uses-bf",
+            "explanation": "Search never looks at balance factors. It compares keys only."
+          },
+          {
+            "id": "c",
+            "text": "Compare the key with the node: equal, stop; smaller, go left; larger, go right",
+            "explanation": "Right. AVL search is exactly this BST search."
+          }
+        ],
+        "correctOptionId": "c"
+      }
+    },
+    {
+      "id": "c4-s04",
+      "type": "animation",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "animated-tree",
+      "title": "Search, step by step",
+      "text": "Watch the search for 30. The matching line of the pseudocode lights up at each step.",
+      "tree": {
+        "insert": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ]
+      },
+      "operation": {
+        "name": "search",
+        "key": 30
+      },
+      "caption": "Compare the key with the node. Smaller: go left. Larger: go right.",
+      "steps": [
+        "30 > 20: go right.",
+        "30 < 40: go left.",
+        "30 = 30: found."
+      ],
+      "result": "20(10, 40(30, 50))",
+      "pseudocode": "search-loop"
+    },
+    {
+      "id": "c4-s05",
+      "type": "animation",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "animated-tree",
+      "title": "When the key is not there",
+      "text": "Now the search for 35.",
+      "tree": {
+        "insert": [
+          10,
+          20,
+          30,
+          40,
+          50
+        ]
+      },
+      "operation": {
+        "name": "search",
+        "key": 35
+      },
+      "caption": "When the next branch is empty, the key is not in the tree: return null.",
+      "steps": [
+        "35 > 20: go right.",
+        "35 < 40: go left.",
+        "35 > 30: go right.",
+        "The right branch of 30 is empty, so 35 is not in the tree."
+      ],
+      "result": "20(10, 40(30, 50))",
+      "pseudocode": "search-loop"
+    },
+    {
+      "id": "c4-s06",
+      "type": "pseudocode",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "pseudocode",
+      "title": "Loop and recursive versions",
+      "pseudocode": [
+        "search-loop",
+        "search-recursive"
+      ],
+      "text": "The loop version is the natural fit: search follows a single path from the root, so there is nothing to come back to. The recursive version does the same work: each call handles one node and calls itself on one branch only, as its last action (tail recursion)."
+    },
+    {
+      "id": "c4-s07",
+      "type": "rule",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "written-rule",
+      "title": "Why search is O(log n)",
+      "points": [
+        "There is at most one comparison per level, so a search needs at most height + 1 comparisons.",
+        "Each comparison rules out one branch and everything in it. This is decrease and conquer, the same idea as binary search on a sorted array.",
+        "The AVL rule keeps the height at most roughly 1.44 log(n + 2) − 1.328.",
+        "With 1,000,000 keys, the height is at most 27, so a search needs at most 28 comparisons. A plain BST with the same keys could need 1,000,000."
+      ],
+      "showRule": "Comparisons ≤ height + 1, and an AVL tree’s height is O(log n)."
+    },
+    {
+      "id": "c4-s08",
+      "type": "diagram",
+      "gagneEvent": 5,
+      "merrillPhase": "demonstration",
+      "representation": "static-diagram",
+      "title": "Search ignores balance factors",
+      "tree": {
+        "insert": [
+          3,
+          2,
+          1,
+          4,
+          5,
+          6,
+          7,
+          16,
+          15,
+          14,
+          13,
+          12,
+          11,
+          10,
+          8,
+          9
+        ]
+      },
+      "show": [
+        "balanceFactor"
+      ],
+      "caption": "Search reads only the keys. The balance factors are shown here, but the pseudocode never uses them. Balance matters because it limits how long the path can be."
+    },
+    {
+      "id": "c4-s09",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Be the algorithm",
+      "text": "Click the next node to visit. The pseudocode line lights up and the step counter counts comparisons.",
+      "pseudocode": "search-loop",
+      "stepCounter": true,
+      "show": [
+        "balanceFactor"
+      ],
+      "task": {
+        "id": "c4-s09-task",
+        "set": "practice",
+        "lessonId": "c4",
+        "type": "trace",
+        "outcomeId": "LO3",
+        "criteria": [
+          "LO3.1"
+        ],
+        "subSkill": "trace-search",
+        "level": "apply",
+        "concept": "search",
+        "stem": "Search for 9. Click the nodes in the order they are visited.",
+        "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
+        "tree": {
+          "insert": [
+            3,
+            2,
+            1,
+            4,
+            5,
+            6,
+            7,
+            16,
+            15,
+            14,
+            13,
+            12,
+            11,
+            10,
+            8,
+            9
+          ]
+        },
+        "searchKey": 9,
+        "answerFrom": "engine",
+        "expected": {
+          "path": [
+            7,
+            13,
+            11,
+            9
+          ],
+          "found": true
+        },
+        "wrongAnswers": [
+          {
+            "pattern": "goes-wrong-direction",
+            "misconceptionId": "misc-bst-order-reversed",
+            "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
+          },
+          {
+            "pattern": "visits-extra-nodes",
+            "misconceptionId": "misc-search-is-traversal",
+            "feedback": "Search follows one path from the root. It never visits both branches of a node."
+          }
+        ],
+        "feedback": {
+          "correct": "9 > 7: go right; 9 < 13: go left; 9 < 11: go left; 9 = 9: found. That is 4 comparisons.",
+          "incorrect": "9 > 7: go right; 9 < 13: go left; 9 < 11: go left; 9 = 9: found. That is 4 comparisons."
+        }
+      }
+    },
+    {
+      "id": "c4-s10",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Be the algorithm",
+      "pseudocode": "search-loop",
+      "stepCounter": true,
+      "show": [
+        "balanceFactor"
+      ],
+      "text": "The step counter never goes above 5, the height of this tree plus one.",
+      "task": {
+        "id": "c4-s10-task",
+        "set": "practice",
+        "lessonId": "c4",
+        "type": "trace",
+        "outcomeId": "LO3",
+        "criteria": [
+          "LO3.3"
+        ],
+        "subSkill": "search-not-found",
+        "level": "apply",
+        "concept": "search",
+        "stem": "Search for 17. Click the nodes in the order they are visited, then choose Not found.",
+        "hint": "This checks that you can tell when a search fails: it stops when the next branch is empty.",
+        "tree": {
+          "insert": [
+            3,
+            2,
+            1,
+            4,
+            5,
+            6,
+            7,
+            16,
+            15,
+            14,
+            13,
+            12,
+            11,
+            10,
+            8,
+            9
+          ]
+        },
+        "searchKey": 17,
+        "answerFrom": "engine",
+        "expected": {
+          "path": [
+            7,
+            13,
+            15,
+            16
+          ],
+          "found": false
+        },
+        "wrongAnswers": [
+          {
+            "pattern": "goes-wrong-direction",
+            "misconceptionId": "misc-bst-order-reversed",
+            "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
+          },
+          {
+            "pattern": "visits-extra-nodes",
+            "misconceptionId": "misc-search-is-traversal",
+            "feedback": "Search follows one path from the root. It never visits both branches of a node."
+          }
+        ],
+        "feedback": {
+          "correct": "17 > 7: go right; 17 > 13: go right; 17 > 15: go right; 17 > 16: go right. That branch is empty, so 17 is not in the tree. That is 4 comparisons.",
+          "incorrect": "17 > 7: go right; 17 > 13: go right; 17 > 15: go right; 17 > 16: go right. That branch is empty, so 17 is not in the tree. That is 4 comparisons."
+        }
+      }
+    },
+    {
+      "id": "c4-s11",
+      "type": "check",
+      "gagneEvent": 8,
+      "merrillPhase": "integration",
+      "representation": "interactive-task",
+      "title": "Lesson check",
+      "checkId": "chk4",
+      "optional": false,
+      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
+    },
+    {
+      "id": "c4-s12",
+      "type": "summary",
+      "gagneEvent": 9,
+      "merrillPhase": "integration",
+      "representation": "written-rule",
+      "title": "Summary",
+      "points": [
+        "AVL search is BST search: compare, then go left or right.",
+        "It stops at the key (found) or at an empty branch (not found).",
+        "At most height + 1 comparisons, and the AVL rule keeps the height O(log n)."
+      ],
+      "format": "short-box"
+    }
+  ],
+  "checkId": "chk4"
+}
