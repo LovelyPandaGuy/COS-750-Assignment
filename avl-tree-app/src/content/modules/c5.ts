@@ -6,7 +6,7 @@
 // Do it yourself menu (proposal item 4).
 import type { FigureFacts } from '../../modules/facts'
 import type { ModuleContent } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 
 const list = (keys: readonly number[]) => keys.join(', ')
 const UP = [10, 20, 30]
@@ -180,7 +180,7 @@ export const c5: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // checks arrive with the assessment changes (19 to 21)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c5-summary',

@@ -10,6 +10,11 @@ import { computeFacts } from '../../modules/facts'
 import type { StructureId } from '../../modules/compare'
 import { pickScenario, practiceProblem } from '../../modules/generators'
 import { renderStep } from '../../modules/render'
+import { playerSteps } from '../../modules/checkSteps'
+import { checksFor } from '../../assessment/session'
+import { useOptionalLearner } from '../../state/LearnerContext'
+import type { Attempt } from '../../state/learnerState'
+import { CheckItem } from './check/CheckItem'
 import { recommendRoute } from '../../navigation/policy'
 import { drawSearchPractice } from '../../modules/searchPractice'
 import { drawDeletePractice } from '../../modules/deletePractice'
@@ -19,7 +24,7 @@ import { replayCopy } from '../../content/replay'
 import { ReplayPlayer } from '../replay/ReplayPlayer'
 import { PseudocodePanel } from '../replay/PseudocodePanel'
 import { emitRouteEvent } from '../../navigation/routeEvents'
-import { SKIPPABLE_EVENTS, stepsFor, type ModuleContent, type Step, type StepActivity } from '../../modules/schema'
+import { SKIPPABLE_EVENTS, type ModuleContent, type Step, type StepActivity } from '../../modules/schema'
 import { ACTIVITIES_BY_MODULE, paths } from '../../routes'
 import { TreeView } from '../tree/TreeView'
 import { ArrayView } from './ArrayView'
@@ -46,6 +51,7 @@ interface PracticeState {
   /** The scenario showing before New scenario, so the next pick differs. */
   avoid?: string
 }
+const NO_ATTEMPTS: readonly Attempt[] = []
 const FRESH: PracticeState = { regen: 0, answered: [], solved: false, hintsUsed: 0, choice: undefined, checked: undefined, avoid: undefined }
 
 export interface ModulePlayerProps {
@@ -59,7 +65,8 @@ export interface ModulePlayerProps {
  */
 export function ModulePlayer({ content, activity }: ModulePlayerProps) {
   const navigate = useNavigate()
-  const steps = stepsFor(content, activity)
+  const steps = playerSteps(content, activity)
+  const attempts = useOptionalLearner()?.learner.attempts ?? NO_ATTEMPTS
   const [index, setIndex] = useState(0)
   const [ruleOpen, setRuleOpen] = useState(false)
   const [practice, setPractice] = useState<Record<string, PracticeState>>({})
@@ -96,7 +103,7 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
     navigate(after === undefined ? paths.hub() : paths.activity(content.id, after))
   }
   // The last step of the Check activity offers a route (D20); Next there counts as choosing the path (D28).
-  const recommended = activity === 'check' && index === steps.length - 1 ? recommendRoute(content.id) : null
+  const recommended = activity === 'check' && index === steps.length - 1 ? recommendRoute(content.id, attempts) : null
   const onNext = () => {
     if (index + 1 < steps.length) return go(index + 1)
     if (recommended !== null) {
@@ -169,6 +176,11 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
           </div>
         )}
         {step.table === 'structures' && <ComparisonTable />}
+        {step.checkItem !== undefined &&
+          (() => {
+            const item = checksFor(content.id).find((i) => i.id === step.checkItem)
+            return item === undefined ? null : <CheckItem key={step.id} item={item} isLast={index === steps.length - 2} onNext={onNext} />
+          })()}
         {r.paragraphs.map((text, i) => (
           <p key={i}>{text}</p>
         ))}

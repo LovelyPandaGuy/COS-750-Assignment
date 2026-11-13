@@ -213,10 +213,13 @@ describe('LO7 name the case, then rotate, in the player', () => {
   })
 })
 
-describe('D42 the optional check placeholder', () => {
-  it('Check: the coming line, then the summary with Where next; nothing completed', () => {
+describe('D42 the check on the last step', () => {
+  it('Check: the questions, then the summary with Where next; nothing completed unanswered', () => {
     const { storage } = renderRoutes(backendWith(), '/module/C6/check')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
+    next()
+    next()
+    next()
     next()
     expect(h2()).toHaveTextContent(headingOf('c6-summary'))
     expect(screen.getByRole('heading', { level: 3, name: navigationCopy.whereNext })).toBeInTheDocument()

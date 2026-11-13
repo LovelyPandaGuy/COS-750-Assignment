@@ -160,11 +160,13 @@ describe('D20 skip on explanation steps only', () => {
   })
 })
 
-describe('D20 check placeholder until assessment exists', () => {
-  it('C2 Check: coming line, then the summary, then the path; nothing completed', () => {
+describe('D20 the Check activity shows the bank items', () => {
+  it('C2 Check: intro, two questions, the summary, then the path; nothing completed unanswered', () => {
     const { storage } = renderRoutes(backendWith(), '/module/C2/check')
-    expect(place()).toHaveTextContent('Step 1 of 2')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(place()).toHaveTextContent('Step 1 of 4')
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
+    next()
+    next()
     next()
     expect(h2()).toHaveTextContent(stepsFor(c2, 'check')[1].heading)
     next()

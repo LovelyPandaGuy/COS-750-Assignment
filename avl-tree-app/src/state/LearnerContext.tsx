@@ -4,7 +4,7 @@
  * development double-render cannot turn "new" or "reset-corrupt" into "restored".
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
-import type { LearnerState } from './learnerState'
+import type { Attempt, LearnerState, ModuleId } from './learnerState'
 import { learnerReducer, type SessionStatus } from './learnerReducer'
 import type { LoadResult, StorageAdapter } from './storage'
 
@@ -14,6 +14,10 @@ export interface LearnerSession {
   persistent: boolean
   /** Clear stored data and start again with a fresh profile (FR-ONB-04). */
   reset: () => void
+  /** Save one marked answer (add-checks-and-feedback). It never completes a module. */
+  recordAttempt: (attempt: Attempt) => void
+  /** Add a module to the completed ones; a repeat changes nothing. */
+  completeModule: (module: ModuleId) => void
 }
 
 const Ctx = createContext<LearnerSession | null>(null)
@@ -52,9 +56,12 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
     onReset?.()
   }, [storage, onReset])
 
+  const recordAttempt = useCallback((attempt: Attempt) => dispatch({ type: 'attempt-recorded', attempt }), [])
+  const completeModule = useCallback((module: ModuleId) => dispatch({ type: 'module-completed', module }), [])
+
   const value = useMemo<LearnerSession>(
-    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset }),
-    [state, reset],
+    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule }),
+    [state, reset, recordAttempt, completeModule],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }
@@ -64,4 +71,10 @@ export function useLearner(): LearnerSession {
   const session = useContext(Ctx)
   if (session === null) throw new Error('useLearner must be used inside LearnerProvider')
   return session
+}
+
+/** The session when there is one. Components that only read it for an extra (a route suggestion) use this, so they still render alone. */
+// eslint-disable-next-line react-refresh/only-export-components -- the hook belongs with its provider
+export function useOptionalLearner(): LearnerSession | null {
+  return useContext(Ctx)
 }

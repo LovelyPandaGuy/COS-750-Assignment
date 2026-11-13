@@ -137,3 +137,13 @@
   gap: var(--space-4);
 }
 .search-practice-goal { font: var(--type-body-lg); margin: 0; }
+
+/* Check items (add-checks-and-feedback) */
+.check-item { display: grid; gap: var(--space-3, 12px); }
+.check-options { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.check-option { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.check-option input { width: 24px; height: 24px; }
+.check-number { display: grid; gap: 6px; max-width: 16rem; }
+.check-number input { min-height: 44px; font: inherit; padding: 0 12px; }
+.check-confidence { display: flex; flex-wrap: wrap; gap: 8px; }
+.check-confidence [aria-pressed='true'] { border-color: var(--action-primary); font-weight: 600; }

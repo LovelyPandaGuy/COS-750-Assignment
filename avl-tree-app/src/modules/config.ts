@@ -11,3 +11,6 @@ export const RETRY_CAP = 3
 
 /** Keys in a "be the algorithm" practice tree, drawn from 1 to 99 (add-module-c4-search, proposal item 5). */
 export const SEARCH_PRACTICE_KEYS = 7
+
+/** Required check items answered wrongly first time that make "look over this module again" the suggested route (D20; routing cut-offs wait on the team). */
+export const REVIEW_AFTER_MISSES = 1

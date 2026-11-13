@@ -169,13 +169,6 @@ Content and example steps SHALL offer "I know this, skip", which moves to the fi
 - **WHEN** a C3 practice step is shown
 - **THEN** "I know this, skip" is not present
 
-### Requirement: Check placeholder until assessment exists
-A check step SHALL show that the check is coming in a later step, using the existing skeleton wording, and SHALL NOT mark the module complete. The summary step SHALL follow it. (D20, plan changes 19 to 21)
-
-#### Scenario: Check activity
-- **WHEN** the C2 Check activity opens
-- **THEN** step 1 shows the coming-later line, step 2 is the C2 summary, and the learner's completed modules are unchanged
-
 ### Requirement: A step can play a search as a replay
 A step SHALL be able to name one of its figures and a search key, and SHALL then show the existing replay of that search with its pseudocode panel as the step's primary representation, instead of the still figure. The replay SHALL start at its first position each time the step is shown. A step MAY instead name a key to insert into an AVL figure, which SHALL play that insert as described under "A step can play an insert". (D22, D33, FR-VIS-03, FR-VIS-04)
 
