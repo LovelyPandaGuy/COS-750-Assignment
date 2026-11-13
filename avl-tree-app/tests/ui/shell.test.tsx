@@ -129,3 +129,48 @@ describe('NFR-02 TopBar link action', () => {
     expect(calls).toEqual(['x']);
   });
 });
+
+// Spec: add-ui-foundation / app-shell, "TopBar content comes from its props" (progress area). NFR-02, D20, D23.
+describe('NFR-02 TopBar progress area', () => {
+  const css = () => readFileSync('src/ui/shell.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+  it('sits after the breadcrumb and before the pill, inside a nav named by its label', () => {
+    render(
+      <TopBar
+        title="AVL Trees"
+        breadcrumb="Crumb"
+        progress={<span>Progress content</span>}
+        progressLabel="Your progress"
+        status="Saved on this device"
+        actions={[{ label: 'Sandbox', onClick: () => {} }]}
+      />,
+    );
+    const nav = screen.getByRole('navigation', { name: 'Your progress' });
+    expect(nav).toContainElement(screen.getByText('Progress content'));
+    expect(nav.textContent).toBe('Progress content');
+    const all = ['AVL Trees', 'Crumb', 'Progress content', 'Saved on this device', 'Sandbox'].map((t) => screen.getByText(t));
+    all.push(screen.getByRole('button', { name: /display and read-aloud settings/i }));
+    for (let i = 1; i < all.length; i++) {
+      expect(all[i - 1].compareDocumentPosition(all[i]) & Node.DOCUMENT_POSITION_FOLLOWING, `item ${i}`).toBeTruthy();
+    }
+  });
+  it('is absent when not given', () => {
+    const { container } = render(<TopBar title="AVL Trees" />);
+    expect(screen.queryByRole('navigation')).toBeNull();
+    expect(container.querySelector('.topbar-progress')).toBeNull();
+  });
+  it('NFR-04 wraps onto its own row on a phone and sits inline from 768px', () => {
+    const text = css();
+    const base = /\.topbar-progress\s*\{([^}]*)\}/.exec(text)?.[1] ?? '';
+    expect(base).toMatch(/flex-basis:\s*100%/);
+    const wide = /@media \(min-width: 768px\)\s*\{([\s\S]*?\})\s*\}/.exec(text)?.[1] ?? '';
+    expect(wide).toMatch(/\.topbar-progress\s*\{[^}]*flex-basis:\s*auto/);
+  });
+  it('axe clean with a progress area', async () => {
+    const { container } = render(
+      <AppShell title="AVL Trees" progress={<span>C3 of C9</span>} progressLabel="Your progress">
+        <h1>Page</h1>
+      </AppShell>,
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+});
