@@ -30,6 +30,7 @@ export function progressState(overrides: Partial<LearnerState> = {}): LearnerSta
       { questionId: 'c3-q2', at: '2026-11-10T10:01:00.000Z', answer: { keys: [3, 2, 1] }, correct: true, hintsUsed: 0 },
     ],
     subSkillStatus: { 'bf-compute': 'developing', 'height-count': 'secure' },
+    lectureQuestions: [],
     ...overrides,
   }
 }

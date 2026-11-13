@@ -9,6 +9,8 @@ export interface CheckFeedbackProps {
   diverged?: string | null
   reviewTo: string
   isLast: boolean
+  /** The retry cap is reached: no Try again, Continue instead. */
+  capped?: boolean
   onTryAgain: () => void
   onNext: () => void
 }
@@ -17,7 +19,7 @@ export interface CheckFeedbackProps {
  * Four-part feedback (D27): verdict, why, Review, next step. A polite live region whose text starts
  * with the verdict. No icon, no red, no cross.
  */
-export function CheckFeedback({ verdict, why, diverged = null, reviewTo, isLast, onTryAgain, onNext }: CheckFeedbackProps) {
+export function CheckFeedback({ verdict, why, diverged = null, reviewTo, isLast, capped = false, onTryAgain, onNext }: CheckFeedbackProps) {
   return (
     <div role="status" aria-live="polite" aria-label={checkCopy.feedbackLabel} className="practice-panel" data-verdict={verdict ?? 'none'}>
       {verdict !== null && (
@@ -29,13 +31,13 @@ export function CheckFeedback({ verdict, why, diverged = null, reviewTo, isLast,
             <Link className="module-button module-button-quiet" to={reviewTo}>
               {checkCopy.review}
             </Link>
-            {verdict === 'not-yet' ? (
+            {verdict === 'not-yet' && !capped ? (
               <button type="button" className="module-button module-button-secondary" onClick={onTryAgain}>
                 {checkCopy.tryAgain}
               </button>
             ) : (
               <button type="button" className="module-button module-button-secondary" onClick={onNext}>
-                {isLast ? checkCopy.continue : checkCopy.nextQuestion}
+                {isLast || capped ? checkCopy.continue : checkCopy.nextQuestion}
               </button>
             )}
           </span>

@@ -3,6 +3,7 @@
 import { CHECKS } from '../content/questions/checks'
 import { REVIEW_AFTER_MISSES } from '../modules/config'
 import type { Attempt, ModuleId } from '../state/learnerState'
+import { finished } from './scaffold'
 import type { BankItem } from './types'
 
 /** The bank items of a module's check, in bank order. C1 and C9 have none. */
@@ -20,12 +21,10 @@ export function checkSeed(profileId: string, itemId: string): number {
   return h >>> 0
 }
 
-const correctFor = (attempts: readonly Attempt[], id: string) => attempts.some((a) => a.questionId === id && a.correct)
-
-/** A module completes when every one of its check items has a correct attempt (FR-LRN-05, D20). C1 and C9 never do here. */
+/** A module completes when every one of its check items is finished: right, or at the retry cap (FR-LRN-05, FR-SCA-03, D20). C1 and C9 never do here. */
 export function checkComplete(module: ModuleId, attempts: readonly Attempt[]): boolean {
   const items = checksFor(module)
-  return items.length > 0 && items.every((i) => correctFor(attempts, i.id))
+  return items.length > 0 && items.every((i) => finished(attempts, i.id))
 }
 
 /** Required items whose earliest stored attempt was not correct. Optional items (C7, D4) never count. */

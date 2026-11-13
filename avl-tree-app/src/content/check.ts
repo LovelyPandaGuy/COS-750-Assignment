@@ -31,6 +31,25 @@ export const checkCopy = {
   sure: 'Sure',
   unsure: 'Not sure',
 
+  /** The scaffold ladder and the retry cap (add-scaffold-ladder-and-retry-cap). */
+  ladder: {
+    region: 'Help',
+    hint: 'Show a hint',
+    worked: 'Show a worked example',
+    walk: 'Walk me through it',
+    nextStep: 'Show next step',
+    hintLabel: 'Hint',
+    workedLabel: 'A worked example',
+    walkLabel: 'Walking through your question',
+    exampleAnswer: (answer: string) => `In that example the answer is ${answer}.`,
+    answerLine: (answer: string) => `So the answer is ${answer}.`,
+    treeAnswerLine: 'So the finished tree is the one below.',
+    treeAnswerLabel: 'The finished tree',
+    opened: (level: 1 | 2 | 3) => (level === 1 ? 'Hint opened.' : level === 2 ? 'Worked example opened.' : 'Step-through opened.'),
+    cappedNote: 'That was the last try for this question. Here is how it works.',
+    lectureLabel: 'A question to take to the lecture',
+  },
+
   editor: {
     heading: 'Build the final tree',
     task: (key: Key) => `Insert ${key} as in a plain search tree, then rotate until the tree is balanced.`,

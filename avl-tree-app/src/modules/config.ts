@@ -14,3 +14,10 @@ export const SEARCH_PRACTICE_KEYS = 7
 
 /** Required check items answered wrongly first time that make "look over this module again" the suggested route (D20; routing cut-offs wait on the team). */
 export const REVIEW_AFTER_MISSES = 1
+
+/** Support levels on a check question: a hint, a worked example, a guided step-through (D21, FR-SCA-02). */
+export const LADDER_LEVELS = 3
+
+/** Mastery threshold per sub-skill: at least MASTERY_CORRECT of the last MASTERY_WINDOW attempts correct. Provisional (FR-SCA-01, SE TODO). */
+export const MASTERY_WINDOW = 3
+export const MASTERY_CORRECT = 2

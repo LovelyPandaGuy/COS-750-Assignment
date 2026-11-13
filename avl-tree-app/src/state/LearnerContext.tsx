@@ -4,7 +4,7 @@
  * development double-render cannot turn "new" or "reset-corrupt" into "restored".
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
-import type { Attempt, LearnerState, ModuleId } from './learnerState'
+import type { Attempt, LearnerState, LectureQuestion, ModuleId } from './learnerState'
 import { learnerReducer, type SessionStatus } from './learnerReducer'
 import type { LoadResult, StorageAdapter } from './storage'
 
@@ -18,6 +18,8 @@ export interface LearnerSession {
   recordAttempt: (attempt: Attempt) => void
   /** Add a module to the completed ones; a repeat changes nothing. */
   completeModule: (module: ModuleId) => void
+  /** Save a lecture question; one per item (add-scaffold-ladder-and-retry-cap). */
+  recordLectureQuestion: (question: LectureQuestion) => void
 }
 
 const Ctx = createContext<LearnerSession | null>(null)
@@ -59,9 +61,11 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
   const recordAttempt = useCallback((attempt: Attempt) => dispatch({ type: 'attempt-recorded', attempt }), [])
   const completeModule = useCallback((module: ModuleId) => dispatch({ type: 'module-completed', module }), [])
 
+  const recordLectureQuestion = useCallback((question: LectureQuestion) => dispatch({ type: 'lecture-question-recorded', question }), [])
+
   const value = useMemo<LearnerSession>(
-    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule }),
-    [state, reset, recordAttempt, completeModule],
+    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion }),
+    [state, reset, recordAttempt, completeModule, recordLectureQuestion],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

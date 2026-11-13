@@ -1,7 +1,8 @@
-import { useCallback, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { attemptRecord } from '../../../assessment/attempt'
 import { instantiate } from '../../../assessment/instantiate'
 import { mark } from '../../../assessment/mark'
+import { capped as isCappedFor, hintFor, ladderLevel, lectureQuestionFor, workedExampleFor } from '../../../assessment/scaffold'
 import { checkComplete, checkSeed } from '../../../assessment/session'
 import type { BankItem, Instance, Mark, Response } from '../../../assessment/types'
 import { checkCopy } from '../../../content/check'
@@ -11,6 +12,7 @@ import { paths } from '../../../routes'
 import type { Tree } from '../../../engine/tree'
 import { TreeView } from '../../tree/TreeView'
 import { CheckFeedback } from './CheckFeedback'
+import { ScaffoldLadder } from './ScaffoldLadder'
 import { TraceEditor } from './TraceEditor'
 
 export interface CheckItemProps {
@@ -31,10 +33,28 @@ interface Answered {
  * answer is stored; the module completes when every required item has a right answer (FR-LRN-05).
  */
 export function CheckItem({ item, isLast, onNext }: CheckItemProps) {
-  const { learner, recordAttempt, completeModule } = useLearner()
-  const attempt = learner.attempts.filter((a) => a.questionId === item.id).length
+  const { learner, recordAttempt, completeModule, recordLectureQuestion } = useLearner()
+  const mine = learner.attempts.filter((a) => a.questionId === item.id)
+  const attempt = mine.length
+  const isCapped = isCappedFor(learner.attempts, item.id)
   const [answered, setAnswered] = useState<Answered | null>(null)
-  const inst = answered?.inst ?? instantiate(item, checkSeed(learner.profileId, item.id), attempt)
+  const seed = checkSeed(learner.profileId, item.id)
+  // At the cap the last variant stays on screen; otherwise the next attempt, or the one just answered.
+  const inst = answered?.inst ?? instantiate(item, seed, isCapped ? attempt - 1 : attempt)
+  /** Levels asked for on this variant; wrong attempts open levels too (D21). */
+  const [requested, setRequested] = useState(0)
+  const wrongs = mine.filter((a) => !a.correct).length
+  const level = ladderLevel(wrongs, requested)
+  const lastMis = mine.length > 0 ? mine[mine.length - 1].misconceptionId : undefined
+  const stored = (learner.lectureQuestions ?? []).find((q) => q.questionId === item.id)
+  const lecture = stored?.text ?? lectureQuestionFor(item, inst, lastMis)
+
+  // The cap records one lecture question for the item (FR-SCA-03).
+  useEffect(() => {
+    if (isCapped && stored === undefined) {
+      recordLectureQuestion({ questionId: item.id, ...(lastMis !== undefined ? { misconceptionId: lastMis } : {}), text: lecture, at: new Date().toISOString() })
+    }
+  }, [isCapped, stored, item.id, lastMis, lecture, recordLectureQuestion])
 
   const [choice, setChoice] = useState<string | null>(null)
   const [number, setNumber] = useState('')
@@ -63,21 +83,22 @@ export function CheckItem({ item, isLast, onNext }: CheckItemProps) {
       return
     }
     setUnreadable(false)
-    const record = attemptRecord(inst, r, m, { hintsUsed: 0, at: new Date().toISOString(), ...(confidence !== null ? { confidence } : {}) })
+    const record = attemptRecord(inst, r, m, { hintsUsed: level, at: new Date().toISOString(), ...(confidence !== null ? { confidence } : {}) })
     if (record !== null) {
       recordAttempt(record)
-      if (record.correct && checkComplete(item.module, [...learner.attempts, record])) completeModule(item.module)
+      if (checkComplete(item.module, [...learner.attempts, record])) completeModule(item.module)
     }
     setAnswered({ inst, mark: m })
   }
   const tryAgain = () => {
     setAnswered(null)
+    setRequested(0)
     setChoice(null)
     setNumber('')
     setConfidence(null)
   }
 
-  const locked = answered !== null
+  const locked = answered !== null || isCapped
   const diverged = answered?.mark.divergedKind !== undefined ? checkCopy.editor.diverged(answered.mark.divergedKind) : null
 
   return (
@@ -119,8 +140,25 @@ export function CheckItem({ item, isLast, onNext }: CheckItemProps) {
           {checkCopy.checkAnswer}
         </button>
       )}
+      <ScaffoldLadder
+        level={level}
+        hint={hintFor(item, inst, answered?.mark.misconceptionId)}
+        inst={inst}
+        example={workedExampleFor(item, inst)}
+        capped={isCapped}
+        onOpenNext={() => setRequested(Math.min(3, level + 1))}
+      />
+      {isCapped && (
+        <div className="check-lecture">
+          <p>
+            <strong>{checkCopy.ladder.lectureLabel}</strong>
+          </p>
+          <p>{lecture}</p>
+        </div>
+      )}
       <CheckFeedback
-        verdict={answered === null ? null : answered.mark.status === 'correct' ? 'right' : 'not-yet'}
+        capped={isCapped}
+        verdict={isCapped ? 'not-yet' : answered === null ? null : answered.mark.status === 'correct' ? 'right' : 'not-yet'}
         why={answered?.mark.explanation ?? ''}
         diverged={diverged}
         reviewTo={paths.activity(item.module, 'explore')}

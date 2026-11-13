@@ -2,7 +2,9 @@
  * Session-level learner state (SE §6.2 learnerReducer). Pure: no React, no storage.
  * Only the actions this change needs; later screens add their own.
  */
-import { MODULE_IDS, parseAttempt, type Attempt, type LearnerState, type ModuleId } from './learnerState'
+import { subSkillStatus } from '../assessment/mastery'
+import { CHECKS } from '../content/questions/checks'
+import { MODULE_IDS, parseAttempt, type Attempt, type LearnerState, type LectureQuestion, type ModuleId } from './learnerState'
 import type { LoadStatus } from './storage'
 
 /** The load status, or 'reset-by-user' once the student has reset in this session. */
@@ -19,6 +21,7 @@ export type SessionAction =
   | { type: 'persistence'; persistent: boolean }
   | { type: 'attempt-recorded'; attempt: Attempt }
   | { type: 'module-completed'; module: ModuleId }
+  | { type: 'lecture-question-recorded'; question: LectureQuestion }
 
 export function learnerReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
@@ -29,7 +32,18 @@ export function learnerReducer(state: SessionState, action: SessionAction): Sess
     case 'attempt-recorded': {
       // An attempt the validator rejects is never stored (add-checks-and-feedback).
       const attempt = parseAttempt(action.attempt)
-      return attempt === null ? state : { ...state, learner: { ...state.learner, attempts: [...state.learner.attempts, attempt] } }
+      if (attempt === null) return state
+      const attempts = [...state.learner.attempts, attempt]
+      // The sub-skill's status follows the attempt in the same change (FR-SCA-01).
+      const item = CHECKS.find((i) => i.id === attempt.questionId)
+      const status = item === undefined ? null : subSkillStatus(attempts, item.subSkill)
+      const subSkillStatuses = item === undefined || status === null ? state.learner.subSkillStatus : { ...state.learner.subSkillStatus, [item.subSkill]: status }
+      return { ...state, learner: { ...state.learner, attempts, subSkillStatus: subSkillStatuses } }
+    }
+    case 'lecture-question-recorded': {
+      const existing = state.learner.lectureQuestions ?? []
+      if (existing.some((q) => q.questionId === action.question.questionId)) return state
+      return { ...state, learner: { ...state.learner, lectureQuestions: [...existing, action.question] } }
     }
     case 'module-completed': {
       const { learner } = state

@@ -57,22 +57,31 @@ Every answer the marker reports as correct or not yet SHALL be saved as an attem
 - **THEN** it shows the same learner's variant for attempt 1, not attempt 0
 
 ### Requirement: Retries are new variants
-Try again SHALL show the next attempt of the same item, a new problem with options reshuffled. Until the retry cap is enforced in a later change, Try again SHALL stay available after every wrong answer. (FR-ASM-07, D9)
+Try again SHALL show the next attempt of the same item, a new problem with options reshuffled. Try again SHALL be offered after a wrong answer until the retry cap is reached, and not after. (FR-ASM-07, FR-SCA-03, D9)
 
 #### Scenario: New problem
 - **WHEN** a wrong answer is followed by Try again
 - **THEN** the stem or options differ from the previous attempt
 
+#### Scenario: No retry at the cap
+- **WHEN** the third wrong answer is checked
+- **THEN** Try again is not shown
+
 ### Requirement: A module completes through its check
-A module SHALL be added to the completed modules when every required item of its check has an attempt marked correct. C7's items SHALL be optional: leaving them unanswered SHALL NOT block the next module, but answering them correctly SHALL complete C7. A module SHALL NOT be completed by any other route, including "I know this, skip". (FR-LRN-05, FR-SCA-05, D4, D20)
+A module SHALL be added to the completed modules when every required item of its check is finished: it has an attempt marked correct, or it has reached the retry cap. C7's items SHALL be optional: leaving them unanswered SHALL NOT block the next module, but finishing them all SHALL complete C7. A module SHALL NOT be completed by any other route, including "I know this, skip". (FR-LRN-05, FR-SCA-03, FR-SCA-05, D4, D20)
 
 #### Scenario: Complete on the last right answer
 - **GIVEN** the C2 items, all required
 - **WHEN** the last is answered correctly
 - **THEN** C2 is in the completed modules, and `currentModule` is C3 if it was C2
 
+#### Scenario: Complete on the last capped item
+- **GIVEN** every other C2 item answered correctly
+- **WHEN** the last reaches the retry cap
+- **THEN** C2 is in the completed modules
+
 #### Scenario: One right is not enough
-- **WHEN** only some of the C2 items have been answered correctly
+- **WHEN** only some of the C2 items are finished
 - **THEN** C2 is not completed
 
 #### Scenario: Skip does not complete

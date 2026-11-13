@@ -9,6 +9,7 @@ import { renderStep } from './render'
 import { STEP_ACTIVITIES, activityOf, type ClaimKind, type GagneEvent, type ModuleContent, type Step } from './schema'
 
 export type ProblemKind =
+  | 'scaffold'
   | 'order'
   | 'activity'
   | 'source'

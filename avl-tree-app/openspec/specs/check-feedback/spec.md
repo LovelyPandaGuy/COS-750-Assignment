@@ -6,7 +6,7 @@ The four-part feedback shown after each checked answer: a calm verdict, why, a r
 ## Requirements
 
 ### Requirement: Four parts
-After a checked answer, feedback SHALL show four parts in order: a verdict, why, a Review link, and the next step. The verdict SHALL be "That's right" for a correct answer and "Not quite yet" otherwise. Why SHALL be the marker's explanation, which names the misconception where one was recognised; a correct answer SHALL get a brief why too. The next step SHALL be Try again for a wrong answer and Next question for a right one, or Continue on the last item. (FR-ASM-03, D27)
+After a checked answer, feedback SHALL show four parts in order: a verdict, why, a Review link, and the next step. The verdict SHALL be "That's right" for a correct answer and "Not quite yet" otherwise. Why SHALL be the marker's explanation, which names the misconception where one was recognised; a correct answer SHALL get a brief why too. The next step SHALL be Try again for a wrong answer with attempts left, Next question for a right one or Continue on the last item, and Continue after the retry cap is reached. (FR-ASM-03, FR-SCA-03, D27)
 
 #### Scenario: Wrong answer
 - **WHEN** a wrong option with a misconception is checked
@@ -19,6 +19,10 @@ After a checked answer, feedback SHALL show four parts in order: a verdict, why,
 #### Scenario: No misconception recognised
 - **WHEN** a number answer that matches no known misconception is checked
 - **THEN** feedback shows the item's general explanation and still shows all four parts
+
+#### Scenario: At the cap
+- **WHEN** the third wrong answer is checked
+- **THEN** feedback reads "Not quite yet", the why, Review and Continue, and no Try again
 
 ### Requirement: Calm wording and no glyph
 Feedback SHALL NOT use a cross, tick-in-circle, red, "wrong", "incorrect" or "fail", and attempt markers in the check header SHALL NOT either. Verdict wording SHALL come from the content files. A tree answer's feedback SHALL name the first trace step the student's tree does not reach. (D27, FR-ASM-04)

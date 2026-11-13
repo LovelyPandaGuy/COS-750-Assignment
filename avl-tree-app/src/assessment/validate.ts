@@ -1,5 +1,6 @@
 // The bank validator (add-question-model-and-bank, design decision 8; FR-ASM-02, FR-ASM-03, D19).
 // Pure and never throws: every problem is reported.
+import { SCAFFOLDS, type ScaffoldContent } from '../content/questions/scaffolds'
 import { MISCONCEPTIONS, type MisconceptionEntry } from '../content/questions/misconceptions'
 import { OUTCOMES, type OutcomeEntry } from '../content/questions/outcomes'
 import { SUB_SKILLS, type SubSkillEntry } from '../content/questions/subSkills'
@@ -21,6 +22,7 @@ export interface ValidateOptions {
   seeds?: readonly number[]
   kinds?: Record<KindName, Kind>
   records?: BankRecords
+  scaffolds?: ScaffoldContent
 }
 
 const DEFAULT_SEEDS = Array.from({ length: 100 }, (_, i) => i)
@@ -145,9 +147,57 @@ export function validateItems(items: readonly BankItem[], options: ValidateOptio
   return problems
 }
 
+/** Every misconception and used sub-skill has a hint and a lecture question, and their text keeps the wording rules (FR-SCA-02, D19). */
+function scaffoldProblems(items: readonly BankItem[], options: ValidateOptions): Problem[] {
+  const content = options.scaffolds ?? SCAFFOLDS
+  const records = options.records ?? DEFAULT_RECORDS
+  const out: Problem[] = []
+  const add = (value: string, message: string) => out.push({ kind: 'scaffold', value, message })
+  for (const m of Object.keys(records.misconceptions)) {
+    if (content.hints[m] === undefined) add(m, `${m} has no hint`)
+    if (content.lecture[m] === undefined) add(m, `${m} has no lecture-question template`)
+  }
+  for (const skill of new Set(items.map((i) => i.subSkill))) {
+    if (content.subSkillHints[skill] === undefined) add(skill, `sub-skill ${skill} has no fallback hint`)
+    if (content.subSkillLecture[skill] === undefined) add(skill, `sub-skill ${skill} has no fallback lecture-question template`)
+  }
+  const kinds = options.kinds ?? KINDS
+  const seen = new Set<string>()
+  for (const item of items) {
+    const kind = kinds[item.kind]
+    if (kind === undefined) continue
+    for (const seed of options.seeds ?? DEFAULT_SEEDS) {
+      let inst: Instance
+      try {
+        inst = instantiate(item, seed, 0, { kinds, wording: VALIDATION_WORDING })
+      } catch {
+        continue
+      }
+      const allowed = new Set<number>([LEAF_HEIGHT, EMPTY_HEIGHT, ...BALANCE_RANGE, ...inst.numbers])
+      for (const mis of [...kind.misconceptions, undefined]) {
+        const texts = [
+          (mis !== undefined ? content.hints[mis] : undefined) ?? content.subSkillHints[item.subSkill],
+          (mis !== undefined ? content.lecture[mis] : undefined) ?? content.subSkillLecture[item.subSkill],
+        ]
+          .filter((fn) => fn !== undefined)
+          .map((fn) => fn(inst.facts, VALIDATION_WORDING))
+        for (const text of texts) {
+          const bad = statesConvention(text) ? 'states sign, lean or case wording (D19)' : JUDGING.test(text) ? 'uses judging words (D27)' : numbersIn(text).some((n) => !allowed.has(n)) ? 'has a number that is not a fact of the instance' : null
+          const key = `${item.id}|${text}`
+          if (bad !== null && !seen.has(key)) {
+            seen.add(key)
+            out.push({ kind: 'scaffold', step: item.id, value: text, message: `${item.id}: "${text}" ${bad}` })
+          }
+        }
+      }
+    }
+  }
+  return out
+}
+
 /** The whole bank: item checks, then per-module counts, optional flags and catalogue coverage. */
 export function validateBank(items: readonly BankItem[], options: ValidateOptions = {}): Problem[] {
-  const problems = validateItems(items, options)
+  const problems = [...validateItems(items, options), ...scaffoldProblems(items, options)]
   const records = options.records ?? DEFAULT_RECORDS
   for (const m of MODULE_IDS) {
     const n = items.filter((i) => i.module === m).length

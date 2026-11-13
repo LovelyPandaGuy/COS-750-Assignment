@@ -48,6 +48,7 @@ function sampleState(overrides: Partial<LearnerState> = {}): LearnerState {
       },
     ],
     subSkillStatus: { 'bf-compute': 'developing', 'height-count': 'secure' },
+    lectureQuestions: [],
     ...overrides,
   }
 }
@@ -62,6 +63,7 @@ function expectFresh(state: LearnerState) {
   expect(state.completedModules).toEqual([])
   expect(state.attempts).toEqual([])
   expect(state.subSkillStatus).toEqual({})
+  expect(state.lectureQuestions).toEqual([])
 }
 
 /** A backend whose every call throws, like blocked storage in some private modes. */
@@ -148,8 +150,12 @@ const stateArb: fc.Arbitrary<LearnerState> = fc.record(
     completedModules: fc.uniqueArray(moduleArb),
     attempts: fc.array(attemptArb, { maxLength: 8 }),
     subSkillStatus: fc.dictionary(fc.string({ minLength: 1 }), statusArb),
+    lectureQuestions: fc.array(
+      fc.record({ questionId: fc.string({ minLength: 1 }), text: fc.string({ minLength: 1 }), at: fc.date({ noInvalidDate: true }).map((d) => d.toISOString()) }),
+      { maxLength: 3 },
+    ),
   },
-  { requiredKeys: ['schemaVersion', 'profileId', 'path', 'currentModule', 'completedModules', 'attempts', 'subSkillStatus'] },
+  { requiredKeys: ['schemaVersion', 'profileId', 'path', 'currentModule', 'completedModules', 'attempts', 'subSkillStatus', 'lectureQuestions'] },
 )
 
 function normaliseNickname(n: string | undefined): string | undefined {
@@ -192,6 +198,7 @@ describe('FR-ONB-02, NFR-05: no personal identifiers stored', () => {
         'attempts',
         'completedModules',
         'currentModule',
+        'lectureQuestions',
         'nickname',
         'path',
         'profileId',
