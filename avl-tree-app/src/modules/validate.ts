@@ -21,6 +21,9 @@ export type ProblemKind =
   | 'bank'
   | 'option'
   | 'misconception'
+  // scaffolds (add-scaffold-ladder-and-retry-cap)
+  | 'scaffold'
+  | 'answer'
 
 export interface Problem {
   kind: ProblemKind
