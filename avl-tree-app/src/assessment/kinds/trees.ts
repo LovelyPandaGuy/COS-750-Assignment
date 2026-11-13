@@ -4,11 +4,11 @@ import { EMPTY_HEIGHT, LEAF_HEIGHT, balanceFactor } from '../../engine/conventio
 import { generateInsertSequence, generateTree, variantSeed } from '../../engine/generate'
 import { createRng } from '../../engine/random'
 import { searchTrace } from '../../engine/search'
-import { balanceFactorOf, height, subtreeAt, type Key } from '../../engine/tree'
+import { balanceFactorOf, height, subtreeAt, type Key, type Tree } from '../../engine/tree'
 import { isPerfect, searchBounds } from '../../modules/facts'
 import { brokenNode } from '../../modules/practice'
 import { generateFillInTree, generateRootLooksFine } from '../../modules/generators'
-import type { Kind } from '../types'
+import type { Built, Kind } from '../types'
 import { avl, depthOf, nodes, plain, unique } from './shared'
 
 const TRIES = 50
@@ -174,16 +174,22 @@ export const searchVisits: Kind = {
       ? keys.filter((k) => k !== tree!.key)
       : Array.from({ length: sorted[sorted.length - 1] - sorted[0] }, (_, i) => sorted[0] + i).filter((k) => !keys.includes(k))
     const target = candidates[rng.int(0, candidates.length - 1)]
-    const steps = searchTrace(tree, target).steps
-    return {
-      facts: { tree, keys, target, values: { steps, edges: steps - 1, count: SEARCH_SIZE } },
-      numbers: unique([...keys, target, steps, steps - 1, SEARCH_SIZE]),
-      signature: `${keys.join(',')}|${target}`,
-      answer: steps,
-      wrong: [
-        { value: steps - 1, misconception: 'M-COUNTS-EDGES' },
-        { value: SEARCH_SIZE, misconception: 'M-SEARCH-VISITS-ALL' },
-      ],
-    }
+    return searchProblem(keys, tree, target)
   },
+}
+
+/** A search problem on a given tree: nodes visited, with the edge and every-node slips (shared with add-readiness-c9). */
+export function searchProblem(keys: Key[], tree: Tree, target: Key): Built {
+  const steps = searchTrace(tree, target).steps
+  const count = keys.length
+  return {
+    facts: { tree, keys, target, values: { steps, edges: steps - 1, count } },
+    numbers: unique([...keys, target, steps, steps - 1, count]),
+    signature: `${keys.join(',')}|${target}`,
+    answer: steps,
+    wrong: [
+      { value: steps - 1, misconception: 'M-COUNTS-EDGES' },
+      { value: count, misconception: 'M-SEARCH-VISITS-ALL' },
+    ],
+  }
 }

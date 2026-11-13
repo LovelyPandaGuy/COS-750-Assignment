@@ -2,11 +2,13 @@
 import type { Kind, KindName } from '../types'
 import { deleteRebalances, deleteRoot } from './delete'
 import { insertFinalTree, lowestUnbalanced, rebalanceCase, rotationResult, rotationsNeeded } from './rotations'
+import { buildAvl, searchBuilt, worstSearch } from './readiness'
 import { scenarioChoice } from './scenario'
 import { balanceFactorKind, bstHeight, isAvl, nodeHeight, searchVisits, sortedSearch } from './trees'
 
 export { DELETE_FALLBACK, DELETE_ONE_FALLBACK, DELETE_ROOT_FALLBACK } from './delete'
 export { DEEP_FALLBACK } from './rotations'
+export { BUILD_FALLBACK } from './readiness'
 
 export const KINDS: Record<KindName, Kind> = {
   'bst-height': bstHeight,
@@ -23,4 +25,7 @@ export const KINDS: Record<KindName, Kind> = {
   'delete-rebalances': deleteRebalances,
   'delete-root': deleteRoot,
   'scenario-choice': scenarioChoice,
+  'worst-search': worstSearch,
+  'build-avl': buildAvl,
+  'search-built': searchBuilt,
 }

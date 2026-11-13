@@ -24,6 +24,10 @@ export type KindName =
   | 'delete-rebalances'
   | 'delete-root'
   | 'scenario-choice'
+  // C9 readiness (add-readiness-c9)
+  | 'worst-search'
+  | 'build-avl'
+  | 'search-built'
 
 export interface KindParams {
   /** search-visits: a key that is in the tree, or one that is not. */
@@ -87,6 +91,8 @@ export interface BankItem {
   level: BloomLevel
   /** Never blocks progress (C7, D4). */
   optional?: boolean
+  /** C9: one of the two combined items (build an AVL tree, then search it), counted toward its outcome. */
+  combined?: boolean
   stem: Wording
   /** Text of a choice option whose value is not a number (yes or no, a case, a structure). */
   optionText?: Wording

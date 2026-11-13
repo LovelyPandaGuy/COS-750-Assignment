@@ -235,3 +235,30 @@ export function validateBank(items: readonly BankItem[], options: ValidateOption
   }
   return problems
 }
+
+/** C9 (FR-ASM-06, add-readiness-c9): the outcomes the combined items count toward, build then search. */
+const COMBINED_OUTCOMES: readonly LoId[] = ['LO7', 'LO4']
+const READINESS_MODULE: ModuleId = 'C9'
+/** D4: the outcome whose readiness item is optional. */
+const OPTIONAL_OUTCOME: LoId = 'LO8'
+
+/** The C9 readiness bank: the item checks, then one item per outcome, the two combined items, module and optional flags. */
+export function validateReadinessBank(items: readonly BankItem[], options: ValidateOptions = {}): Problem[] {
+  const problems = validateItems(items, options)
+  for (const lo of LO_IDS) {
+    const n = items.filter((i) => i.outcome === lo && i.combined !== true).length
+    if (n !== 1) problems.push({ kind: 'bank', value: lo, message: `${lo} has ${n} readiness items; it needs exactly 1` })
+  }
+  const combined = items.filter((i) => i.combined === true).map((i) => i.outcome)
+  if ([...combined].sort().join(',') !== [...COMBINED_OUTCOMES].sort().join(',')) {
+    problems.push({ kind: 'bank', value: 'combined', message: `the combined items count toward ${combined.join(', ') || 'nothing'}; they need ${COMBINED_OUTCOMES.join(' and ')}` })
+  }
+  for (const i of items) {
+    if (i.module !== READINESS_MODULE) problems.push({ kind: 'bank', step: i.id, value: i.id, message: `${i.id}: a readiness item belongs to ${READINESS_MODULE}` })
+    const shouldBeOptional = i.outcome === OPTIONAL_OUTCOME && i.combined !== true
+    if ((i.optional === true) !== shouldBeOptional) {
+      problems.push({ kind: 'bank', step: i.id, value: i.id, message: `${i.id}: only the ${OPTIONAL_OUTCOME} readiness item is optional` })
+    }
+  }
+  return problems
+}

@@ -20,7 +20,6 @@ import { SEEDS, avlOf, engineAnswer, plain, sameShape } from './helpers'
 
 const AT = '2026-11-13T12:00:00.000Z'
 const LOS = ['LO1', 'LO2', 'LO3', 'LO4', 'LO5', 'LO6', 'LO7', 'LO8', 'LO9']
-const item = (id: string) => READINESS.find((i) => i.id === id)!
 const build = () => READINESS.find((i) => i.combined && i.kind === 'build-avl')!
 const search = () => READINESS.find((i) => i.combined && i.kind === 'search-built')!
 const lo = (outcome: string) => READINESS.find((i) => i.outcome === outcome && !i.combined)!

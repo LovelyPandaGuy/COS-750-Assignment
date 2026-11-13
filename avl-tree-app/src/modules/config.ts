@@ -17,3 +17,12 @@ export const SEARCH_PRACTICE_KEYS = 7
  * or a request opens the next rung; at RETRY_CAP every rung opens.
  */
 export const SCAFFOLD_LADDER = ['hint', 'worked-example', 'guided'] as const
+
+/** Keys in the C9 combined item's sequence (build an AVL tree, then search it; add-readiness-c9). */
+export const READINESS_BUILD_KEYS = 6
+
+/** How many times a C9 item answered wrongly comes back, as a new variant, after the first pass (D14, FR-ASM-06). */
+export const READINESS_RETURNS = 1
+
+/** Question ID of a lecture question the student writes themselves (FR-RDY-02, D14); drafted ones carry an item ID. */
+export const OWN_LECTURE_QUESTION = 'own'
