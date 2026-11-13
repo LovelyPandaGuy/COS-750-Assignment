@@ -23,6 +23,8 @@ export const screenCopy = {
     continue: (module: string) => `Continue: ${module}`,
     sandboxHeading: 'Sandbox',
     sandboxText: 'Try inserting your own keys.',
+    /** Shown once C2 is completed (FR-VIS-08, D11). */
+    sandboxSuggested: 'Suggested now that you have finished C2: see how insertion order shapes a tree.',
     sandboxLink: 'Open sandbox',
   },
 

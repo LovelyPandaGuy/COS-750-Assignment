@@ -1,0 +1,58 @@
+/* Sandbox (wireframe 1n). Tokens only; every control at least 44 px; rows wrap at 360 px. */
+.sandbox-controls { align-self: stretch; display: flex; flex-direction: column; gap: var(--space-3); }
+.sandbox-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.sandbox-row label { font: var(--type-body); font-weight: 700; }
+.sandbox-input {
+  min-height: var(--target-min);
+  width: 7ch;
+  padding: 0 var(--space-2);
+  font: var(--type-body);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-md);
+}
+.sandbox-notice:empty { display: none; }
+.sandbox-notice { font: var(--type-body); color: var(--text-primary); }
+
+.sandbox-switch-row { display: flex; flex-direction: column; gap: var(--space-2); }
+.sandbox-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: 0 var(--space-3);
+  font: var(--type-body);
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+.sandbox-switch-track {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-pill);
+  background: var(--bg-page);
+}
+.sandbox-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-pill);
+  background: var(--border-control);
+}
+.sandbox-switch[data-on='true'] .sandbox-switch-track { background: var(--action-primary-tint); border-color: var(--action-primary); }
+.sandbox-switch[data-on='true'] .sandbox-switch-thumb { left: auto; right: 2px; background: var(--action-primary); }
+
+.sandbox-stats ul { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); margin: 0; padding: 0; list-style: none; font: var(--type-body); }
+.sandbox-replay { align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); }
+.sandbox-log { align-self: stretch; }
+.sandbox-log h2 { font: var(--type-h2); margin: 0 0 var(--space-2); }
+.sandbox-log ol { margin: 0; padding-left: var(--space-5); font: var(--type-body); }

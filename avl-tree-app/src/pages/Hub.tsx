@@ -31,6 +31,7 @@ export function Hub() {
       <section className="screen-card" aria-labelledby={sandboxId}>
         <h2 id={sandboxId}>{copy.sandboxHeading}</h2>
         <p>{copy.sandboxText}</p>
+        {learner.completedModules.includes('C2') && <p>{copy.sandboxSuggested}</p>}
         <Link className="screen-link" to={paths.sandbox()}>
           {copy.sandboxLink}
         </Link>

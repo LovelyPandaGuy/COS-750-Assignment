@@ -4,6 +4,7 @@ import { axe } from 'vitest-axe'
 import { describe, it, expect } from 'vitest'
 import { MODULE_IDS } from '../../src/state/learnerState'
 import { moduleLabel } from '../../src/content/modules'
+import { screenCopy } from '../../src/content/screens'
 import { LEARNER_KEY } from '../../src/state/storage'
 import { backendWith, progressState, renderRoutes } from './learner-fixtures'
 
@@ -87,6 +88,18 @@ describe('FR-LRN-03 hub screen', () => {
     expect(href(within(main()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
   })
 
+  // Spec: add-sandbox / module-hub delta. FR-VIS-08, D11.
+  it('suggests the sandbox once C2 is completed, and links to it either way', () => {
+    const card = () => screen.getByRole('region', { name: screenCopy.hub.sandboxHeading })
+    const { unmount } = renderRoutes(backendWith(progressState()), '/path')
+    expect(card()).toHaveTextContent(screenCopy.hub.sandboxSuggested)
+    expect(href(within(card()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
+    unmount()
+    renderRoutes(backendWith(), '/path')
+    expect(card()).not.toHaveTextContent(screenCopy.hub.sandboxSuggested)
+    expect(href(within(card()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
+  })
+
   it('Continue opens the current module', () => {
     renderRoutes(backendWith(progressState()), '/path')
     fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
@@ -160,7 +173,6 @@ describe('FR-VIS-08 skeleton screens', () => {
     ['/module/C6/example', 'Worked example'],
     ['/module/C6/check', 'Check'],
     ['/module/C9/check', 'Check'],
-    ['/sandbox', 'Sandbox'],
     ['/readiness', 'Ready for the lecture?'],
   ]
 
@@ -186,8 +198,6 @@ describe('FR-VIS-08 skeleton screens', () => {
       expect(href(back), path).toMatch(/\/path$/)
       unmount()
     }
-    renderRoutes(backendWith(), '/sandbox')
-    expect(within(main()).getByRole('link', { name: /back to path/i })).toHaveTextContent('←')
   })
 
   it('the result links to the refresher and the warm-up check, whatever the state', () => {

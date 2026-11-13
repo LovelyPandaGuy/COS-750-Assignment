@@ -6,10 +6,10 @@ Gives every remaining MVP screen a route, a heading and a way back, with no cont
 ## Requirements
 
 ### Requirement: Skeleton screens exist
-These screens SHALL exist as skeletons, each with the heading shown: the warm-up check "Warm-up check" (`/module/C1/check`, wireframe 1c), its result "Here's where you're starting from" (`/module/C1/check/result`, 1d), the BST refresher "BST refresher" (`/module/C1/refresher`), an Explore, Worked example or Check activity for modules C2 to C9 with that activity's name as heading (`/module/:moduleId/explore`, `example`, `check`; 1f, 1i), the sandbox "Sandbox" (1n) and the readiness summary "Ready for the lecture?" (1o). Each SHALL show one line saying the screen is coming and no questions, trees, controls or learning content. (SE §6.6, wireframes 1a to 1o)
+These screens SHALL exist as skeletons, each with the heading shown: the warm-up check "Warm-up check" (`/module/C1/check`, wireframe 1c), its result "Here's where you're starting from" (`/module/C1/check/result`, 1d), the BST refresher "BST refresher" (`/module/C1/refresher`), an Explore, Worked example or Check activity of a module with no module content yet, with that activity's name as heading (`/module/:moduleId/explore`, `example`, `check`; 1f, 1i), and the readiness summary "Ready for the lecture?" (1o). Each SHALL show one line saying the screen is coming and no questions, trees, controls or learning content. (SE §6.6, wireframes 1a to 1o; the sandbox, 1n, is its own screen)
 
 #### Scenario: Headings
-- **WHEN** each of `/module/C1/check`, `/module/C1/check/result`, `/module/C1/refresher`, `/module/C5/explore`, `/module/C5/example`, `/module/C5/check`, `/module/C9/check`, `/sandbox` and `/readiness` is opened
+- **WHEN** each of `/module/C1/check`, `/module/C1/check/result`, `/module/C1/refresher`, `/module/C6/explore`, `/module/C6/example`, `/module/C6/check`, `/module/C9/check` and `/readiness` is opened
 - **THEN** each has the heading named above, and its text outside the heading, the breadcrumb and the back link is the one "coming" line
 
 #### Scenario: No content
@@ -21,7 +21,7 @@ These screens SHALL exist as skeletons, each with the heading shown: the warm-up
 - **THEN** the breadcrumb names "C6 Insertion with rebalancing" and "Check"
 
 ### Requirement: A way back from every skeleton
-Every skeleton screen SHALL have a "Back to path" link to the hub, except the sandbox, which SHALL have "← Back to path" as in wireframe 1n; the warm-up result SHALL also link to the warm-up check. Following a link SHALL leave the learner state unchanged. (wireframes 1d, 1n; FR-LRN-04, FR-DIA-04)
+Every skeleton screen SHALL have a "Back to path" link to the hub; the warm-up result SHALL also link to the warm-up check. Following a link SHALL leave the learner state unchanged. (wireframe 1d; FR-LRN-04, FR-DIA-04)
 
 #### Scenario: Back links
 - **WHEN** each skeleton screen is rendered
