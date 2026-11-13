@@ -6,11 +6,13 @@ import { rotateLeft, rotateRight } from '../../src/engine/rotations'
 import { searchTrace } from '../../src/engine/search'
 import { balanceFactorOf, height, subtreeAt, type Key, type Tree } from '../../src/engine/tree'
 import { answersOf } from '../../src/modules/compare'
+import { searchBounds } from '../../src/modules/facts'
 import type { Instance } from '../../src/assessment/types'
 
 export const SEEDS = Array.from({ length: 100 }, (_, i) => i)
 
 export const plain = (keys: readonly Key[]): Tree => keys.reduce<Tree>((t, k) => insert(t, k).tree, null)
+export const avlOf = (keys: readonly Key[]): Tree => keys.reduce<Tree>((t, k) => avlInsert(t, k).tree, null)
 
 /** Same keys and shape; stored heights ignored. */
 export function sameShape(a: Tree, b: Tree): boolean {
@@ -52,6 +54,15 @@ export function engineAnswer(kind: string, inst: Instance): unknown {
       return avlDelete(t, k).tree!.key
     case 'scenario-choice':
       return answersOf(f.scenario!)[0]
+    // add-readiness-c9
+    case 'worst-search': {
+      const b = searchBounds(f.values.n)
+      return b.worst === f.values.plainWorst && b.avlWorst === f.values.avlWorst && b.avlWorst < b.worst ? 'plain-n-avl-log' : 'mismatch'
+    }
+    case 'build-avl':
+      return avlOf(f.keys)
+    case 'search-built':
+      return searchTrace(t, k).steps
     default:
       throw new Error(`no engine answer for ${kind}`)
   }
