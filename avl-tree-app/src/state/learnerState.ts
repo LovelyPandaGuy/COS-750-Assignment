@@ -39,6 +39,15 @@ export interface LectureQuestion {
   at: string
 }
 
+/** A question the student wrote for the lecture (FR-RDY-02). Typed text; it stays in this browser. */
+export interface OwnQuestion {
+  text: string
+  at: string
+}
+
+/** Own questions are trimmed and capped at this length. */
+export const OWN_QUESTION_MAX_LENGTH = 300
+
 export interface LearnerState {
   schemaVersion: number
   profileId: string
@@ -50,6 +59,8 @@ export interface LearnerState {
   subSkillStatus: Record<string, SubSkillStatus>
   /** Absent in older saves; the parser always fills it. */
   lectureQuestions?: LectureQuestion[]
+  /** Absent in older saves; the parser always fills it. */
+  ownQuestions?: OwnQuestion[]
 }
 
 /** A fresh state for a new anonymous profile (FR-ONB-02). */
@@ -63,6 +74,7 @@ export function freshLearnerState(profileId: string): LearnerState {
     attempts: [],
     subSkillStatus: {},
     lectureQuestions: [],
+    ownQuestions: [],
   }
 }
 
@@ -165,6 +177,16 @@ export function parseLearnerState(raw: unknown): LearnerState | null {
     }
   }
 
+  const ownQuestions: OwnQuestion[] = []
+  if (raw.ownQuestions !== undefined) {
+    if (!Array.isArray(raw.ownQuestions)) return null
+    for (const q of raw.ownQuestions) {
+      if (!isObject(q) || !isNonEmptyString(q.text) || q.text.length > OWN_QUESTION_MAX_LENGTH) return null
+      if (typeof q.at !== 'string' || Number.isNaN(Date.parse(q.at))) return null
+      ownQuestions.push({ text: q.text, at: q.at })
+    }
+  }
+
   const state: LearnerState = {
     schemaVersion: SCHEMA_VERSION,
     profileId: raw.profileId,
@@ -174,6 +196,7 @@ export function parseLearnerState(raw: unknown): LearnerState | null {
     attempts,
     subSkillStatus,
     lectureQuestions,
+    ownQuestions,
   }
   const nickname = normaliseNickname(raw.nickname as string | undefined)
   if (nickname !== undefined) state.nickname = nickname

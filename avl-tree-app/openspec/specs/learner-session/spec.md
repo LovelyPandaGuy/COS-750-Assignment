@@ -93,3 +93,25 @@ The session SHALL let a screen record a lecture question, saved like any other c
 #### Scenario: Status in the same change
 - **WHEN** an attempt at a bank item is recorded
 - **THEN** the saved state holds the attempt and the updated sub-skill status together
+
+### Requirement: Screens can set the learning path
+The session SHALL let a screen set the learning path to "guided" or "diagnostic skipped", saved like any other change; setting the value it already has SHALL change nothing. (FR-DIA-04)
+
+#### Scenario: Saved
+- **WHEN** the path is set to "diagnostic skipped" and the app is reloaded
+- **THEN** the restored state has that path
+
+#### Scenario: No-op
+- **WHEN** the path is set to the value it already has
+- **THEN** nothing is written
+
+### Requirement: Screens can record an own question
+The session SHALL let a screen add one of the student's own questions, trimmed and capped at 300 characters, saved like any other change; a blank question SHALL change nothing. (FR-RDY-02)
+
+#### Scenario: Added
+- **WHEN** "  Why rotate at the lowest node?  " is added and the app is reloaded
+- **THEN** the restored list holds "Why rotate at the lowest node?"
+
+#### Scenario: Blank
+- **WHEN** an empty or spaces-only question is added
+- **THEN** nothing is written

@@ -1,6 +1,5 @@
 import { fireEvent, screen, within } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
-import { axe } from 'vitest-axe'
 import { describe, it, expect } from 'vitest'
 import { MODULE_IDS } from '../../src/state/learnerState'
 import { moduleLabel } from '../../src/content/modules'
@@ -153,73 +152,21 @@ describe('FR-LRN-05 module screen', () => {
   })
 
   it('moving about does not change the stored learner state', () => {
-    // C9 has no module content yet, so its Check activity is still a skeleton with "Back to path".
     const backend = backendWith(progressState({ currentModule: 'C9' }))
     const before = backend.getItem(LEARNER_KEY)
     renderRoutes(backend, '/path')
     fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
-    fireEvent.click(within(main()).getByRole('link', { name: /^check/i }))
     fireEvent.click(within(main()).getByRole('link', { name: /back to path/i }))
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
   })
 })
 
-describe('FR-VIS-08 skeleton screens', () => {
-  const cases: [string, string][] = [
-    ['/module/C1/check', 'Warm-up check'],
-    ['/module/C1/check/result', "Here's where you're starting from"],
-    ['/module/C1/refresher', 'BST refresher'],
-    ['/module/C9/check', 'Check'],
-    ['/readiness', 'Ready for the lecture?'],
-  ]
-
-  it('has the heading and one "coming" line, with no content', () => {
-    for (const [path, heading] of cases) {
-      const { unmount } = renderRoutes(backendWith(), path)
-      expect(h1(), path).toHaveTextContent(new RegExp(`^${heading.replace(/[?']/g, '.')}$`))
-      expect(main().querySelectorAll('p'), path).toHaveLength(1)
-      expect(main().querySelector('.tree-view, input, textarea, select, svg'), path).toBeNull()
-      unmount()
-    }
-  })
-
-  it('names the right module for an activity', () => {
-    renderRoutes(backendWith(), '/module/C9/check')
-    expect(screen.getByRole('banner').querySelector('.topbar-breadcrumb')).toHaveTextContent('C9 Am I ready')
-  })
-
-  it('every skeleton links back to the path', () => {
-    for (const [path] of cases) {
-      const { unmount } = renderRoutes(backendWith(), path)
-      const back = within(main()).getByRole('link', { name: /back to path/i })
-      expect(href(back), path).toMatch(/\/path$/)
-      unmount()
-    }
-  })
-
-  it('the result links to the refresher and the warm-up check, whatever the state', () => {
-    for (const backend of [backendWith(), backendWith(progressState())]) {
-      const { unmount } = renderRoutes(backend, '/module/C1/check/result')
-      expect(href(within(main()).getByRole('link', { name: /bst refresher/i }))).toMatch(/\/module\/C1\/refresher$/)
-      expect(href(within(main()).getByRole('link', { name: /warm-up check/i }))).toMatch(/\/module\/C1\/check$/)
-      unmount()
-    }
-  })
-
-  it('visiting every screen leaves the stored state byte for byte the same', () => {
+describe('FR-VIS-08 no skeleton screens are left', () => {
+  it('visiting the C1, C9 and readiness screens leaves the stored state byte for byte the same', () => {
     const backend = backendWith(progressState())
     const before = backend.getItem(LEARNER_KEY)
-    for (const [path] of cases) renderRoutes(backend, path).unmount()
+    for (const path of ['/module/C1/check', '/module/C1/check/result', '/module/C1/refresher', '/module/C9/check', '/readiness']) renderRoutes(backend, path).unmount()
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
-  })
-
-  it('keeps the back link reachable by keyboard and has no axe violations', async () => {
-    for (const [path] of cases) {
-      const { container, unmount } = renderRoutes(backendWith(), path)
-      expect(within(main()).getByRole('link', { name: /back to path/i }).getAttribute('tabindex')).not.toBe('-1')
-      expect(await axe(container), path).toHaveNoViolations()
-      unmount()
-    }
   })
 })
 

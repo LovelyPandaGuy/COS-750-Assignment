@@ -23,7 +23,8 @@ Work with unknowns per D18: assume, record the assumption in `decisions.md`, kee
 - 19 `add-question-model-and-bank`: attempt policy differs for practice and checks; record hints used (D21).
 - 20 `add-checks-and-feedback`: built 13 Nov (D75 to D79). Checks are shown, marked and stored; modules complete through them; the route follows the result. Four-part feedback, "Not quite yet", no cross glyph (D27). The retry cap and ladder are change 21.
 - 21 `add-scaffold-ladder-and-retry-cap`: built 13 Nov (D80 to D83). Ladder, cap of 3, lecture questions, mastery status. Practice-step review and fading (FR-SCA-04, FR-SCA-05) are not done; `RETRY_CAP` and `PRACTICE_HINTS` stay in one config (D9, D21).
-- 22 `add-diagnostic-c1-and-routing`: emit route events (D28).
+- 22 `add-diagnostic-c1-and-routing`: built 13 Nov (D84 to D86). Warm-up, result, routing, re-check and refresher. Route events go to the no-op sink (D28). The accessibility settings beside the conventions card wait for change 24.
+- 23 `add-readiness-c9`: built 13 Nov (D87 to D89). The C9 check with a return step, and the readiness summary with the lecture list, own question and print, save or copy. No skeleton screens are left.
 - 24 `add-accessibility-settings-and-audit`: read-aloud is stretch (D26); add the colour-vision emulation check (D25).
 - 26 `add-event-log-and-export`: persist route events (D28).
 

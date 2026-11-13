@@ -60,9 +60,9 @@ describe('FR-LRN-04 step player position and navigation', () => {
     expect(place()).toHaveTextContent(`Step 1 of ${stepsFor(c2, 'example').length}`)
   })
 
-  it('activities without content stay skeletons', () => {
+  it('the C9 check is its own page, not the step player', () => {
     renderRoutes(backendWith(), '/module/C9/check')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
     expect(screen.queryByText(/^Step \d+ of \d+$/)).toBeNull()
   })
 

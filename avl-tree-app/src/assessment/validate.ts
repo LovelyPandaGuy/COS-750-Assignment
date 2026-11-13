@@ -7,13 +7,13 @@ import { SUB_SKILLS, type SubSkillEntry } from '../content/questions/subSkills'
 import { BALANCE_RANGE, EMPTY_HEIGHT, LEAF_HEIGHT } from '../engine/conventions'
 import { numbersIn, statesConvention, VALIDATION_WORDING, type Problem } from '../modules/validate'
 import { MODULE_IDS, type ModuleId } from '../state/learnerState'
-import { BLOOM_LEVELS, LO_IDS, type LoId } from './ids'
+import { BLOOM_LEVELS, OUTCOME_TAGS, type OutcomeTag } from './ids'
 import { instantiate } from './instantiate'
 import { KINDS } from './kinds'
 import type { BankItem, Instance, Kind, KindName } from './types'
 
 export interface BankRecords {
-  outcomes: Record<LoId, OutcomeEntry>
+  outcomes: Record<OutcomeTag, OutcomeEntry>
   subSkills: Record<string, SubSkillEntry>
   misconceptions: Record<string, MisconceptionEntry>
 }
@@ -32,6 +32,10 @@ const JUDGING = /\b(?:wrong|fail\w*|incorrect)\b/i
 /** FR-ASM-01: modules with a check, and how many items each has. */
 const CHECK_MODULES: readonly ModuleId[] = ['C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8']
 const ITEMS_PER_CHECK = { min: 2, max: 3 }
+/** C1's diagnostic: five items, or none when only the module checks are validated (FR-DIA-01). */
+const DIAGNOSTIC_ITEMS = 5
+/** C9's readiness check: eleven items, or none when only some of the bank is validated (D14). */
+const READINESS_ITEMS = 11
 /** D4: the only module whose check is optional. */
 const OPTIONAL_MODULE: ModuleId = 'C7'
 
@@ -41,12 +45,12 @@ function tagProblems(item: BankItem, records: BankRecords, kinds: Record<KindNam
   const out: Problem[] = []
   const tag = (name: string, detail: string) => out.push({ kind: 'tag', step: item.id, value: name, message: `${item.id}: ${name} ${detail}` })
   if (!isOneOf(MODULE_IDS, item.module)) tag('module', `"${String(item.module)}" is not a module`)
-  if (!isOneOf(LO_IDS, item.outcome)) tag('outcome', `"${String(item.outcome)}" is not LO1 to LO9`)
+  if (!isOneOf(OUTCOME_TAGS, item.outcome)) tag('outcome', `"${String(item.outcome)}" is not LO1 to LO9 or PRE`)
   const skill = records.subSkills[item.subSkill]
   if (!item.subSkill || skill === undefined) tag('subSkill', `"${item.subSkill}" is missing or unknown`)
   else if (skill.outcome !== item.outcome) tag('subSkill', `"${item.subSkill}" belongs to ${skill.outcome}, not ${item.outcome}`)
   if (!isOneOf(BLOOM_LEVELS, item.level)) tag('level', `"${String(item.level)}" is not a Bloom level`)
-  else if (isOneOf(LO_IDS, item.outcome) && !records.outcomes[item.outcome].levels.includes(item.level)) {
+  else if (isOneOf(OUTCOME_TAGS, item.outcome) && !records.outcomes[item.outcome].levels.includes(item.level)) {
     tag('level', `"${item.level}" is not a level the ID gives ${item.outcome}`)
   }
   if (kinds[item.kind] === undefined) tag('kind', `"${String(item.kind)}" is not a kind`)
@@ -201,11 +205,20 @@ export function validateBank(items: readonly BankItem[], options: ValidateOption
   const records = options.records ?? DEFAULT_RECORDS
   for (const m of MODULE_IDS) {
     const n = items.filter((i) => i.module === m).length
+    if (m === 'C1') {
+      if (n !== 0 && n !== DIAGNOSTIC_ITEMS) problems.push({ kind: 'bank', value: m, message: `C1 has ${n} items; it needs ${DIAGNOSTIC_ITEMS}` })
+      continue
+    }
+    if (m === 'C9') {
+      if (n !== 0 && n !== READINESS_ITEMS) problems.push({ kind: 'bank', value: m, message: `C9 has ${n} items; it needs ${READINESS_ITEMS}` })
+      continue
+    }
     const [min, max] = CHECK_MODULES.includes(m) ? [ITEMS_PER_CHECK.min, ITEMS_PER_CHECK.max] : [0, 0]
     if (n < min || n > max) problems.push({ kind: 'bank', value: m, message: `${m} has ${n} items; it needs ${min} to ${max}` })
   }
   for (const i of items) {
-    if ((i.optional === true) !== (i.module === OPTIONAL_MODULE)) {
+    // D4: C7's items, and C9's LO8 item, are the only optional ones.
+    if ((i.optional === true) !== (i.module === OPTIONAL_MODULE || (i.module === 'C9' && i.outcome === 'LO8'))) {
       problems.push({ kind: 'bank', step: i.id, message: `${i.id}: only ${OPTIONAL_MODULE} items are optional` })
     }
   }

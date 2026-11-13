@@ -30,7 +30,7 @@ export const STORAGE_INVENTORY: readonly StoredKey[] = [
   {
     key: LEARNER_KEY,
     description:
-      'Your progress: a random profile ID, your optional nickname, the module you are on, the modules you have finished, your answers with confidence and hints used, how secure each skill is, and the lecture questions the app drafted for you. It stays in this browser and is never sent anywhere.',
+      'Your progress: a random profile ID, your optional nickname, the module you are on, the modules you have finished, your answers with confidence and hints used, how secure each skill is, the lecture questions the app drafted for you, and your own questions for the lecture, which you type yourself (please do not include your name or student number). It stays in this browser and is never sent anywhere.',
   },
   {
     key: SETTINGS_KEY,
@@ -119,6 +119,7 @@ function serialise(state: LearnerState): string {
     }),
     subSkillStatus: state.subSkillStatus,
     lectureQuestions: state.lectureQuestions ?? [],
+    ownQuestions: state.ownQuestions ?? [],
   }
   const nickname = normaliseNickname(state.nickname)
   if (nickname !== undefined) out.nickname = nickname

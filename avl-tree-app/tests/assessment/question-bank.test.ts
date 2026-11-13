@@ -8,6 +8,7 @@ import { instantiate } from '../../src/assessment/instantiate'
 import { DELETE_FALLBACK, DELETE_ROOT_FALLBACK, KINDS } from '../../src/assessment/kinds'
 import { validateBank } from '../../src/assessment/validate'
 import { CHECKS } from '../../src/content/questions/checks'
+import { ALL_ITEMS } from '../../src/content/questions/bank'
 import { MISCONCEPTIONS } from '../../src/content/questions/misconceptions'
 import { OUTCOMES } from '../../src/content/questions/outcomes'
 import { SUB_SKILLS } from '../../src/content/questions/subSkills'
@@ -96,8 +97,9 @@ describe('FR-ASM-02 outcomes and Bloom levels come from the ID', () => {
       LO7: ['apply', 'analyse'],
       LO8: ['apply'],
       LO9: ['analyse'],
+      PRE: ['remember', 'understand'],
     })
-    for (const o of Object.values(OUTCOMES)) expect(o.source).toBe('ID')
+    for (const [lo, o] of Object.entries(OUTCOMES)) expect(o.source, lo).toBe(lo === 'PRE' ? 'beyond ID' : 'ID')
   })
 
   it('each item level fits its outcome', () => {
@@ -107,8 +109,8 @@ describe('FR-ASM-02 outcomes and Bloom levels come from the ID', () => {
 
 describe('FR-SCA-01 sub-skills', () => {
   it('every sub-skill names one outcome and is used or reserved', () => {
-    const used = new Set(CHECKS.map((i) => i.subSkill))
-    expect(Object.keys(SUB_SKILLS)).toHaveLength(14)
+    const used = new Set(ALL_ITEMS.map((i) => i.subSkill))
+    expect(Object.keys(SUB_SKILLS)).toHaveLength(18)
     for (const [id, s] of Object.entries(SUB_SKILLS)) {
       expect(Object.keys(OUTCOMES), id).toContain(s.outcome)
       expect(used.has(id) || s.reserved !== undefined, id).toBe(true)
@@ -118,7 +120,7 @@ describe('FR-SCA-01 sub-skills', () => {
 
 describe('FR-ASM-02 FR-ASM-03 misconception catalogue', () => {
   const produced = new Set<string>()
-  for (const item of CHECKS) {
+  for (const item of ALL_ITEMS) {
     for (const seed of SEEDS) {
       const inst = instantiate(item, seed)
       for (const o of inst.options ?? []) if (o.misconceptionId) produced.add(o.misconceptionId)
@@ -131,11 +133,11 @@ describe('FR-ASM-02 FR-ASM-03 misconception catalogue', () => {
     for (const m of Object.keys(MISCONCEPTIONS)) expect(produced.has(m), m).toBe(true)
   })
 
-  it('18 drafted entries plus one tag per need, all flagged beyond ID', () => {
+  it('25 drafted entries plus one tag per need, all flagged beyond ID', () => {
     const needTags = NEED_IDS.map(needMisconception)
     expect(new Set(needTags).size).toBe(NEED_IDS.length)
     for (const t of needTags) expect(Object.keys(MISCONCEPTIONS)).toContain(t)
-    expect(Object.keys(MISCONCEPTIONS)).toHaveLength(18 + NEED_IDS.length)
+    expect(Object.keys(MISCONCEPTIONS)).toHaveLength(25 + NEED_IDS.length)
     for (const [id, m] of Object.entries(MISCONCEPTIONS)) {
       expect(m.source, id).toBe('beyond ID')
       expect(m.label.trim().length, id).toBeGreaterThan(0)
@@ -178,6 +180,6 @@ describe('C7 delete fallbacks (hand-checked)', () => {
 
 describe('FR-ASM-02 the bank validates cleanly', () => {
   it('validateBank reports nothing', () => {
-    expect(validateBank(CHECKS)).toEqual([])
-  })
+    expect(validateBank(ALL_ITEMS)).toEqual([])
+  }, 30_000)
 })

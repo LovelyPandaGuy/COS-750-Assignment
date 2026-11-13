@@ -4,7 +4,7 @@
  * development double-render cannot turn "new" or "reset-corrupt" into "restored".
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
-import type { Attempt, LearnerState, LectureQuestion, ModuleId } from './learnerState'
+import type { Attempt, LearnerPath, LearnerState, LectureQuestion, ModuleId } from './learnerState'
 import { learnerReducer, type SessionStatus } from './learnerReducer'
 import type { LoadResult, StorageAdapter } from './storage'
 
@@ -20,6 +20,10 @@ export interface LearnerSession {
   completeModule: (module: ModuleId) => void
   /** Save a lecture question; one per item (add-scaffold-ladder-and-retry-cap). */
   recordLectureQuestion: (question: LectureQuestion) => void
+  /** Set the learning path, and optionally the current module (skipping the diagnostic, FR-DIA-04). */
+  setPath: (path: LearnerPath, currentModule?: ModuleId) => void
+  /** Add one of the student's own lecture questions; blank text changes nothing (FR-RDY-02). */
+  addOwnQuestion: (text: string) => void
 }
 
 const Ctx = createContext<LearnerSession | null>(null)
@@ -63,9 +67,13 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
 
   const recordLectureQuestion = useCallback((question: LectureQuestion) => dispatch({ type: 'lecture-question-recorded', question }), [])
 
+  const setPath = useCallback((path: LearnerPath, currentModule?: ModuleId) => dispatch({ type: 'path-set', path, currentModule }), [])
+
+  const addOwnQuestion = useCallback((text: string) => dispatch({ type: 'own-question-added', text, at: new Date().toISOString() }), [])
+
   const value = useMemo<LearnerSession>(
-    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion }),
-    [state, reset, recordAttempt, completeModule, recordLectureQuestion],
+    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion, setPath, addOwnQuestion }),
+    [state, reset, recordAttempt, completeModule, recordLectureQuestion, setPath, addOwnQuestion],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './module.css'
 import { playerCopy } from '../../content/modules/player'
@@ -57,13 +57,19 @@ const FRESH: PracticeState = { regen: 0, answered: [], solved: false, hintsUsed:
 export interface ModulePlayerProps {
   content: ModuleContent
   activity: StepActivity
+  /** Replaces the activity label as the level-1 heading (the BST refresher). */
+  heading?: string
+  /** Shown on the last step, above the control strip. */
+  endPanel?: ReactNode
+  /** Where Next on the last step goes, in place of the next activity. */
+  finishTo?: string
 }
 
 /**
  * One activity of a module, one step at a time (design decision 6). The step index and practice
  * answers live here, so Back and Next within the activity keep them; nothing is stored.
  */
-export function ModulePlayer({ content, activity }: ModulePlayerProps) {
+export function ModulePlayer({ content, activity, heading: title, endPanel, finishTo }: ModulePlayerProps) {
   const navigate = useNavigate()
   const steps = playerSteps(content, activity)
   const attempts = useOptionalLearner()?.learner.attempts ?? NO_ATTEMPTS
@@ -106,6 +112,7 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
   const recommended = activity === 'check' && index === steps.length - 1 ? recommendRoute(content.id, attempts) : null
   const onNext = () => {
     if (index + 1 < steps.length) return go(index + 1)
+    if (finishTo !== undefined) return navigate(finishTo)
     if (recommended !== null) {
       emitRouteEvent({ type: 'route_chosen', from: content.id, recommended, chosen: 'path', at: new Date().toISOString() })
     }
@@ -127,7 +134,7 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
 
   return (
     <div className="screen-stack module-player">
-      <h1 tabIndex={-1}>{activityLabel(content.id, activity)}</h1>
+      <h1 tabIndex={-1}>{title ?? activityLabel(content.id, activity)}</h1>
       <p className="module-place">{playerCopy.stepOf(index + 1, steps.length)}</p>
       <section className="module-step" aria-labelledby={`${ruleId}-h`}>
         <h2 id={`${ruleId}-h`} ref={heading} tabIndex={-1}>
@@ -302,6 +309,7 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
           </div>
         )
       })}
+      {endPanel !== undefined && index === steps.length - 1 && endPanel}
       {recommended !== null && (
         <RouteChoice
           key={step.id}

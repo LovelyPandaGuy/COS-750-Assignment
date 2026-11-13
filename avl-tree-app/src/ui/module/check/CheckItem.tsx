@@ -8,6 +8,7 @@ import type { BankItem, Instance, Mark, Response } from '../../../assessment/typ
 import { checkCopy } from '../../../content/check'
 import type { Confidence } from '../../../state/learnerState'
 import { useLearner } from '../../../state/LearnerContext'
+import { RETRY_CAP } from '../../../modules/config'
 import { paths } from '../../../routes'
 import type { Tree } from '../../../engine/tree'
 import { TreeView } from '../../tree/TreeView'
@@ -18,6 +19,10 @@ import { TraceEditor } from './TraceEditor'
 export interface CheckItemProps {
   item: BankItem
   isLast: boolean
+  /** Attempts before this index belong to an earlier pass; the question starts afresh from here (C9's return question). */
+  since?: number
+  /** Where Review goes; the module's Explore activity by default. */
+  reviewTo?: string
   /** Next question, or the summary after the last. */
   onNext: () => void
 }
@@ -32,11 +37,13 @@ interface Answered {
  * attempt, an answer control for its type, optional confidence, and four-part feedback. Each marked
  * answer is stored; the module completes when every required item has a right answer (FR-LRN-05).
  */
-export function CheckItem({ item, isLast, onNext }: CheckItemProps) {
+export function CheckItem({ item, isLast, onNext, since = 0, reviewTo }: CheckItemProps) {
   const { learner, recordAttempt, completeModule, recordLectureQuestion } = useLearner()
-  const mine = learner.attempts.filter((a) => a.questionId === item.id)
-  const attempt = mine.length
-  const isCapped = isCappedFor(learner.attempts, item.id)
+  const all = learner.attempts.filter((a) => a.questionId === item.id)
+  const attempt = all.length
+  // This pass only: a return question has its own wrong count and cap.
+  const mine = all.slice(since)
+  const isCapped = since === 0 ? isCappedFor(learner.attempts, item.id) : mine.length >= RETRY_CAP && !mine.some((a) => a.correct)
   const [answered, setAnswered] = useState<Answered | null>(null)
   const seed = checkSeed(learner.profileId, item.id)
   // At the cap the last variant stays on screen; otherwise the next attempt, or the one just answered.
@@ -161,7 +168,7 @@ export function CheckItem({ item, isLast, onNext }: CheckItemProps) {
         verdict={isCapped ? 'not-yet' : answered === null ? null : answered.mark.status === 'correct' ? 'right' : 'not-yet'}
         why={answered?.mark.explanation ?? ''}
         diverged={diverged}
-        reviewTo={paths.activity(item.module, 'explore')}
+        reviewTo={reviewTo ?? paths.activity(item.module, 'explore')}
         isLast={isLast}
         onTryAgain={tryAgain}
         onNext={onNext}

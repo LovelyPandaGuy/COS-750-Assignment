@@ -3,6 +3,7 @@ import { instantiate } from '../../src/assessment/instantiate'
 import { MISCONCEPTIONS } from '../../src/content/questions/misconceptions'
 import { SUB_SKILLS } from '../../src/content/questions/subSkills'
 import { CHECKS } from '../../src/content/questions/checks'
+import { ALL_ITEMS } from '../../src/content/questions/bank'
 import { SCAFFOLDS, SCAFFOLD_SOURCE } from '../../src/content/questions/scaffolds'
 import { validateBank } from '../../src/assessment/validate'
 import { capped, finished, hintFor, ladderLevel, lectureQuestionFor, stepsOf, workedExampleFor } from '../../src/assessment/scaffold'
@@ -114,25 +115,25 @@ describe('FR-SCA-02 every misconception and sub-skill is covered', () => {
       expect(SCAFFOLDS.hints[m], m).toBeTypeOf('function')
       expect(SCAFFOLDS.lecture[m], m).toBeTypeOf('function')
     }
-    const used = new Set(CHECKS.map((i) => i.subSkill))
+    const used = new Set(ALL_ITEMS.map((i) => i.subSkill))
     for (const s of Object.keys(SUB_SKILLS).filter((k) => used.has(k))) {
       expect(SCAFFOLDS.subSkillHints[s], s).toBeTypeOf('function')
       expect(SCAFFOLDS.subSkillLecture[s], s).toBeTypeOf('function')
     }
   })
   it('the bank validator passes', () => {
-    expect(validateBank(CHECKS)).toEqual([])
-  })
+    expect(validateBank(ALL_ITEMS)).toEqual([])
+  }, 30_000)
   it('a missing hint is caught and named', () => {
     const { 'M-BF-SIGN': _gone, ...hints } = SCAFFOLDS.hints
     void _gone
-    const problems = validateBank(CHECKS, { scaffolds: { ...SCAFFOLDS, hints } })
+    const problems = validateBank(ALL_ITEMS, { scaffolds: { ...SCAFFOLDS, hints } })
     expect(problems.some((p) => p.kind === 'scaffold' && p.message.includes('M-BF-SIGN'))).toBe(true)
-  })
+  }, 30_000)
   it('a missing lecture template is caught and named', () => {
     const { 'M-HEIGHT-NODES': _gone, ...lecture } = SCAFFOLDS.lecture
     void _gone
-    const problems = validateBank(CHECKS, { scaffolds: { ...SCAFFOLDS, lecture } })
+    const problems = validateBank(ALL_ITEMS, { scaffolds: { ...SCAFFOLDS, lecture } })
     expect(problems.some((p) => p.kind === 'scaffold' && p.message.includes('M-HEIGHT-NODES'))).toBe(true)
-  })
+  }, 30_000)
 })

@@ -3,8 +3,8 @@
  * Only the actions this change needs; later screens add their own.
  */
 import { subSkillStatus } from '../assessment/mastery'
-import { CHECKS } from '../content/questions/checks'
-import { MODULE_IDS, parseAttempt, type Attempt, type LearnerState, type LectureQuestion, type ModuleId } from './learnerState'
+import { ALL_ITEMS } from '../content/questions/bank'
+import { MODULE_IDS, OWN_QUESTION_MAX_LENGTH, type LearnerPath, parseAttempt, type Attempt, type LearnerState, type LectureQuestion, type ModuleId } from './learnerState'
 import type { LoadStatus } from './storage'
 
 /** The load status, or 'reset-by-user' once the student has reset in this session. */
@@ -22,6 +22,8 @@ export type SessionAction =
   | { type: 'attempt-recorded'; attempt: Attempt }
   | { type: 'module-completed'; module: ModuleId }
   | { type: 'lecture-question-recorded'; question: LectureQuestion }
+  | { type: 'path-set'; path: LearnerPath; currentModule?: ModuleId }
+  | { type: 'own-question-added'; text: string; at: string }
 
 export function learnerReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
@@ -35,10 +37,21 @@ export function learnerReducer(state: SessionState, action: SessionAction): Sess
       if (attempt === null) return state
       const attempts = [...state.learner.attempts, attempt]
       // The sub-skill's status follows the attempt in the same change (FR-SCA-01).
-      const item = CHECKS.find((i) => i.id === attempt.questionId)
+      const item = ALL_ITEMS.find((i) => i.id === attempt.questionId)
       const status = item === undefined ? null : subSkillStatus(attempts, item.subSkill)
       const subSkillStatuses = item === undefined || status === null ? state.learner.subSkillStatus : { ...state.learner.subSkillStatus, [item.subSkill]: status }
       return { ...state, learner: { ...state.learner, attempts, subSkillStatus: subSkillStatuses } }
+    }
+    case 'own-question-added': {
+      const text = action.text.trim().slice(0, OWN_QUESTION_MAX_LENGTH)
+      if (text === '') return state
+      return { ...state, learner: { ...state.learner, ownQuestions: [...(state.learner.ownQuestions ?? []), { text, at: action.at }] } }
+    }
+    case 'path-set': {
+      const { learner } = state
+      const currentModule = action.currentModule ?? learner.currentModule
+      if (learner.path === action.path && learner.currentModule === currentModule) return state
+      return { ...state, learner: { ...learner, path: action.path, currentModule } }
     }
     case 'lecture-question-recorded': {
       const existing = state.learner.lectureQuestions ?? []

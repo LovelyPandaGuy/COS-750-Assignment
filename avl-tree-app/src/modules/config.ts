@@ -21,3 +21,6 @@ export const LADDER_LEVELS = 3
 /** Mastery threshold per sub-skill: at least MASTERY_CORRECT of the last MASTERY_WINDOW attempts correct. Provisional (FR-SCA-01, SE TODO). */
 export const MASTERY_WINDOW = 3
 export const MASTERY_CORRECT = 2
+
+/** Correct answers out of five at which the diagnostic routes straight to C2 (FR-DIA-03, D6). */
+export const DIAGNOSTIC_ROUTE_MIN = 4

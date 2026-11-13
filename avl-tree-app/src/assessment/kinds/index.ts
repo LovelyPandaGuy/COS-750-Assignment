@@ -2,6 +2,8 @@
 import type { Kind, KindName } from '../types'
 import { deleteRebalances, deleteRoot } from './delete'
 import { insertFinalTree, lowestUnbalanced, rebalanceCase, rotationResult, rotationsNeeded } from './rotations'
+import { insertParent, isBst, treeTerms } from './prerequisites'
+import { avlBuildRoot, buildAndSearch, searchBound } from './readiness'
 import { scenarioChoice } from './scenario'
 import { balanceFactorKind, bstHeight, isAvl, nodeHeight, searchVisits, sortedSearch } from './trees'
 
@@ -23,4 +25,10 @@ export const KINDS: Record<KindName, Kind> = {
   'delete-rebalances': deleteRebalances,
   'delete-root': deleteRoot,
   'scenario-choice': scenarioChoice,
+  'tree-terms': treeTerms,
+  'is-bst': isBst,
+  'insert-parent': insertParent,
+  'search-bound': searchBound,
+  'avl-build-root': avlBuildRoot,
+  'build-and-search': buildAndSearch,
 }

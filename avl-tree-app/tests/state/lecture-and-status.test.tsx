@@ -85,3 +85,35 @@ describe('session', () => {
     expect(seen.learner.subSkillStatus).toEqual({})
   })
 })
+
+describe('add-diagnostic-c1-and-routing: setPath', () => {
+  it('sets the path and optionally the current module, saved, and a repeat writes nothing', () => {
+    const { backend } = mount()
+    act(() => seen.setPath('diagnostic-skipped', 'C2'))
+    expect(seen.learner.path).toBe('diagnostic-skipped')
+    expect(seen.learner.currentModule).toBe('C2')
+    expect(boot(backend).initial.state.path).toBe('diagnostic-skipped')
+    const stored = backend.getItem(LEARNER_KEY)
+    act(() => seen.setPath('diagnostic-skipped', 'C2'))
+    expect(backend.getItem(LEARNER_KEY)).toBe(stored)
+  })
+})
+
+describe('add-readiness-c9: own questions', () => {
+  it('trimmed, capped, saved; blank writes nothing; older saves load empty; tampered is corrupt; inventory mentions them', () => {
+    const { backend } = mount()
+    act(() => seen.addOwnQuestion('  Why rotate at the lowest node?  '))
+    expect(seen.learner.ownQuestions!.map((q) => q.text)).toEqual(['Why rotate at the lowest node?'])
+    expect(boot(backend).initial.state.ownQuestions!.map((q) => q.text)).toEqual(['Why rotate at the lowest node?'])
+    const stored = backend.getItem(LEARNER_KEY)
+    act(() => seen.addOwnQuestion('   '))
+    expect(backend.getItem(LEARNER_KEY)).toBe(stored)
+    act(() => seen.addOwnQuestion('x'.repeat(400)))
+    expect(seen.learner.ownQuestions![1].text).toHaveLength(300)
+    expect(boot(backendWith(base())).initial.state.ownQuestions).toEqual([])
+    for (const bad of ['nope', [{ text: '', at: q.at }]]) {
+      expect(boot(backendWith(JSON.stringify({ ...base(), ownQuestions: bad }))).initial.status).toBe('reset-corrupt')
+    }
+    expect(STORAGE_INVENTORY.find((k) => k.key === LEARNER_KEY)!.description).toMatch(/your own questions/i)
+  })
+})
