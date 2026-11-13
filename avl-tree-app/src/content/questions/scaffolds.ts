@@ -35,6 +35,13 @@ const drafted: Record<MisconceptionId, Wording> = {
   'M-IN-RANGE-PICKED': (_f, w) => `A node is out of balance only when its balance factor is outside ${w.rangeText}. Work out the balance factor of each node on the path.`,
   'M-FORGETS-REBALANCE': () => 'After the plain BST step, walk back up towards the root and check the balance factor of every node on the way.',
   'M-DELETE-ONE-ROTATION': () => 'A delete can put more than one node out of balance. Keep checking all the way up to the root.',
+  // C1 prerequisites (add-diagnostic-c1-and-routing; wording drafted on that branch)
+  'M-LEAVES-COUNT-ALL': () => 'A leaf is a node with no children. Go through the nodes and count only those.',
+  'M-LEAVES-COUNT-PARENTS': () => 'Look at the nodes at the very bottom of each branch. A leaf has nothing below it.',
+  'M-BST-PARENT-ONLY': () => 'Check each node against every ancestor above it, not only its parent: everything on the left must be smaller, everything on the right larger.',
+  'M-BST-NEEDS-BALANCE': () => 'The ordering is the only rule for a binary search tree. Check that rule at every node, and ignore how tall the tree is.',
+  'M-INSERT-NEAR-VALUE': () => 'Do not look for the closest value. Compare the new key with the root, go left or right, and repeat at each node until there is no child to go to.',
+  'M-INSERT-AT-ROOT': () => 'A new key goes where a search for it would end. Start at the root, but keep comparing and going down.',
 }
 
 /** One hint per catalogue misconception: the drafted ones, then one per need from the comparison record's need wording. */
@@ -65,6 +72,11 @@ const general: Record<string, Wording> = {
   'rebalance-insert': () => 'Do the plain BST insert first. Then walk back up to the lowest node out of balance and fix it with the rotation its shape needs.',
   'delete-rebalance': () => 'Do the plain BST delete first. Then walk back up to the root and check every node on the way.',
   'choose-structure': () => 'List what the task needs: keys in order, worst-case speed, typical speed, and balancing work. Then check each structure against every need.',
+  // C1 prerequisites (add-diagnostic-c1-and-routing; wording drafted on that branch)
+  'bst-terminology': () => 'Name the part you are asked about: the root is at the top, a leaf has no children, and a subtree is a node with everything below it.',
+  'bst-insert': () => 'Compare the new key with the root, go left or right, and repeat until there is no child to go to. That is where it attaches.',
+  'bst-search': () => 'At each node compare the key and go one way. Count every node you compare, including the root.',
+  'tree-height': (_f, w) => `Find the longest path down to a leaf and count its edges. ${w.heightRule}`,
 }
 
 /** One general hint per sub-skill, for help before any wrong answer or after one with no misconception. */

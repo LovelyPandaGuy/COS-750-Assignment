@@ -5,9 +5,10 @@ import { CHECKS } from '../content/questions/checks'
 import { MISCONCEPTIONS } from '../content/questions/misconceptions'
 import { OUTCOMES } from '../content/questions/outcomes'
 import { READINESS, lectureListText } from '../content/questions/readiness'
+import { OUTCOME_TEXT, readinessCopy } from '../content/readiness'
 import { OWN_LECTURE_QUESTION } from '../modules/config'
 import type { Attempt, LectureQuestion, ModuleId } from '../state/learnerState'
-import { LO_IDS, type LoId, type MisconceptionId } from './ids'
+import { LO_IDS, type LoId, type MisconceptionId, type OutcomeTag } from './ids'
 import type { BankItem } from './types'
 
 export type ItemState = 'secure' | 'developing' | 'not-yet' | 'unassessed'
@@ -61,7 +62,7 @@ export function readinessReport(attempts: readonly Attempt[], banks: Banks = DEF
   const ordered = inTimeOrder(attempts)
   const byItem = new Map<string, Attempt[]>()
   for (const a of ordered) byItem.set(a.questionId, [...(byItem.get(a.questionId) ?? []), a])
-  const outcomeOf = new Map<string, LoId>([...banks.checks, ...banks.readiness].map((i) => [i.id, i.outcome]))
+  const outcomeOf = new Map<string, OutcomeTag>([...banks.checks, ...banks.readiness].map((i) => [i.id, i.outcome]))
 
   const outcomes = LO_IDS.map((lo): OutcomeReport => {
     const mine = banks.readiness.filter((i) => i.outcome === lo)
@@ -118,4 +119,16 @@ export function lectureList(attempts: readonly Attempt[], lectureQuestions: read
   const own = lectureQuestions.filter((q) => q.questionId === OWN_LECTURE_QUESTION)
   const drafted = lectureQuestions.filter((q) => q.questionId !== OWN_LECTURE_QUESTION)
   return { generated, drafted, own, needsOwn: own.length === 0 }
+}
+
+/** Plain text of the summary for save and copy (FR-RDY-03). No profile ID (NFR-05). */
+export function summaryText(report: ReadinessReport, list: LectureList): string {
+  const t = readinessCopy.text
+  const word = (v: Verdict) => (v === 'ready' ? readinessCopy.states.ready : readinessCopy.states.revise)
+  const rows = report.outcomes.map(
+    (o) => `${o.outcome}: ${word(o.verdict)}. ${OUTCOME_TEXT[o.outcome]}${o.blocksReady ? '' : ` (${readinessCopy.optional})`}${o.confidentErrors > 0 ? ` (${readinessCopy.flag}.)` : ''}`,
+  )
+  const lecture = [...list.drafted.map((q) => q.text), ...list.generated.map((g) => g.text)]
+  const bullets = (xs: readonly string[]) => (xs.length === 0 ? [t.none] : xs.map((x) => `- ${x}`))
+  return [t.title, readinessCopy.overall(word(report.overall)), '', ...rows, '', t.lecture, ...bullets(lecture), '', t.own, ...bullets(list.own.map((q) => q.text))].join('\n')
 }

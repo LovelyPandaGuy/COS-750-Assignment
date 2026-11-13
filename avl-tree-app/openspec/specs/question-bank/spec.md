@@ -6,15 +6,15 @@ The formative check items for modules C2 to C8, and the records they are tagged 
 ## Requirements
 
 ### Requirement: A check for each module from C2 to C8
-Modules C2, C3, C4, C5, C6, C7 and C8 SHALL each have 2 or 3 check items, and together they SHALL cover each module's outcomes: C2 LO1, C3 LO2 and LO3, C4 LO4, C5 LO6, C6 LO7, C7 LO8, C8 LO9. C7's items SHALL be tagged optional, and no other module's items SHALL be. (FR-ASM-01, D4, D15)
+Modules C2, C3, C4, C5, C6, C7 and C8 SHALL each have 2 or 3 check items, and together they SHALL cover each module's outcomes: C2 LO1, C3 LO2 and LO3, C4 LO4, C5 LO6, C6 LO7, C7 LO8, C8 LO9. C7's items SHALL be tagged optional, and no other module's items SHALL be. C1 SHALL have the five diagnostic items, tagged `PRE` and not optional,; C9 SHALL have none in this bank (its items are in the readiness bank). (FR-ASM-01, FR-ASM-06, FR-DIA-01, D4, D14, D15)
 
 #### Scenario: Item counts
 - **WHEN** the bank is grouped by module
-- **THEN** each of C2 to C8 has 2 or 3 items, and C1 and C9 have none in this bank
+- **THEN** each of C2 to C8 has 2 or 3 items, C1 has five, and C9 has none in this bank
 
 #### Scenario: Outcomes covered
 - **WHEN** the outcomes of each module's items are collected
-- **THEN** each module covers the outcomes listed above
+- **THEN** each of C2 to C8 covers the outcomes listed above, and every C1 item is `PRE`
 
 #### Scenario: C7 is optional
 - **WHEN** the bank is read
@@ -78,3 +78,19 @@ Every explanation SHALL be built from the instance's facts and the conventions w
 - **GIVEN** the conventions wording with the balance-factor order reversed
 - **WHEN** a balance-factor item is rendered with it
 - **THEN** the rendered explanation follows the reversed order, and the bank source has no copy of the formula
+
+### Requirement: Every misconception has a scaffold
+The content validator SHALL fail when any misconception in the catalogue has no hint, or when any sub-skill used by an item has no fallback hint. Every hint SHALL be marked `beyond ID` for review. Lecture questions use the one template of the scaffold-ladder capability, so no per-misconception template is required. (FR-SCA-02, FR-ASM-02, D19)
+
+#### Scenario: Complete
+- **WHEN** the validator runs over the bank
+- **THEN** it reports no missing hint
+
+#### Scenario: A missing hint is caught
+- **GIVEN** a misconception with no hint
+- **WHEN** the validator runs
+- **THEN** it reports a scaffold problem naming that misconception
+
+#### Scenario: Flagged for review
+- **WHEN** the scaffold content is read
+- **THEN** every entry is marked `beyond ID`

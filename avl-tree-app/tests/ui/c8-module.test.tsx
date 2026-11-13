@@ -60,9 +60,11 @@ describe('LO9 C8 plays instead of the skeleton', () => {
     expect(screen.queryByText(screenCopy.coming)).toBeNull()
   })
 
-  it('Check: the coming line, then the summary; nothing completed', () => {
+  it('Check: the questions, then the summary; nothing completed unanswered', () => {
     const { storage } = renderRoutes(backendWith(), '/module/C8/check')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
+    next()
+    next()
     next()
     expect(h2()).toHaveTextContent(headingOf('c8-summary'))
     expect(storage.load().state.completedModules).toEqual([])

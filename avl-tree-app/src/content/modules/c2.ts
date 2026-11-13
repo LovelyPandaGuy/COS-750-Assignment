@@ -3,7 +3,7 @@
 // FLAGGED FOR THE USER TO READ: lines marked [beyond ID] are new wording, not in the ID.
 // Lines marked [ID] restate the ID's C2 bullets.
 import type { ModuleContent } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 
 const KEYS = [10, 20, 30, 40, 50]
 const fmt = (n: number) => n.toLocaleString('en-US')
@@ -105,7 +105,7 @@ export const c2: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // checks arrive with the assessment changes (19 to 21)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c2-summary',

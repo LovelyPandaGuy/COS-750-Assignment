@@ -5,9 +5,9 @@ import type { Key, Tree } from '../engine/tree'
 import type { TraceKind, TraceStep } from '../engine/trace'
 import type { Scenario } from '../modules/compare'
 import type { ModuleId } from '../state/learnerState'
-import type { AnswerType, BloomLevel, LoId, MisconceptionId } from './ids'
+import type { AnswerType, BloomLevel, MisconceptionId, OutcomeTag } from './ids'
 
-export type { AnswerType, BloomLevel, LoId, MisconceptionId } from './ids'
+export type { AnswerType, BloomLevel, LoId, MisconceptionId, OutcomeTag } from './ids'
 
 export type KindName =
   | 'bst-height'
@@ -24,6 +24,9 @@ export type KindName =
   | 'delete-rebalances'
   | 'delete-root'
   | 'scenario-choice'
+  | 'tree-terms'
+  | 'is-bst'
+  | 'insert-parent'
   // C9 readiness (add-readiness-c9)
   | 'worst-search'
   | 'build-avl'
@@ -86,7 +89,7 @@ export interface BankItem {
   module: ModuleId
   kind: KindName
   params?: KindParams
-  outcome: LoId
+  outcome: OutcomeTag
   subSkill: string
   level: BloomLevel
   /** Never blocks progress (C7, D4). */

@@ -12,7 +12,7 @@
 //   unbalanced node is not the parent of the new leaf). Guided by case: the same tree as done for
 //   you, then 35, so the learner sees one tree give a different case for a different key.
 import type { ModuleContent } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 
 const RUN = [30, 20]
 const RUN_KEY = 10
@@ -238,7 +238,7 @@ export const c6: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // checks arrive with the assessment changes (19 to 21, D42)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c6-summary',

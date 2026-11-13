@@ -8,7 +8,7 @@ import { mark } from '../../src/assessment/mark'
 import { itemSeed, readinessInstance, readinessStep, startReadiness, type ReadinessSession } from '../../src/assessment/readiness'
 import type { BankItem, Instance, Response } from '../../src/assessment/types'
 import { validateBank, validateReadinessBank } from '../../src/assessment/validate'
-import { CHECKS } from '../../src/content/questions/checks'
+import { ALL_ITEMS } from '../../src/content/questions/bank'
 import { READINESS } from '../../src/content/questions/readiness'
 import { avlInsertTrace } from '../../src/engine/avl'
 import type { Tree } from '../../src/engine/tree'
@@ -70,8 +70,9 @@ describe('FR-ASM-06 one item per outcome and two combined items', () => {
   })
 
   it('module checks are unchanged', () => {
-    expect(CHECKS.filter((i) => i.module === 'C9')).toEqual([])
-    expect(validateBank(CHECKS)).toEqual([])
+    expect(ALL_ITEMS.filter((i) => i.module === 'C9')).toEqual([])
+    // Since change 22 the check bank is the diagnostic and the checks together.
+    expect(validateBank(ALL_ITEMS)).toEqual([])
   })
 })
 

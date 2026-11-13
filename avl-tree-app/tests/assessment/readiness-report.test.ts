@@ -1,6 +1,8 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
-import { lectureList, readinessReport } from '../../src/assessment/report'
+import { c9RunFinished } from '../../src/assessment/readiness'
+import { lectureList, readinessReport, summaryText } from '../../src/assessment/report'
+import { readinessCopy } from '../../src/content/readiness'
 import { CHECKS } from '../../src/content/questions/checks'
 import { MISCONCEPTIONS } from '../../src/content/questions/misconceptions'
 import { READINESS, lectureListText } from '../../src/content/questions/readiness'
@@ -211,5 +213,32 @@ describe('FR-RDY-02 D14 drafted and own questions', () => {
     expect(list.needsOwn).toBe(false)
     const state = parseLearnerState(JSON.parse(JSON.stringify({ ...freshLearnerState('p'), lectureQuestions: [drafted, own] })))
     expect(state?.lectureQuestions).toEqual([drafted, own])
+  })
+})
+
+// Added at the 13 Nov merge: the summary screen's text and C9's completion read from these.
+describe('FR-RDY-03 the summary text', () => {
+  it('holds every outcome, the overall verdict, the lecture list and own questions, and no profile ID', () => {
+    const attempts = [att('rdy-lo3', false, { misconceptionId: 'M-BF-SIGN', confidence: 'sure' })]
+    const own: LectureQuestion = { questionId: OWN_LECTURE_QUESTION, module: 'C9', at: time(3), text: 'Mine?' }
+    const state = freshLearnerState('profile-xyz')
+    const text = summaryText(readinessReport(attempts), lectureList(attempts, [own]))
+    for (const o of LOS) expect(text).toContain(`${o}:`)
+    expect(text).toContain(readinessCopy.overall(readinessCopy.states.revise))
+    expect(text).toContain(lectureListText(MISCONCEPTIONS['M-BF-SIGN'].label))
+    expect(text).toContain(readinessCopy.flag)
+    expect(text).toContain('Mine?')
+    expect(text).not.toContain(state.profileId)
+  })
+})
+
+describe('decision 11: a C9 run is over', () => {
+  it('when every required item has an attempt and each missed one has used its return', () => {
+    const required = READINESS.filter((i) => i.optional !== true)
+    expect(c9RunFinished([])).toBe(false)
+    expect(c9RunFinished(required.map((i) => att(i.id, true)))).toBe(true)
+    const missed = required.map((i) => att(i.id, i.id !== 'rdy-lo2'))
+    expect(c9RunFinished(missed)).toBe(false)
+    expect(c9RunFinished([...missed, att('rdy-lo2', false)])).toBe(true)
   })
 })

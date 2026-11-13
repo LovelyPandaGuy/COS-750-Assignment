@@ -2,16 +2,16 @@
 
 ## Purpose
 
-The closing readiness check of module C9: one item per learning outcome plus two combined items, with every answer computed by the engine, and a session in which each missed item comes back once as a new problem.
+The closing readiness check of module C9: one item per learning outcome plus two combined items, with every answer computed by the engine, a single return of what was missed as a new problem,.
 
 ## ADDED Requirements
 
 ### Requirement: One item per outcome and two combined items
-The readiness bank SHALL hold exactly one non-combined item for each of LO1 to LO9, and exactly two combined items: one that builds an AVL tree from keys (LO7) and one that searches that tree (LO4). Every item SHALL belong to module C9. Only the LO8 item SHALL be optional. (FR-ASM-06, D4, ID C9)
+The readiness bank SHALL hold exactly one non-combined item for each of LO1 to LO9, and exactly two combined items: one that builds an AVL tree from keys (LO7) and one that searches that tree (LO4). Every item SHALL belong to module C9. Only the LO8 item SHALL be optional. (FR-ASM-06, D4, ID C9) Every answer and wrong option SHALL come from the engine. (D13, D14)
 
 #### Scenario: Coverage
 - **WHEN** the readiness bank is read
-- **THEN** each of LO1 to LO9 has exactly one non-combined item, there are exactly two combined items with outcomes LO7 and LO4, and every item's module is C9
+- **THEN** there are eleven items, each of LO1 to LO9 has exactly one non-combined item, there are exactly two combined items with outcomes LO7 and LO4, and every item's module is C9
 
 #### Scenario: Only LO8 is optional
 - **WHEN** the readiness bank is read
@@ -20,6 +20,10 @@ The readiness bank SHALL hold exactly one non-combined item for each of LO1 to L
 #### Scenario: Module checks are unchanged
 - **WHEN** the module-check bank is grouped by module
 - **THEN** C9 still has no items in it, and the module-check validator still reports nothing
+
+#### Scenario: Engine answers
+- **WHEN** every C9 item is built for seeds 0 to 99
+- **THEN** each answer equals the engine's for that problem, and the validator reports nothing
 
 ### Requirement: The readiness bank is validated like the checks
 The readiness bank SHALL pass the same item checks as the module checks over seeds 0 to 99: tags, explanations, engine-built answers, options, numbers, D19 wording and calm wording. A validator SHALL also report a missing or extra item for any outcome and a wrong number of combined items. (FR-ASM-02, FR-ASM-03, D19, D27)
@@ -69,7 +73,7 @@ The build item SHALL give keys, from a sequence whose AVL build needs at least o
 - **THEN** the search instance's tree has the same keys and shape as the build instance's answer, and its answer equals the engine's search visit count for its key
 
 ### Requirement: The C9 session runs every item, then the returns
-A C9 session started with a seed SHALL present every readiness item once, in bank order, with the two combined items sharing one seed. A readable answer SHALL be marked and SHALL produce an attempt record with no hints used. An unreadable answer SHALL change nothing. (FR-ASM-06)
+A C9 session started with a seed SHALL present every readiness item once, in bank order, with the two combined items sharing one seed. A readable answer SHALL be marked and SHALL produce an attempt record with no hints used. An unreadable answer SHALL change nothing. (FR-ASM-06) The C9 check SHALL be reached at `/module/C9/check`, with a short introduction, then the items one per step, with Back and Next between steps. (D21, D27)
 
 #### Scenario: Every item once, in order
 - **WHEN** a session is answered correctly item after item
@@ -83,7 +87,6 @@ A C9 session started with a seed SHALL present every readiness item once, in ban
 - **GIVEN** a session on a number item
 - **WHEN** it is answered with `two`
 - **THEN** the session is unchanged and no attempt record is produced
-
 ### Requirement: A missed item returns once as a new problem
 After the first pass, every item answered wrongly SHALL be presented again once, in the order it was missed, as the question model's next attempt for that item. A missed return SHALL NOT come back again. The number of returns SHALL be read from the config. (FR-ASM-06, FR-ASM-07, D9, D14)
 
@@ -99,7 +102,6 @@ After the first pass, every item answered wrongly SHALL be presented again once,
 #### Scenario: One place
 - **WHEN** the source is scanned
 - **THEN** the number of returns is defined only in the config module
-
 ### Requirement: Only the optional item may be skipped
 The session SHALL let the student skip the LO8 item, recording no attempt, and SHALL NOT let any other item be skipped. A skipped item SHALL NOT return. (D4, D20)
 

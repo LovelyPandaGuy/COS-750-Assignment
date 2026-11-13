@@ -60,9 +60,9 @@ describe('FR-LRN-04 step player position and navigation', () => {
     expect(place()).toHaveTextContent(`Step 1 of ${stepsFor(c2, 'example').length}`)
   })
 
-  it('activities without content stay skeletons', () => {
+  it('the C9 check is its own page, not the step player', () => {
     renderRoutes(backendWith(), '/module/C9/check')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
     expect(screen.queryByText(/^Step \d+ of \d+$/)).toBeNull()
   })
 
@@ -160,11 +160,13 @@ describe('D20 skip on explanation steps only', () => {
   })
 })
 
-describe('D20 check placeholder until assessment exists', () => {
-  it('C2 Check: coming line, then the summary, then the path; nothing completed', () => {
+describe('D20 the Check activity shows the bank items', () => {
+  it('C2 Check: intro, two questions, the summary, then the path; nothing completed unanswered', () => {
     const { storage } = renderRoutes(backendWith(), '/module/C2/check')
-    expect(place()).toHaveTextContent('Step 1 of 2')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(place()).toHaveTextContent('Step 1 of 4')
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
+    next()
+    next()
     next()
     expect(h2()).toHaveTextContent(stepsFor(c2, 'check')[1].heading)
     next()

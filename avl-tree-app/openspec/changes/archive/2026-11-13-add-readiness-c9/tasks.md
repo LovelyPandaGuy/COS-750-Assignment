@@ -1,52 +1,37 @@
 # Tasks
 
+> **Merge note.** Union of both branches' tasks; this branch's IDs are kept first and the incoming tasks follow, renumbered. Checked on either side stays checked. Incoming tasks marked "superseded" built the version not chosen on 13 Nov; their code is to be replaced by this branch's.
+
 ## 1. Red tests (test-writer)
 
-- [x] 1.1 Write `tests/assessment/readiness-check.test.ts` from every `readiness-check` scenario, named after the FR or LO it serves (FR-ASM-06, FR-ASM-07, LO4, LO5, LO7). Cover:
-  - bank coverage, the optional item, and the module checks unchanged
-  - the readiness validator: clean, and a fixture bank without LO5
-  - engine answers over seeds 0 to 99
-  - the LO5 worst cases and tags
-  - build needs a rotation, plain BST build recognised, search uses the built tree
-  - session order, shared combined seed, unreadable input
-  - returns in miss order as attempt 1, the "each returns only once and always ends" property test, the single-place scan for `READINESS_RETURNS`
-  - skip on LO8 only
-
-  Add `worst-search`, `build-avl` and `search-built` cases to `engineAnswer` in `tests/assessment/helpers.ts`, computed straight from the engine and `searchBounds`. Verify the tests fail only because the new modules and kinds do not exist.
-- [x] 1.2 Write `tests/assessment/readiness-report.test.ts` from every `readiness-report` scenario (FR-RDY-01, FR-RDY-02). Cover:
-  - the four item states and the latest run deciding
-  - Ready with a return, a combined item holding LO4 back, nothing answered
-  - the property test comparing verdicts with the rule applied directly
-  - LO8 not blocking, and Revise elsewhere
-  - confident errors per outcome, with unknown IDs ignored
-  - links per outcome
-  - unresolved, resolved, the empty-only-when-nothing-unresolved property test, the template over every label
-  - drafted versus own questions, and the own question passing the learner-state validator
-
-  Build attempts by hand with fixed times. Verify the tests fail only because the modules do not exist. Commit 1.1 and 1.2 as the red tests.
+- [x] 1.1 Write `tests/assessment/readiness-check.test.ts` from every `readiness-check` scenario (FR-ASM-06, FR-ASM-07, LO4, LO5, LO7): bank coverage, the optional item, module checks unchanged; the readiness validator; engine answers over seeds 0 to 99; LO5 worst cases and tags; build rotates, plain BST recognised, search uses the built tree; session order, shared combined seed, unreadable input; returns in miss order, the "returns once and always ends" property test, the single-place scan for `READINESS_RETURNS`; skip on LO8 only. Add `worst-search`, `build-avl` and `search-built` to `engineAnswer` in `tests/assessment/helpers.ts`.
+- [x] 1.2 Write `tests/assessment/readiness-report.test.ts` from every `readiness-report` scenario (FR-RDY-01, FR-RDY-02): item states and the latest run deciding; Ready with a return, a combined item holding LO4 back, nothing answered; the verdict property test; LO8 not blocking; confident errors with unknown IDs ignored; links; unresolved and resolved misconceptions, the property test, the template over every label; drafted and own questions. Commit 1.1 and 1.2 as the red tests.
+- [x] 1.3 (incoming, superseded) Write failing tests for the incoming kinds and `READINESS` over seeds 0 to 99 (validator clean with C9 at eleven); `outcomeStatus`, `confidentErrors`, `lectureList` and `summaryText` (no profile ID); own-question storage and session (older save, tampered, trim, blank, reload, reset); the C9 page (intro, ladder and cap, recycle once as new variants, skipped when all Ready, completion, summary link); the summary page (table against fixtures, links back, flags, lecture list, own question required for export, copy with status, save builds a text file, print stylesheet hides controls, wording scan, axe).
 
 ## 2. Kinds and bank
 
-- [x] 2.1 (implementer) Add `combined?` to `BankItem`, the three kind names, and `src/assessment/kinds/readiness.ts` with `worst-search`, `build-avl` (with its concatenated trace and pinned fallback) and `search-built`, sharing the search builder from `trees.ts` (design decision 2). Add `READINESS_BUILD_KEYS` and `READINESS_RETURNS` to `src/modules/config.ts`. Verify the kind tests in 1.1 pass using fixture items, and that `tests/assessment/question-model.test.ts` and `question-bank.test.ts` still pass.
-- [x] 2.2 (content-author, `src/content/` only) Write `src/content/questions/readiness.ts`: the 11 items of design decision 1, flagged `beyond ID`, and `lectureListText`. Add `modules` to `OUTCOMES` from the ID's objective list. No formula, sign, lean or case wording except through `ConventionsWording`, and no typed numbers. Verify `npm run typecheck` passes.
-- [x] 2.3 (implementer) Add `validateReadinessBank` (design decision 3). Verify that it reports nothing for `READINESS`, catches the fixture bank without LO5, and that `validateBank(CHECKS)` is still clean. If an item fails, report it to the content-author; do not change the check.
+- [x] 2.1 (implementer) Add `combined?` to `BankItem`, the three kind names and `src/assessment/kinds/readiness.ts` (`worst-search`, `build-avl`, `search-built`, sharing the search builder from `trees.ts`). Add `READINESS_BUILD_KEYS` and `READINESS_RETURNS` to `src/modules/config.ts`.
+- [x] 2.2 (content-author) Write `src/content/questions/readiness.ts`: the 11 items, flagged `beyond ID`, and `lectureListText`. Add `modules` to `OUTCOMES`.
+- [x] 2.3 (implementer) Add `validateReadinessBank`; `validateBank(CHECKS)` stays clean.
+- [x] 2.4 (incoming, superseded) Build `search-bound`, `avl-build-root` and `build-and-search`. Add `M-AVL-WORST-LINEAR` with a hint and a lecture template. Write `READINESS` and join it into `ALL_ITEMS`. Update the validator's C9 count and optional rule.
 
-## 3. Session (implementer)
+## 3. Session and state
 
-- [x] 3.1 Add `src/assessment/readiness.ts`: `startReadiness`, `readinessStep`, `readinessInstance` and `itemSeed` (design decision 4). Verify every session, return and skip test passes, including the property test.
+- [x] 3.1 (implementer) Add `src/assessment/readiness.ts`: `startReadiness`, `readinessStep`, `readinessInstance` and `itemSeed`.
+- [x] 3.2 (incoming, superseded) Add `ownQuestions` to the learner state, the parser, the storage writer and the inventory, plus the `own-question-added` action and `addOwnQuestion` on the session.
 
-## 4. Report and lecture list (implementer)
+## 4. Report and lecture list
 
-- [x] 4.1 Add `readinessReport` to `src/assessment/report.ts` (design decision 5). Verify the item-state, verdict, LO8, confident-error and link tests pass, including the property test.
-- [x] 4.2 Add `lectureList` and `OWN_LECTURE_QUESTION` (in `src/modules/config.ts`) (design decision 6). Verify the unresolved, resolved, property, template and own-question tests pass.
+- [x] 4.1 (implementer) Add `readinessReport` to `src/assessment/report.ts`.
+- [x] 4.2 (implementer) Add `lectureList` and `OWN_LECTURE_QUESTION`.
+- [x] 4.3 (incoming, superseded) Build `assessment/readiness.ts`: `outcomeStatus`, `confidentErrors`, `lectureList` and `summaryText`.
 
-## 5. Integration and records
+## 5. Screens (incoming)
 
-- [x] 5.1 Add rows D83 to D91 to `.claude/docs/decisions.md` for proposal items 1 to 9 (assumed, 13 Nov, add-readiness-c9). Update D14 to point at them. Update `next-steps.md` (row 23 built as logic, and the screens change still to come). Verify with `grep -c "add-readiness-c9" .claude/docs/decisions.md` (9 or more).
-- [x] 5.2 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`. Verify all pass, no new `[OPEN]` marker is added, and nothing under `src/ui/`, `src/pages/` or `src/components/` changed (logic only).
+- [x] 5.1 (to move onto this branch's session) Build `ReadinessCheck` at `/module/C9/check`: the intro, the eleven `CheckItem` steps, the recycle step, C9 completion and the summary link.
+- [x] 5.2 (to move onto this branch's report) Build the `Readiness` summary: the outcome table, flags, lecture list, own-question form, and print, save and copy with a print stylesheet. Wording goes in `content/readiness.ts`.
 
-## Workflow follow-up
+## 6. Integration, records and review
 
-- Reviewer (fresh context) checks the diff against both specs, D4, D8, D9, D13, D14, D19, D20 and D27. No a11y-checker run: this change has no UI.
-- The user reads the flagged C9 wording, merges, and runs `/opsx:archive`.
-- A later change (after change 20) renders the C9 question screen and the readiness summary, with print, save and copy (FR-RDY-03).
+- [x] 6.1 Add decision rows for the proposal's assumptions, update D14 and `next-steps.md`, and run `npm test`, typecheck, lint, build and `openspec validate --all` with no new `[OPEN]` marker. Merge note: this branch added D83 to D91; incoming added rows "from D87". The ranges overlap in `decisions.md`, which is still in conflict.
+- [ ] 6.2 (incoming) Reviewer and accessibility-checker passes. Your browser checks: keyboard only, greyscale, colour-vision emulation (D25), 360 px touch, and print to one A4 page. A read of the new wording (gate G3).

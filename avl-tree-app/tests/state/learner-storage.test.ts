@@ -208,12 +208,12 @@ describe('FR-ONB-02, NFR-05: no personal identifiers stored', () => {
         'attempts',
         'completedModules',
         'currentModule',
+        'lectureQuestions',
         'nickname',
         'path',
         'profileId',
         'schemaVersion',
         'subSkillStatus',
-        'lectureQuestions',
       ].sort(),
     )
     expect(JSON.stringify(stored)).not.toContain('student@example.com')

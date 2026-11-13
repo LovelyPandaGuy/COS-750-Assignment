@@ -84,3 +84,16 @@ export function readinessStep(session: ReadinessSession, action: ReadinessAction
   const missed = returns ? [...session.missed, { itemId: head.itemId, attempt: head.attempt + 1 }] : session.missed
   return { session: advance(session, missed), mark: m, attempt }
 }
+
+/**
+ * Whether a C9 run is over, read from stored attempts (add-readiness-c9, decision 11): every required
+ * item has an attempt, and every item whose latest attempt is not correct has used its returns.
+ * Attempts carry no run ID, so an earlier run counts too (D88).
+ */
+export function c9RunFinished(attempts: readonly Attempt[], items: readonly BankItem[] = READINESS): boolean {
+  return items.every((i) => {
+    const mine = attempts.filter((a) => a.questionId === i.id)
+    if (mine.length === 0) return i.optional === true
+    return mine[mine.length - 1].correct || mine.length > READINESS_RETURNS
+  })
+}

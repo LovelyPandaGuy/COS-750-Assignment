@@ -2,7 +2,7 @@ import { useEffect, useId, useRef } from 'react'
 import { moduleLabel } from '../../content/modules'
 import { navigationCopy } from '../../content/navigation'
 import { emitRouteEvent } from '../../navigation/routeEvents'
-import type { ModuleId } from '../../state/learnerState'
+import { MODULE_IDS, type ModuleId } from '../../state/learnerState'
 
 export interface RouteChoiceProps {
   module: ModuleId
@@ -26,6 +26,8 @@ export function RouteChoice({ module, recommended, onChoose }: RouteChoiceProps)
     emitRouteEvent({ type: 'route_recommended', from: module, recommended, at: new Date().toISOString() })
   }, [module, recommended])
 
+  // The forward module, and this module again; the recommendation marks one of them (D20).
+  const forward = MODULE_IDS[MODULE_IDS.indexOf(module) + 1]
   const choose = (chosen: ModuleId) => {
     emitRouteEvent({ type: 'route_chosen', from: module, recommended, chosen, at: new Date().toISOString() })
     onChoose(chosen)
@@ -36,11 +38,13 @@ export function RouteChoice({ module, recommended, onChoose }: RouteChoiceProps)
       <h3 id={headingId}>{navigationCopy.whereNext}</h3>
       <p>{navigationCopy.intro}</p>
       <div className="route-choice-options">
-        <button type="button" className="module-button module-button-secondary" onClick={() => choose(recommended)}>
-          {navigationCopy.suggested(moduleLabel(recommended))}
-        </button>
+        {forward !== undefined && (
+          <button type="button" className="module-button module-button-secondary" onClick={() => choose(forward)}>
+            {recommended === forward ? navigationCopy.suggested(moduleLabel(forward)) : navigationCopy.goTo(moduleLabel(forward))}
+          </button>
+        )}
         <button type="button" className="module-button module-button-secondary" onClick={() => choose(module)}>
-          {navigationCopy.lookAgain(moduleLabel(module))}
+          {recommended === module ? navigationCopy.suggested(navigationCopy.lookAgain(moduleLabel(module))) : navigationCopy.lookAgain(moduleLabel(module))}
         </button>
       </div>
     </section>
