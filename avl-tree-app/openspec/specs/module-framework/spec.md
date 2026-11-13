@@ -38,7 +38,7 @@ Each step SHALL belong to the activity its event maps to: hook, goals, recall an
 - **THEN** it reports an activity problem naming that step
 
 ### Requirement: Facts come from the engine
-A step SHALL name its trees by source (keys inserted into a plain BST, keys inserted into an AVL tree, or a seeded generator) and any search key or tree size. The framework SHALL build each tree and compute its facts with the engine: height, node count, keys, search step count for the named key, best and worst case search step counts for a size, and AVL validity. Step text SHALL receive these facts and SHALL NOT contain them typed. (Guardrail, FR-ENG-03)
+A step SHALL name its trees by source (keys inserted into a plain BST, keys inserted into an AVL tree, or a seeded generator) and any search key or tree size. The framework SHALL build each tree and compute its facts with the engine: height, node count, keys, search step count for the named key, best and worst case search step counts for a size, the most nodes a search can visit in an AVL tree of that size, and AVL validity. Step text SHALL receive these facts and SHALL NOT contain them typed. (Guardrail, FR-ENG-03, D13)
 
 #### Scenario: Chain facts
 - **GIVEN** a step whose tree is keys 10, 20, 30, 40, 50 into a plain BST, with search key 50
@@ -53,6 +53,14 @@ A step SHALL name its trees by source (keys inserted into a plain BST, keys inse
 #### Scenario: Bounds for a size
 - **WHEN** the search bounds for 5 keys and for 1,000,000 keys are computed
 - **THEN** the worst case is 5 and 1,000,000 steps, and the best case is 3 and 20 steps (the height of the shortest tree plus one)
+
+#### Scenario: AVL worst case for a size
+- **WHEN** the AVL worst-case search bound for 1,000,000 keys is computed
+- **THEN** it is 28 steps, because the tallest AVL tree of 1,000,000 keys has height 27
+
+#### Scenario: AVL worst case matches the minimum node counts
+- **WHEN** the AVL worst-case bound is computed for every n from 1 to 2,000
+- **THEN** for each n it is h + 1, where h is the largest height whose minimum AVL node count (1 for height 0, 2 for height 1, then the two before plus one) is at most n
 
 ### Requirement: Claims are checked against the engine
 A step MAY state boolean claims about its trees: is AVL, is perfect, root in range, has exactly one unbalanced node. The validator SHALL compute each claim with the engine and report any claim that is false.
@@ -106,7 +114,7 @@ For an activity with module content, the activity screen SHALL show one step at 
 - **THEN** the C2 Worked example activity opens at step 1
 
 #### Scenario: Activities without content stay skeletons
-- **WHEN** the C4 Explore activity opens
+- **WHEN** the C6 Explore activity opens
 - **THEN** it shows the skeleton screen as before
 
 ### Requirement: Focus moves to each step
@@ -152,3 +160,24 @@ A check step SHALL show that the check is coming in a later step, using the exis
 #### Scenario: Check activity
 - **WHEN** the C2 Check activity opens
 - **THEN** step 1 shows the coming-later line, step 2 is the C2 summary, and the learner's completed modules are unchanged
+
+### Requirement: A step can play a search as a replay
+A step SHALL be able to name one of its figures and a search key, and SHALL then show the existing replay of that search with its pseudocode panel as the step's primary representation, instead of the still figure. The replay SHALL start at its first position each time the step is shown. (D22, D33, FR-VIS-03, FR-VIS-04)
+
+#### Scenario: Replay step
+- **GIVEN** a step that names an AVL figure and a search key as a replay
+- **WHEN** the step is shown
+- **THEN** the replay controls, the tree and the pseudocode panel for the search are present, and the figure is not drawn a second time
+
+#### Scenario: Replay restarts
+- **GIVEN** a replay step moved forward two positions
+- **WHEN** the learner presses Next, then Back
+- **THEN** the replay is at its first position again
+
+### Requirement: A step can show listings side by side
+A step SHALL be able to name pseudocode listings to show side by side, each with its name and no line lit. Below the width where two columns fit, the listings SHALL stack in the order named. (ID C4, D3)
+
+#### Scenario: Loop and recursive listings
+- **GIVEN** a step that names the loop and recursive search listings
+- **WHEN** it is shown
+- **THEN** both listings are present with their names, in that order, and no line is marked current

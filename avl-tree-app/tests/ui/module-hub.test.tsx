@@ -140,7 +140,8 @@ describe('FR-LRN-05 module screen', () => {
   })
 
   it('moving about does not change the stored learner state', () => {
-    const backend = backendWith(progressState())
+    // C6 has no module content yet, so its Explore activity is still a skeleton with "Back to path".
+    const backend = backendWith(progressState({ currentModule: 'C6' }))
     const before = backend.getItem(LEARNER_KEY)
     renderRoutes(backend, '/path')
     fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))

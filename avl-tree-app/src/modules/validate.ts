@@ -116,7 +116,7 @@ function factNumbers(facts: StepFacts, into: Set<number>): Set<number> {
     add(f.rebalances.length)
     for (const [key, n] of Object.entries(f.nodes)) add(Number(key), n.height, n.balanceFactor, n.leftHeight, n.rightHeight)
   }
-  for (const b of facts.bounds) add(b.n, b.best, b.worst)
+  for (const b of facts.bounds) add(b.n, b.best, b.worst, b.avlWorst)
   for (const a of Object.values(facts.arrays)) add(a.searchKey, a.probeCount, a.sorted.length, ...a.sorted)
   return into
 }

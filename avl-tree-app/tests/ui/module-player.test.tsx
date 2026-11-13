@@ -61,7 +61,7 @@ describe('FR-LRN-04 step player position and navigation', () => {
   })
 
   it('activities without content stay skeletons', () => {
-    renderRoutes(backendWith(), '/module/C4/explore')
+    renderRoutes(backendWith(), '/module/C6/explore')
     expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
     expect(screen.queryByText(/^Step \d+ of \d+$/)).toBeNull()
   })

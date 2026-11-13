@@ -8,3 +8,6 @@ export const ROTATION_PRACTICE_KEYS = 5
 
 /** Attempts per check question before a lecture question is recorded and the student continues (D9, FR-SCA-03). */
 export const RETRY_CAP = 3
+
+/** Keys in a "be the algorithm" practice tree, drawn from 1 to 99 (add-module-c4-search, proposal item 5). */
+export const SEARCH_PRACTICE_KEYS = 7

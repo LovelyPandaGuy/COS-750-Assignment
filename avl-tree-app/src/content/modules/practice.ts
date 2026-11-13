@@ -1,9 +1,10 @@
-// C3 practice wording: hints and feedback (D21, D27). Values are filled in from engine results.
+// Practice wording for C3, C5, C8 and C4: hints and feedback (D21, D27). Values are filled in from engine results.
 // FLAGGED FOR THE USER TO READ: none of this comes from the ID content.
 // Low-anxiety rules: verdicts are "That's right" or "Not quite yet"; no red, no cross, no judging words.
 // Sign and side wording comes from the conventions wording (D19).
 import type { Key } from '../../engine/tree'
 import type { BalanceFactorResult, RotationHintFacts, SpotResult } from '../../modules/practice'
+import type { PickResult, SearchMove } from '../../modules/searchPractice'
 import { answersOf, reasonOf, STRUCTURE_IDS, type Scenario, type StructureId } from '../../modules/compare'
 import type { ConventionsWording } from './conventionsWording'
 import { NEEDS, STRUCTURES } from './structures'
@@ -107,6 +108,44 @@ export const practiceModuleCopy = {
         const answer = answersOf(sc)[0]
         const out = STRUCTURE_IDS.filter((s) => s !== answer).map((s) => `the ${STRUCTURES[s].name} misses ${NEEDS[reasonOf(sc, s)!].label}`)
         return `Rule them out one by one: ${out.join('; ')}.`
+      },
+    ],
+  },
+  /** C4 "be the algorithm" (add-module-c4-search). [beyond ID] except the activity itself (ID C4). */
+  search: {
+    treeLabel: 'Practice tree, select the nodes the search visits',
+    find: (key: Key) => `Find ${key}.`,
+    visited: (path: readonly Key[]) => (path.length === 0 ? 'Visited: none yet.' : `Visited: ${path.join(', ')}.`),
+    notInTree: 'Not in the tree',
+    why: (r: PickResult, key: Key): string => {
+      const m = r.move
+      switch (m.kind) {
+        case 'start':
+          return 'A search starts at the root. Select the node at the top of the tree.'
+        case 'go':
+          return `${key} is ${m.smaller ? 'smaller' : 'larger'} than ${m.at}, so the search goes to the ${m.smaller ? 'left' : 'right'} child of ${m.at}.`
+        case 'off':
+          return `${key} is ${m.smaller ? 'smaller' : 'larger'} than ${m.at}, and ${m.at} has no ${m.smaller ? 'left' : 'right'} child. The search has nowhere left to go.`
+        case 'found':
+          return `${key} is at node ${m.at}, so the search has found it.`
+      }
+    },
+    foundDone: (key: Key, steps: number) => `Found ${key} after ${steps} steps. Press Next when you are ready.`,
+    missingDone: (key: Key, steps: number) =>
+      `${key} is not in the tree. The search visited ${steps} nodes, then reached an empty spot. Press Next when you are ready.`,
+    hints: [
+      (key: Key) => `Compare ${key} with the node you are on: if it is smaller, go left; if it is larger, go right.`,
+      (key: Key, m: SearchMove): string => {
+        switch (m.kind) {
+          case 'start':
+            return 'Start at the root, the node at the top of the tree.'
+          case 'go':
+            return `${key} is ${m.smaller ? 'smaller' : 'larger'} than ${m.at}. Select the ${m.smaller ? 'left' : 'right'} child of ${m.at}.`
+          case 'off':
+            return `${key} is ${m.smaller ? 'smaller' : 'larger'} than ${m.at}, but ${m.at} has no ${m.smaller ? 'left' : 'right'} child. Press Not in the tree.`
+          case 'found':
+            return `${key} is at node ${m.at}.`
+        }
       },
     ],
   },

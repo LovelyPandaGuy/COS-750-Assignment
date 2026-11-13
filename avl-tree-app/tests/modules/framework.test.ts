@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import type { ModuleContent, Step } from '../../src/modules/schema'
 import { EVENT_ACTIVITY, stepsFor } from '../../src/modules/schema'
-import { computeFacts, searchBounds } from '../../src/modules/facts'
+import { computeFacts, maxAvlHeight, searchBounds } from '../../src/modules/facts'
 import { validateModule } from '../../src/modules/validate'
 import { MODULE_CONTENT } from '../../src/modules/registry'
 
@@ -119,8 +119,8 @@ describe('FR-ENG-03 facts come from the engine', () => {
   })
 
   it('bounds for a size', () => {
-    expect(searchBounds(5)).toEqual({ n: 5, best: 3, worst: 5 })
-    expect(searchBounds(1_000_000)).toEqual({ n: 1_000_000, best: 20, worst: 1_000_000 })
+    expect(searchBounds(5)).toMatchObject({ n: 5, best: 3, worst: 5 })
+    expect(searchBounds(1_000_000)).toMatchObject({ n: 1_000_000, best: 20, worst: 1_000_000 })
     const f = computeFacts(step('x', 'content', { bounds: [5, 1_000_000] }))
     expect(f.bounds.map((b) => b.best)).toEqual([3, 20])
   })
@@ -222,5 +222,33 @@ describe('D19 no sign, lean or case wording in module content', () => {
 describe('every registered module validates cleanly (content validator)', () => {
   it('no problems in any module', () => {
     for (const [id, m] of Object.entries(MODULE_CONTENT)) expect(validateModule(m!), id).toEqual([])
+  })
+})
+
+// Spec: add-module-c4-search / module-framework delta. D13, FR-ENG-03.
+describe('D13 AVL worst-case search bound for a size', () => {
+  /** Minimum node count of an AVL tree of each height: 1, 2, then the two before plus one. */
+  const minNodes = (upTo: number): number[] => {
+    const m = [1, 2]
+    while (m[m.length - 1] <= upTo) m.push(m[m.length - 1] + m[m.length - 2] + 1)
+    return m
+  }
+
+  it('a million keys: height at most 27, so at most 28 steps', () => {
+    expect(maxAvlHeight(1_000_000)).toBe(27)
+    expect(searchBounds(1_000_000).avlWorst).toBe(28)
+  })
+
+  it('matches the minimum node counts for every n from 1 to 2,000', () => {
+    const m = minNodes(2000)
+    for (let n = 1; n <= 2000; n++) {
+      const h = m.reduce((best, count, i) => (count <= n ? i : best), -1)
+      expect(searchBounds(n).avlWorst, `n = ${n}`).toBe(h + 1)
+    }
+  })
+
+  it('an empty tree has height -1 and no steps', () => {
+    expect(maxAvlHeight(0)).toBe(-1)
+    expect(searchBounds(0).avlWorst).toBe(0)
   })
 })

@@ -60,6 +60,8 @@ export interface BoundFacts {
   best: number
   /** Steps when the tree is a chain. */
   worst: number
+  /** Most steps in an AVL tree of n keys: its greatest possible height plus one (D13). */
+  avlWorst: number
 }
 
 export interface ArrayFacts {
@@ -164,7 +166,23 @@ export function isPerfect(tree: Tree): boolean {
 /** Best and worst case search step counts for n keys (ID C2: about log2 n, and n). */
 export function searchBounds(n: number): BoundFacts {
   const best = n < 1 ? 0 : Math.floor(Math.log2(n)) + 1
-  return { n, best, worst: n }
+  return { n, best, worst: n, avlWorst: maxAvlHeight(n) + 1 }
+}
+
+/**
+ * The greatest height an AVL tree of n keys can have (D13): the largest h whose minimum node
+ * count is at most n. Minimum counts: 1 for height 0, 2 for height 1, then the two before plus one.
+ * -1 for an empty tree. Exact, unlike the 1.44 log2 n bound.
+ */
+export function maxAvlHeight(n: number): number {
+  if (n < 1) return -1
+  let h = 0
+  let [prev, cur] = [1, 2] // minimum nodes for heights h and h + 1
+  while (cur <= n) {
+    ;[prev, cur] = [cur, prev + cur + 1]
+    h++
+  }
+  return h
 }
 
 function nodesOf(tree: Tree, into: Record<Key, NodeFacts> = {}): Record<Key, NodeFacts> {

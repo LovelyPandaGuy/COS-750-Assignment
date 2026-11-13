@@ -11,7 +11,9 @@ Work with unknowns per D18: assume, record the assumption in `decisions.md`, kee
 | 12 | `add-module-framework` | Step schema typed by Gagné event (D10) with `skippable` (content and worked example only), `primary` and `supporting` representations (D22). One entry-policy function: guided default, never locked, soft prerequisite note (D20). Recommend-and-choose after a check. Control strip layout (D23). No-op event sink emitting `route_recommended` and `route_chosen` (D28). Content validator also rejects sign, lean and case-name wording in content (D19). |
 | 13 | `add-modules-c2-c3` | Needs 12. All formula, sign and case wording from the conventions module (D19). C2's "height 2" and step counts come from the engine. |
 | 14 | `add-module-c4-search` | Step count and the million-key figure computed by the engine (D13). |
-| 15 | `add-modules-c5-c6` | Case and rotation names from the conventions module (D19). Practice hints and retries per D21. |
+| 15 | `add-modules-c5-c6` | Split three ways (D49). This change: C5 and rotate-it-yourself practice. Case and rotation names from the conventions module (D19). Practice hints and retries per D21. Archived 13 Nov. |
+| 15b | `add-insert-replay` | The step player for insert traces, so C6 can show an insert step by step (FR-VIS-03, FR-VIS-04). |
+| 15c | `add-module-c6-insertion` | Needs 15b. C6 outline, worked examples that fade from done for you to on your own, seeded keys (LO7). Case names from the conventions module (D19). |
 | 16 | `add-sandbox` | No changes from the consolidation. |
 | 17 | `add-module-c8-choosing` | Wording per D19 and D27. |
 | 18 | `add-module-c7-delete` | Wording per D19; check optional (D4). |

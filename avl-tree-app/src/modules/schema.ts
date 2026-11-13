@@ -29,8 +29,8 @@ export const STEP_ACTIVITIES: readonly StepActivity[] = ['explore', 'example', '
 /** Events that offer "I know this, skip" (D20). */
 export const SKIPPABLE_EVENTS: readonly GagneEvent[] = ['content', 'example']
 
-/** D22: one primary representation per step. Pseudocode and animation are reserved for later modules. */
-export type Representation = 'diagram' | 'text'
+/** D22: one primary representation per step. Animation is a replay; pseudocode is listings (add-module-c4-search). */
+export type Representation = 'diagram' | 'text' | 'pseudocode' | 'animation'
 
 export type GeneratorName = 'fill-in' | 'root-looks-fine' | 'single-rotation' | 'double-rotation'
 
@@ -68,7 +68,10 @@ export interface Allowance {
   reason: string
 }
 
-export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario'
+export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario' | 'trace-search'
+
+/** Pseudocode listings a step can show side by side (names in src/content/pseudocode.ts). */
+export type ListingName = 'searchLoop' | 'searchRecursive'
 
 /** A sorted array drawn as a row of cells and searched with binary search (add-module-c8-choosing). */
 export interface ArraySpec {
@@ -103,6 +106,12 @@ export interface Step {
   scenario?: string
   /** Scenario practice draws one of these by seed. */
   scenarios?: readonly string[]
+  /** Play a search of this figure's `searchKey` as a replay in place of the figure (D33). */
+  replay?: { figure: string }
+  /** Listings shown side by side, no line lit. */
+  listings?: readonly ListingName[]
+  /** "Be the algorithm": search for a key that is in the seeded tree, or one that is not. */
+  searchPractice?: 'found' | 'missing'
 }
 
 export interface ModuleContent {

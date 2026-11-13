@@ -11,6 +11,11 @@ import type { StructureId } from '../../modules/compare'
 import { pickScenario, practiceProblem } from '../../modules/generators'
 import { renderStep } from '../../modules/render'
 import { recommendRoute } from '../../navigation/policy'
+import { drawSearchPractice } from '../../modules/searchPractice'
+import { pseudocode } from '../../content/pseudocode'
+import { replayCopy } from '../../content/replay'
+import { ReplayPlayer } from '../replay/ReplayPlayer'
+import { PseudocodePanel } from '../replay/PseudocodePanel'
 import { emitRouteEvent } from '../../navigation/routeEvents'
 import { SKIPPABLE_EVENTS, stepsFor, type ModuleContent, type Step, type StepActivity } from '../../modules/schema'
 import { ACTIVITIES_BY_MODULE, paths } from '../../routes'
@@ -20,6 +25,7 @@ import { ComparisonTable } from './ComparisonTable'
 import { ControlStrip } from './ControlStrip'
 import { RouteChoice } from './RouteChoice'
 import { BalanceFactorFill } from './practice/BalanceFactorFill'
+import { BeTheAlgorithm } from './practice/BeTheAlgorithm'
 import { RotatePractice } from './practice/RotatePractice'
 import { ScenarioPractice } from './practice/ScenarioPractice'
 import { SpotTheProblem } from './practice/SpotTheProblem'
@@ -113,7 +119,22 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
         <h2 id={`${ruleId}-h`} ref={heading} tabIndex={-1}>
           {r.heading}
         </h2>
-        {step.practice === undefined && (step.figures?.length ?? 0) > 0 && (
+        {step.replay !== undefined &&
+          (() => {
+            const f = facts.figures[step.replay.figure]
+            const spec = step.figures?.find((x) => x.id === step.replay?.figure)
+            if (f === undefined || f.searchKey === undefined) return null
+            // Keyed on the step, so the replay starts again each time the step is shown.
+            return <ReplayPlayer key={step.id} operation={{ kind: 'search', tree: f.tree, key: f.searchKey }} label={spec?.label ?? ''} />
+          })()}
+        {(step.listings?.length ?? 0) > 0 && (
+          <div className="module-listings">
+            {(step.listings ?? []).map((name) => (
+              <PseudocodePanel key={name} name={replayCopy.panel[name]} listing={pseudocode[name]} line={null} />
+            ))}
+          </div>
+        )}
+        {step.practice === undefined && step.replay === undefined && (step.figures?.length ?? 0) > 0 && (
           <div className="module-figures">
             {(step.figures ?? []).map((f) => (
               <TreeView key={f.id} tree={facts.figures[f.id].tree} label={f.label} />
@@ -167,6 +188,24 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
                 onNew={() => update({ ...FRESH, regen: p.regen + 1, avoid: pick.scenario })}
                 onReview={review}
                 hintsUsed={p.hintsUsed}
+              />
+            )
+          })()}
+        {step.practice === 'trace-search' &&
+          (() => {
+            const problem = drawSearchPractice(seed, step.searchPractice ?? 'found')
+            return (
+              <BeTheAlgorithm
+                key={seed}
+                tree={problem.tree}
+                searchKey={problem.key}
+                path={p.answered}
+                onPath={(answered) => update({ answered })}
+                solved={p.solved}
+                onSolved={() => update({ solved: true })}
+                hintsUsed={p.hintsUsed}
+                onReview={review}
+                onNewTree={() => update({ ...FRESH, regen: p.regen + 1 })}
               />
             )
           })()}
