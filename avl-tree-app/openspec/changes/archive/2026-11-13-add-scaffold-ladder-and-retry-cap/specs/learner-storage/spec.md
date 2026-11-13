@@ -32,7 +32,7 @@ Stored learner data SHALL contain only the fields of the learner state model. Th
 ## ADDED Requirements
 
 ### Requirement: Lecture questions are stored
-The learner state SHALL hold a list of lecture questions, each with a question ID, a module ID, a time, a non-empty text and, optionally, a misconception ID. A stored state without the list SHALL load with an empty list and keep schema version 1. A malformed entry SHALL make the stored data corrupt. (FR-SCA-03, NFR-06, D9)
+The learner state SHALL hold a list of lecture questions, each with a question ID, a module ID, a time, a non-empty text and, optionally, a misconception ID. A stored state without the list SHALL load with an empty list and keep schema version 1. A malformed entry SHALL make the stored data corrupt. (FR-SCA-03, NFR-06, D9) The stored-data inventory description SHALL mention lecture questions.
 
 #### Scenario: Round trip
 - **WHEN** a state with two lecture questions, one with a misconception and one without, is saved and a new adapter on the same storage loads
@@ -44,7 +44,7 @@ The learner state SHALL hold a list of lecture questions, each with a question I
 - **THEN** the load status is "restored", its other fields are unchanged and its lecture questions are an empty list
 
 #### Scenario: Malformed lecture question
-- **WHEN** a valid stored state is altered in one way at a time: `lectureQuestions` a string, an entry with module "C10", an entry with empty text, an entry with a numeric question ID
+- **WHEN** a valid stored state is altered in one way at a time: `lectureQuestions` a string, an entry with module "C10", an entry with empty text, an entry with a numeric question ID, an entry with no question ID
 - **THEN** each load has status "reset-corrupt" and returns a fresh state
 
 #### Scenario: Recorded through the session

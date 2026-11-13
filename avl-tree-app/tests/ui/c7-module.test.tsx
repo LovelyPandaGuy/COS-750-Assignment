@@ -121,9 +121,11 @@ describe('D21 in the player: hints count down; nothing stored', () => {
 })
 
 describe('D4 the optional check and axe', () => {
-  it('Check: the coming line, then the summary; nothing completed', () => {
+  it('Check: the optional questions, then the summary; nothing completed unanswered', () => {
     const { storage } = renderRoutes(backendWith(), '/module/C7/check')
-    expect(screen.getByText(screenCopy.coming)).toBeInTheDocument()
+    expect(screen.queryByText(screenCopy.coming)).toBeNull()
+    next()
+    next()
     next()
     expect(h2()).toHaveTextContent(headingOf('c7-summary'))
     expect(storage.load().state.completedModules).toEqual([])

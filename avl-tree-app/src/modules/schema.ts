@@ -122,6 +122,8 @@ export interface Step {
   listings?: readonly ListingName[]
   /** "Be the algorithm": search for a key that is in the seeded tree, or one that is not. */
   searchPractice?: 'found' | 'missing'
+  /** A bank item shown as this step's question (set by the player on its question steps, never by content). */
+  checkItem?: string
 }
 
 export interface ModuleContent {

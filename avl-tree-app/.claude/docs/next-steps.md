@@ -24,6 +24,7 @@ Work with unknowns per D18: assume, record the assumption in `decisions.md`, kee
 - 20 `add-checks-and-feedback`: four-part feedback, "Not quite yet", no cross glyph (D27).
 - 21 `add-scaffold-ladder-and-retry-cap`: built 13 Nov before change 20, as logic only (D75 to D82): check-question session, ladder (hint, worked example, guided step-through), cap of 3 with a drafted lecture question, hints flagged for G3, `lectureQuestions` in learner state. Change 20 renders it.
 - 22 `add-diagnostic-c1-and-routing`: emit route events (D28).
+- 23 `add-readiness-c9`: built 13 Nov as logic only (D83 to D91): readiness bank (one item per LO plus build-then-search), C9 session with one return per missed item, Ready or Revise report from stored attempts, bring-to-the-lecture list with the student's own question. Still to come, after change 20: the C9 question screen and the readiness summary with print, save and copy (FR-RDY-03).
 - 24 `add-accessibility-settings-and-audit`: read-aloud is stretch (D26); add the colour-vision emulation check (D25).
 - 26 `add-event-log-and-export`: persist route events (D28).
 

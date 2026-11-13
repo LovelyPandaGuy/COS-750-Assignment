@@ -1,46 +1,53 @@
 # Tasks
 
+> **Merge note.** Union of both branches' tasks; this branch's IDs are kept first and the incoming tasks follow, renumbered. Checked on either side stays checked. Incoming work marked "superseded" built the version not chosen on 13 Nov.
+
 ## 1. Red tests (test-writer)
 
-- [x] 1.1 Write `tests/assessment/scaffold-ladder.test.ts` from every session, escalation, hints-used, hint-match, worked-example, guided, cap and lecture-draft scenario in `specs/scaffold-ladder`. Name each test after its FR (FR-SCA-02, FR-SCA-03, FR-ASM-07). Cover:
-  - property tests (fast-check) for the never-shrinking prefix and for "no loop without an exit"
-  - the bank over seeds 0 to 99 for the new-problem, sibling and guided scenarios
-  - the single-place scan, extended to `SCAFFOLD_LADDER`
+- [x] 1.1 Write `tests/assessment/scaffold-ladder.test.ts` from every session, escalation, hints-used, hint-match, worked-example, guided, cap and lecture-draft scenario (FR-SCA-02, FR-SCA-03, FR-ASM-07): property tests for the never-shrinking prefix and "no loop without an exit", the bank over seeds 0 to 99, and the single-place scan extended to `SCAFFOLD_LADDER`.
+- [x] 1.2 Write `tests/assessment/scaffold-content.test.ts`: full coverage, a missing hint caught, clean hints over the bank, an answer-stating hint caught, reversed conventions, and calm wording.
+- [x] 1.3 Extend `tests/state/learner-storage.test.ts` and the session test from the `learner-storage` delta (fresh state, model fields, round trip, older state, each malformed entry, the session action, the inventory). Commit 1.1 to 1.3 as the red tests.
+- [x] 1.4 (incoming; the `ladderLevel` and per-misconception template tests are superseded) Write failing tests for:
+  - the mastery table and window
+  - `ladderLevel` order and requests
+  - the hint, worked-example and step-through builders over every item and seeds 0 to 99
+  - the lecture-question templates and the D19 and number checks
+  - `capped`, `finished` and `checkComplete`
+  - the session actions
+  - the ladder UI (escalation, order, hints counted, axe, 44 px, wording scan)
+  - the cap UI (no Try again at three, capped screen, continue, module completes with a capped item, the route)
 
-  Verify the tests fail only because `src/assessment/scaffold.ts` and `SCAFFOLD_LADDER` do not exist.
-- [x] 1.2 Write `tests/assessment/scaffold-content.test.ts` from the coverage and hint-wording scenarios:
-  - full coverage, and a missing hint caught by a fixture catalogue
-  - clean hints over the bank, and an answer-stating fixture hint caught
-  - the reversed-conventions render through `conventionsWording` overrides
-  - calm wording
+## 2. Learner state and rules
 
-  Verify they fail only because `src/content/questions/scaffolds.ts` and the scaffold checks do not exist.
-- [x] 1.3 Extend `tests/state/learner-storage.test.ts` (and the session test that covers `learnerReducer`) from the `learner-storage` delta: fresh state, model fields, round trip, older state without the field, each malformed entry, the session action and the inventory wording. Add `lectureQuestions` to the arbitrary-state generator. Verify the new cases fail and every existing case still passes. Commit 1.1 to 1.3 as the red tests.
-
-## 2. Learner state (implementer)
-
-- [x] 2.1 Add `LectureQuestion`, `lectureQuestions` in `freshLearnerState` and `parseLearnerState` (a missing field reads as an empty list), the `lecture-question` session action, and the inventory wording (design decision 8). Verify task 1.3's tests and the whole `tests/state/` folder pass.
+- [x] 2.1 (implementer) Add `LectureQuestion` and `lectureQuestions` to the fresh state and the parser, the `lecture-question` session action, and the inventory wording.
+- [x] 2.2 (incoming) Add `MASTERY_WINDOW` and `MASTERY_CORRECT` to the config and build `mastery.ts`. Add the `lecture-question-recorded` action and update `attempt-recorded` to set the sub-skill status. Expose `recordLectureQuestion` on the session.
+- [x] 2.3 (incoming; to move onto this branch's `scaffold.ts`) Add `capped`, `finished` and the new `checkComplete` rule.
 
 ## 3. Ladder logic (implementer)
 
-- [x] 3.1 Add `SCAFFOLD_LADDER` to `src/modules/config.ts`. Add `startCheck`, `checkStep`, `currentInstance` and the lecture-question draft to `src/assessment/scaffold.ts` (design decisions 1 and 2), using a stub hint lookup until task 4.1 lands. Verify the session, escalation, hints-used, cap and draft tests pass, including both property tests.
-- [x] 3.2 Add `workedExample`, `guidedSteps` and `scaffolds` with the hint lookup of design decision 3 (decisions 3 to 5). Verify the hint-match, sibling and guided tests pass over seeds 0 to 99.
+- [x] 3.1 Add `SCAFFOLD_LADDER` to `src/modules/config.ts`. Add `startCheck`, `checkStep`, `currentInstance` and the lecture-question draft to `src/assessment/scaffold.ts`.
+- [x] 3.2 Add `workedExample`, `guidedSteps` and `scaffolds` with the hint lookup.
 
 ## 4. Scaffold content (content-author, `src/content/` only)
 
-- [x] 4.1 Write `src/content/questions/scaffolds.ts`: a hint for each of the 18 drafted misconceptions, the per-need hints built from `NEEDS` labels, a general hint for each of the 14 sub-skills, all `beyond ID` and flagged at the top of the file for the user to read at G3. Write `lectureQuestionText` (design decision 6). No formula, sign, lean or case wording except through `ConventionsWording`. No number except from the instance's facts. Verify `npm run typecheck` passes and the coverage test passes.
+- [x] 4.1 Write `src/content/questions/scaffolds.ts` as follows. Incoming: the ladder and cap wording in `checkCopy` (its per-misconception lecture templates are superseded).
+  - a hint for each drafted misconception
+  - the per-need hints from the `NEEDS` labels
+  - a general hint for each sub-skill
+  - the lecture-question wording
+  - every entry `beyond ID` and flagged for G3
 
 ## 5. Validation (implementer)
 
-- [x] 5.1 Add the `scaffold` and `answer` problem kinds and the scaffold pass to `validateBank`, and extend `BankRecords` (design decision 7). Verify that every test in `tests/assessment/` passes, including the bank being clean with the real hints. If a hint fails, report it to the content-author; do not change the check.
+- [x] 5.1 Add the `scaffold` and `answer` problem kinds and the scaffold pass to `validateBank`, and extend `BankRecords`.
 
-## 6. Integration and records
+## 6. Screens (incoming)
 
-- [x] 6.1 Add rows D75 to D82 to `.claude/docs/decisions.md` for proposal items 1 to 8 (assumed, 13 Nov, add-scaffold-ladder-and-retry-cap). Update D42 and D74 to say the ladder logic exists and only the check UI (change 20) is still missing. Update `next-steps.md` row 21. Verify with `grep -c "add-scaffold-ladder-and-retry-cap" .claude/docs/decisions.md` (8 or more).
-- [x] 6.2 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`. Verify all pass, no new `[OPEN]` marker is added, and `git diff --stat` shows nothing under `src/ui/`, `src/pages/` or `src/components/` (logic only).
+- [x] 6.1 Build `ScaffoldLadder` (the levels, the live region, the step-through) and wire it into `CheckItem` with `hintsUsed` on the attempt.
+- [x] 6.2 Enforce the cap in `CheckItem` and `CheckFeedback`: no Try again, Continue, the full step-through, the lecture question recorded once, and completion with a capped item.
 
-## Workflow follow-up
+## 7. Integration, records and review
 
-- Reviewer (fresh context) checks the diff against `specs/scaffold-ladder`, `specs/learner-storage`, D9, D19, D21 and D27. No a11y-checker run: this change has no UI.
-- The user reads the flagged hints and the lecture-question template, then merges and runs `/opsx:archive`.
-- Change 20 (`add-checks-and-feedback`) renders `scaffolds()` and records the lecture question through the session action.
+- [x] 7.1 Add decision rows for the proposal's assumptions, update D42, D74 and `next-steps.md` row 21. Merge note: this branch added D75 to D82; incoming added rows "from D80". The ranges overlap in `decisions.md`, which is still in conflict.
+- [x] 7.2 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run build` and `openspec validate --all`, with no new `[OPEN]` marker.
+- [ ] 7.3 (incoming) Reviewer and accessibility-checker passes. Your browser checks: keyboard only, greyscale, colour-vision emulation (D25), 360 px touch. A read of the drafted hints and lecture questions (gate G3).

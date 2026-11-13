@@ -13,5 +13,6 @@ export const navigationCopy = {
   /** The word that marks the suggested route, so it is not shown by colour alone. */
   suggestedWord: 'Suggested',
   suggested: (label: string) => `Suggested: ${label}`,
+  goTo: (label: string) => `Go on to ${label}`,
   lookAgain: (label: string) => `Look over ${label} again`,
 } as const

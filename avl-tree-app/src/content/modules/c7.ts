@@ -4,7 +4,7 @@
 // FLAGGED FOR THE USER TO READ: lines marked [beyond ID] are new wording, not in the ID.
 // Lines marked [ID] restate the ID's C7 bullets.
 import type { ModuleContent } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 
 const RECAP = [50, 30, 70, 20, 40, 60, 80]
 const ONE_CHILD = [50, 30, 70, 20, 60, 80]
@@ -166,7 +166,7 @@ export const c7: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // optional check (ID C7, D4); arrives with changes 19 to 21 (D42)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c7-summary',

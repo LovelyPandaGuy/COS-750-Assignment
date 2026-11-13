@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Support for a student working on a module check question: a ladder of help matched to their mistakes (hint, then worked example, then guided step-through), a cap on retries, and a drafted lecture question so they can always move on.
+Support for a student working on a module check question: a ladder of help matched to their mistakes (hint, then worked example, then guided step-through), opened in that order, computed by the engine or drafted as flagged wording, with a cap on retries and a drafted lecture question so they can always move on.
 
 ## Requirements
 
@@ -35,10 +35,19 @@ The ladder SHALL have three rungs in this order: hint, worked example, guided st
 - **WHEN** any sequence of wrong answers and help requests is applied to an open session (property test)
 - **THEN** after each action the open rungs are a prefix of hint, worked example, guided step-through, and that prefix never shrinks
 
+#### Scenario: Wrong attempts escalate
+- **WHEN** a question is answered wrongly three times
+- **THEN** the hint is shown after the first, the worked example after the second, and the guided step-through after the third
+
+#### Scenario: Order is enforced
+- **WHEN** a question is shown before any answer
+- **THEN** the worked example and step-through controls are not available until the hint has been opened
+
 #### Scenario: Help on request before any answer
 - **GIVEN** a fresh session
 - **WHEN** help is requested
 - **THEN** only the hint rung is open and the attempt number is still 0
+- **AND** the next attempt record has `hintsUsed: 1`
 
 #### Scenario: A wrong answer opens the next rung
 - **GIVEN** an open session with the hint rung open from a request
@@ -67,7 +76,12 @@ Each readable answer SHALL produce an attempt record from the question model who
 - **THEN** the attempt record has `hintsUsed: 0` and `correct: true`
 
 ### Requirement: The hint matches the misconception
-The hint rung SHALL show the hint for the misconception of the session's latest wrong answer. When there is none (help requested before any wrong answer, or a wrong answer with no misconception), it SHALL show the general hint for the item's sub-skill. Hint text SHALL be computed for the session's current instance. (FR-SCA-02)
+The hint rung SHALL show the hint for the misconception of the session's latest wrong answer. When there is none (help requested before any wrong answer, or a wrong answer with no misconception), it SHALL show the general hint for the item's sub-skill. Hint text SHALL be computed for the session's current instance. (FR-SCA-02) A hint SHALL point at what to look at next and SHALL NOT give the answer (checked under "Hint wording follows the content rules").
+
+#### Scenario: Misconception hint
+- **GIVEN** a wrong option tagged with a misconception
+- **WHEN** the hint opens
+- **THEN** it is that misconception's hint, built with the instance's engine values
 
 #### Scenario: Matched hint
 - **GIVEN** a balance-factor session answered with the negated answer
@@ -85,7 +99,7 @@ The hint rung SHALL show the hint for the misconception of the session's latest 
 - **THEN** it is the general hint for the item's sub-skill
 
 ### Requirement: The worked example is a solved sibling problem
-The worked-example rung SHALL show another instance of the same item: its problem, its correct answer computed by the engine, and the item's correct explanation for that instance. Its problem SHALL differ from the problem of every attempt the session can reach. (FR-SCA-02, D9, CLAUDE.md guardrail)
+The worked-example rung SHALL show another instance of the same item: its problem, its figure if any, its correct answer computed by the engine, and the item's correct explanation for that instance. Its problem SHALL differ from the problem of every attempt the session can reach. (FR-SCA-02, D9, CLAUDE.md guardrail)
 
 #### Scenario: Sibling differs from every attempt
 - **GIVEN** any bank item and any seed from 0 to 99
@@ -102,7 +116,7 @@ The worked-example rung SHALL show another instance of the same item: its proble
 - **THEN** the two are equal
 
 ### Requirement: The guided step-through walks the student's problem
-The guided rung SHALL break the session's current problem (the last problem when the session is capped) into ordered steps. For a tree item the steps SHALL be the engine's insert trace for that problem. For any other item they SHALL be the sentences of the item's correct explanation for that problem, in order. (FR-SCA-02, D21)
+The guided rung SHALL break the session's current problem (the last problem when the session is capped) into ordered steps. For a tree item the steps SHALL be the engine's insert trace for that problem. For any other item they SHALL be the sentences of the item's correct explanation for that problem, in order. (FR-SCA-02, D21) The steps SHALL be shown one at a time, with a control to show the next step. (FR-SCA-02, D21)
 
 #### Scenario: Tree items follow the trace
 - **GIVEN** an insert-final-tree session at any seed from 0 to 99
@@ -114,6 +128,9 @@ The guided rung SHALL break the session's current problem (the last problem when
 - **WHEN** the guided steps are built
 - **THEN** there is at least one step, no step is empty, and the steps joined with single spaces equal the correct explanation
 
+#### Scenario: One step at a time
+- **WHEN** the step-through opens
+- **THEN** only the first step shows, and each press of "Show next step" adds one, until the answer shows and the control is gone
 ### Requirement: Retries are capped
 After `RETRY_CAP` (3) wrong readable answers the session SHALL close as capped. A capped session SHALL have every rung open, SHALL hold a drafted lecture question, and SHALL let the student continue. A closed session SHALL ignore further answers and requests. (FR-SCA-03, D9)
 
@@ -176,3 +193,14 @@ For every bank item and seed from 0 to 99, each hint that can be shown for that 
 #### Scenario: Calm wording
 - **WHEN** every hint and the lecture-question template are rendered over the bank
 - **THEN** none contains "wrong", "fail" or "incorrect" (D27)
+
+### Requirement: Calm and accessible
+The ladder SHALL be wrapped in a labelled region, SHALL announce each level opened in a polite live region, SHALL use no red, cross or "wrong"/"fail" wording, and its controls SHALL be at least 44 by 44 px. (D27, NFR accessibility)
+
+#### Scenario: Axe and targets
+- **WHEN** a question with each level open is rendered
+- **THEN** axe reports no violations and each control is at least 44 by 44 px
+
+#### Scenario: Wording scan
+- **WHEN** the ladder wording is scanned
+- **THEN** it contains none of a cross glyph, "wrong", "incorrect", "fail" or "red"

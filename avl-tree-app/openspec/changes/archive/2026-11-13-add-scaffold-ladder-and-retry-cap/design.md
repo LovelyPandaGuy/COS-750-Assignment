@@ -1,123 +1,103 @@
 # Design: add-scaffold-ladder-and-retry-cap
 
+> **Merge note.** Joins the logic-only design (this branch) and the screens-and-mastery design (`feat/add-checks-and-feedback`). Where they contradicted, this branch's version was chosen (13 Nov).
+
 ## Context
 
 See proposal.md for why and scope. What exists:
 
-- `src/assessment/`: `instantiate(item, seed, attempt)` builds an instance whose problem differs from the attempt before it (D9). `mark(inst, response)` returns `correct`, `not-yet` (with a misconception when one is recognised) or `unreadable`. `attemptRecord` builds the learner-storage `Attempt`. `attemptPolicy('check')` already returns `{ retryCap: RETRY_CAP, hints: 'ladder' }`.
-- `src/modules/config.ts` holds `RETRY_CAP = 3` and `PRACTICE_HINTS = 2`, and a test checks that the numbers appear nowhere else.
-- `src/assessment/validate.ts` (`validateBank`) checks tags, explanations, numbers (`numbersIn`), conventions wording (`statesConvention`) and judging words, and returns `Problem[]` without throwing.
-- `src/content/questions/`: the bank (`checks.ts`), the misconception catalogue (25 entries: 18 drafted plus one per need) and 14 sub-skills.
-- Learner state has no place for lecture questions. `learnerReducer` has only `reset` and `persistence`.
+- `src/assessment/`: `instantiate(item, seed, attempt)` builds a problem that differs from the attempt before it (D9). `mark` returns `correct`, `not-yet` (with a misconception when one is recognised) or `unreadable`. `attemptRecord` builds the stored `Attempt`. `attemptPolicy('check')` returns `{ retryCap: RETRY_CAP, hints: 'ladder' }`, but the cap is not enforced.
+- `src/modules/config.ts` holds `RETRY_CAP = 3` and `PRACTICE_HINTS = 2`; a test checks they appear nowhere else.
+- `validateBank` checks tags, explanations, numbers, convention wording and judging words.
+- The bank has 25 catalogued misconceptions (18 drafted plus one per need) and 14 sub-skills.
+- `LearnerState` has `attempts` and an unused `subSkillStatus`, and no place for lecture questions.
+- Change 20, on the incoming branch, shows check items: `CheckItem` instantiates, marks and stores an attempt, then shows `CheckFeedback` with Try again always offered.
 
 ## Goals / Non-Goals
 
-**Goals:** one pure module that change 20 can drive from a component with `useReducer`, with no React import. Every scaffold is either computed by the engine or flagged wording, and validated with the bank.
+**Goals:**
+- One ladder, one cap and one threshold, each defined in one place.
+- Support content that is complete by construction (a validator, not a promise).
+- Capped items never trap a student.
 
-**Non-goals:** rendering, focus management and live regions (change 20). Any change to the practice hint flow.
+**Non-Goals:** practice support, fading, skipping practice, progress display, readiness (changes 22 and 23).
 
 ## Decisions
 
-### 1. A reducer, not a class
+### 1. A reducer for the question's state (Decided 13 Nov: this branch's version.)
 
-`src/assessment/scaffold.ts` exports:
+`src/assessment/scaffold.ts`:
+- `startCheck(item, seed)` and `checkStep(item, session, action)` return the new session plus the mark and the attempt record, so the caller saves the attempt.
+- The session (`itemId`, `seed`, `attempt`, `rungs`, `lastMisconception`, `outcome`, `lectureQuestion`) holds only numbers and IDs; the instance is recomputed.
+- A rung count makes "a prefix that never shrinks" hold by construction.
+- Incoming screens drive this reducer. Their completion rule (correct or capped counts as finished) reads the stored attempts.
 
-```ts
-type Rung = 'hint' | 'worked-example' | 'guided'   // order from SCAFFOLD_LADDER in config
-interface CheckSession {
-  itemId: string; seed: number; attempt: number
-  rungs: number                     // count of open rungs, 0..SCAFFOLD_LADDER.length
-  lastMisconception?: MisconceptionId
-  outcome: 'open' | 'correct' | 'capped'
-  lectureQuestion?: LectureQuestion
-}
-type CheckAction =
-  | { type: 'answer'; response: Response; at: string; confidence?: Confidence }
-  | { type: 'help' }
-startCheck(item, seed): CheckSession
-checkStep(item, session, action): { session: CheckSession; mark?: Mark; attempt?: Attempt }
-currentInstance(item, session): Instance          // instantiate(item, seed, attempt)
-scaffolds(item, session): OpenScaffold[]           // one entry per open rung, in order
-```
+### 2. Escalation (Decided 13 Nov: this branch's version.)
 
-The session stores only numbers and IDs, not the instance, so it stays serialisable and the instance is recomputed (deterministic). `checkStep` returns the mark and attempt record next to the new session so the caller can save the attempt without the reducer touching storage. Alternative considered: a stateful class. It is harder to test with property tests and to keep in React state.
+- A help request opens the next rung; a wrong readable answer also opens the next rung (`rungs = min(rungs + 1, max)`).
+- An unreadable answer changes nothing.
+- `hintsUsed` is the number of rungs open when the answer is marked.
+- At the cap every rung opens.
+- The order is `SCAFFOLD_LADDER` in `src/modules/config.ts`.
 
-Rung count rather than a set of rungs: the "prefix that never shrinks" rule then holds by construction.
+### 3. The hint
 
-### 2. Escalation
+The misconception's hint, else the sub-skill's, rendered with the instance's facts and `conventionsWording()`. For a capped question, it uses the last problem. A missing hint falls back to the sub-skill hint at run time, and the validator reports it.
 
-- `help` on an open session: `rungs = min(rungs + 1, SCAFFOLD_LADDER.length)`.
-- `answer` that marks `unreadable`: nothing changes and no attempt record is returned.
-- `answer` that marks `correct`: `outcome = 'correct'`, and the attempt record has `hintsUsed = rungs`.
-- `answer` that marks `not-yet`: record with `hintsUsed = rungs`, set `lastMisconception` (cleared when the mark has none), then if `attempt + 1 === RETRY_CAP` → `outcome = 'capped'`, `rungs = SCAFFOLD_LADDER.length`, draft the lecture question; else `attempt += 1`, `rungs = min(rungs + 1, max)`.
-- Any action on a closed session returns it unchanged.
+### 4. The worked example
 
-`SCAFFOLD_LADDER = ['hint', 'worked-example', 'guided'] as const` goes in `src/modules/config.ts`, so the config holds every check-policy constant. The single-place test gets one more assertion. The ladder's length (3) and `RETRY_CAP` (3) are equal only by chance. Nothing relies on that: the cap opens every rung directly.
+Instantiate the item from a seed salted away from the attempts' seeds, retrying until its `signature` differs from every reachable attempt (0 to `RETRY_CAP - 1`). Throw a `RangeError` after a bound.
 
-### 3. Hint selection
+Rejected alternative: a worked example authored per kind, because it needs new teaching text.
 
-`scaffolds` resolves the hint as `HINTS[lastMisconception] ?? GENERAL_HINTS[item.subSkill]`, rendered with `(currentInstance.facts, conventionsWording())`. For a capped session, "current" is the last attempt's instance. A misconception with no hint falls back to the general hint at run time, and the validator reports it as missing.
+### 5. The guided step-through (Decided 13 Nov: this branch's version.)
 
-### 4. Worked example
+- Tree items: the engine's insert trace, rendered by the existing replay components.
+- Other items: the sentences of the correct explanation, split after `.`, `?` or `!`.
 
-`workedExample(item, seed)` returns `instantiate(item, s, 0)` for the first `s = variantSeed(seed, WORKED_EXAMPLE_SALT + k)`, k = 0, 1, …, up to a bound, whose `signature` is not among the signatures of attempts 0 to `RETRY_CAP - 1`. The result carries `{ instance, answer, explanation: instance.correctExplanation }`. `WORKED_EXAMPLE_SALT` is a mechanic, not policy, so it lives in `scaffold.ts`, like `RETRY_TRIES` in `instantiate.ts`. If the bound is hit (no kind does this over seeds 0 to 99, and the test proves it), it throws a `RangeError`, which the test would catch.
+The steps are shown one at a time. It is one function, so a per-kind step-through later replaces only that function.
 
-Alternative considered: an authored worked example per kind. Rejected because it needs new teaching text per kind, while the item's correct explanation already explains the answer with engine values.
+### 6. Scaffold content (Decided 13 Nov: this branch's version.)
 
-### 5. Guided steps
-
-`guidedSteps(item, session): GuidedStep[]`:
-
-- Tree items (`inst.trace` present): one `{ kind: 'trace', step }` per trace step. Change 20 renders these with the existing replay components.
-- Every other item: `{ kind: 'text', text }` per sentence of `inst.correctExplanation`, split after `.`, `?` or `!` followed by whitespace. Joining with single spaces gives back the explanation, which the test checks.
-
-This is the weakest default in the change (proposal item 5): it shows the reasoning in order, not a step the student completes. It lives in one function, so a per-kind interactive step-through later replaces only that function.
-
-### 6. Scaffold content
-
-`src/content/questions/scaffolds.ts` (content-author):
-
-```ts
-export interface HintEntry { text: Wording; source: SourceMark }   // source: 'beyond ID'
-export const HINTS: Record<MisconceptionId, HintEntry>              // one per catalogue entry
-export const GENERAL_HINTS: Record<string, HintEntry>               // one per sub-skill
-export const lectureQuestionText: (label: string | undefined, stem: string) => string
-```
-
-Need misconceptions (one per `NEED_ID`) get their hint from the existing `NEEDS[n].label`, built in a loop the way the catalogue builds them, so no per-need text is written. Hints say where to look ("count the edges on the longest path from node X down"), not what the result is. Formula, sign, lean and case wording come from `ConventionsWording` (D19).
-
-The lecture-question template is a single function. It quotes the stem, and with a label it reads "My answer {label}." The catalogue labels are written in the third person singular, so "My answer counts height in nodes, not edges." reads correctly for every entry. It does not state the cap number.
+`src/content/questions/scaffolds.ts` (content-author), every entry `beyond ID`:
+- `HINTS`: one per misconception, with need hints built from the `NEEDS` labels.
+- `GENERAL_HINTS`: one per sub-skill.
+- `lectureQuestionText(label, stem)`: one template.
 
 ### 7. Validation
 
-`validateBank` gains a `scaffoldProblems` pass and two new problem kinds, `scaffold` (missing hint) and `answer` (a hint states the answer). For every item and seed, it renders the general hint and the hint of every misconception the item's kind can produce against the instance, then checks:
+`validateBank` gains a scaffold pass over every item and seed:
+- every catalogue misconception and used sub-skill has a hint
+- numbers come only from the instance
+- no typed convention wording
+- no `undefined` or `NaN`, and no judging words
+- no hint states the answer (this branch adds the `scaffold` and `answer` problem kinds)
 
-- numbers ⊆ `inst.numbers` (the existing `numbersIn` check)
-- `statesConvention` is false
-- no `undefined` or `NaN`
-- no judging word
-- does not state the answer: choice items, the hint does not contain the correct option's text (when that text is not already in the stem); number items, the answer is not among the hint's numbers unless it is also among the stem's numbers
-
-`BankRecords` gains `hints` and `generalHints` so tests can pass a catalogue with a gap. The lecture-question template is checked over the same items for judging words.
+`BankRecords` takes the hint tables, so tests can pass a catalogue with a gap.
 
 ### 8. Lecture questions in learner state
 
-```ts
-interface LectureQuestion { questionId: string; module: ModuleId; at: string; text: string; misconceptionId?: string }
-LearnerState.lectureQuestions: LectureQuestion[]
-```
+`LectureQuestion { questionId, module, at, text, misconceptionId? }` sits in a `lectureQuestions` list. A missing field reads as `[]`; anything else malformed is corrupt. A session action records one (`lecture-question`). Incoming screens record it once per item. The inventory text is reworded. There is no schema bump: a bump would reset every pilot student's progress, and D18 favours the cheaper change.
 
-`freshLearnerState` sets `[]`. `parseLearnerState` treats a missing field as `[]` and anything else that is not an array of valid entries as corrupt. A new `SessionAction` `{ type: 'lecture-question'; question }` appends one entry. `STORAGE_INVENTORY`'s learner description adds "questions you want to ask in the lecture".
+### 9. Mastery (incoming)
 
-Alternative considered: bump the schema to 2. Rejected because D18 favours the cheaper change, and a version bump would reset every pilot student's progress (an unknown version is treated as corrupt).
+`subSkillStatus(attempts, items, subSkill)` in `src/assessment/mastery.ts` reads the last `MASTERY_WINDOW` attempts against `MASTERY_CORRECT` (both in config). The reducer calls it inside `attempt-recorded`, so the attempt and the status change in one save.
+
+### 10. UI, route and completion (incoming)
+
+- A `ScaffoldLadder` region sits under the feedback, with buttons "Show a hint", "Show a worked example" and "Walk me through it", enabled in order. It has a polite live region and "Show next step". At the cap, `CheckFeedback` drops Try again and shows Continue and the lecture question, recorded once.
+- `firstAttemptMisses` keeps the route at "look over this module again".
+- `checkComplete` counts an item that is correct or capped.
 
 ## Risks / Trade-offs
 
-- [Sentence-split guided steps feel thin] → Isolated in `guidedSteps`. Listed as assumed so the team can ask for interactive steps, which would be a later change touching only that function and change 20's view.
-- [25 + 14 new hint texts are unverified teaching wording] → All are `beyond ID` and flagged for G3. Nothing reaches a student until change 20 renders them, and the user reads them before that.
-- [The "does not state the answer" check is heuristic] → It covers the text forms answers take here (option text, numbers). The reviewer reads every hint once.
-- [The worked-example search could fail for a future kind with very few problems] → It throws instead of looping, and the bank test runs every kind over seeds 0 to 99.
+- **The step-through reads like the "why".** It adds no text but may feel repetitive. It is isolated in one function.
+- **About 40 to 60 new hint strings are unverified teaching wording.** All are `beyond ID` and flagged for G3. The validator guards completeness and D19, not quality.
+- **The "does not state the answer" check is heuristic.** The reviewer reads every hint once.
+- **A worked example equal to the question.** Guarded by the retry loop and a test over seeds 0 to 99.
+- **Asking for the step-through first reveals the answer.** Allowed and recorded.
+- **The provisional mastery threshold (incoming).** It is one config pair.
 
 ## Migration Plan
 
-No migration. States saved before this change load with an empty `lectureQuestions` list under schema version 1. Rollback: an older build would drop the extra field on its next save, because extra fields are dropped. Nothing else changes.
+No migration. States saved before this change load with empty `lectureQuestions` under schema version 1. An older build drops the extra field on its next save.

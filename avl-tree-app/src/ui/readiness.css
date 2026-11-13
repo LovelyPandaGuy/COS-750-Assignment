@@ -1,0 +1,21 @@
+/* Readiness summary and the C9 check (add-readiness-c9). */
+.readiness-table { width: 100%; border-collapse: collapse; }
+.readiness-table th, .readiness-table td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border-subtle, currentColor); vertical-align: top; }
+.readiness-flag { display: block; font-size: 0.9em; }
+.readiness-own form { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+.readiness-own input { min-height: 44px; font: inherit; padding: 0 12px; flex: 1 1 16rem; max-width: 100%; }
+.readiness-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.readiness-actions button { min-height: 44px; }
+
+/* One A4 page: no navigation, no controls (FR-RDY-03). */
+@media print {
+  @page { size: A4; margin: 15mm; }
+  .topbar, .skip-link, .readiness-actions, .readiness-own form, .readiness-back, nav { display: none !important; }
+  body { font-size: 10.5pt; }
+  .readiness-table th, .readiness-table td { padding: 3px 6px; }
+  a { color: inherit; text-decoration: none; }
+}
+
+.readiness-link {
+  display: block;
+}

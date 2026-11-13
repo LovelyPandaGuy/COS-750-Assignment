@@ -4,7 +4,7 @@
 // FLAGGED FOR THE USER TO READ: lines marked [beyond ID] are new wording, not in the ID.
 // Lines marked [ID] restate the ID's C4 bullets.
 import type { ModuleContent } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 
 const TREE = [50, 30, 70, 20, 40, 60, 80]
 const EXAMPLE = [40, 20, 60, 10, 30, 50, 70]
@@ -141,7 +141,7 @@ export const c4: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // checks arrive with the assessment changes (19 to 21, D42)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c4-summary',

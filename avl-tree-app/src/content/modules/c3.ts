@@ -4,7 +4,7 @@
 // FLAGGED FOR THE USER TO READ: lines marked [beyond ID] are new wording, not in the ID.
 // Lines marked [ID] restate the ID's C3 bullets.
 import type { ModuleContent } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 
 const PREVIEW = [10, 20, 30, 40, 50]
 const SMALL_AVL = [20, 10, 30, 5]
@@ -164,7 +164,7 @@ export const c3: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // checks arrive with the assessment changes (19 to 21)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c3-summary',

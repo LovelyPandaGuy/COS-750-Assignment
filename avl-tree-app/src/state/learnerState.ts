@@ -81,7 +81,8 @@ const isNonEmptyString = (v: unknown): v is string => typeof v === 'string' && v
 const isOneOf = <T extends string>(values: readonly T[], v: unknown): v is T =>
   typeof v === 'string' && (values as readonly string[]).includes(v)
 
-function parseAttempt(raw: unknown): Attempt | null {
+/** Validate one attempt; null when it is malformed. */
+export function parseAttempt(raw: unknown): Attempt | null {
   if (!isObject(raw)) return null
   const { questionId, at, answer, correct, confidence, misconceptionId, hintsUsed } = raw
   if (!isNonEmptyString(questionId)) return null

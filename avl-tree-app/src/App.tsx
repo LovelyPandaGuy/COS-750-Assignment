@@ -19,6 +19,8 @@ import { Module } from './pages/Module'
 import { Readiness } from './pages/Readiness'
 import { Sandbox } from './pages/Sandbox'
 import { Start } from './pages/Start'
+import { ReadinessCheck } from './pages/ReadinessCheck'
+import { Refresher } from './pages/Refresher'
 import { WarmUpCheck } from './pages/WarmUpCheck'
 import { WarmUpResult } from './pages/WarmUpResult'
 
@@ -76,7 +78,7 @@ function ActivityRoute() {
   const actions: ActionKey[] = id === 'C1' ? [] : activity === 'check' ? ['lectureQuestions'] : BOTH
   return (
     <Screen breadcrumb={breadcrumb(moduleLabel(id), where)} actions={actions}>
-      {id === 'C1' && activity === 'check' ? <WarmUpCheck /> : <Activity module={id} activity={activity} />}
+      {id === 'C1' && activity === 'check' ? <WarmUpCheck /> : id === 'C1' && activity === 'refresher' ? <Refresher /> : id === 'C9' && activity === 'check' ? <ReadinessCheck /> : <Activity module={id} activity={activity} />}
     </Screen>
   )
 }

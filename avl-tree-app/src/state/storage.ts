@@ -30,7 +30,7 @@ export const STORAGE_INVENTORY: readonly StoredKey[] = [
   {
     key: LEARNER_KEY,
     description:
-      'Your progress: a random profile ID, your optional nickname, the module you are on, the modules you have finished, your answers with confidence and hints used, how secure each skill is, and the questions you want to ask in the lecture. It stays in this browser and is never sent anywhere.',
+      'Your progress: a random profile ID, your optional nickname, the module you are on, the modules you have finished, your answers with confidence and hints used, how secure each skill is, and your lecture questions: the ones drafted for you and the ones you write yourself (please do not include your name or student number). It stays in this browser and is never sent anywhere.',
   },
   {
     key: SETTINGS_KEY,

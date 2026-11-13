@@ -62,3 +62,45 @@ Screens SHALL be able to reset the learner. A reset SHALL clear the stored data 
 - **GIVEN** the app started with load status "reset-corrupt"
 - **WHEN** reset is called
 - **THEN** screens no longer see the "reset-corrupt" status, only the reset
+
+### Requirement: Screens can record results
+The session SHALL let a screen record an attempt and complete a module. Both SHALL change the learner state once, be saved like any other change, and survive a reload. Recording an attempt SHALL NOT complete a module, and completing a module already completed SHALL change nothing. An attempt that fails the learner-state validator SHALL NOT be stored. (FR-ASM-05 groundwork, FR-LRN-05)
+
+#### Scenario: Attempt saved
+- **WHEN** an attempt is recorded and the app is reloaded
+- **THEN** the restored state holds that attempt
+
+#### Scenario: Completing twice
+- **WHEN** C2 is completed twice
+- **THEN** the completed modules hold C2 once and the second call writes nothing
+
+#### Scenario: Reset clears them
+- **GIVEN** attempts and a completed module
+- **WHEN** the learner resets
+- **THEN** both are gone
+
+### Requirement: Screens can record lecture questions, and status follows attempts
+The session SHALL let a screen record a lecture question, saved like any other change; recording one for an item that already has one SHALL change nothing. Recording an attempt at a bank item SHALL also update that item's sub-skill status in the same change. (FR-SCA-01, FR-SCA-03)
+
+#### Scenario: Recorded once
+- **WHEN** a lecture question is recorded twice for the same item
+- **THEN** the learner state holds it once and the second call writes nothing
+
+#### Scenario: Survives reload
+- **WHEN** a lecture question is recorded and the app is reloaded
+- **THEN** it is restored
+
+#### Scenario: Status in the same change
+- **WHEN** an attempt at a bank item is recorded
+- **THEN** the saved state holds the attempt and the updated sub-skill status together
+
+### Requirement: Screens can set the learning path
+The session SHALL let a screen set the learning path to "guided" or "diagnostic skipped", saved like any other change; setting the value it already has SHALL change nothing. (FR-DIA-04)
+
+#### Scenario: Saved
+- **WHEN** the path is set to "diagnostic skipped" and the app is reloaded
+- **THEN** the restored state has that path
+
+#### Scenario: No-op
+- **WHEN** the path is set to the value it already has
+- **THEN** nothing is written

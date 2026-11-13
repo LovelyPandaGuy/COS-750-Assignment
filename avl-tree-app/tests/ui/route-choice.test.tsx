@@ -2,6 +2,7 @@ import { fireEvent, screen, within } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 import { afterEach, beforeEach, describe, it, expect } from 'vitest'
 import { MODULE_CONTENT } from '../../src/modules/registry'
+import { playerSteps } from '../../src/modules/checkSteps'
 import { stepsFor } from '../../src/modules/schema'
 import { moduleLabel } from '../../src/content/modules'
 import { navigationCopy } from '../../src/content/navigation'
@@ -26,7 +27,7 @@ const lookAgain = (m: ModuleId) => within(panel()).getByRole('button', { name: n
 /** Open a module's Check activity and press Next until its last step. */
 function lastCheckStep(m: ModuleId, path = `/module/${m}/check`, backend = backendWith()) {
   const r = renderRoutes(backend, path)
-  const n = stepsFor(MODULE_CONTENT[m]!, 'check').length
+  const n = playerSteps(MODULE_CONTENT[m]!, 'check').length
   for (let i = 1; i < n; i++) next()
   expect(screen.getByText(playerCopy.stepOf(n, n))).toBeInTheDocument()
   return r

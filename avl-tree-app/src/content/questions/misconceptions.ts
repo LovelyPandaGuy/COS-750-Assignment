@@ -29,6 +29,13 @@ const drafted: Record<MisconceptionId, string> = {
   'M-IN-RANGE-PICKED': 'picks a node whose balance factor is still in range',
   'M-FORGETS-REBALANCE': 'stops after the BST insert or delete',
   'M-DELETE-ONE-ROTATION': 'expects a delete, like an insert, to need at most one rebalance',
+  // C1 prerequisites (add-diagnostic-c1-and-routing)
+  'M-LEAVES-COUNT-ALL': 'counts every node as a leaf',
+  'M-LEAVES-COUNT-PARENTS': 'counts the nodes that have children, not the ones that do not',
+  'M-BST-PARENT-ONLY': 'checks the ordering only between a node and its parent',
+  'M-BST-NEEDS-BALANCE': 'expects a binary search tree to be balanced',
+  'M-INSERT-NEAR-VALUE': 'attaches a new key under the node with the nearest value',
+  'M-INSERT-AT-ROOT': 'attaches a new key directly under the root',
 }
 
 export const MISCONCEPTIONS: Record<MisconceptionId, MisconceptionEntry> = {

@@ -11,7 +11,7 @@ import { NEED_IDS, type StructureId } from '../../modules/compare'
 import type { ConventionsWording } from '../modules/conventionsWording'
 import { NEEDS, STRUCTURES } from '../modules/structures'
 
-const list = (keys: readonly number[]) => keys.join(', ')
+export const list = (keys: readonly number[]) => keys.join(', ')
 /** A height as the app shows it: 2, 0, −1. */
 const h = (n: number) => (n < 0 ? `−${-n}` : String(n))
 const v = (f: KindFacts, name: string) => f.values[name]
@@ -22,7 +22,7 @@ const leans = (f: KindFacts, w: ConventionsWording) => `${w.leanPhrase(v(f, 'zBa
 
 // ---- C2 (LO1) ----
 
-const chk2Height: BankItem = {
+export const chk2Height: BankItem = {
   id: 'chk2-height',
   module: 'C2',
   kind: 'bst-height',
@@ -57,7 +57,7 @@ const chk2Worst: BankItem = {
 
 // ---- C3 (LO2, LO3) ----
 
-const chk3Height: BankItem = {
+export const chk3Height: BankItem = {
   id: 'chk3-height',
   module: 'C3',
   kind: 'node-height',
@@ -78,7 +78,7 @@ const chk3Height: BankItem = {
 const bfWhy = (f: KindFacts, w: ConventionsWording) =>
   `Its left subtree has height ${h(v(f, 'leftHeight'))} and its right subtree has height ${h(v(f, 'rightHeight'))}. Using ${w.formula}, node ${f.target} has ${w.num(v(f, 'balanceFactor'))}.`
 
-const chk3Bf: BankItem = {
+export const chk3Bf: BankItem = {
   id: 'chk3-bf',
   module: 'C3',
   kind: 'balance-factor',
@@ -116,7 +116,7 @@ const chk3Avl: BankItem = {
 
 // ---- C4 (LO4) ----
 
-const searchWhy = (missing: boolean): BankItem['why'] => ({
+export const searchWhy = (missing: boolean): BankItem['why'] => ({
   correct: (f) =>
     `The search compares ${f.target} with one node per level on its way down and visits ${v(f, 'steps')} nodes${missing ? ' before it runs out of tree' : ''}.`,
   'M-COUNTS-EDGES': (f) => `${v(f, 'edges')} counts the moves between nodes. The search also compares ${f.target} with the root, so it visits ${v(f, 'steps')} nodes.`,
@@ -136,7 +136,7 @@ const chk4Found: BankItem = {
   why: searchWhy(false),
 }
 
-const chk4Missing: BankItem = {
+export const chk4Missing: BankItem = {
   id: 'chk4-missing',
   module: 'C4',
   kind: 'search-visits',
@@ -150,7 +150,7 @@ const chk4Missing: BankItem = {
 
 // ---- C5 (LO6) ----
 
-const chk5Rotate: BankItem = {
+export const chk5Rotate: BankItem = {
   id: 'chk5-rotate',
   module: 'C5',
   kind: 'rotation-result',
@@ -205,7 +205,7 @@ const chk6Node: BankItem = {
   },
 }
 
-const chk6Case: BankItem = {
+export const chk6Case: BankItem = {
   id: 'chk6-case',
   module: 'C6',
   kind: 'rebalance-case',
@@ -264,7 +264,7 @@ const chk7Count: BankItem = {
   },
 }
 
-const chk7Root: BankItem = {
+export const chk7Root: BankItem = {
   id: 'chk7-root',
   module: 'C7',
   kind: 'delete-root',
@@ -284,7 +284,7 @@ const chk7Root: BankItem = {
 
 const structureName = (value?: OptionValue) => STRUCTURES[value as StructureId].name
 
-const scenarioItem = (id: string, scenarios: string[]): BankItem => ({
+export const scenarioItem = (id: string, scenarios: string[]): BankItem => ({
   id,
   module: 'C8',
   kind: 'scenario-choice',

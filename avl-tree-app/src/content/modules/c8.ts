@@ -5,7 +5,7 @@
 // FLAGGED FOR THE USER TO READ: lines marked [beyond ID] are new wording or facts, not in the ID.
 // Lines marked [ID] restate the ID's C8 bullets or LO5 and LO9.
 import type { ModuleContent, Step } from '../../modules/schema'
-import { screenCopy } from '../screens'
+import { checkCopy } from '../check'
 import { NEEDS, SCENARIOS, STRUCTURES, structureSummary } from './structures'
 
 /** The same sorted keys go into every figure (proposal item 4: a small set, not a million). */
@@ -174,7 +174,7 @@ export const c8: ModuleContent = {
       event: 'check',
       heading: 'Check your understanding',
       primary: 'text',
-      text: () => [screenCopy.coming], // checks arrive with the assessment changes (19 to 21)
+      text: () => [checkCopy.intro],
     },
     {
       id: 'c8-summary',
