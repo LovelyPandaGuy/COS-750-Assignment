@@ -115,6 +115,7 @@ function factNumbers(facts: StepFacts, into: Set<number>): Set<number> {
     add(f.height, f.nodeCount, f.rootKey, f.rootBalance, f.searchKey, f.searchSteps, f.avlRootKey, ...f.keys, ...f.violations)
     for (const r of f.rebalances) add(r.key, r.node, r.rotations)
     add(f.rebalances.length)
+    if (f.insert !== undefined) add(f.insert.key, f.insert.node, f.insert.rotations, f.insert.heightAfter)
     for (const d of f.deletes ?? []) add(d.key, d.children, d.successor, d.rebalances.length, ...d.rebalances.map((r) => r.node))
     for (const [key, n] of Object.entries(f.nodes)) add(Number(key), n.height, n.balanceFactor, n.leftHeight, n.rightHeight)
   }

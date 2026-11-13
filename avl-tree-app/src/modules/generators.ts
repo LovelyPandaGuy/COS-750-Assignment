@@ -94,6 +94,8 @@ export function practiceProblem(source: { kind: string; generator?: string }, se
   if (source.kind !== 'practice') return null
   if (source.generator === 'single-rotation') return generateRotationProblem(seed, 'single')
   if (source.generator === 'double-rotation') return generateRotationProblem(seed, 'double')
+  // C6 mixes both: the seed decides whether this problem needs one rotation or two.
+  if (source.generator === 'insert-rebalance') return generateRotationProblem(seed, createRng(seed ^ 0xc6c6).next() < 0.5 ? 'single' : 'double')
   return null
 }
 

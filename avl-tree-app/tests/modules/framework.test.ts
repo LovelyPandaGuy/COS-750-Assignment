@@ -308,3 +308,129 @@ describe('FR-ENG-06 delete figures and their facts', () => {
     expect(kinds(m)).not.toContain('number')
   })
 })
+
+// Spec: add-insert-replay / module-framework delta. FR-ENG-03, FR-VIS-05, D19, D33.
+describe('FR-ENG-03 D19 insert facts', () => {
+  const insertStep = (key: number, extra: Partial<Step> = {}): Step =>
+    step('i', 'content', {
+      figures: [{ id: 't', source: { kind: 'avl', keys: [30, 20] }, label: 't' }],
+      replay: { figure: 't', insert: key },
+      ...extra,
+    })
+  const withStep = (s: Step): ModuleContent => {
+    const m = valid()
+    m.steps[3] = s
+    return m
+  }
+
+  it('inserting 10 into 30, 20 rebalances at 30 with 1 rotation; height after is 1', () => {
+    const f = computeFacts(insertStep(10)).figures.t
+    expect(f.insert).toMatchObject({ key: 10, rebalanced: true, node: 30, rotations: 1, heightAfter: 1 })
+    expect(f.insert!.case).not.toBeNull()
+  })
+
+  it('inserting 25 into 30, 20 is a double rotation at 30', () => {
+    expect(computeFacts(insertStep(25)).figures.t.insert).toMatchObject({ rebalanced: true, node: 30, rotations: 2 })
+  })
+
+  it('an insert that needs no rebalance records none', () => {
+    const f = computeFacts(
+      step('i', 'content', { figures: [{ id: 't', source: { kind: 'avl', keys: [20, 10, 30] }, label: 't' }], replay: { figure: 't', insert: 5 } }),
+    ).figures.t
+    expect(f.insert).toMatchObject({ key: 5, rebalanced: false, node: null, case: null, rotations: 0, heightAfter: 2 })
+  })
+
+  it('a search replay has no insert facts', () => {
+    const f = computeFacts(
+      step('s', 'content', { figures: [{ id: 't', source: { kind: 'avl', keys: [30, 20] }, searchKey: 20, label: 't' }], replay: { figure: 't' } }),
+    ).figures.t
+    expect(f.insert).toBeUndefined()
+  })
+
+  it('a key already in the tree is a source problem naming the step', () => {
+    const problems = validateModule(withStep(insertStep(20))).filter((p) => p.kind === 'source')
+    expect(problems).toHaveLength(1)
+    expect(problems[0].step).toBe('i')
+  })
+
+  it('predict or doItYourself on a search replay is a source problem', () => {
+    const search = (replay: NonNullable<Step['replay']>) =>
+      step('s', 'content', { figures: [{ id: 't', source: { kind: 'avl', keys: [30, 20] }, searchKey: 20, label: 't' }], replay })
+    expect(kinds(withStep(search({ figure: 't', predict: 'node' })))).toContain('source')
+    expect(kinds(withStep(search({ figure: 't', doItYourself: true })))).toContain('source')
+  })
+
+  it('an insert replay on a tree that is not AVL is a source problem', () => {
+    const chain = step('i', 'content', { figures: [{ id: 't', source: { kind: 'bst', keys: [1, 2, 3] }, label: 't' }], replay: { figure: 't', insert: 9 } })
+    expect(kinds(withStep(chain))).toContain('source')
+  })
+
+  it('a valid insert step with a prediction has no problems', () => {
+    expect(validateModule(withStep(insertStep(10, { replay: { figure: 't', insert: 10, predict: 'node', doItYourself: true } })))).toEqual([])
+  })
+
+  it('insert numbers are accepted by the number check', () => {
+    const s = insertStep(10, {
+      text: ({ figures: { t } }) => [
+        `Insert ${t.insert!.key}: node ${t.insert!.node} is out of balance, ${t.insert!.rotations} rotation fixes it, and the height is then ${t.insert!.heightAfter}.`,
+      ],
+    })
+    expect(kinds(withStep(s))).not.toContain('number')
+  })
+
+  it('a typed number in insert text is still rejected', () => {
+    const s = insertStep(10, { text: () => ['It takes 7 rotations.'] })
+    expect(kinds(withStep(s))).toContain('number')
+  })
+})
+
+// Spec: add-module-c6-insertion-and-rebalancing / module-framework delta. FR-ENG-03, ID C6.
+describe('FR-ENG-03 inserted figures', () => {
+  const inserted = (keys: number[], key: number, rebalance: boolean): Step =>
+    step('i', 'content', { figures: [{ id: 't', source: { kind: 'inserted', keys, key, rebalance }, label: 't' }] })
+  const fig = (s: Step) => computeFacts(s).figures.t
+  const withStep = (s: Step): ModuleContent => {
+    const m = valid()
+    m.steps[3] = s
+    return m
+  }
+
+  it('a plain insert of 10 into the AVL tree of 30, 20 breaks the rule at 30 only', () => {
+    const f = fig(inserted([30, 20], 10, false))
+    expect(f.isAvl).toBe(false)
+    expect(f.violations).toEqual([30])
+    expect(f.inOrder).toEqual([10, 20, 30])
+  })
+
+  it('the AVL insert fixes it: a valid AVL tree with root 20', () => {
+    const f = fig(inserted([30, 20], 10, true))
+    expect(f.isAvl).toBe(true)
+    expect(f.rootKey).toBe(20)
+  })
+
+  it('insert facts describe the AVL insert even when the figure shows the plain insert', () => {
+    expect(fig(inserted([30, 20], 10, false)).insert).toMatchObject({ key: 10, rebalanced: true, node: 30, rotations: 1, heightAfter: 1 })
+  })
+
+  it('more than one node can be out of balance; the lowest is the one the AVL insert fixes', () => {
+    const f = fig(inserted([20, 10, 30, 5], 1, false))
+    expect(f.violations).toEqual([10, 20])
+    expect(f.insert!.node).toBe(10)
+  })
+
+  it('the keys in the facts include the inserted key, so the AVL root is the root after the insert', () => {
+    expect(fig(inserted([30, 20], 10, false)).avlRootKey).toBe(20)
+  })
+
+  it('a key already in the base tree is a source problem naming the step', () => {
+    const problems = validateModule(withStep(inserted([30, 20], 20, false))).filter((p) => p.kind === 'source')
+    expect(problems).toHaveLength(1)
+    expect(problems[0].step).toBe('i')
+  })
+
+  it('a valid inserted figure with numbers from its facts has no problems', () => {
+    const s = inserted([30, 20], 10, false)
+    s.text = ({ figures: { t } }) => [`Node ${t.insert!.node} is out of balance; ${t.insert!.rotations} rotation fixes it.`]
+    expect(validateModule(withStep(s))).toEqual([])
+  })
+})

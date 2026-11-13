@@ -4,6 +4,7 @@ import type { Key } from '../engine/tree'
 import type { Activity } from '../routes'
 import type { ModuleId } from '../state/learnerState'
 import type { ConventionsWording } from '../content/modules/conventionsWording'
+import type { PredictionKind } from '../practice/predict'
 import type { StepFacts } from './facts'
 
 export const GAGNE_EVENTS = ['hook', 'goals', 'recall', 'content', 'example', 'practice', 'check', 'summary'] as const
@@ -32,7 +33,7 @@ export const SKIPPABLE_EVENTS: readonly GagneEvent[] = ['content', 'example']
 /** D22: one primary representation per step. Animation is a replay; pseudocode is listings (add-module-c4-search). */
 export type Representation = 'diagram' | 'text' | 'pseudocode' | 'animation'
 
-export type GeneratorName = 'fill-in' | 'root-looks-fine' | 'single-rotation' | 'double-rotation'
+export type GeneratorName = 'fill-in' | 'root-looks-fine' | 'single-rotation' | 'double-rotation' | 'insert-rebalance'
 
 /** One single rotation at the node with key `at` (add-modules-c5-c6). */
 export interface RotationSpec {
@@ -48,6 +49,8 @@ export type TreeSource =
   | { kind: 'practice'; generator: GeneratorName }
   /** Keys into a plain BST or an AVL tree, then each key in `remove` deleted by the engine (add-module-c7-delete). */
   | { kind: 'deleted'; build: 'bst' | 'avl'; keys: readonly Key[]; remove: readonly Key[]; rebalance: boolean }
+  /** An AVL tree of `keys`, then `key` inserted plainly (`rebalance: false`) or with the AVL insert (add-module-c6-insertion-and-rebalancing). */
+  | { kind: 'inserted'; keys: readonly Key[]; key: Key; rebalance: boolean }
 
 export interface FigureSpec {
   id: string
@@ -70,10 +73,10 @@ export interface Allowance {
   reason: string
 }
 
-export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario' | 'trace-search' | 'after-delete'
+export type PracticeKind = 'fill-in-bf' | 'spot-the-problem' | 'rotate' | 'scenario' | 'trace-search' | 'after-delete' | 'name-case'
 
 /** Pseudocode listings a step can show side by side (names in src/content/pseudocode.ts). */
-export type ListingName = 'searchLoop' | 'searchRecursive'
+export type ListingName = 'insert' | 'searchLoop' | 'searchRecursive'
 
 /** A sorted array drawn as a row of cells and searched with binary search (add-module-c8-choosing). */
 export interface ArraySpec {
@@ -108,8 +111,13 @@ export interface Step {
   scenario?: string
   /** Scenario practice draws one of these by seed. */
   scenarios?: readonly string[]
-  /** Play a search of this figure's `searchKey` as a replay in place of the figure (D33). */
-  replay?: { figure: string }
+  /**
+   * Play an operation on one of this step's figures as a replay in place of the figure (D33): a
+   * search for its `searchKey`, or, with `insert`, an AVL insert of that key. `predict` asks for a
+   * prediction first and `doItYourself` offers the Watch or Do it yourself switch; both need `insert`
+   * (add-insert-replay).
+   */
+  replay?: { figure: string; insert?: Key; predict?: PredictionKind; doItYourself?: boolean }
   /** Listings shown side by side, no line lit. */
   listings?: readonly ListingName[]
   /** "Be the algorithm": search for a key that is in the seeded tree, or one that is not. */

@@ -19,10 +19,15 @@ export interface ReplayPlayerProps {
   held?: boolean
   /** "Replay that step": show the position after trace step `index`. A new nonce repeats the request. */
   showStep?: { index: number; nonce: number }
+  /**
+   * Told the position and trace length whenever the position changes, so a parent can react to the
+   * end of the replay (add-insert-replay). Give it a stable identity (useCallback). No visible effect.
+   */
+  onPosition?: (position: number, length: number) => void
 }
 
 /** Watch mode (FR-VIS-03, FR-VIS-04, FR-VIS-07, wireframe 1f): tree, step controls, pseudocode and the step sentence. */
-export function ReplayPlayer({ operation, label, held = false, showStep }: ReplayPlayerProps) {
+export function ReplayPlayer({ operation, label, held = false, showStep, onPosition }: ReplayPlayerProps) {
   const { kind, tree: start, key } = operation
   const [form, setForm] = useState<SearchForm>('loop')
   const { trace } = useMemo(() => traceFor({ kind, tree: start, key } as Operation, form), [kind, start, key, form])
@@ -44,6 +49,10 @@ export function ReplayPlayer({ operation, label, held = false, showStep }: Repla
     setSeenShow(showStep.nonce)
     dispatch({ type: 'jumpTo', stepIndex: showStep.index })
   }
+
+  useEffect(() => {
+    onPosition?.(state.position, state.length)
+  }, [onPosition, state.position, state.length])
 
   // One interval per play and speed. A tick while paused or at the end is ignored by the reducer,
   // so Pause never races a pending tick; a speed change restarts the interval from that moment.

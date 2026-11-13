@@ -7,7 +7,7 @@ import { isOutOfBalance, type RebalanceCase } from '../engine/conventions'
 import { searchTrace } from '../engine/search'
 import { balanceFactorOf, height, subtreeAt, type Key, type Tree } from '../engine/tree'
 import { rotateAt } from '../practice/rotate'
-import { generateFillInTree, generateRootLooksFine, generateRotationProblem, rotationsFor } from './generators'
+import { generateFillInTree, generateRootLooksFine, practiceProblem, rotationsFor } from './generators'
 import { SCENARIOS } from '../content/modules/structures'
 import { answersOf, binarySearchProbes, reasonOf, STRUCTURE_IDS, type NeedId, type StructureId } from './compare'
 import type { ArraySpec, RotationSpec, Step, TreeSource } from './schema'
@@ -42,8 +42,22 @@ export interface FigureFacts {
   avlRootKey: Key | null
   /** Rotations in the source that could not be performed (shown by the validator). */
   sourceProblems: string[]
+  /** The insert this step replays on the figure, from the engine (add-insert-replay). */
+  insert?: InsertFacts
   /** Each delete of a `deleted` source, in order. */
   deletes?: DeleteFacts[]
+}
+
+export interface InsertFacts {
+  key: Key
+  rebalanced: boolean
+  /** The unbalanced node the engine rotated at, or null when nothing needed fixing. */
+  node: Key | null
+  /** The case stays in the facts; it reaches text only through the conventions wording (D19). */
+  case: RebalanceCase | null
+  /** Single rotations used: 0, 1, or 2 for a double rotation. */
+  rotations: 0 | 1 | 2
+  heightAfter: number
 }
 
 export interface DeleteFacts {
@@ -109,6 +123,8 @@ export interface BuiltTree {
   /** Rotations that could not be performed; empty for every other source. */
   problems?: string[]
   deletes?: DeleteFacts[]
+  /** The engine's AVL insert of the key of an `inserted` source into its base tree. */
+  insert?: InsertFacts
 }
 
 const plain = (keys: readonly Key[]): Tree => keys.reduce<Tree>((t, k) => insert(t, k).tree, null)
@@ -150,10 +166,33 @@ function deleteFrom(source: Extract<TreeSource, { kind: 'deleted' }>): BuiltTree
   return { keys: [...source.keys], tree, problems, deletes }
 }
 
+/** The engine's result for inserting `key` into the AVL tree `tree`. */
+function insertFactsFor(tree: Tree, key: Key): InsertFacts {
+  const { tree: after, rebalance } = avlInsert(tree, key)
+  return {
+    key,
+    rebalanced: rebalance !== null,
+    node: rebalance?.node ?? null,
+    case: rebalance?.case ?? null,
+    rotations: rebalance === null ? 0 : rotationsFor(rebalance.case),
+    heightAfter: height(after),
+  }
+}
+
+/** The AVL tree of the keys, then one more key inserted plainly or with the AVL insert. */
+function insertInto(source: Extract<TreeSource, { kind: 'inserted' }>): BuiltTree {
+  const base = source.keys.reduce<Tree>((t, k) => avlInsert(t, k).tree, null)
+  const problems = searchTrace(base, source.key).found ? [`insert ${source.key}: ${source.key} is already in the tree`] : []
+  const tree = source.rebalance ? avlInsert(base, source.key).tree : insert(base, source.key).tree
+  return { keys: [...source.keys, source.key], tree, problems, insert: insertFactsFor(base, source.key) }
+}
+
 export function buildTree(source: TreeSource, seed = 0): BuiltTree {
   switch (source.kind) {
     case 'deleted':
       return deleteFrom(source)
+    case 'inserted':
+      return insertInto(source)
     case 'bst':
       return { keys: [...source.keys], tree: plain(source.keys) }
     case 'avl':
@@ -169,9 +208,10 @@ export function buildTree(source: TreeSource, seed = 0): BuiltTree {
         case 'root-looks-fine':
           return generateRootLooksFine(seed)
         case 'single-rotation':
-        case 'double-rotation': {
+        case 'double-rotation':
+        case 'insert-rebalance': {
           // The student sees the tree after the plain BST insert, before any rebalancing.
-          const p = generateRotationProblem(seed, source.generator === 'single-rotation' ? 'single' : 'double')
+          const p = practiceProblem(source, seed)!
           return { keys: p.keys, tree: insert(p.base, p.key).tree }
         }
       }
@@ -262,12 +302,27 @@ export function figureFacts(id: string, tree: Tree, keys: Key[], searchKey?: Key
   }
 }
 
+/** The engine's result for the insert a replay plays, and the ways a replay can be misused. */
+function withReplayFacts(facts: FigureFacts, replay: NonNullable<Step['replay']>): FigureFacts {
+  const problems: string[] = []
+  if (replay.insert === undefined) {
+    if (replay.predict !== undefined || replay.doItYourself === true) problems.push('predict and doItYourself need an insert to replay')
+    return problems.length === 0 ? facts : { ...facts, sourceProblems: [...facts.sourceProblems, ...problems] }
+  }
+  const key = replay.insert
+  if (searchTrace(facts.tree, key).found) problems.push(`insert ${key}: ${key} is already in the tree`)
+  if (!facts.isAvl) problems.push('an insert replay needs an AVL tree')
+  return { ...facts, insert: insertFactsFor(facts.tree, key), sourceProblems: [...facts.sourceProblems, ...problems] }
+}
+
 /** Build every tree of a step and compute its facts. Practice trees use the seed. */
 export function computeFacts(step: Step, seed = 0): StepFacts {
   const figures: Record<string, FigureFacts> = {}
   for (const f of step.figures ?? []) {
-    const { keys, tree, problems, deletes } = buildTree(f.source, seed)
-    figures[f.id] = figureFacts(f.id, tree, keys, f.searchKey, problems, deletes)
+    const { keys, tree, problems, deletes, insert } = buildTree(f.source, seed)
+    const facts = figureFacts(f.id, tree, keys, f.searchKey, problems, deletes)
+    if (insert !== undefined) facts.insert = insert
+    figures[f.id] = step.replay?.figure === f.id ? withReplayFacts(facts, step.replay) : facts
   }
   const arrays: Record<string, ArrayFacts> = {}
   for (const a of step.arrays ?? []) arrays[a.id] = arrayFacts(a)

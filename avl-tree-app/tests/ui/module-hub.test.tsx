@@ -153,12 +153,12 @@ describe('FR-LRN-05 module screen', () => {
   })
 
   it('moving about does not change the stored learner state', () => {
-    // C6 has no module content yet, so its Explore activity is still a skeleton with "Back to path".
-    const backend = backendWith(progressState({ currentModule: 'C6' }))
+    // C9 has no module content yet, so its Check activity is still a skeleton with "Back to path".
+    const backend = backendWith(progressState({ currentModule: 'C9' }))
     const before = backend.getItem(LEARNER_KEY)
     renderRoutes(backend, '/path')
     fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
-    fireEvent.click(within(main()).getByRole('link', { name: /^explore/i }))
+    fireEvent.click(within(main()).getByRole('link', { name: /^check/i }))
     fireEvent.click(within(main()).getByRole('link', { name: /back to path/i }))
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
   })
@@ -169,9 +169,6 @@ describe('FR-VIS-08 skeleton screens', () => {
     ['/module/C1/check', 'Warm-up check'],
     ['/module/C1/check/result', "Here's where you're starting from"],
     ['/module/C1/refresher', 'BST refresher'],
-    ['/module/C6/explore', 'Explore'],
-    ['/module/C6/example', 'Worked example'],
-    ['/module/C6/check', 'Check'],
     ['/module/C9/check', 'Check'],
     ['/readiness', 'Ready for the lecture?'],
   ]
@@ -187,8 +184,8 @@ describe('FR-VIS-08 skeleton screens', () => {
   })
 
   it('names the right module for an activity', () => {
-    renderRoutes(backendWith(), '/module/C6/check')
-    expect(screen.getByRole('banner').querySelector('.topbar-breadcrumb')).toHaveTextContent('C6 Insertion with rebalancing')
+    renderRoutes(backendWith(), '/module/C9/check')
+    expect(screen.getByRole('banner').querySelector('.topbar-breadcrumb')).toHaveTextContent('C9 Am I ready')
   })
 
   it('every skeleton links back to the path', () => {

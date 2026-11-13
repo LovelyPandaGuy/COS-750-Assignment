@@ -6,6 +6,7 @@ import type { Key } from '../../engine/tree'
 import type { BalanceFactorResult, RotationHintFacts, SpotResult } from '../../modules/practice'
 import type { PickResult, SearchMove } from '../../modules/searchPractice'
 import type { AfterDeleteResult } from '../../modules/deletePractice'
+import type { CaseResult } from '../../modules/casePractice'
 import { answersOf, reasonOf, STRUCTURE_IDS, type Scenario, type StructureId } from '../../modules/compare'
 import type { ConventionsWording } from './conventionsWording'
 import { NEEDS, STRUCTURES } from './structures'
@@ -20,6 +21,13 @@ export interface FillInHintFacts {
   key: Key
   leftHeight: number
   rightHeight: number
+}
+
+export interface NameCaseHintFacts {
+  z: Key
+  y: Key
+  zBalance: number
+  yBalance: number
 }
 
 export interface AfterDeleteHintFacts {
@@ -177,6 +185,23 @@ export const practiceModuleCopy = {
         `Start where ${f.key} was removed and walk up toward the root. Work out each balance factor from the heights shown.`,
       (f: AfterDeleteHintFacts) =>
         f.side === null ? 'The node you are looking for is the root.' : `The node you are looking for is in the ${f.side} subtree of the root.`,
+    ],
+  },
+  /** C6 "name the case, then rotate" (add-module-c6-insertion-and-rebalancing). [beyond ID]: the ID gives C6 worked examples, not this activity. */
+  nameCase: {
+    treeLabel: 'Practice tree after a plain BST insert',
+    groupLabel: 'Which case applies?',
+    question: 'A key was just inserted with a plain BST insert. Work out which case applies here.',
+    // Case names come only from the conventions wording (D19); the feedback never names a case until it is right.
+    why: (r: CaseResult, w: ConventionsWording): string =>
+      r.kind === 'right'
+        ? `Node ${r.z} is out of balance and its taller child is node ${r.y}. This is the ${w.caseName(r.answer)} case.`
+        : `Node ${r.z} has balance factor ${w.num(r.zBalance)} and its taller child, node ${r.y}, has ${w.num(r.yBalance)}. Look at which way each of the two is taller.`,
+    done: 'Now rotate the tree yourself, below.',
+    hints: [
+      (f: NameCaseHintFacts) => `Find the node that is out of balance: it is node ${f.z}. Its taller child is node ${f.y}.`,
+      (f: NameCaseHintFacts, w: ConventionsWording) =>
+        `${w.leanPhrase(f.zBalance)} ${w.leanPhrase(f.yBalance)} Compare the two directions: the same, or opposite.`,
     ],
   },
 } as const

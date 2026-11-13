@@ -12,8 +12,8 @@ Work with unknowns per D18: assume, record the assumption in `decisions.md`, kee
 | 13 | `add-modules-c2-c3` | Needs 12. All formula, sign and case wording from the conventions module (D19). C2's "height 2" and step counts come from the engine. |
 | 14 | `add-module-c4-search` | Step count and the million-key figure computed by the engine (D13). |
 | 15 | `add-modules-c5-c6` | Split three ways (D49). This change: C5 and rotate-it-yourself practice. Case and rotation names from the conventions module (D19). Practice hints and retries per D21. Archived 13 Nov. |
-| 15b | `add-insert-replay` | The step player for insert traces, so C6 can show an insert step by step (FR-VIS-03, FR-VIS-04). |
-| 15c | `add-module-c6-insertion` | Needs 15b. C6 outline, worked examples that fade from done for you to on your own, seeded keys (LO7). Case names from the conventions module (D19). |
+| 15b | `add-insert-replay` | Built 13 Nov (D65 to D68): a module step can play an AVL insert, with predict-first and the Watch or Do it yourself switch, from the existing replay components. No student-visible change until C6 uses it. |
+| 15c | `add-module-c6-insertion` | Built 13 Nov as `add-module-c6-insertion-and-rebalancing` (D69 to D74): C6 outline, worked examples that fade (done for you, guided by node, guided by case) and a seeded name-the-case-then-rotate practice (LO7). Case names from the conventions module (D19). |
 | 16 | `add-sandbox` | No changes from the consolidation. |
 | 17 | `add-module-c8-choosing` | Wording per D19 and D27. |
 | 18 | `add-module-c7-delete` | Wording per D19; check optional (D4). |

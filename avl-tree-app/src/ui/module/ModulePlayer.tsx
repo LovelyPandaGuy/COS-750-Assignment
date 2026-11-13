@@ -13,6 +13,7 @@ import { renderStep } from '../../modules/render'
 import { recommendRoute } from '../../navigation/policy'
 import { drawSearchPractice } from '../../modules/searchPractice'
 import { drawDeletePractice } from '../../modules/deletePractice'
+import { caseProblem } from '../../modules/casePractice'
 import { pseudocode } from '../../content/pseudocode'
 import { replayCopy } from '../../content/replay'
 import { ReplayPlayer } from '../replay/ReplayPlayer'
@@ -24,10 +25,12 @@ import { TreeView } from '../tree/TreeView'
 import { ArrayView } from './ArrayView'
 import { ComparisonTable } from './ComparisonTable'
 import { ControlStrip } from './ControlStrip'
+import { InsertReplay } from './InsertReplay'
 import { RouteChoice } from './RouteChoice'
 import { BalanceFactorFill } from './practice/BalanceFactorFill'
 import { BeTheAlgorithm } from './practice/BeTheAlgorithm'
 import { FindAfterDelete } from './practice/FindAfterDelete'
+import { NameTheCase } from './practice/NameTheCase'
 import { RotatePractice } from './practice/RotatePractice'
 import { ScenarioPractice } from './practice/ScenarioPractice'
 import { SpotTheProblem } from './practice/SpotTheProblem'
@@ -82,7 +85,8 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
   }, [index])
 
   const go = (i: number) => {
-    if (step.practice === 'rotate') setKept((k) => (k.includes(step.id) ? k : [...k, step.id]))
+    // A visited rotation block stays mounted, hidden, so Back keeps its rotations (D53). A name-case step has one once solved.
+    if (step.practice === 'rotate' || (step.practice === 'name-case' && p.solved)) setKept((k) => (k.includes(step.id) ? k : [...k, step.id]))
     setRuleOpen(false)
     setIndex(i)
   }
@@ -111,7 +115,8 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
 
   const tree = Object.values(facts.figures)[0]?.tree ?? null
   const label = step.figures?.[0]?.label
-  const rotateSteps = steps.filter((s) => s.practice === 'rotate' && (s.id === step.id || kept.includes(s.id)))
+  const hasRotation = (s: Step) => s.practice === 'rotate' || (s.practice === 'name-case' && stateOf(s).solved)
+  const rotateSteps = steps.filter((s) => hasRotation(s) && (s.id === step.id || kept.includes(s.id)))
 
   return (
     <div className="screen-stack module-player">
@@ -125,8 +130,21 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
           (() => {
             const f = facts.figures[step.replay.figure]
             const spec = step.figures?.find((x) => x.id === step.replay?.figure)
-            if (f === undefined || f.searchKey === undefined) return null
-            // Keyed on the step, so the replay starts again each time the step is shown.
+            if (f === undefined) return null
+            // Keyed on the step, so a replay starts again each time the step is shown.
+            if (step.replay.insert !== undefined) {
+              return (
+                <InsertReplay
+                  key={step.id}
+                  tree={f.tree}
+                  keyToInsert={step.replay.insert}
+                  label={spec?.label ?? ''}
+                  predict={step.replay.predict}
+                  doItYourself={step.replay.doItYourself}
+                />
+              )
+            }
+            if (f.searchKey === undefined) return null
             return <ReplayPlayer key={step.id} operation={{ kind: 'search', tree: f.tree, key: f.searchKey }} label={spec?.label ?? ''} />
           })()}
         {(step.listings?.length ?? 0) > 0 && (
@@ -205,6 +223,23 @@ export function ModulePlayer({ content, activity }: ModulePlayerProps) {
                 onPath={(answered) => update({ answered })}
                 solved={p.solved}
                 onSolved={() => update({ solved: true })}
+                hintsUsed={p.hintsUsed}
+                onReview={review}
+                onNewTree={() => update({ ...FRESH, regen: p.regen + 1 })}
+              />
+            )
+          })()}
+        {step.practice === 'name-case' &&
+          (() => {
+            const problem = practiceProblem(step.figures?.[0]?.source ?? { kind: 'none' }, seed)
+            if (problem === null) return null
+            return (
+              <NameTheCase
+                key={seed}
+                problem={caseProblem(problem.base, problem.key)}
+                solved={p.solved}
+                // The rotation phase starts with a fresh hint budget.
+                onSolved={() => update({ solved: true, hintsUsed: 0 })}
                 hintsUsed={p.hintsUsed}
                 onReview={review}
                 onNewTree={() => update({ ...FRESH, regen: p.regen + 1 })}
