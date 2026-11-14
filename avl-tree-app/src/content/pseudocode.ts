@@ -9,21 +9,17 @@
 //   proposal, question 2). Line 4 never lights on its own: the imbalance step
 //   carries the case and the panel names it beside line 3.
 // Case names (LL, RR, LR, RL) are never written here; the panel shows the
-// case from the step itself. The out-of-range values on line 3 are the first
-// values past the balance range, written with the conventions number format (D19).
-import { BALANCE_RANGE } from '../engine/conventions'
+// case from the step itself. The out-of-range values on line 3 come from the
+// conventions wording (D19, revamp-tree-controls review R1).
 import { conventionsWording } from './modules/conventionsWording'
 
-const { num } = conventionsWording()
-// BALANCE_RANGE is in ascending order: its last value plus one and its first value minus one are out of range.
-const above = BALANCE_RANGE[BALANCE_RANGE.length - 1] + 1
-const below = BALANCE_RANGE[0] - 1
+const { outOfRangeText } = conventionsWording()
 
 export const pseudocode = {
   insert: [
     'insert k as in a plain BST, remembering the path',
     'walk back up the path, updating each height',
-    `stop at the lowest unbalanced node z (bf ${num(above)} or ${num(below)})`,
+    `stop at the lowest unbalanced node z (bf ${outOfRangeText})`,
     'work out the case from z and its taller child y',
     'rotate to fix z; nothing above needs fixing',
   ],

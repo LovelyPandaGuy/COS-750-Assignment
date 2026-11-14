@@ -3,8 +3,7 @@
 // Numbers are passed in from the engine's trace; nothing here computes an answer.
 // Case names and the balance range come from the conventions wording (D19), read at call time.
 // revamp-tree-controls adds the switcher, Replay, group, caption and whole-tree labels (flagged, beyond the ID).
-import type { RebalanceCase } from '../engine/conventions'
-import { conventionsWording } from './modules/conventionsWording'
+import { conventionsWording, type RebalanceCase } from './modules/conventionsWording'
 
 const w = () => conventionsWording()
 
@@ -32,7 +31,8 @@ export const replayCopy = {
     progress: 'Replay progress',
     counter: (p: number, n: number) => `Step ${p} / ${n}`,
     held: 'Make your prediction, or skip it, to start the replay.',
-    help: 'Keys: Space play or pause, ← and → step, [ and ] speed.',
+    // Same words as the strip (review R2). The arrows scroll a wide tree inside the tree box (review C5).
+    help: 'Keys: Space Play or Pause, ← Back, → Step, [ and ] Speed. The Replay button starts again. Inside the tree box, ← and → scroll the tree.',
   },
   visited: (n: number) => `Nodes visited: ${n}`,
   explanationLabel: 'Step explanation',

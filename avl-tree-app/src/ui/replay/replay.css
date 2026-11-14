@@ -3,7 +3,7 @@
 .replay { display: flex; flex-direction: column; gap: var(--space-4); max-width: 100%; min-width: 0; }
 .replay p { margin: 0; font: var(--type-body); }
 
-/* Replay strip (D23): navigation first, then progress and speed. Stacked on a phone, one row from 768 px. */
+/* Replay strip (D23): navigation first, then progress and speed. Wraps to the width it is given (review C1). */
 .replay-controls { display: flex; flex-direction: column; flex-wrap: wrap; align-items: flex-start; gap: var(--space-3); }
 .replay-side { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
 .replay-progress { flex: 1 1 auto; }
@@ -33,8 +33,10 @@
 /* Pressed (review C2, D94): secondary as base.css .btn-secondary, primary with the pressed token. */
 .replay-button:active:not(:disabled) { background: var(--action-primary-tint); border-color: var(--action-primary); }
 .replay-button[data-primary]:active:not(:disabled) { background: var(--action-primary-pressed); border-color: var(--action-primary-pressed); }
-/* Selected speed: fill, border and weight, not colour alone; aria-pressed carries the state. */
-.replay-button[aria-pressed='true'] { background: var(--action-primary-tint); border-color: var(--action-primary); border-width: 2px; color: var(--text-primary); }
+/* Speed: the selected one has fill, a 2 px border and bold weight; the others are regular weight, so weight is a
+   real cue (review A2). aria-pressed carries the state. */
+.replay-button[aria-pressed='false'] { font-weight: 400; }
+.replay-button[aria-pressed='true'] { background: var(--action-primary-tint); border-color: var(--action-primary); border-width: 2px; color: var(--text-primary); font-weight: 700; }
 .replay-button:disabled { background: var(--disabled-bg); color: var(--disabled-text); border-color: var(--border-subtle); cursor: not-allowed; }
 
 .pseudo {
@@ -134,7 +136,7 @@
 }
 .switcher-task { font-weight: 700; }
 
+/* From 768 px the task sits at the end of the switcher bar (wireframe 1f). */
 @media (min-width: 768px) {
-  .replay-controls { flex-direction: row; justify-content: space-between; align-items: center; }
   .switcher-task { margin-inline-start: auto; }
 }

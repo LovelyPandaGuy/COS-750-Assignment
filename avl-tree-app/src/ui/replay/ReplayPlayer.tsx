@@ -119,6 +119,8 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
     // Inside the tree's scroll box the arrows scroll a wide tree (D17); they step everywhere else (review C5).
     const arrow = e.key === 'ArrowLeft' || e.key === 'ArrowRight'
     if (arrow && e.target instanceof Element && e.target.closest('.tree-scroll')) return
+    // On a button or summary, Space keeps its native action and activates it (review A1/R3).
+    if (e.key === ' ' && e.target instanceof Element && e.target.closest('button, summary')) return
     const action =
       e.key === ' ' ? 'toggle'
       : e.key === 'ArrowLeft' ? 'back'
@@ -129,10 +131,6 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
     if (action === null) return
     e.preventDefault()
     dispatch({ type: action })
-  }
-  // A focused button turns Space into a click on keyup; stop that so one press is one toggle.
-  const onKeyUp = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === ' ' && !(e.target instanceof HTMLInputElement)) e.preventDefault()
   }
 
   const p = state.position
@@ -146,7 +144,7 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
   const roles = rolesAt(trace, p)
 
   return (
-    <div className="replay" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
+    <div className="replay" onKeyDown={onKeyDown}>
       {hostsSwitcher && <RepresentationSwitcher primary={representations.primary} shown={shown} onToggle={toggle} />}
       <TreeView tree={tree} roles={roles} label={label} slots={slots} transitionMs={transitionMs} />
       <Caption sentence={sentenceFor(op, explainAt(op, trace, p))} visited={kind === 'search' ? visitedAt(trace, p) : undefined} />

@@ -8,10 +8,14 @@ import {
   BALANCE_RANGE,
   EMPTY_HEIGHT,
   LEAF_HEIGHT,
+  isOutOfBalance,
   leanOf,
   type RebalanceCase,
   type Side,
 } from '../../engine/conventions'
+
+/** Re-exported so other content files can name a case type without importing the engine (review R1). */
+export type { RebalanceCase }
 
 export interface ConventionsWording {
   /** "balance factor = height of the left subtree − height of the right subtree" */
@@ -20,6 +24,8 @@ export interface ConventionsWording {
   leanPhrase: (balanceFactor: number) => string
   /** "−1, 0 or +1" */
   rangeText: string
+  /** The first balance factors outside the range, one on each side: "+2 or −2" (revamp-tree-controls review R1). */
+  outOfRangeText: string
   /** "A leaf has height 0 and an empty tree has height −1." */
   heightRule: string
   sideWord: (side: Side) => string
@@ -33,6 +39,13 @@ const SIDE_WORD: Record<Side, string> = { left: 'left', right: 'right' }
 
 function num(n: number): string {
   return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : '0'
+}
+
+/** The first value past the balance range in one direction, found with the engine's own test. */
+function firstOutside(step: 1 | -1): number {
+  let n = step
+  while (!isOutOfBalance(n)) n += step
+  return n
 }
 
 /** Plain count, no plus sign: 0, −1. */
@@ -50,6 +63,7 @@ export function conventionsWording(order: readonly [Side, Side] = BALANCE_FACTOR
       return `A balance factor of ${num(bf)} means the ${SIDE_WORD[side]} subtree is taller.`
     },
     rangeText: `${range.slice(0, -1).join(', ')} or ${range[range.length - 1]}`,
+    outOfRangeText: `${num(firstOutside(1))} or ${num(firstOutside(-1))}`,
     heightRule: `A leaf has height ${count(LEAF_HEIGHT)} and an empty tree has height ${count(EMPTY_HEIGHT)}.`,
     sideWord: (side) => SIDE_WORD[side],
     num,
