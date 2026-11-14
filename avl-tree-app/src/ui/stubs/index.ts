@@ -16,8 +16,6 @@ import { TaskPrompt } from './TaskPrompt'
 import { KeyboardHelp } from './KeyboardHelp'
 import { CheckHeader } from './CheckHeader'
 import { GuidedStepThrough } from './GuidedStepThrough'
-import { TreeEditorToolbar } from './TreeEditorToolbar'
-import { EditLog } from './EditLog'
 import { LiveBalanceReadout } from './LiveBalanceReadout'
 import { OutcomeStatusTable } from './OutcomeStatusTable'
 import { ConfidenceFlags } from './ConfidenceFlags'
@@ -44,8 +42,6 @@ export const STUBS: Record<StubbedName, ComponentType<never>> = {
   KeyboardHelp,
   CheckHeader,
   GuidedStepThrough,
-  TreeEditorToolbar,
-  EditLog,
   LiveBalanceReadout,
   OutcomeStatusTable,
   ConfidenceFlags,
@@ -73,8 +69,6 @@ export {
   KeyboardHelp,
   CheckHeader,
   GuidedStepThrough,
-  TreeEditorToolbar,
-  EditLog,
   LiveBalanceReadout,
   OutcomeStatusTable,
   ConfidenceFlags,

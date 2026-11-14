@@ -5,9 +5,9 @@ export const treeViewCopy = {
   unbalancedWord: 'unbalanced',
   balancedWord: 'balanced',
   /** Visible tags (ID 11.1 "NEW" tag; conventions.unbalancedNode "n"). Being rotated has none: the caption says it. */
-  roleTag: { new: 'NEW', n: 'n' } as Record<string, string>,
+  roleTag: { new: 'NEW', n: 'n', placed: 'PLACED' } as Record<string, string>,
   /** Words for assistive technology, one per role. */
-  roleWord: { new: 'newly inserted', rotating: 'being rotated', n: 'n, the first unbalanced node' },
+  roleWord: { new: 'newly inserted', rotating: 'being rotated', n: 'n, the first unbalanced node', placed: 'placed by you' },
   unbalancedMarker: '!',
   emptyTree: 'The tree is empty.',
   describeButton: 'Describe tree',

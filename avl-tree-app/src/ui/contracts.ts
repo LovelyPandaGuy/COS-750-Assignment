@@ -15,6 +15,8 @@ import type { ActivityList } from '../components/ActivityList'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
 import type { ProgressMap } from '../components/ProgressMap'
 import type { ResumeCard } from '../components/ResumeCard'
+import type { EditLog } from './editor/EditLog'
+import type { TreeEditorToolbar } from './editor/TreeEditorToolbar'
 import type { InOrderStrip } from './practice/InOrderStrip'
 import type { RotationMenu } from './practice/RotationMenu'
 import type { PseudocodePanel } from './replay/PseudocodePanel'
@@ -180,21 +182,10 @@ export interface GuidedStepThroughProps {
   step: number
   onStep: (step: number) => void
 }
-/** 1m: insert, rotations, undo and reset for the tree being edited. */
-export interface TreeEditorToolbarProps {
-  nextKey: number | null
-  onInsert: () => void
-  canUndo: boolean
-  onUndo: () => void
-  onReset: () => void
-  disabled: boolean
-}
-/** 1m: the student's edits, in order. */
-export interface EditLogProps {
-  heading: string
-  entries: readonly string[]
-  emptyText: string
-}
+/** 1m: place, undo, reset and delete for the tree being edited (built: src/ui/editor/, revamp-tree-editor). */
+export type TreeEditorToolbarProps = ComponentProps<typeof TreeEditorToolbar>
+/** 1m: the student's edits, in order (built: src/ui/editor/, revamp-tree-editor). */
+export type EditLogProps = ComponentProps<typeof EditLog>
 /** 1m: balance factors of the tree as the student edits it, from the engine. */
 export interface LiveBalanceReadoutProps {
   tree: Tree
@@ -224,14 +215,14 @@ export interface ExportActionsProps {
 export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls', 'PseudocodePanel',
   'StepExplanation', 'RotationMenu', 'InOrderStrip', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
-  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel',
+  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel', 'TreeEditorToolbar', 'EditLog',
 ] as const
 
 export const STUBBED = [
   'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper',
   'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
   'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
-  'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
+  'LiveBalanceReadout', 'OutcomeStatusTable',
   'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
   'ScaffoldLadder',
 ] as const

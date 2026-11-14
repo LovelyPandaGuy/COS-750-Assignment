@@ -29,8 +29,9 @@ describe('every named component has a contract', () => {
     expect([...BUILT, ...STUBBED].sort()).toEqual([...CONTRACT_NAMES].sort());
     // 14 and 31 after the merge with the live content (D121); revamp-question-and-feedback then built
     // QuestionItem, ConfidenceRating, FullAnswer, LectureQuestionDraft and FeedbackPanel (D128): 19 and 26.
-    expect(BUILT).toHaveLength(19);
-    expect(STUBBED).toHaveLength(26);
+    // revamp-tree-editor built TreeEditorToolbar and EditLog (D132, D134): 21 and 24.
+    expect(BUILT).toHaveLength(21);
+    expect(STUBBED).toHaveLength(24);
   });
 });
 

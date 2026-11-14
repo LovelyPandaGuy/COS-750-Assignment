@@ -1,0 +1,91 @@
+/* The tree editor (revamp-tree-editor design 4, 7; D133, D135). Tokens only. One column at every width;
+   from the tablet breakpoint the rotation menu sits beside the selected node over the tree. */
+.tree-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+}
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.editor-toolbar button {
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+}
+.editor-toolbar button[aria-pressed='true'] {
+  border-style: dashed;
+  border-width: 3px;
+  font-weight: 700;
+}
+.editor-tree {
+  min-width: 0;
+}
+.editor-menu {
+  margin-top: var(--space-2);
+}
+.editor-menu button {
+  min-height: var(--target-min);
+}
+.editor-menu kbd {
+  margin-inline-start: var(--space-2);
+  font: var(--type-label);
+}
+.editor-slot {
+  cursor: pointer;
+}
+.editor-slot-hit {
+  fill: transparent;
+}
+.editor-slot-ring {
+  fill: var(--bg-surface);
+  stroke: var(--text-secondary);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+}
+.editor-slot:hover .editor-slot-ring,
+.editor-slot:focus-visible .editor-slot-ring {
+  stroke: var(--text-primary);
+  stroke-width: 3;
+}
+.editor-slot:focus-visible .editor-slot-hit {
+  stroke: var(--focus-ring-color);
+  stroke-width: var(--focus-ring-width);
+}
+.editor-slot-word {
+  font: var(--type-label);
+  text-anchor: middle;
+  fill: var(--text-secondary);
+}
+.editor-log ol {
+  margin: 0;
+  padding-inline-start: var(--space-5);
+}
+.editor-log-heading {
+  font: var(--type-body);
+  font-weight: 700;
+  margin: 0;
+}
+.practice-strip-new {
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .editor-tree {
+    position: relative;
+  }
+  .editor-menu {
+    position: absolute;
+    left: calc(var(--menu-x) + var(--space-6));
+    top: calc(var(--menu-y) - var(--space-4));
+    margin-top: 0;
+    z-index: 1;
+  }
+  .editor-menu[data-side='left'] {
+    left: auto;
+    right: calc(100% - var(--menu-x) + var(--space-6));
+  }
+}
