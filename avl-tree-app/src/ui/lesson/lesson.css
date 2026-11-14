@@ -154,3 +154,62 @@
   .certificate, .certificate * { visibility: visible; }
   .certificate { position: absolute; inset: 0 auto auto 0; width: 100%; border-color: currentColor; }
 }
+
+/* Lesson outline (add-lesson-outline, D154; ID 8.2, 8.3, 11.1). One column by default: the outline is a
+   disclosure above the frame. From the desktop width (D118) it is a sticky column beside the frame, and the
+   shell's reading column widens by that column only, so the lesson keeps its own reading width. */
+.lesson-layout {
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+.lesson-layout > * { min-width: 0; }
+@media (min-width: 1366px) {
+  .lesson-layout { grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr); gap: var(--space-6); }
+  .app-main:has(> .lesson-layout) { max-width: calc(var(--reading-column) + 16rem + var(--space-6)); }
+  .lesson-outline { position: sticky; top: var(--space-4); max-height: calc(100vh - var(--space-6)); overflow-y: auto; }
+}
+
+.lesson-outline { font: var(--type-label); }
+.lesson-outline-summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding-inline: var(--space-3);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-weight: 700;
+  cursor: pointer;
+}
+.lesson-outline-disclosure[open] > .lesson-outline-summary { margin-bottom: var(--space-3); }
+.lesson-outline-groups,
+.lesson-outline-list { list-style: none; margin: 0; padding: 0; }
+.lesson-outline-groups { display: flex; flex-direction: column; gap: var(--space-3); }
+.lesson-outline-list { display: flex; flex-direction: column; gap: var(--space-1); }
+.lesson-outline-phase { display: block; padding-block: var(--space-1); color: var(--text-secondary); font-weight: 700; }
+.lesson-outline-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  font: var(--type-label);
+  text-align: left;
+  cursor: pointer;
+}
+.lesson-outline-entry:hover:not(:disabled) { border-color: var(--border-control); background: var(--bg-surface); }
+/* The current screen: a border and a tint, plus its "You are here" mark, never colour alone (ID 11.1). */
+.lesson-outline-entry[aria-current='step'] { border: 2px solid var(--action-primary); background: var(--action-primary-tint); font-weight: 700; }
+.lesson-outline-entry:disabled { color: var(--disabled-text); cursor: not-allowed; }
+.lesson-outline-mark { display: inline-flex; align-items: center; gap: var(--space-1); color: var(--text-secondary); font-weight: 400; }
+.lesson-outline-entry[aria-current='step'] .lesson-outline-mark { color: var(--text-primary); }
+.lesson-outline-entry:disabled .lesson-outline-mark { color: var(--disabled-text); }
