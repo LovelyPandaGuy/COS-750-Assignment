@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, type FocusEvent } from 'react'
 import './replay.css'
 import { replayCopy } from '../../content/replay'
 import { SPEEDS, type Speed } from '../../replay/replay'
@@ -25,8 +26,31 @@ export interface StepControlsProps {
  */
 export function StepControls({ position, length, playing, speed, held, onBack, onToggle, onStep, onSpeed, onReplay }: StepControlsProps) {
   const atEnd = position >= length
+  const strip = useRef<HTMLDivElement>(null)
+  // The strip button that last had focus while focus is in the strip (review C4, WCAG 2.4.3).
+  const lastFocused = useRef<HTMLButtonElement | null>(null)
+  const onFocus = (e: FocusEvent<HTMLDivElement>) => {
+    lastFocused.current = e.target instanceof HTMLButtonElement ? e.target : null
+  }
+  const onBlur = (e: FocusEvent<HTMLDivElement>) => {
+    if (!(e.relatedTarget instanceof Node) || !strip.current?.contains(e.relatedTarget)) lastFocused.current = null
+  }
+  // A disabled button drops focus (browsers send no blur when it happens). If the focused button has just
+  // been disabled and focus has not gone anywhere else, move it to the next enabled strip button, else the previous.
+  useLayoutEffect(() => {
+    const was = lastFocused.current
+    const root = strip.current
+    if (!was || !root || !was.disabled) return
+    const active = document.activeElement
+    if (active !== was && active !== document.body && active !== null) return
+    const buttons = Array.from(root.querySelectorAll('button'))
+    const i = buttons.indexOf(was)
+    const target = buttons.slice(i + 1).find((b) => !b.disabled) ?? buttons.slice(0, Math.max(i, 0)).reverse().find((b) => !b.disabled)
+    if (target) target.focus()
+    else lastFocused.current = null
+  })
   return (
-    <div className="replay-controls" role="group" aria-label={copy.label}>
+    <div ref={strip} className="replay-controls" role="group" aria-label={copy.label} onFocus={onFocus} onBlur={onBlur}>
       <div className="replay-side" role="group" aria-label={copy.navGroup}>
         <button type="button" className="replay-button" disabled={position <= 0} onClick={onBack}>
           <span aria-hidden="true">{copy.iconBack}</span>

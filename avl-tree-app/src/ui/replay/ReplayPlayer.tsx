@@ -116,6 +116,9 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     if (e.ctrlKey || e.altKey || e.metaKey) return
     if (e.target instanceof HTMLInputElement) return
+    // Inside the tree's scroll box the arrows scroll a wide tree (D17); they step everywhere else (review C5).
+    const arrow = e.key === 'ArrowLeft' || e.key === 'ArrowRight'
+    if (arrow && e.target instanceof Element && e.target.closest('.tree-scroll')) return
     const action =
       e.key === ' ' ? 'toggle'
       : e.key === 'ArrowLeft' ? 'back'
