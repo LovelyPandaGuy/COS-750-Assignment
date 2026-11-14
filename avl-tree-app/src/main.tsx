@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './ui/tokens.css'
+import './ui/fonts/fonts.css'
 import './index.css'
 import App from './App.tsx'
 import { bootLearner } from './state/boot'

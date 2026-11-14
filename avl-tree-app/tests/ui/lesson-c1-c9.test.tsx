@@ -1,9 +1,13 @@
 import { readFileSync } from 'node:fs'
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { axe } from 'vitest-axe'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from '../../src/App'
 import { lessonCopy } from '../../src/content/lesson'
+import { narrationCopy } from '../../src/content/narration'
+import type { SpeechEngine } from '../../src/ui/narration/engine'
+import { fakeEngine } from './narration/fake'
+import { readinessCopy } from '../../src/content/readiness'
 import { loadContent, lessonById } from '../../src/live/load'
 import { setRouteEventSink, type RouteEvent } from '../../src/navigation/routeEvents'
 import type { Attempt, LearnerState } from '../../src/state/learnerState'
@@ -148,16 +152,40 @@ describe('lesson-c9 (ID 7.2 C9)', () => {
     expect(r.container.querySelector('.tree-description')!.textContent).toMatch(/^Root 13 /)
   })
 
+  // revamp-readiness: the report is the readiness summary table (one row per objective) and its flags list.
+  // Same meaning as before the change; the old list markup ("LO2: Revise" in one item) is gone.
+  const objectiveRows = (root: HTMLElement) => within(within(root).getByRole('table')).getAllByRole('row').slice(1)
+
   it('report: title, Ready per objective, a flag and a lecture question', () => {
     const attempts = [...RDY.map((id) => att(id, id !== 'rdy-02', id === 'rdy-02' ? { confidence: 'sure', misconceptionId: 'misc-bf-sign' } : {})), att('rdy-02-r', false)]
     const r = openAt('/module/C9', 'c9', 'c9-s03', c9(attempts))
-    const rows = within(r.container.querySelector('.lesson-report-rows')!).getAllByRole('listitem')
+    const rows = objectiveRows(r.container)
     expect(rows).toHaveLength(7)
-    expect(rows[1]).toHaveTextContent('LO2: Revise')
-    expect(rows[1]).toHaveTextContent(lessonCopy.c9.flag)
-    expect(rows[0]).toHaveTextContent('LO1: Ready')
-    expect(rows[6]).toHaveTextContent('(optional)')
-    expect(r.container.querySelector('.lesson-report')).toHaveTextContent('Which sign convention does the lecture use for balance factors')
+    expect(rows[1]).toHaveTextContent('LO2')
+    expect(rows[1]).toHaveTextContent('Revise')
+    const flags = screen.getByRole('heading', { name: readinessCopy.flagsHeading }).closest('section')!
+    expect(flags).toHaveTextContent('LO2')
+    expect(flags).toHaveTextContent(lessonCopy.c9.flag)
+    expect(rows[0]).toHaveTextContent('LO1')
+    expect(rows[0]).toHaveTextContent('Ready')
+    expect(rows[6]).toHaveTextContent(lessonCopy.c9.optional)
+    expect(r.container).toHaveTextContent('Which sign convention does the lecture use for balance factors')
+  })
+
+  it('revamp-readiness: levels come from ID 5.1', () => {
+    const r = openAt('/module/C9', 'c9', 'c9-s03', c9(allRight()))
+    const rows = objectiveRows(r.container)
+    expect(rows[2].querySelectorAll('[data-level]')).toHaveLength(2)
+    expect(rows[2].querySelector('[data-level="apply"]')).not.toBeNull()
+    expect(rows[2].querySelector('[data-level="understand"]')).not.toBeNull()
+    expect(rows[5].querySelector('[data-level="evaluate"]')).not.toBeNull()
+  })
+
+  it('revamp-readiness: suggested questions are read-only', () => {
+    const attempts = [...RDY.map((id) => att(id, id !== 'rdy-02', id === 'rdy-02' ? { misconceptionId: 'misc-bf-sign' } : {})), att('rdy-02-r', false)]
+    openAt('/module/C9', 'c9', 'c9-s03', c9(attempts))
+    const item = screen.getByText(/Which sign convention does the lecture use for balance factors/).closest('li')!
+    expect(within(item).queryByRole('button')).toBeNull()
   })
 
   it('every question right: Structural Savant', () => {
@@ -185,9 +213,38 @@ describe('lesson-c9 (ID 7.2 C9)', () => {
   })
 
   it('/readiness shows the same report', () => {
-    renderRoutes(backendWith(c9(allRight())), '/readiness')
+    const r = renderRoutes(backendWith(c9(allRight())), '/readiness')
     expect(screen.getByText('Structural Savant')).toBeInTheDocument()
-    expect(screen.getAllByText(/LO\d: Ready/)).toHaveLength(7)
+    const rows = objectiveRows(r.container)
+    expect(rows).toHaveLength(7)
+    for (const row of rows) expect(row).toHaveTextContent('Ready')
+    // ID 10.4 and revamp-readiness question 6: the title shows no rank letter.
+    expect(Array.from(r.container.querySelectorAll('*')).some((e) => e.children.length === 0 && e.textContent?.trim() === 'S')).toBe(false)
+  })
+
+  it('revamp-readiness: Copy on /readiness holds every objective and question, and confirms', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true })
+    const state = c9(allRight(), { lectureQuestions: [{ questionId: 'own', module: 'C9', at: '2026-11-14T10:00:00.000Z', text: 'Why is one rotation enough?' }] })
+    renderRoutes(backendWith(state), '/readiness')
+    fireEvent.click(screen.getByRole('button', { name: readinessCopy.exports.copy }))
+    await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1))
+    const text = writeText.mock.calls[0][0] as string
+    for (let i = 1; i <= 7; i++) expect(text).toContain(`LO${i}`)
+    expect(text).toContain('Why is one rotation enough?')
+    await vi.waitFor(() => expect(screen.getAllByRole('status').some((s) => s.textContent === readinessCopy.exports.copied)).toBe(true))
+  })
+
+  it('revamp-readiness: an own question is edited on /readiness and stored', () => {
+    const backend = backendWith(c9(allRight(), { lectureQuestions: [{ questionId: 'own', module: 'C9', at: '2026-11-14T10:00:00.000Z', text: 'Why is one rotation enough?' }] }))
+    renderRoutes(backend, '/readiness')
+    const item = screen.getByText('Why is one rotation enough?').closest('li')!
+    fireEvent.click(within(item).getByRole('button', { name: new RegExp(readinessCopy.questions.edit) }))
+    fireEvent.change(screen.getByRole('textbox', { name: new RegExp(readinessCopy.questions.field) }), { target: { value: 'Why is one rotation always enough?' } })
+    fireEvent.click(screen.getByRole('button', { name: readinessCopy.questions.save }))
+    expect(screen.getByText('Why is one rotation always enough?')).toBeInTheDocument()
+    const stored = JSON.parse(backend.getItem(LEARNER_KEY)!) as LearnerState
+    expect(stored.lectureQuestions.map((q) => q.text)).toEqual(['Why is one rotation always enough?'])
   })
 })
 
@@ -208,11 +265,11 @@ describe('NFR-02 axe on every C1 and C9 screen', () => {
 })
 
 describe('display-settings (ID 10.4, 11.2)', () => {
-  function renderApp(backend = memoryBackend(), path = '#/module/C1') {
+  function renderApp(backend = memoryBackend(), path = '#/module/C1', speech: SpeechEngine | null = null) {
     window.location.hash = path
     const storage = createLearnerStorage(backend)
     const settings = createSettingsStorage(backend)
-    const r = render(<App storage={storage} initial={storage.load()} settings={settings} initialTheme={settings.load().theme} />)
+    const r = render(<App storage={storage} initial={storage.load()} settings={settings} initialTheme={settings.load().theme} speech={speech} />)
     for (let i = 0; i < 4; i++) fireEvent.click(screen.getByRole('button', { name: c.next }))
     return { ...r, backend }
   }
@@ -247,10 +304,31 @@ describe('display-settings (ID 10.4, 11.2)', () => {
     a.unmount()
   })
 
-  it('narration comes later', () => {
+  // add-narration (display-settings delta) replaces "narration comes later". jsdom has no speech, so
+  // renderApp's default engine is none; the cases with a voice pass a fake engine.
+  it('no on-device voice: narration off and disabled, with the note', () => {
     renderApp()
     expect(sw('Read text aloud')).toBeDisabled()
-    expect(screen.getByText(lessonCopy.settings.later)).toBeInTheDocument()
+    expect(sw('Read text aloud')).toHaveAttribute('aria-checked', 'false')
+    expect(screen.getByText(narrationCopy.unavailable)).toBeInTheDocument()
+    expect(screen.queryByText(lessonCopy.settings.later)).toBeNull()
+  })
+
+  it('narration turned on and kept across a reload', () => {
+    const backend = memoryBackend()
+    const a = renderApp(backend, '#/module/C1', fakeEngine())
+    expect(sw('Read text aloud')).toBeEnabled()
+    fireEvent.click(sw('Read text aloud'))
+    expect(sw('Read text aloud')).toHaveAttribute('aria-checked', 'true')
+    a.unmount()
+    renderApp(backend, '#/module/C1', fakeEngine())
+    expect(sw('Read text aloud')).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('a damaged narration value takes the default and keeps the rest', () => {
+    const backend = memoryBackend()
+    backend.setItem(SETTINGS_KEY, JSON.stringify({ theme: 'light', confetti: false, narration: 'yes', textSize: 'large' }))
+    expect(createSettingsStorage(backend).load()).toMatchObject({ confetti: false, narration: false, textSize: 'large' })
   })
 })
 

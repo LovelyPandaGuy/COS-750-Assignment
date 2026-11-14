@@ -11,12 +11,14 @@ export const Points = ({ points }: { points?: string[] }) =>
   points === undefined || points.length === 0 ? null : (
     <ul className="lesson-points">
       {points.map((p, i) => (
-        <li key={i}>{p}</li>
+        <li key={i} data-narrate>
+          {p}
+        </li>
       ))}
     </ul>
   )
 
-export const Text = ({ text }: { text?: string }) => (text === undefined ? null : <p>{text}</p>)
+export const Text = ({ text }: { text?: string }) => (text === undefined ? null : <p data-narrate>{text}</p>)
 
 /** The four-case chart from conventions.json (ID 7.3, ID 8.1 "Case chart"). */
 export function CaseChart() {

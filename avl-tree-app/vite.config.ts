@@ -9,5 +9,7 @@ export default defineConfig({
     globals: true,
     setupFiles: ['tests/setup.ts'],
     include: ['tests/**/*.test.{ts,tsx}'],
+    // Browser tests (Playwright) run with `npm run test:visual`, not here (add-ui-foundation, design decision 8).
+    exclude: ['tests/visual/**', 'node_modules/**'],
   },
 })

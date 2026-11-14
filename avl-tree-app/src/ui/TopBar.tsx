@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { AaMenu } from './AaMenu'
 
 /**
@@ -9,18 +10,31 @@ export type TopBarAction =
   | { label: string; onClick: () => void }
   | { label: string; href: string; onNavigate?: () => void }
 
-export interface TopBarProps {
+/**
+ * The progress area (add-ui-foundation). [OPEN] The design does not show what it holds ("revealed
+ * structure"); a screen passes the content and the label that names it, and the TopBar adds no text.
+ */
+type ProgressSlot =
+  | { progress?: undefined; progressLabel?: undefined }
+  | { progress: ReactNode; progressLabel: string }
+
+export type TopBarProps = {
   title: string
   breadcrumb?: string
   status?: string
   actions?: TopBarAction[]
-}
+} & ProgressSlot
 
-export function TopBar({ title, breadcrumb, status, actions }: TopBarProps) {
+export function TopBar({ title, breadcrumb, progress, progressLabel, status, actions }: TopBarProps) {
   return (
     <div className="topbar">
       <span className="topbar-title">{title}</span>
       {breadcrumb && <span className="topbar-breadcrumb">{breadcrumb}</span>}
+      {progress !== undefined && progress !== null && (
+        <nav className="topbar-progress" aria-label={progressLabel}>
+          {progress}
+        </nav>
+      )}
       <span className="topbar-spacer" />
       {status && (
         // Polite live region so a change, such as saving stopping mid-session, is announced (WCAG 4.1.3).

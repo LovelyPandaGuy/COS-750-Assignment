@@ -44,12 +44,13 @@ Commands (OpenSpec 1.16): `/opsx:propose`, `/opsx:apply`, `/opsx:archive`, `/ops
 
 Every change follows this loop. Do not skip steps and do not merge two changes.
 
-1. **Propose.** The `spec-writer` drafts the change under `openspec/changes/<name>/` from the decision log, the ID content and the SE requirement IDs. Assumptions are listed first ("Assumed, not blocking"); only real `[OPEN]` items (D18) stop the change.
-2. **Human skim.** The user reads the proposal. Anything marked `[OPEN]` goes back to `decisions.md`.
-3. **Red tests.** The `test-writer` turns every scenario into a failing test. Commit the red tests.
-4. **Build.** `/opsx:apply`, using the `implementer` (code) and the `content-author` (`src/content/` only) until the tests pass.
-5. **Review.** The `reviewer` (fresh context) checks the diff against the spec, the LO and the conventions module. The `a11y-checker` also runs on every UI change.
-6. **Merge and archive.** The user merges and runs `/opsx:archive`. Agents never do this.
+1. **Propose.** The `spec-writer` subagent drafts the change under `openspec/changes/<name>/` from the decision log, the ID content and the SE requirement IDs. Open questions are listed first. If any remain, stop.
+2. **Human skim.** The user reads the proposal. Anything marked `[OPEN]` goes back to `.claude/docs/decisions.md`.
+3. **Red tests.** The `test-writer` subagent turns every scenario into a failing test. Commit the red tests.
+4. **Build.** `/opsx:apply`, using the `implementer` subagent (code) and the `content-author` subagent (`src/content/` only) until the tests pass.
+5. **Polish (UI changes only).** The `ui-polisher` subagent refines the look inside the design system, using the `frontend-design` skill, until `.claude/docs/design/quality-bar.md` passes. It edits styling only.
+6. **Review.** The `reviewer` subagent (fresh context) checks the diff against the spec, the LO, the conventions module and the quality bar. The `a11y-checker` subagent also runs on every UI change.
+7. **Merge and archive.** A human merges (with two developers, the one who did not write the change) and runs `/opsx:archive`, one at a time on main. Agents never do this.
 
 One change in flight per capability. A change with more than about ten tasks gets split.
 
@@ -61,12 +62,11 @@ One change in flight per capability. A change with more than about ten tasks get
 | test-writer | `tests/`, `*.test.ts(x)` | `src/` non-test files |
 | implementer | `src/` except `src/content/` | tests, content, `openspec/` |
 | content-author | `src/content/` | everything else |
+| ui-polisher | CSS and layout markup in `src/ui/` | tokens, logic, tests, content, `openspec/` |
 | reviewer | nothing (read-only) | everything |
 | a11y-checker | nothing (read-only) | everything |
 
 If a test looks wrong, the implementer reports it; it does not edit the test.
-
-Note: `.claude/agents/` does not exist in this repo yet, so these six subagents are not defined. Until they are, the main session plays each role and keeps to the same write limits.
 
 ## Guardrails
 
@@ -82,15 +82,14 @@ Note: `.claude/agents/` does not exist in this repo yet, so these six subagents 
 ## Commands
 
 - `npm test` (Vitest, includes fast-check property tests)
-- `npm run typecheck`, `npm run lint`, `npm run build`
+- `npm run typecheck`, `npm run lint` (ESLint and the CSS token rule), `npm run build`
 - `openspec validate --all`
 
 ## Definition of done for a change
 
 - Every scenario has a passing test named after the FR or LO it serves.
 - Tests, type check and lint pass; no new `[OPEN]` markers.
-- Every assumption the change made has a row in `decisions.md`.
-- UI changes: axe clean, keyboard-only run works, greyscale check passes, colour-vision emulation check passes (D25).
+- UI changes: every line of `.claude/docs/design/quality-bar.md` passes (axe clean, keyboard-only run works, greyscale and colour-vision checks, three widths, tokens only).
 - Reviewer report is a pass or its findings are resolved.
-- The change is archived and `decisions.md` is updated if the change settled a decision.
+- The change is archived and `.claude/docs/decisions.md` is updated if the change settled a decision.
 - The commit names the change and the FR or LO.

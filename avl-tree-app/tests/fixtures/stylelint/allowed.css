@@ -1,0 +1,4 @@
+.x { color: var(--text-primary); border-radius: var(--radius-md); font: inherit; }
+@media (min-width: 768px) { .x { display: flex; } }
+@media (min-width: 1366px) { .x { display: grid; } }
+@media print { body { font-size: 10.5pt; } }

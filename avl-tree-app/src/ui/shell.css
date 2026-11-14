@@ -32,6 +32,11 @@
 .topbar-title { font: var(--type-body); font-weight: 700; }
 .topbar-breadcrumb { color: var(--text-secondary); }
 .topbar-spacer { flex: 1; }
+/* Progress area (add-ui-foundation): its own row on a phone, in line from the tablet width. */
+.topbar-progress { flex-basis: 100%; min-width: 0; }
+@media (min-width: 768px) {
+  .topbar-progress { flex-basis: auto; }
+}
 .topbar-status {
   padding: var(--space-1) var(--space-3);
   border: 1px solid var(--border-subtle);

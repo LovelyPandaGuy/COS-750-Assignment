@@ -1,0 +1,31 @@
+/*
+ * Self-hosted fonts (add-ui-foundation; design index "Design-system gaps"; NFR-05).
+ * Atkinson Hyperlegible Next and Mono, SIL Open Font License 1.1 (OFL.txt, OFL-Mono.txt).
+ * Downloaded once during development (Google Fonts, latin subset); the app never fetches fonts from another origin.
+ * Next is a variable font: one file serves weights 400 and 700, the two the type tokens use.
+ * Characters outside the latin subset (such as the arrow in a mastery change) fall back to system-ui.
+ */
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./AtkinsonHyperlegibleNext-Variable-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('./AtkinsonHyperlegibleNext-Variable-latin.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Atkinson Hyperlegible Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./AtkinsonHyperlegibleMono-Variable-latin.woff2') format('woff2');
+}

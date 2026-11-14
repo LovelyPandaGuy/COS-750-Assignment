@@ -4,6 +4,8 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { App } from '../../src/App';
 import { AaMenu } from '../../src/ui/AaMenu';
+import { ThemeProvider } from '../../src/ui/ThemeContext';
+import { createSettingsStorage } from '../../src/state/storage';
 
 // Spec: add-design-tokens-and-shell / app-shell, "Aa menu stub". Requirement IDs: NFR-02, NFR-05, FR-VIS-10.
 // The panel's Dark theme switch (add-dark-mode-toggle) is tested in theme-switch.test.tsx.
@@ -28,8 +30,14 @@ describe('NFR-02 Aa menu stub', () => {
     expect(btn()).toHaveAttribute('type', 'button');
   });
 
+  // add-narration: the placeholder line is gone, so the panel's content is the settings, which need the
+  // theme provider the app always mounts.
   it('opens on click and shows the panel copy', () => {
-    render(<AaMenu />);
+    render(
+      <ThemeProvider settings={createSettingsStorage(null)} initial="light">
+        <AaMenu />
+      </ThemeProvider>,
+    );
     fireEvent.click(btn());
     expect(btn()).toHaveAttribute('aria-expanded', 'true');
     const panel = screen.getByRole('region', { name: /display and read-aloud/i });

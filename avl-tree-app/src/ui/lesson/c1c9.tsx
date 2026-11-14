@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { lessonCopy } from '../../content/lesson'
+import { readinessCopy } from '../../content/readiness'
 import { MODULE_TITLES } from '../../content/modules'
 import { navigationCopy } from '../../content/navigation'
 import { CONVENTIONS } from '../../engine/conventions'
@@ -13,7 +14,8 @@ import { ownQuestions, readinessQueue, readinessReport } from '../../live/readin
 import { emitRouteEvent, type RouteTarget } from '../../navigation/routeEvents'
 import { paths } from '../../routes'
 import { useLearner } from '../../state/LearnerContext'
-import type { ModuleId } from '../../state/learnerState'
+import { OWN_LECTURE_QUESTION, type ModuleId } from '../../state/learnerState'
+import { ReadinessSummary } from '../readiness/ReadinessSummary'
 import type { CheckNav } from './questions/CheckRunner'
 import { QuestionCard } from './questions/QuestionCard'
 
@@ -137,75 +139,72 @@ export function RouteResult({ route }: { route: { passMessage: string; failMessa
   )
 }
 
-/** The readiness report (lesson-c9): title, Ready or Revise per objective, flags, links, lists. */
+/**
+ * The readiness report (lesson-c9): maps the live report and the learner state onto ReadinessSummary
+ * (revamp-readiness, design decision 13). Every result comes from readinessReport; this only maps.
+ */
 export function ReadinessReportView({ level = 3 }: { level?: 2 | 3 }) {
-  const H = `h${level}` as 'h2' | 'h3'
-  const { learner } = useLearner()
+  const { learner, editOwnQuestion, removeOwnQuestion } = useLearner()
   const content = loadContent().content!
   const r = readinessReport(learner.attempts, content)
   const c = lessonCopy.c9
-  const word = (v: 'ready' | 'revise') => (v === 'ready' ? labels.ready : labels.revise)
-  const own = ownQuestions(learner.lectureQuestions)
+  const rc = readinessCopy
+  const words = { ready: labels.ready, revise: labels.revise }
+  const moduleOf = (lesson: string) => lesson.toUpperCase() as ModuleId
+  const review = (lesson: string) => {
+    const module = moduleOf(lesson)
+    return { href: paths.module(module), label: c.see(`${module} ${MODULE_TITLES[module]}`) }
+  }
+  const own = learner.lectureQuestions.filter((q) => q.questionId === OWN_LECTURE_QUESTION)
   return (
     <div className="lesson-report">
       {!r.done && <p className="q-status">{c.answerFirst}</p>}
-      <section aria-labelledby="report-title" className="lesson-box">
-        <H id="report-title">{c.titleHeading}</H>
-        <p className="q-stem">{r.title.title}</p>
-        <p>{r.title.message}</p>
-        <p>
-          <strong>{c.overall(word(r.overall))}</strong>
-        </p>
-      </section>
-      <section aria-labelledby="report-objectives">
-        <H id="report-objectives">{c.objectivesHeading}</H>
-        <ul className="lesson-report-rows">
-          {r.rows.map((row) => {
-            const module = row.lesson.toUpperCase() as ModuleId
-            return (
-              <li key={row.outcome} data-verdict={row.verdict}>
-                <p>
-                  <span aria-hidden="true">{row.verdict === 'ready' ? '✓ ' : '↻ '}</span>
-                  <strong>
-                    {row.outcome}: {word(row.verdict)}
-                  </strong>
-                  {row.optional && ` (${c.optional})`}. {OUTCOMES[row.outcome as OutcomeId]?.statement}
-                </p>
-                {row.flagged && <p className="q-status">{c.flag}</p>}
-                <Link className="screen-link" to={paths.module(module)}>
-                  {c.see(`${module} ${MODULE_TITLES[module]}`)}
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </section>
-      <section aria-labelledby="report-lecture">
-        <H id="report-lecture">{c.lectureHeading}</H>
-        {r.lectureQuestions.length + own.length === 0 ? (
-          <p>{c.noneYet}</p>
-        ) : (
-          <ul className="lesson-points">
-            {[...r.lectureQuestions, ...own].map((t, i) => (
-              <li key={i}>{t}</li>
-            ))}
-          </ul>
-        )}
-      </section>
-      <section aria-labelledby="report-listen">
-        <H id="report-listen">{c.listenHeading}</H>
-        <ul className="lesson-points">
-          {r.listenFor.map((t, i) => (
-            <li key={i}>{t}</li>
-          ))}
-        </ul>
-      </section>
+      <ReadinessSummary
+        headingLevel={level}
+        headline={{
+          status: r.overall,
+          heading: c.overall(words[r.overall]),
+          // ID 10.4 and proposal question 6: the title's words and message only, never the rank or share.
+          title: { words: r.title.title, message: r.title.message },
+        }}
+        table={{
+          rows: r.rows.map((row) => {
+            const outcome = OUTCOMES[row.outcome as OutcomeId]
+            return {
+              id: row.outcome,
+              name: outcome?.statement ?? row.outcome,
+              levels: (outcome?.levels ?? []).map((l) => ({ level: l, word: rc.levelWords[l] ?? l })),
+              status: row.verdict,
+              optional: row.optional || undefined,
+              review: review(row.lesson),
+            }
+          }),
+          labels: { words, symbols: rc.symbols, optional: c.optional },
+          columns: rc.columns,
+        }}
+        flags={{
+          heading: rc.flagsHeading,
+          symbol: rc.flagSymbol,
+          items: r.rows.filter((row) => row.flagged).map((row) => ({ id: row.outcome, text: c.flag, link: review(row.lesson) })),
+        }}
+        listen={{ heading: rc.listenHeading, points: r.listenFor }}
+        questions={{
+          questions: [
+            ...r.lectureQuestions.map((text, i) => ({ id: `suggested-${i}`, text })),
+            ...own.map((q) => ({ id: q.at, text: q.text, editable: true, removable: true })),
+          ],
+          labels: rc.questions,
+          onEdit: editOwnQuestion,
+          onRemove: removeOwnQuestion,
+        }}
+        exports={{ fileName: rc.fileName, labels: rc.exports, disabled: !r.done, disabledReason: c.answerFirst }}
+      />
     </div>
   )
 }
 
 /** The student's own lecture question (lesson-c9; FR-RDY-02). */
-export function OwnQuestion() {
+export function OwnQuestion({ showList = true }: { showList?: boolean }) {
   const { learner, addOwnQuestion } = useLearner()
   const [draft, setDraft] = useState('')
   const [saved, setSaved] = useState(false)
@@ -232,7 +231,7 @@ export function OwnQuestion() {
       <p role="status" className="q-status">
         {saved ? c.ownSaved : ''}
       </p>
-      {own.length > 0 && (
+      {showList && own.length > 0 && (
         <section aria-labelledby="own-list">
           <h3 id="own-list">{c.ownHeading}</h3>
           <ul className="lesson-points">

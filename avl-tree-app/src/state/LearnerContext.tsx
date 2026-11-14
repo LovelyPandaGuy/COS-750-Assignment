@@ -23,6 +23,10 @@ export interface LearnerSession {
   /** Set the learning path, and optionally the current module (skipping the diagnostic, FR-DIA-04). */
   /** Add one of the student's own lecture questions, stored as a lecture question with ID `own` (FR-RDY-02, D91); blank text changes nothing. */
   addOwnQuestion: (text: string) => void
+  /** Change the text of one own question, found by its time; trimmed and capped, blank changes nothing (D143). */
+  editOwnQuestion: (at: string, text: string) => void
+  /** Remove one own question, found by its time (D143). Drafted questions are never removed. */
+  removeOwnQuestion: (at: string) => void
 }
 
 const Ctx = createContext<LearnerSession | null>(null)
@@ -73,9 +77,12 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
     dispatch({ type: 'lecture-question', question: { questionId: OWN_LECTURE_QUESTION, module: 'C9', at: new Date().toISOString(), text: trimmed } })
   }, [])
 
+  const editOwnQuestion = useCallback((at: string, text: string) => dispatch({ type: 'lecture-question-edited', at, text }), [])
+  const removeOwnQuestion = useCallback((at: string) => dispatch({ type: 'lecture-question-removed', at }), [])
+
   const value = useMemo<LearnerSession>(
-    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion, addOwnQuestion }),
-    [state, reset, recordAttempt, completeModule, recordLectureQuestion, addOwnQuestion],
+    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion, addOwnQuestion, editOwnQuestion, removeOwnQuestion }),
+    [state, reset, recordAttempt, completeModule, recordLectureQuestion, addOwnQuestion, editOwnQuestion, removeOwnQuestion],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

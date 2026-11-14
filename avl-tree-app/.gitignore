@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright output (add-ui-foundation); baselines in tests/visual/__screenshots__ are committed
+test-results
+playwright-report

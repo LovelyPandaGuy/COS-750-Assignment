@@ -18,13 +18,14 @@ rules:
     - Mark anything that depends on an unresolved decision with [OPEN] and the question.
   tasks:
     - Keep a change to about ten tasks. If it needs more, propose a split.
-    - "Write tests first: the first task group is the failing tests."
+    - Write tests first: the first task group is the failing tests.
 
 operations:
   apply:
     guidance:
       - Tests are written by the test-writer subagent before implementation starts.
       - Never edit a test to make it pass; report it instead.
+      - UI changes: after the tests pass, hand off to the ui-polisher subagent, then the reviewer and a11y-checker.
   archive:
     guidance:
       - The user archives. Agents do not.

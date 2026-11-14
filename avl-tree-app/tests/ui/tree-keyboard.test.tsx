@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { useState } from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import fc from 'fast-check';
 import { avlInsert } from '../../src/engine/avl';
 import type { Key, Tree } from '../../src/engine/tree';
 import { TreeView } from '../../src/ui/tree/TreeView';
@@ -131,5 +132,83 @@ describe('NFR-02 focus style', () => {
   it('does not override the global focus rule in the tree stylesheet', async () => {
     const css = (await import('node:fs')).readFileSync('src/ui/tree/tree-view.css', 'utf8');
     expect(css).not.toMatch(/outline\s*:\s*(none|0)\b|outline-offset\s*:/);
+  });
+});
+
+// ---- Spec: revamp-tree-view / tree-view "Keyboard navigation and selection", "Wide trees keep their size" ----
+
+describe('FR-VIS-10 every node is reachable by keyboard (revamp-tree-view)', () => {
+  const keysArb = fc.uniqueArray(fc.integer({ min: 1, max: 99 }), { minLength: 1, maxLength: 15 });
+
+  it('reaches every node from the root with Left, Right and Up', () => {
+    fc.assert(
+      fc.property(keysArb, (keys) => {
+        const tree = avl(keys);
+        const { unmount } = render(<Harness tree={tree} />);
+        const reached = new Set<Key>();
+        const focused = () => keyOf(document.activeElement);
+        const visit = (n: NonNullable<Tree>) => {
+          reached.add(focused());
+          if (n.left) {
+            fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+            visit(n.left);
+            fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+          }
+          if (n.right) {
+            fireEvent.keyDown(document.activeElement!, { key: 'ArrowRight' });
+            visit(n.right);
+            fireEvent.keyDown(document.activeElement!, { key: 'ArrowUp' });
+          }
+        };
+        item(tree!.key).focus();
+        visit(tree!);
+        expect([...reached].sort((a, b) => a - b)).toEqual([...keys].sort((a, b) => a - b));
+        unmount();
+      }),
+      { numRuns: 20 },
+    );
+  });
+});
+
+describe('FR-VIS-10 NFR-04 focus and z are kept in view (revamp-tree-view)', () => {
+  // A left chain: root n, its left child n - 1, ..., leaf 1 (a valid BST).
+  const chain = (n: number): Tree => {
+    let t: Tree = null;
+    for (let k = 1; k <= n; k++) t = { key: k, height: k - 1, left: t, right: null };
+    return t;
+  };
+  let spy: ReturnType<typeof vi.fn>;
+  beforeEach(() => {
+    spy = vi.fn();
+    Object.defineProperty(Element.prototype, 'scrollIntoView', { value: spy, configurable: true, writable: true });
+  });
+  afterEach(() => {
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView;
+  });
+  const scrolledKeys = () => spy.mock.contexts.map((el) => keyOf(el as Element));
+
+  it('does not scroll on first render', () => {
+    render(<Harness tree={chain(15)} />);
+    expect(spy).not.toHaveBeenCalled();
+  });
+
+  it('scrolls the newly focused node into view with nearest alignment', () => {
+    render(<Harness tree={chain(15)} />);
+    item(15).focus();
+    for (let i = 0; i < 14; i++) fireEvent.keyDown(document.activeElement!, { key: 'ArrowLeft' });
+    expect(keyOf(document.activeElement)).toBe(1);
+    expect(scrolledKeys()).toContain(1);
+    expect(spy).toHaveBeenLastCalledWith(expect.objectContaining({ block: 'nearest', inline: 'nearest' }));
+  });
+
+  // D97: the node being taught is the first unbalanced node, tagged "n" (it was "z" before the live content).
+  it('scrolls the n node into view when the tree changes', () => {
+    const before = chain(14);
+    const { rerender } = render(<TreeView tree={before} label="t" />);
+    expect(spy).not.toHaveBeenCalled();
+    const after: Tree = { key: 15, height: 15, left: before, right: null };
+    rerender(<TreeView tree={after} roles={{ 3: 'n' }} label="t" />);
+    expect(scrolledKeys()).toContain(3);
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'nearest', inline: 'nearest' }));
   });
 });

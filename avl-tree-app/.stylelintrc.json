@@ -1,0 +1,51 @@
+{
+  "plugins": [
+    "./tools/stylelint-print-points.mjs"
+  ],
+  "ignoreFiles": [
+    "src/ui/tokens.css",
+    "dist/**",
+    "node_modules/**"
+  ],
+  "rules": {
+    "color-no-hex": true,
+    "color-named": "never",
+    "function-disallowed-list": [
+      "rgb",
+      "rgba",
+      "hsl",
+      "hsla"
+    ],
+    "declaration-property-value-allowed-list": [
+      {
+        "font": [
+          "/var\\(--/",
+          "inherit"
+        ],
+        "font-size": [
+          "/var\\(--/",
+          "inherit",
+          "/^\\d+(\\.\\d+)?pt$/"
+        ],
+        "line-height": [
+          "/var\\(--/",
+          "inherit"
+        ],
+        "border-radius": [
+          "/var\\(--/",
+          "inherit",
+          "0"
+        ]
+      }
+    ],
+    "media-feature-name-value-allowed-list": {
+      "min-width": [
+        "768px",
+        "1366px"
+      ],
+      "max-width": [],
+      "width": []
+    },
+    "avl/print-points-only": true
+  }
+}
