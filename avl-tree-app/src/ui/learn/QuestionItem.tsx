@@ -1,11 +1,12 @@
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
 import './learn.css'
-import type { Instance, Mark, Response } from '../../assessment/types'
+import type { Mark, Response } from '../../live/mark'
+import type { Question } from '../../live/types'
 import { TreeView } from '../tree/TreeView'
 import type { TreeViewProps } from '../contracts'
 import { signed } from '../tree/describe'
 
-/** Every word QuestionItem shows that is not from the instance (revamp-question-and-feedback, D103). */
+/** Every word QuestionItem shows that is not from the question (revamp-question-and-feedback, D128). */
 export interface QuestionItemLabels {
   choiceLegend: string
   yourAnswer: string
@@ -27,7 +28,9 @@ export interface StepperRange {
 }
 
 export interface QuestionItemProps {
-  instance: Instance
+  /** The live question (src/live/types). Options give a radio group; no options give the value stepper. */
+  question: Question
+  /** The live response shapes: `{ kind: 'option', id }`, or `{ kind: 'values', values: [n] }` from the stepper. */
   response: Response | null
   onResponse: (response: Response) => void
   /** Locked once the answer is checked. */
@@ -39,8 +42,9 @@ export interface QuestionItemProps {
   tree?: TreeViewProps
   /** Replaces the answer input (the tree editor of change A3). */
   editor?: ReactNode
-  /** Mark the correct option. The caller sets it only at the retry cap (D105). */
-  revealCorrect?: boolean
+  /** The engine's correct option ID, marked as correct. The caller passes it only at the retry cap (D130),
+   *  from `engineAnswer`, never from the content's typed `correctOptionId` (D95). */
+  revealCorrect?: string
   /** Number items. Assumed default when absent (proposal question 5): -99 to 99 in steps of 1. */
   range?: StepperRange
 }
@@ -52,19 +56,16 @@ const UP = 1
 const DOWN = -1
 const DEFAULT_RANGE: Required<StepperRange> = { min: -99, max: 99, step: 1 }
 
-/** The response as the marker reads it: "+2", "0", "-1". */
-const asResponse = (n: number) => (n > 0 ? `+${n}` : String(n))
-const parse = (r: Response | null): number | null => {
-  if (r === null || !('number' in r)) return null
-  const n = Number(r.number.replace('−', '-'))
-  return Number.isFinite(n) ? n : null
-}
+/** The stepper's value: the first entry of a `values` response. */
+const parse = (r: Response | null): number | null => (r !== null && r.kind === 'values' ? (r.values[0] ?? null) : null)
+/** A `partial` verdict is shown like not quite yet: calm, no answer revealed (D27). */
+const isRight = (m: Mark | undefined) => m?.verdict === 'right'
 
 /**
  * One question, presentation only (revamp-question-and-feedback, FR-ASM-01): the stem, an optional tree,
- * and the answer input for the instance's type. It shows what it is given and marks nothing itself.
+ * and the answer input for the question. It shows what it is given and marks nothing itself.
  */
-export function QuestionItem({ instance, response, onResponse, disabled, mark, labels, tree, editor, revealCorrect = false, range }: QuestionItemProps) {
+export function QuestionItem({ question, response, onResponse, disabled, mark, labels, tree, editor, revealCorrect, range }: QuestionItemProps) {
   const name = useId()
   const first = useRef<HTMLElement | null>(null)
 
@@ -81,20 +82,19 @@ export function QuestionItem({ instance, response, onResponse, disabled, mark, l
 
   const answer = (() => {
     if (editor !== undefined) return editor
-    if (instance.type === 'choice') return choices()
-    if (instance.type === 'number') return stepper()
-    return null
+    if (question.options !== undefined && question.options.length > 0) return choices()
+    return stepper()
   })()
 
   function choices() {
-    const options = instance.options ?? []
-    const chosen = response !== null && 'choice' in response ? response.choice : null
+    const options = question.options ?? []
+    const chosen = response !== null && response.kind === 'option' ? response.id : null
     const onKeyDown = (e: KeyboardEvent<HTMLFieldSetElement>) => {
       if (disabled || e.key.length !== 1) return
       const i = LETTERS.indexOf(e.key.toUpperCase())
       if (i < 0 || i >= options.length) return
       e.preventDefault()
-      onResponse({ choice: options[i].id })
+      onResponse({ kind: 'option', id: options[i].id })
       e.currentTarget.querySelectorAll<HTMLInputElement>('input[type="radio"]')[i]?.focus()
     }
     return (
@@ -102,8 +102,9 @@ export function QuestionItem({ instance, response, onResponse, disabled, mark, l
         <legend className="learn-legend">{labels.choiceLegend}</legend>
         {options.map((o, i) => {
           const isChosen = o.id === chosen
-          const showCorrect = (revealCorrect && o.correct) || (isChosen && mark?.status === 'correct')
-          const state = showCorrect ? 'correct' : isChosen && mark?.status === 'not-yet' ? 'not-yet' : isChosen ? 'selected' : undefined
+          const isAnswer = revealCorrect !== undefined && o.id === revealCorrect
+          const showCorrect = isAnswer || (isChosen && isRight(mark))
+          const state = showCorrect ? 'correct' : isChosen && mark !== undefined ? 'not-yet' : isChosen ? 'selected' : undefined
           return (
             <label key={o.id} className="learn-option" data-option="" data-state={state}>
               <input
@@ -112,7 +113,7 @@ export function QuestionItem({ instance, response, onResponse, disabled, mark, l
                 name={name}
                 value={o.id}
                 checked={isChosen}
-                onChange={() => onResponse({ choice: o.id })}
+                onChange={() => onResponse({ kind: 'option', id: o.id })}
               />
               <span className="learn-option-letter">{LETTERS[i]}</span>{' '}
               <span className="learn-option-text">{o.text}</span>{' '}
@@ -122,7 +123,7 @@ export function QuestionItem({ instance, response, onResponse, disabled, mark, l
                 </span>
               )}
               {mark !== undefined && isChosen && <span className="learn-tag">{labels.yourAnswer}</span>}
-              {revealCorrect && o.correct && <span className="learn-tag learn-tag-correct">{labels.correct}</span>}
+              {isAnswer && <span className="learn-tag learn-tag-correct">{labels.correct}</span>}
             </label>
           )
         })}
@@ -137,10 +138,10 @@ export function QuestionItem({ instance, response, onResponse, disabled, mark, l
     const move = (dir: number) => {
       if (disabled) return
       const next = value === null ? nearestZero : Math.min(max, Math.max(min, value + dir * step))
-      if (next !== value) onResponse({ number: asResponse(next) })
+      if (next !== value) onResponse({ kind: 'values', values: [next] })
     }
     const text = value === null ? labels.empty : signed(value)
-    const state = mark === undefined ? undefined : mark.status === 'correct' ? 'correct' : 'not-yet'
+    const state = mark === undefined ? undefined : isRight(mark) ? 'correct' : 'not-yet'
     return (
       <div className="learn-stepper" data-state={state}>
         <button
@@ -193,7 +194,7 @@ export function QuestionItem({ instance, response, onResponse, disabled, mark, l
 
   return (
     <div className="learn-question">
-      <p className="learn-stem">{instance.stem}</p>
+      <p className="learn-stem">{question.stem}</p>
       {tree !== undefined && <TreeView {...tree} />}
       {answer}
     </div>

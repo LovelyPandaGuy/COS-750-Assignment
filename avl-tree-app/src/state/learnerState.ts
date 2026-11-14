@@ -3,17 +3,22 @@
  * Plain TypeScript: no React and no browser storage here.
  */
 
-export const SCHEMA_VERSION = 1
+/** Version 2: the JSON questions (live-c1-and-c9). A version-1 save is replaced once, with the notice. */
+export const SCHEMA_VERSION = 2
 
 /** Module IDs from decision D1. */
 export const MODULE_IDS = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9'] as const
 export type ModuleId = (typeof MODULE_IDS)[number]
 
-export const LEARNER_PATHS = ['guided', 'diagnostic-skipped'] as const
+/** The guided order is the only path: the ID offers no way to skip C1's readiness questions (ID 7.2). */
+export const LEARNER_PATHS = ['guided'] as const
 export type LearnerPath = (typeof LEARNER_PATHS)[number]
 
-export const SUB_SKILL_STATUSES = ['secure', 'developing', 'not-yet'] as const
-export type SubSkillStatus = (typeof SUB_SKILL_STATUSES)[number]
+/** The question id under which a student's own lecture questions are stored (FR-RDY-02). */
+export const OWN_LECTURE_QUESTION = 'own'
+
+/** The student's own lecture question is trimmed and capped at this length (FR-RDY-02). */
+export const OWN_QUESTION_MAX_LENGTH = 300
 
 export const CONFIDENCE_LEVELS = ['sure', 'unsure'] as const
 export type Confidence = (typeof CONFIDENCE_LEVELS)[number]
@@ -28,6 +33,8 @@ export interface Attempt {
   confidence?: Confidence
   misconceptionId?: string
   hintsUsed: number
+  /** 1 for a first answer, 2 for a check re-attempt (ID 9.1, 12.2); an older save without it reads as 1. */
+  attempt?: number
 }
 
 /** A question the student wants to ask in the lecture, drafted at the retry cap (FR-SCA-03, D9). */
@@ -48,7 +55,6 @@ export interface LearnerState {
   currentModule: ModuleId
   completedModules: ModuleId[]
   attempts: Attempt[]
-  subSkillStatus: Record<string, SubSkillStatus>
   lectureQuestions: LectureQuestion[]
 }
 
@@ -61,7 +67,6 @@ export function freshLearnerState(profileId: string): LearnerState {
     currentModule: 'C1',
     completedModules: [],
     attempts: [],
-    subSkillStatus: {},
     lectureQuestions: [],
   }
 }
@@ -81,10 +86,15 @@ const isNonEmptyString = (v: unknown): v is string => typeof v === 'string' && v
 const isOneOf = <T extends string>(values: readonly T[], v: unknown): v is T =>
   typeof v === 'string' && (values as readonly string[]).includes(v)
 
+/** An attempt's number: 1 for a first answer, 2 for a re-attempt; an older save without one reads as 1 (ID 12.2). */
+export function attemptNumber(a: Attempt): number {
+  return a.attempt ?? 1
+}
+
 /** Validate one attempt; null when it is malformed. */
 export function parseAttempt(raw: unknown): Attempt | null {
   if (!isObject(raw)) return null
-  const { questionId, at, answer, correct, confidence, misconceptionId, hintsUsed } = raw
+  const { questionId, at, answer, correct, confidence, misconceptionId, hintsUsed, attempt: number } = raw
   if (!isNonEmptyString(questionId)) return null
   if (typeof at !== 'string' || Number.isNaN(Date.parse(at))) return null
   // `answer` is `unknown` (SE §6.3). An undefined answer is dropped by JSON,
@@ -92,6 +102,10 @@ export function parseAttempt(raw: unknown): Attempt | null {
   if (typeof correct !== 'boolean') return null
   if (typeof hintsUsed !== 'number' || !Number.isInteger(hintsUsed) || hintsUsed < 0) return null
   const attempt: Attempt = { questionId, at, answer, correct, hintsUsed }
+  if (number !== undefined) {
+    if (typeof number !== 'number' || !Number.isInteger(number) || number < 1) return null
+    attempt.attempt = number
+  }
   if (confidence !== undefined) {
     if (!isOneOf(CONFIDENCE_LEVELS, confidence)) return null
     attempt.confidence = confidence
@@ -146,15 +160,6 @@ export function parseLearnerState(raw: unknown): LearnerState | null {
     attempts.push(attempt)
   }
 
-  if (!isObject(raw.subSkillStatus)) return null
-  const statusEntries: [string, SubSkillStatus][] = []
-  for (const [skill, status] of Object.entries(raw.subSkillStatus)) {
-    if (!isOneOf(SUB_SKILL_STATUSES, status)) return null
-    statusEntries.push([skill, status])
-  }
-  // fromEntries defines own properties, so a key such as "__proto__" is kept
-  // instead of hitting the prototype setter.
-  const subSkillStatus: Record<string, SubSkillStatus> = Object.fromEntries(statusEntries)
 
   // Added after schema version 1 shipped: a state stored without it reads as an empty list (D18).
   const lectureQuestions: LectureQuestion[] = []
@@ -174,7 +179,6 @@ export function parseLearnerState(raw: unknown): LearnerState | null {
     currentModule: raw.currentModule,
     completedModules,
     attempts,
-    subSkillStatus,
     lectureQuestions,
   }
   const nickname = normaliseNickname(raw.nickname as string | undefined)

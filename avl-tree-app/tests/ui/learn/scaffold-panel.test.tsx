@@ -7,7 +7,7 @@ import { read, rule, stripComments } from '../base/css-helpers';
 import { scaffoldLabels } from './fixtures';
 
 // Spec: revamp-question-and-feedback / ui-feedback "ScaffoldPanel shows rungs as given" and
-// "Hint button shows the hints left". (FR-SCA-02, FR-VIS-10, D21, D23, D76, D106)
+// "Hint button shows the hints left". (FR-SCA-02, FR-VIS-10, D21, D23, D76, D131)
 
 type Props = Parameters<typeof ScaffoldPanel>[0];
 type Rung = Props['rungs'][number];
@@ -17,7 +17,7 @@ const check: Rung[] = [rung('fuller-hint', 'seen', 1), rung('worked-example', 'a
 const base = (over: Partial<Props> = {}): Props => ({ rungs: check, hintsLeft: 2, onHint: vi.fn(), labels: scaffoldLabels, ...over });
 const items = () => screen.getAllByRole('listitem');
 
-describe('FR-SCA-02 D106 ScaffoldPanel shows rungs as given', () => {
+describe('FR-SCA-02 D131 ScaffoldPanel shows rungs as given', () => {
   it.each([
     ['practice', practice],
     ['check', check],

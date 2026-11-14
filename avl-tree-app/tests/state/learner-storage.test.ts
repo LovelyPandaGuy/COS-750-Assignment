@@ -25,7 +25,7 @@ function counterIds(prefix = 'id'): () => string {
 
 function sampleState(overrides: Partial<LearnerState> = {}): LearnerState {
   return {
-    schemaVersion: 1,
+    schemaVersion: SCHEMA_VERSION,
     profileId: 'profile-abc',
     nickname: 'Rotator',
     path: 'guided',
@@ -49,14 +49,13 @@ function sampleState(overrides: Partial<LearnerState> = {}): LearnerState {
         hintsUsed: 0,
       },
     ],
-    subSkillStatus: { 'bf-compute': 'developing', 'height-count': 'secure' },
     lectureQuestions: [],
     ...overrides,
   }
 }
 
 function expectFresh(state: LearnerState) {
-  expect(state.schemaVersion).toBe(1)
+  expect(state.schemaVersion).toBe(SCHEMA_VERSION)
   expect(typeof state.profileId).toBe('string')
   expect(state.profileId.length).toBeGreaterThan(0)
   expect(state.nickname).toBeUndefined()
@@ -64,7 +63,7 @@ function expectFresh(state: LearnerState) {
   expect(state.currentModule).toBe('C1')
   expect(state.completedModules).toEqual([])
   expect(state.attempts).toEqual([])
-  expect(state.subSkillStatus).toEqual({})
+  expect('subSkillStatus' in state).toBe(false)
   expect(state.lectureQuestions).toEqual([])
 }
 
@@ -125,7 +124,6 @@ function recordingBackend() {
 // ---------- arbitraries ----------
 
 const moduleArb = fc.constantFrom(...MODULE_IDS)
-const statusArb = fc.constantFrom('secure' as const, 'developing' as const, 'not-yet' as const)
 const jsonValueArb = fc.jsonValue().map((v) => JSON.parse(JSON.stringify(v)) as unknown)
 
 const attemptArb: fc.Arbitrary<Attempt> = fc
@@ -155,17 +153,16 @@ const lectureQuestionArb: fc.Arbitrary<LectureQuestion> = fc.record(
 
 const stateArb: fc.Arbitrary<LearnerState> = fc.record(
   {
-    schemaVersion: fc.constant(1),
+    schemaVersion: fc.constant(SCHEMA_VERSION),
     profileId: fc.string({ minLength: 1 }),
     nickname: fc.string({ maxLength: 40 }),
-    path: fc.constantFrom('guided' as const, 'diagnostic-skipped' as const),
+    path: fc.constant('guided' as const),
     currentModule: moduleArb,
     completedModules: fc.uniqueArray(moduleArb),
     attempts: fc.array(attemptArb, { maxLength: 8 }),
-    subSkillStatus: fc.dictionary(fc.string({ minLength: 1 }), statusArb),
     lectureQuestions: fc.array(lectureQuestionArb, { maxLength: 4 }),
   },
-  { requiredKeys: ['schemaVersion', 'profileId', 'path', 'currentModule', 'completedModules', 'attempts', 'subSkillStatus', 'lectureQuestions'] },
+  { requiredKeys: ['schemaVersion', 'profileId', 'path', 'currentModule', 'completedModules', 'attempts', 'lectureQuestions'] },
 )
 
 function normaliseNickname(n: string | undefined): string | undefined {
@@ -182,7 +179,7 @@ describe('FR-ONB-02: anonymous profile on first launch', () => {
     const store = createLearnerStorage(backend, { randomId: counterIds() })
     const { state, status } = store.load()
     expect(status).toBe('new')
-    expect(SCHEMA_VERSION).toBe(1)
+    expect(SCHEMA_VERSION).toBe(2) // live-c1-and-c9
     expectFresh(state)
     const raw = backend.getItem(LEARNER_KEY)
     expect(raw).not.toBeNull()
@@ -213,7 +210,6 @@ describe('FR-ONB-02, NFR-05: no personal identifiers stored', () => {
         'path',
         'profileId',
         'schemaVersion',
-        'subSkillStatus',
       ].sort(),
     )
     expect(JSON.stringify(stored)).not.toContain('student@example.com')
@@ -286,19 +282,21 @@ describe('NFR-06: stored data is validated on load', () => {
     expect(JSON.parse(backend.getItem(LEARNER_KEY)!)).toEqual(result.state)
   })
 
-  it('unknown schema version resets', () => {
-    const backend = memoryBackend()
-    backend.setItem(LEARNER_KEY, JSON.stringify({ ...sampleState(), schemaVersion: 2 }))
-    const result = createLearnerStorage(backend).load()
-    expect(result.status).toBe('reset-corrupt')
-    expectFresh(result.state)
+  it('unknown schema version resets: a version-1 save and a version 3 (live-c1-and-c9)', () => {
+    for (const version of [1, 3]) {
+      const backend = memoryBackend()
+      backend.setItem(LEARNER_KEY, JSON.stringify({ ...sampleState(), schemaVersion: version }))
+      const result = createLearnerStorage(backend).load()
+      expect(result.status).toBe('reset-corrupt')
+      expectFresh(result.state)
+    }
   })
 
   const tamperings: [string, (s: Record<string, unknown>) => void][] = [
     ['currentModule C10', (s) => (s.currentModule = 'C10')],
     ['path skipped', (s) => (s.path = 'skipped')],
     ['completedModules a string', (s) => (s.completedModules = 'C1')],
-    ['sub-skill status mastered', (s) => (s.subSkillStatus = { 'bf-compute': 'mastered' })],
+    ['attempt 0', (s) => ((s.attempts as Record<string, unknown>[])[0].attempt = 0)],
     ['attempt correct "yes"', (s) => ((s.attempts as Record<string, unknown>[])[0].correct = 'yes')],
     ['attempt confidence maybe', (s) => ((s.attempts as Record<string, unknown>[])[0].confidence = 'maybe')],
     ['attempt hintsUsed -1', (s) => ((s.attempts as Record<string, unknown>[])[0].hintsUsed = -1)],
@@ -323,7 +321,7 @@ describe('NFR-06: stored data is validated on load', () => {
         const result = createLearnerStorage(backend).load()
         expect(['restored', 'reset-corrupt']).toContain(result.status)
         expect(MODULE_IDS).toContain(result.state.currentModule)
-        expect(result.state.schemaVersion).toBe(1)
+        expect(result.state.schemaVersion).toBe(SCHEMA_VERSION)
       }),
       { numRuns: 300 },
     )
@@ -410,16 +408,12 @@ describe('NFR-05: stored-data inventory', () => {
 // ---------- regressions from the fresh-context review ----------
 
 describe('FR-ONB-03: round-trip edge cases (review)', () => {
-  it('a sub-skill named "__proto__" survives a round trip', () => {
+  it('a stray field from the old shape is dropped, not kept (live-c1-and-c9)', () => {
     const backend = memoryBackend()
-    const saved = sampleState({
-      subSkillStatus: Object.fromEntries([['__proto__', 'secure']]) as LearnerState['subSkillStatus'],
-    })
-    createLearnerStorage(backend).save(saved)
+    backend.setItem(LEARNER_KEY, JSON.stringify({ ...sampleState(), subSkillStatus: { '__proto__': 'secure' } }))
     const { state, status } = createLearnerStorage(backend).load()
     expect(status).toBe('restored')
-    expect(Object.keys(state.subSkillStatus)).toEqual(['__proto__'])
-    expect(state).toEqual(saved)
+    expect('subSkillStatus' in state).toBe(false)
   })
 
   it('the round-trip property holds on the seed the review found (124854234)', () => {
@@ -511,7 +505,7 @@ describe('FR-SCA-03: lecture questions are stored', () => {
     backend.setItem(LEARNER_KEY, JSON.stringify(raw))
     const { state, status } = createLearnerStorage(backend).load()
     expect(status).toBe('restored')
-    expect(state.schemaVersion).toBe(1)
+    expect(state.schemaVersion).toBe(SCHEMA_VERSION)
     expect(state).toEqual(sampleState({ lectureQuestions: [] }))
   })
 
@@ -544,5 +538,20 @@ describe('FR-SCA-03: lecture questions are stored', () => {
   it('the inventory describes lecture questions', () => {
     const learner = STORAGE_INVENTORY.find((e) => e.key === LEARNER_KEY)!
     expect(learner.description).toMatch(/lecture/i)
+  })
+})
+
+// Spec: add-live-lesson-questions / learner-storage "Attempts store their attempt number". ID 9.1, 12.2.
+import { attemptNumber, parseAttempt as parseOne } from '../../src/state/learnerState'
+describe('ID 12.2 attempts store their attempt number', () => {
+  const base = { questionId: 'chk2-01', at: '2026-11-14T10:00:00.000Z', answer: 'a', correct: false, hintsUsed: 0 }
+  it('re-attempt stored', () => {
+    expect(parseOne({ ...base, attempt: 2 })?.attempt).toBe(2)
+  })
+  it('older saves still load, as attempt 1', () => {
+    expect(attemptNumber(parseOne(base)!)).toBe(1)
+  })
+  it('attempt 0 is refused', () => {
+    expect(parseOne({ ...base, attempt: 0 })).toBeNull()
   })
 })

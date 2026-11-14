@@ -9,20 +9,21 @@ import { QuestionItem } from '../../../src/ui/learn/QuestionItem';
 import { ScaffoldPanel } from '../../../src/ui/learn/ScaffoldPanel';
 import { BUILT, STUBBED } from '../../../src/ui/contracts';
 import {
-  choiceInstance,
+  CORRECT_OPTION,
+  choiceQuestion,
   confidenceLevels,
   draftLabels,
   feedbackBase,
   notYetMark,
-  numberInstance,
+  numberQuestion,
   questionLabels,
   renderWithRouter,
   scaffoldLabels,
 } from './fixtures';
 
-// Spec: revamp-question-and-feedback / ui-question "Question wording comes from props" (D103).
+// Spec: revamp-question-and-feedback / ui-question "Question wording comes from props" (D128).
 
-describe('D103 question and feedback wording comes from props', () => {
+describe('D128 question and feedback wording comes from props', () => {
   it('no file under src/ui/learn imports from src/content', () => {
     const sources = files('src/ui/learn', /\.tsx?$/);
     expect(sources.length).toBeGreaterThan(0);
@@ -58,17 +59,17 @@ describe('D103 question and feedback wording comes from props', () => {
   const cases: [string, ReactElement][] = [
     [
       'QuestionItem, choice at the cap',
-      <QuestionItem instance={choiceInstance()} response={{ choice: 'opt-b' }} onResponse={vi.fn()} disabled mark={notYetMark} revealCorrect labels={questionLabels} />,
+      <QuestionItem question={choiceQuestion()} response={{ kind: 'option', id: 'opt-b' }} onResponse={vi.fn()} disabled mark={notYetMark} revealCorrect={CORRECT_OPTION} labels={questionLabels} />,
     ],
     [
       'QuestionItem, stepper',
-      <QuestionItem instance={numberInstance()} response={null} onResponse={vi.fn()} disabled={false} labels={questionLabels} range={{ min: -3, max: 3, step: 1 }} />,
+      <QuestionItem question={numberQuestion()} response={null} onResponse={vi.fn()} disabled={false} labels={questionLabels} range={{ min: -3, max: 3, step: 1 }} />,
     ],
     ['ConfidenceRating', <ConfidenceRating value="two" onChange={vi.fn()} label="Example confidence" levels={confidenceLevels} />],
     ['FeedbackPanel', <FeedbackPanel variant="cap" {...feedbackBase} next={{ label: 'Example next', onClick: vi.fn() }} />],
     [
       'FullAnswer',
-      <FullAnswer example={{ instance: numberInstance(), answer: 2, explanation: 'Example explanation' }} labels={{ show: 'Example show', treeAnswer: 'Example show' }} />,
+      <FullAnswer answer={{ kind: 'value', value: 2 }} explanation="Example explanation" labels={{ show: 'Example show', treeAnswer: 'Example show' }} />,
     ],
     ['LectureQuestionDraft', <LectureQuestionDraft text="Example draft" added onAdd={vi.fn()} onChange={vi.fn()} onDecline={vi.fn()} labels={draftLabels} />],
     [
@@ -87,8 +88,8 @@ describe('D103 question and feedback wording comes from props', () => {
     expect(leftover(container.textContent ?? '')).toBe('');
   });
 
-  it('the four built names left STUBBED (D103)', () => {
-    for (const n of ['QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft']) {
+  it('the five built names left STUBBED (D128; FeedbackPanel since the merge with main)', () => {
+    for (const n of ['QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel']) {
       expect(BUILT).toContain(n);
       expect(STUBBED).not.toContain(n);
     }

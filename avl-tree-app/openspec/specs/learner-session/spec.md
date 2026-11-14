@@ -80,7 +80,7 @@ The session SHALL let a screen record an attempt and complete a module. Both SHA
 - **THEN** both are gone
 
 ### Requirement: Screens can record lecture questions, and status follows attempts
-The session SHALL let a screen record a lecture question, saved like any other change; recording one for an item that already has one SHALL change nothing. Recording an attempt at a bank item SHALL also update that item's sub-skill status in the same change. (FR-SCA-01, FR-SCA-03)
+The session SHALL let a screen record a lecture question, saved like any other change; recording one for an item that already has one SHALL change nothing. Recording an attempt SHALL store the attempt only: no sub-skill status is kept (the old mastery rule is removed; the ID's mastery is per lesson, ID 9.3). (FR-RDY-02)
 
 #### Scenario: Recorded once
 - **WHEN** a lecture question is recorded twice for the same item
@@ -91,16 +91,5 @@ The session SHALL let a screen record a lecture question, saved like any other c
 - **THEN** it is restored
 
 #### Scenario: Status in the same change
-- **WHEN** an attempt at a bank item is recorded
-- **THEN** the saved state holds the attempt and the updated sub-skill status together
-
-### Requirement: Screens can set the learning path
-The session SHALL let a screen set the learning path to "guided" or "diagnostic skipped", saved like any other change; setting the value it already has SHALL change nothing. (FR-DIA-04)
-
-#### Scenario: Saved
-- **WHEN** the path is set to "diagnostic skipped" and the app is reloaded
-- **THEN** the restored state has that path
-
-#### Scenario: No-op
-- **WHEN** the path is set to the value it already has
-- **THEN** nothing is written
+- **WHEN** an attempt is recorded
+- **THEN** the saved state holds the attempt and no sub-skill status

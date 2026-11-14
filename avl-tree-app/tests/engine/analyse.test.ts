@@ -23,7 +23,7 @@ describe('FR-ENG-05: tree analysis report', () => {
     expect(a.isBst).toBe(true)
     expect(a.isAvl).toBe(false)
     expect(a.balanceViolations.map((v) => v.key)).toEqual([3, 2, 1])
-    expect(a.balanceViolations.map((v) => v.balanceFactor)).toEqual([-2, -3, -4])
+    expect(a.balanceViolations.map((v) => v.balanceFactor)).toEqual([2, 3, 4]) // ID 7.3: right-heavy chain is positive
   })
 
   it('first balance violation names the node checkAvl reports', () => {

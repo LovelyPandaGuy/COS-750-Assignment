@@ -43,7 +43,7 @@ Roles follow CLAUDE.md. Test-writer works in `tests/` only. Implementer works in
 
 ## 7. Record and verify
 
-- [x] 7.1 Add assumed rows D92 onwards to `.claude/docs/decisions.md`, one for each of these:
+- [x] 7.1 Add assumed rows D117 onwards (first written as D92 onwards; renumbered at the merge) to `.claude/docs/decisions.md`, one for each of these:
   - the progress slot
   - breakpoints
   - the pressed and hover defaults

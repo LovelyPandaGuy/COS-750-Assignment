@@ -1,30 +1,30 @@
 ## ADDED Requirements
 
 ### Requirement: QuestionItem shows what it is given
-`QuestionItem` SHALL render the instance's stem, then a read-only `TreeView` from its optional `tree` prop (`TreeViewProps`), then the answer input for the instance's type, or the optional `editor` slot in its place (change A3). It SHALL render options in the order given and SHALL NOT shuffle, mark or compute anything. (FR-ASM-01, D103)
+`QuestionItem` SHALL render the stem of its `question` (the live `Question`, `src/live/types`), then a read-only `TreeView` from its optional `tree` prop (`TreeViewProps`), then the answer input: a radio group when the question has options, otherwise the value stepper, or the optional `editor` slot in its place (change A3). It SHALL render options in the order given and SHALL NOT shuffle, mark or compute anything. (FR-ASM-01, D128)
 
 #### Scenario: Stem, tree and options in the given order
-- **GIVEN** a choice instance with stem "Example stem" and options "Option one" to "Option four", and `tree` props for a 3-node tree
+- **GIVEN** a choice question with stem "Example stem" and options "Option one" to "Option four", and `tree` props for a 3-node tree
 - **WHEN** `QuestionItem` renders
 - **THEN** the stem appears first, the tree is a read-only image named by the tree label, and the four options appear in exactly the order given
 
 #### Scenario: The editor slot replaces the answer input
-- **GIVEN** a tree instance and an `editor` element with test id "editor-slot"
+- **GIVEN** a tree question and an `editor` element with test id "editor-slot"
 - **WHEN** `QuestionItem` renders
 - **THEN** "editor-slot" is rendered and no radio group or stepper is
 
 ### Requirement: Question wording comes from props
-Every word a learn component shows that is not from its instance or data SHALL come from its `labels` prop. No file in `src/ui/learn/` SHALL import from `src/content/`. (D103)
+Every word a learn component shows that is not from its question or data SHALL come from its `labels` prop. No file in `src/ui/learn/` SHALL import from `src/content/`. (D128)
 
 #### Scenario: No content import and no hard-coded wording
 - **WHEN** every source file under `src/ui/learn/` is read
-- **THEN** none imports from `src/content/`, and rendering each component with fixture labels shows no text that is not in the instance or the labels
+- **THEN** none imports from `src/content/`, and rendering each component with fixture labels shows no text that is not in the question or the labels
 
 ### Requirement: Choice answers are a lettered radio group
-A choice instance (multiple choice and identify-the-case alike) SHALL render as a radio group named by `labels.choiceLegend`, each option a radio with a visible letter A, B, C and so on, in order. Arrow keys SHALL move the selection within the group (native radio behaviour), and pressing an option's letter SHALL select it while focus is inside the group and SHALL do nothing outside it. Selecting an option SHALL call `onResponse({ choice: option.id })`. (FR-ASM-01, FR-VIS-10)
+A choice question (multiple choice and identify-the-case alike) SHALL render as a radio group named by `labels.choiceLegend`, each option a radio with a visible letter A, B, C and so on, in order. Arrow keys SHALL move the selection within the group (native radio behaviour), and pressing an option's letter SHALL select it while focus is inside the group and SHALL do nothing outside it. Selecting an option SHALL call `onResponse({ kind: 'option', id: option.id })`. (FR-ASM-01, FR-VIS-10)
 
 #### Scenario: Pick by click, arrows and letter
-- **GIVEN** a choice instance with four options and no response
+- **GIVEN** a choice question with four options and no response
 - **WHEN** the student clicks option B, presses ArrowDown, then presses "a"
 - **THEN** `onResponse` is called with options B, C, then A in that order, and each option's accessible name starts with its letter
 
@@ -33,12 +33,12 @@ A choice instance (multiple choice and identify-the-case alike) SHALL render as 
 - **THEN** `onResponse` is not called
 
 ### Requirement: Compute-a-value answers are a stepper
-A number instance SHALL render a minus button, the value as a spin button, and a plus button, named by `labels.decrease`, `labels.value` and `labels.increase`, with no free text entry. ArrowUp and ArrowDown on the value SHALL match plus and minus. Each change SHALL call `onResponse({ number })` with the value as a signed string (`+2`, `0`, `-1`). [OPEN] Using it in module checks changes the `module-checks` text-field requirement in the wiring change. (FR-ASM-01, FR-VIS-10)
+A question without options SHALL render a minus button, the value as a spin button, and a plus button, named by `labels.decrease`, `labels.value` and `labels.increase`, with no free text entry. ArrowUp and ArrowDown on the value SHALL match plus and minus. Each change SHALL call `onResponse({ kind: 'values', values: [n] })` with the new value. [OPEN] Using it in module checks changes the `module-checks` text-field requirement in the wiring change. (FR-ASM-01, FR-VIS-10)
 
 #### Scenario: Stepping within the range
-- **GIVEN** a number instance with `min` -3, `max` 3, `step` 1 and no response
+- **GIVEN** a number question with `min` -3, `max` 3, `step` 1 and no response
 - **WHEN** the student presses plus three times, then ArrowDown on the value once
-- **THEN** `onResponse` receives "0", "+1", "+2", then "+1", and there is no text input on the page
+- **THEN** `onResponse` receives the values 0, 1, 2, then 1, and there is no text input on the page
 
 ### Requirement: Stepper range
 With a null response the stepper SHALL show `labels.empty`. The first press of either button SHALL go to the value nearest 0 within `[min, max]`; later presses SHALL move by `step`. Each button SHALL be disabled at its end of the range. (FR-ASM-01)
@@ -49,7 +49,7 @@ With a null response the stepper SHALL show `labels.empty`. The first press of e
 - **THEN** `onResponse` receives "+1"
 
 #### Scenario: Ends of the range
-- **GIVEN** the response "+3" with `max` 3
+- **GIVEN** the response value 3 with `max` 3
 - **THEN** the plus button is disabled and the minus button is enabled
 
 ### Requirement: QuestionItem states
@@ -61,17 +61,17 @@ With a null response the stepper SHALL show `labels.empty`. The first press of e
 
 #### Scenario: Every state reachable in the gallery
 - **WHEN** the learn gallery renders
-- **THEN** it shows a QuestionItem in each of default, selected, disabled, submitted correct, submitted not quite yet and revealed at the cap, for both a choice and a number instance, and the stylesheet has hover and focus rules for options and stepper buttons
+- **THEN** it shows a QuestionItem in each of default, selected, disabled, submitted correct, submitted not quite yet and revealed at the cap, for both a choice and a value question, and the stylesheet has hover and focus rules for options and stepper buttons
 
 ### Requirement: Correct option revealed only at the cap
-`QuestionItem` SHALL mark the correct option with `labels.correct` only when `revealCorrect` is true, which the caller sets only at the retry cap. (FR-ASM-07, FR-SCA-03, D105)
+`QuestionItem` SHALL mark an option with `labels.correct` only when `revealCorrect` names it. The caller passes the engine's correct option ID (`engineAnswer`, never the content's typed `correctOptionId`, D95) only at the retry cap. A mark with verdict `partial` SHALL look like not quite yet. (FR-ASM-07, FR-SCA-03, D130)
 
 #### Scenario: First miss does not reveal the answer
-- **GIVEN** a choice instance, the response option B (not correct), a not-quite-yet mark and `revealCorrect` false
+- **GIVEN** a choice question, the response option B (not correct), a not-quite-yet mark and no `revealCorrect`
 - **THEN** option B carries "Your answer" and `data-state="not-yet"`, no option carries the correct label or `data-state="correct"`, and no element has a red token or a cross glyph
 
 #### Scenario: At the cap the correct option is marked
-- **GIVEN** the same props with `revealCorrect` true
+- **GIVEN** the same props with `revealCorrect` set to option C's ID
 - **THEN** the correct option carries the correct label and `data-state="correct"`, and option B still carries "Your answer"
 
 ### Requirement: Try again returns focus to the first input
@@ -79,7 +79,7 @@ When `disabled` changes from true to false, `QuestionItem` SHALL move focus to i
 
 #### Scenario: Focus after Try again
 - **GIVEN** a QuestionItem rendered with `disabled` true
-- **WHEN** it re-renders with a new instance and `disabled` false
+- **WHEN** it re-renders with a new question and `disabled` false
 - **THEN** the first radio has focus
 
 #### Scenario: No focus on mount

@@ -57,7 +57,7 @@ Node groups stay keyed by `key` (they already are). Focus therefore survives a r
 ### 6. Scroll into view
 An effect calls `scrollIntoView({ block: 'nearest', inline: 'nearest' })`:
 - on the focused node group after keyboard focus moves;
-- on the z node after a tree change.
+- on the node tagged "n" (the first unbalanced node, D97; formerly z) after a tree change.
 
 Under reduced motion `behavior` is `'auto'`, otherwise `'smooth'`. `nearest` stops the page itself jumping vertically.
 
@@ -66,7 +66,7 @@ Under reduced motion `behavior` is `'auto'`, otherwise `'smooth'`. `nearest` sto
 - **Hover.** `[role='treeitem']:hover .tree-node-fill { fill: var(--action-primary-tint) }` and `.tree-ring { stroke: var(--action-primary) }`.
 - **Selected frame.** `fill: var(--action-primary-tint)`, drawn before the node fill so the node stays white inside it, as in the design. Stroke `var(--action-primary)`.
 - **Out-of-balance annotation.** `.tree-metrics[data-unbalanced]` gets `fill: var(--tree-z); font-weight: 700`.
-- The ring styles (dotted new, thick balanced) are kept (proposal question 6).
+- Ring styles follow D97 (solid; thick dashed for unbalanced; bold for being rotated), not the old role rings (proposal merge note). Role colours: `new` uses `--tree-new` and `n` uses `--tree-z`.
 
 ### 8. Announcements and overlay
 - `announce?: string` is rendered in the existing `.tree-live` region, taking priority over the selection sentence for that render.
@@ -78,9 +78,9 @@ Under reduced motion `behavior` is `'auto'`, otherwise `'smooth'`. `nearest` sto
 ## Risks / Trade-offs
 
 - [Every caller now animates] → This is intended for replay, sandbox and do-it-yourself. A screen that should not animate passes `transitionMs={0}`; no caller is changed here, and the reviewer checks the 15 callers by running the existing UI tests, which must still pass with fake timers off. Tests that read positions right after a re-render could see frame-0 positions. Mitigation: under jsdom with no `requestAnimationFrame` progress, the drawn positions at frame 0 are the old ones, so the hook snaps when `requestAnimationFrame` is unavailable (`typeof requestAnimationFrame !== 'function'`). The red tests stub `requestAnimationFrame` explicitly when they test motion.
-- [300 ms is assumed (proposal question 4)] → One constant; D100 records it; the pilot can tune it.
+- [300 ms is assumed (proposal question 4)] → One constant; D125 records it; the pilot can tune it.
 - [The union layout makes a tree briefly wider during an insert] → At most one slot (56 units). Inside the scroll region, so the page never scrolls.
-- [Pill tags change the look of 15 screens at once] → Visual baselines are updated in this change (D97), and the reviewer compares them against design system section 01 D.
+- [Pill tags change the look of 15 screens at once] → Visual baselines are updated in this change (D122), and the reviewer compares them against design system section 01 D.
 - [`scrollIntoView` moving the page] → `block: 'nearest'` and only on keyboard focus or a tree change, never on mount.
 - [jsdom cannot measure page width] → The three-width scenario is a Playwright test on the Sandbox (`npm run test:visual`), not part of `npm test`.
 

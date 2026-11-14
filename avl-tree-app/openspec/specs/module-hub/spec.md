@@ -40,12 +40,12 @@ The progress map SHALL list modules C1 to C9 in order, each as a link to its mod
 - **THEN** `C2` reads Later and not Done, because the map shows only what the state says
 
 ### Requirement: Hub screen
-The hub at `/path` SHALL have the heading "Your path", the progress map, a card for the current module with a link to open it and its activity list, and a Sandbox card with an "Open sandbox" link. It SHALL have one primary action, "Continue", to the current module's screen. It SHALL show no points, streaks or comparison. (wireframe 1e, FR-MOT-04, FR-VIS-08)
+The hub at `/path` SHALL have the heading "Your path", the progress map, a card for the current module with a link to open it, and a Sandbox card with an "Open sandbox" link. It SHALL have one primary action, "Continue", to the current module's screen. It SHALL show no points, streaks or comparison. (wireframe 1e, FR-MOT-04, FR-VIS-08)
 
 #### Scenario: Contents
 - **GIVEN** the learner is at `C4`
 - **WHEN** the hub is shown
-- **THEN** the heading is "Your path", the card names "C4 Search" and lists its activities as links, and "Open sandbox" links to `/sandbox`
+- **THEN** the heading is "Your path", the card names "C4 Search (the algorithm)" and links to `/module/C4`, and "Open sandbox" links to `/sandbox`
 
 #### Scenario: Continue
 - **WHEN** "Continue" is activated
@@ -60,26 +60,26 @@ The hub at `/path` SHALL have the heading "Your path", the progress map, a card 
 - **THEN** it contains none of "score", "points", "streak", "rank", "grade", "pass" or "fail"
 
 ### Requirement: Module screen
-Each module ID `C1` to `C9` SHALL have a module screen at `/module/:moduleId` whose level-1 heading is the module ID and D1 title, with the module's activities as links in default order, each saying its place ("1 of 3"), and a "Back to path" link. It SHALL show no learning content yet. (D1, FR-LRN-05, FR-LRN-04, SE §6.5)
+Each module ID `C1` to `C9` SHALL have a module screen at `/module/:moduleId` that is its lesson, played by the lesson player from its lesson file, with the lesson title as the level-1 heading. No module SHALL have an activity list. Module titles everywhere SHALL come from the lesson files. (ID 7.1, FR-LRN-05, FR-LRN-04)
 
 #### Scenario: Known module
 - **WHEN** the module screen for each of `C1` to `C9` is opened directly
-- **THEN** its level-1 heading is that module's ID and D1 title
+- **THEN** its level-1 heading is that lesson's title from its lesson file
 
 #### Scenario: Activities in default order
-- **WHEN** the module screen for `C5` is shown
-- **THEN** it lists Explore, Worked example and Check as links, in that order, to `/module/C5/explore`, `/module/C5/example` and `/module/C5/check`
+- **WHEN** the module screen for `C1` is shown
+- **THEN** C1's first screen "Welcome" is shown, with "Lesson 1 of 9", and no activity list
 
 #### Scenario: Module with other activities
-- **WHEN** the module screens for `C1` and `C9` are shown
-- **THEN** `C1` lists Warm-up check and BST refresher, and `C9` lists one check
+- **WHEN** the module screen for `C9` is shown
+- **THEN** C9's first screen is shown, with "Lesson 9 of 9", and no activity list
 
 #### Scenario: Back to path
-- **WHEN** "Back to path" is activated
+- **WHEN** Next is activated on the last screen of a lesson
 - **THEN** the hub is shown
 
 #### Scenario: Moving does not change progress
-- **WHEN** the learner opens modules and activities and goes back
+- **WHEN** the learner opens modules, moves through lesson screens and goes back without answering
 - **THEN** the learner state (current module, completed modules, attempts) is unchanged
 
 ### Requirement: Wording and targets
@@ -98,13 +98,13 @@ All text on these screens SHALL come from `src/content/screens.ts` and `src/cont
 - **THEN** axe reports no violations
 
 ### Requirement: Soft prerequisite note on the module screen
-When the entry decision names a prerequisite, the module screen SHALL show a note, below the level-1 heading and above the activities, naming the prerequisite's module ID and D1 title with a link to its module screen. The note SHALL NOT disable, hide or reorder the activities, and SHALL NOT use "locked", "must", "fail", "wrong" or a warning colour as its only signal. With no prerequisite named, no note SHALL show. Its wording SHALL come from the content files. (D20, FR-LRN-04, D27)
+When the entry decision names a prerequisite, the module screen SHALL show a note naming the prerequisite's module ID and lesson title with a link to its module screen: below the level-1 heading and above the activities for C1 and C9, and below the lesson's top region and above its first screen for C2 to C8. The note SHALL NOT disable, hide or reorder anything, and SHALL NOT use "locked", "must", "fail", "wrong" or a warning colour as its only signal. With no prerequisite named, no note SHALL show. Its wording SHALL come from the content files. (D20, FR-LRN-04, D27)
 
 #### Scenario: Early entry shows the note
 - **GIVEN** a fresh learner state
 - **WHEN** the C3 module screen is shown
 - **THEN** a note names "C2 When BSTs go lopsided" and links to `/module/C2`
-- **AND** the Explore, Worked example and Check links are present and enabled
+- **AND** the lesson's first screen and its Next button are present and enabled
 
 #### Scenario: Prerequisite done hides the note
 - **GIVEN** a learner whose completed modules include C2

@@ -5,7 +5,7 @@ export const shellCopy = {
   skipLinkLabel: 'Skip to main content',
   aaButtonText: 'Aa',
   aaButtonName: 'Display and read-aloud settings',
-  aaPanelLine: 'Read-aloud and text size are coming.',
+  aaPanelLine: 'Read-aloud is coming in a later update.',
   // add-dark-mode-toggle: the switch's name. The on/off state is announced from aria-checked.
   darkTheme: 'Dark theme',
   switchOn: 'On',

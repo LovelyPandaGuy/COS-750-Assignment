@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import './learn.css'
 import { Button } from '../base'
 
-// The design's check feedback panel (revamp-question-and-feedback, D104). Not the rotation feedback of
+// The design's check feedback panel (revamp-question-and-feedback, D129). Not the rotation feedback of
 // Do it yourself, which is src/ui/practice/FeedbackPanel.tsx and still the `FeedbackPanel` contract.
 
 interface FeedbackParts {
@@ -17,7 +17,7 @@ interface FeedbackParts {
   icon?: string
 }
 
-/** Variants as a union: only the cap may carry the full answer and the lecture question (D105). */
+/** Variants as a union: only the cap may carry the full answer and the lecture question (D130). */
 export type FeedbackPanelProps =
   | { variant: null }
   | ({ variant: 'correct' } & FeedbackParts)

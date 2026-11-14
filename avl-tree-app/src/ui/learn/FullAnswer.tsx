@@ -1,13 +1,19 @@
 import { useId, useState } from 'react'
 import './learn.css'
-import type { WorkedExample } from '../../assessment/scaffold'
 import type { Tree } from '../../engine/tree'
 import { TreeView } from '../tree/TreeView'
 import { signed } from '../tree/describe'
 
+/** The engine's answer (from `engineAnswer`, never typed content, D95), in the form the question takes. */
+export type FullAnswerValue =
+  | { kind: 'option'; text: string }
+  | { kind: 'value'; value: number }
+  | { kind: 'tree'; tree: Tree }
+
 export interface FullAnswerProps {
-  /** The engine's solved problem: its answer and explanation are shown as given. */
-  example: WorkedExample
+  answer: FullAnswerValue
+  /** The reasoning, from the content (the scaffold's worked example or the question's explanation). */
+  explanation: string
   labels: {
     /** The disclosure button. */
     show: string
@@ -17,17 +23,14 @@ export interface FullAnswerProps {
 }
 
 /** The full answer at the retry cap (frame 1l, FR-SCA-03): a disclosure, collapsed by default. */
-export function FullAnswer({ example, labels }: FullAnswerProps) {
+export function FullAnswer({ answer, explanation, labels }: FullAnswerProps) {
   const [open, setOpen] = useState(false)
   const bodyId = useId()
-  const { instance, answer } = example
   const answerView =
-    instance.type === 'tree' ? (
-      <TreeView tree={answer as Tree} label={labels.treeAnswer} />
+    answer.kind === 'tree' ? (
+      <TreeView tree={answer.tree} label={labels.treeAnswer} />
     ) : (
-      <p className="learn-full-answer-value">
-        {instance.type === 'choice' ? (instance.options?.find((o) => o.correct)?.text ?? String(answer)) : signed(Number(answer))}
-      </p>
+      <p className="learn-full-answer-value">{answer.kind === 'option' ? answer.text : signed(answer.value)}</p>
     )
   return (
     <div className="learn-full-answer">
@@ -36,7 +39,7 @@ export function FullAnswer({ example, labels }: FullAnswerProps) {
       </button>
       <div id={bodyId} hidden={!open}>
         {answerView}
-        <p>{example.explanation}</p>
+        <p>{explanation}</p>
       </div>
     </div>
   )

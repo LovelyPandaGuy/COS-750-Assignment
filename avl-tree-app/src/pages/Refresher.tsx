@@ -1,27 +1,28 @@
 import { Link } from 'react-router-dom'
-import { C1_REFRESHER } from '../content/modules/c1Refresher'
 import { MODULE_TITLES } from '../content/modules'
-import { diagnosticCopy } from '../content/diagnostic'
-import { diagnosticPhase } from '../navigation/diagnostic'
+import { lessonCopy } from '../content/lesson'
+import { lessonById, loadContent } from '../live/load'
 import { paths } from '../routes'
-import { useLearner } from '../state/LearnerContext'
-import { ModulePlayer } from '../ui/module/ModulePlayer'
+import { ContentProblem } from '../ui/lesson/ContentProblem'
+import { LessonPlayer } from '../ui/lesson/LessonPlayer'
 
-/** The BST refresher screen: the step player under its own heading, ending at the re-check or C2. */
+/**
+ * The BST refresher: the refresher screens of lessons/c1.json on the lesson player (bst-refresher). Its
+ * last screen is the re-check of the missed skills (lesson-c1); the way on is C2.
+ */
 export function Refresher() {
-  const { learner } = useLearner()
-  const recheck = diagnosticPhase(learner.attempts).name === 'recheck'
-  const to = recheck ? paths.activity('C1', 'check') : paths.module('C2')
+  const loaded = loadContent()
+  const c1 = lessonById('c1')
+  if (loaded.problems.length > 0 || c1?.refresher === undefined) return <ContentProblem problems={loaded.problems} />
   return (
-    <ModulePlayer
-      content={C1_REFRESHER}
-      activity="explore"
-      heading="BST refresher"
-      finishTo={to}
+    <LessonPlayer
+      lesson={c1}
+      sequence={c1.refresher}
+      finishTo={paths.module('C2')}
       endPanel={
-        <section className="route-choice" aria-label={diagnosticCopy.refresher.endHeading}>
-          <Link className="module-button module-button-secondary" to={to}>
-            {recheck ? diagnosticCopy.refresher.toRecheck : `${diagnosticCopy.refresher.toC2} ${MODULE_TITLES.C2}`}
+        <section className="route-choice" aria-label={lessonCopy.c1.routeLabel}>
+          <Link className="module-button module-button-secondary" to={paths.module('C2')}>
+            {lessonCopy.c1.toC2(MODULE_TITLES.C2)}
           </Link>
         </section>
       }

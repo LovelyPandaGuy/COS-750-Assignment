@@ -20,7 +20,7 @@ describe('FR-ENG-10: conventions module', () => {
   it('default values', () => {
     expect(LEAF_HEIGHT).toBe(0)
     expect(EMPTY_HEIGHT).toBe(-1)
-    expect(balanceFactor(2, 1)).toBe(1)
+    expect(balanceFactor(2, 1)).toBe(-1) // ID 7.3: h(right) − h(left)
     expect([...REBALANCE_CASES]).toEqual(['LL', 'RR', 'LR', 'RL'])
   })
 

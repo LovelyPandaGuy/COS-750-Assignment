@@ -1,0 +1,507 @@
+{
+  "id": "c3",
+  "title": "The AVL property",
+  "outcomeIds": [
+    "LO2"
+  ],
+  "estimatedMinutes": 7,
+  "screens": [
+    {
+      "id": "c3-s01",
+      "type": "predict",
+      "gagneEvent": 1,
+      "merrillPhase": "problem",
+      "representation": "static-diagram",
+      "title": "Spot the problem",
+      "tree": {
+        "insert": [
+          50,
+          30,
+          70,
+          20,
+          80,
+          10,
+          90
+        ],
+        "rebalance": false
+      },
+      "show": [
+        "balanceFactor:root"
+      ],
+      "text": "The root of this tree has balance factor 0: its left and right branches have the same height. Is every node balanced?",
+      "options": [
+        "Yes",
+        "No"
+      ],
+      "answer": "No",
+      "reveal": "No. Nodes 30 and 70 each have one branch two levels taller than the other. Checking only the root is not enough."
+    },
+    {
+      "id": "c3-s02",
+      "type": "objectives",
+      "gagneEvent": 2,
+      "merrillPhase": "problem",
+      "representation": "text",
+      "title": "Goal",
+      "text": "Calculate heights and balance factors, and decide whether a tree is an AVL tree (LO2)."
+    },
+    {
+      "id": "c3-s03",
+      "type": "recall",
+      "gagneEvent": 3,
+      "merrillPhase": "activation",
+      "representation": "interactive-task",
+      "title": "Quick recall",
+      "task": {
+        "id": "c3-s03-task",
+        "set": "practice",
+        "lessonId": "c3",
+        "type": "mcq",
+        "outcomeId": "LO2",
+        "criteria": [
+          "LO2.1"
+        ],
+        "subSkill": "compute-height-bf",
+        "level": "apply",
+        "concept": "balance-factor",
+        "stem": "What is the height of a leaf?",
+        "hint": "This checks heights and balance factors: height counts edges down to a leaf, and bf = h(right) − h(left), with an empty branch counted as −1.",
+        "options": [
+          {
+            "id": "a",
+            "text": "1",
+            "misconceptionId": "misc-height-counts-nodes",
+            "explanation": "That counts the leaf itself as a node. Height counts edges, so a leaf has height 0."
+          },
+          {
+            "id": "b",
+            "text": "0",
+            "explanation": "Right. A leaf has no edges below it, so its height is 0."
+          },
+          {
+            "id": "c",
+            "text": "−1",
+            "misconceptionId": "misc-empty-height",
+            "explanation": "−1 is the height of an empty branch, one level below a leaf."
+          }
+        ],
+        "correctOptionId": "b"
+      }
+    },
+    {
+      "id": "c3-s04",
+      "type": "rule",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "static-diagram",
+      "title": "Height",
+      "tree": {
+        "insert": [
+          20,
+          10,
+          40,
+          30,
+          50
+        ]
+      },
+      "show": [
+        "height"
+      ],
+      "text": "The height of a node is the number of edges on the longest path from the node down to a leaf. A leaf has height 0. An empty branch has height −1, one less than a leaf.",
+      "caption": "10, 30 and 50 are leaves (height 0). 40 has height 1. The root 20 has height 2."
+    },
+    {
+      "id": "c3-s05",
+      "type": "rule",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "written-rule",
+      "title": "Balance factor",
+      "tree": {
+        "insert": [
+          20,
+          10,
+          40,
+          30,
+          50
+        ]
+      },
+      "show": [
+        "height",
+        "balanceFactor"
+      ],
+      "text": "The balance factor of a node is bf = h(right) − h(left).",
+      "points": [
+        "Positive: the right branch is taller.",
+        "Negative: the left branch is taller.",
+        "0: both branches have the same height.",
+        "Node 20: its right branch has height 1 and its left branch has height 0, so bf = 1 − 0 = +1.",
+        "Node 10: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0."
+      ],
+      "showRule": "bf = height of right branch − height of left branch. An empty branch has height −1."
+    },
+    {
+      "id": "c3-s06",
+      "type": "rule",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "written-rule",
+      "title": "The AVL rule",
+      "points": [
+        "In an AVL tree, every node has a balance factor of −1, 0 or +1.",
+        "The rule applies at every node, not just the root. Every subtree of an AVL tree is itself an AVL tree.",
+        "The tree does not have to be perfectly balanced: a difference of 1 is allowed.",
+        "Each node stores its height, so balance factors are quick to recompute.",
+        "Stated without proof: the height of an AVL tree is at most roughly 1.44 log(n + 2) − 1.328, and in practice only slightly more than log n."
+      ],
+      "showRule": "AVL tree: a BST in which every node has bf −1, 0 or +1."
+    },
+    {
+      "id": "c3-s07",
+      "type": "worked-example",
+      "gagneEvent": 5,
+      "merrillPhase": "demonstration",
+      "representation": "worked-example",
+      "title": "Worked example: from the leaves up",
+      "tree": {
+        "insert": [
+          30,
+          20,
+          40,
+          10,
+          25,
+          50,
+          5
+        ]
+      },
+      "show": [
+        "height",
+        "balanceFactor"
+      ],
+      "order": "post-order",
+      "text": "Work from the leaves up, because a node’s height depends on its children’s heights.",
+      "steps": [
+        "Node 5: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
+        "Node 10: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1.",
+        "Node 25: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
+        "Node 20: its right branch has height 0 and its left branch has height 1, so bf = 0 − 1 = −1.",
+        "Node 50: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
+        "Node 40: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1.",
+        "Node 30: its right branch has height 1 and its left branch has height 2, so bf = 1 − 2 = −1.",
+        "Every balance factor is −1, 0 or +1, so this is an AVL tree, even though its levels are not full."
+      ]
+    },
+    {
+      "id": "c3-s08",
+      "type": "diagram",
+      "gagneEvent": 5,
+      "merrillPhase": "demonstration",
+      "representation": "static-diagram",
+      "title": "Balanced does not mean full",
+      "tree": {
+        "insert": [
+          5,
+          2,
+          8,
+          1,
+          4,
+          7,
+          3
+        ],
+        "rebalance": false
+      },
+      "compareWith": {
+        "tree": {
+          "insert": [
+            7,
+            2,
+            8,
+            1,
+            4,
+            3,
+            5
+          ],
+          "rebalance": false
+        }
+      },
+      "show": [
+        "balanceFactor"
+      ],
+      "caption": "Left: an AVL tree, although its levels are not full. Right: not an AVL tree, because node 7 has balance factor −2. These are the two trees in Figure 4.29 of the textbook.",
+      "text": "Requiring equal heights at every node would be too rigid: only perfect trees with 2ᵏ − 1 nodes would pass. The AVL rule allows a difference of 1 and still keeps the height O(log n)."
+    },
+    {
+      "id": "c3-s09",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Your turn: balance factors",
+      "task": {
+        "id": "c3-s09-task",
+        "set": "practice",
+        "lessonId": "c3",
+        "type": "enter-values",
+        "outcomeId": "LO2",
+        "criteria": [
+          "LO2.1"
+        ],
+        "subSkill": "compute-height-bf",
+        "level": "apply",
+        "concept": "balance-factor",
+        "stem": "Click each node and enter its balance factor.",
+        "hint": "This checks heights and balance factors: height counts edges down to a leaf, and bf = h(right) − h(left), with an empty branch counted as −1.",
+        "tree": {
+          "insert": [
+            50,
+            30,
+            70,
+            20,
+            40,
+            80,
+            35
+          ]
+        },
+        "targets": [
+          {
+            "node": 20,
+            "quantity": "bf"
+          },
+          {
+            "node": 35,
+            "quantity": "bf"
+          },
+          {
+            "node": 40,
+            "quantity": "bf"
+          },
+          {
+            "node": 30,
+            "quantity": "bf"
+          },
+          {
+            "node": 80,
+            "quantity": "bf"
+          },
+          {
+            "node": 70,
+            "quantity": "bf"
+          },
+          {
+            "node": 50,
+            "quantity": "bf"
+          }
+        ],
+        "answerFrom": "engine",
+        "expected": [
+          0,
+          0,
+          -1,
+          1,
+          0,
+          1,
+          -1
+        ],
+        "wrongAnswers": [
+          {
+            "target": 2,
+            "value": 1,
+            "misconceptionId": "misc-bf-sign",
+            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 40: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1. A taller left branch gives a negative number."
+          },
+          {
+            "target": 2,
+            "value": 0,
+            "misconceptionId": "misc-empty-height",
+            "feedback": "An empty branch has height −1, not 0. Node 40: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1."
+          },
+          {
+            "target": 3,
+            "value": -1,
+            "misconceptionId": "misc-bf-sign",
+            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 30: its right branch has height 1 and its left branch has height 0, so bf = 1 − 0 = +1. A taller right branch gives a positive number."
+          },
+          {
+            "target": 5,
+            "value": -1,
+            "misconceptionId": "misc-bf-sign",
+            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 70: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1. A taller right branch gives a positive number."
+          },
+          {
+            "target": 5,
+            "value": 0,
+            "misconceptionId": "misc-empty-height",
+            "feedback": "An empty branch has height −1, not 0. Node 70: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1."
+          },
+          {
+            "target": 6,
+            "value": 1,
+            "misconceptionId": "misc-bf-sign",
+            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 50: its right branch has height 1 and its left branch has height 2, so bf = 1 − 2 = −1. A taller left branch gives a negative number."
+          }
+        ],
+        "feedback": {
+          "correct": "Node 20: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 35: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 40: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1. Node 30: its right branch has height 1 and its left branch has height 0, so bf = 1 − 0 = +1. Node 80: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 70: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1. Node 50: its right branch has height 1 and its left branch has height 2, so bf = 1 − 2 = −1.",
+          "incorrect": "Node 20: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 35: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 40: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1. Node 30: its right branch has height 1 and its left branch has height 0, so bf = 1 − 0 = +1. Node 80: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 70: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1. Node 50: its right branch has height 1 and its left branch has height 2, so bf = 1 − 2 = −1."
+        }
+      }
+    },
+    {
+      "id": "c3-s10",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Your turn: spot the problem",
+      "task": {
+        "id": "c3-s10-task",
+        "set": "practice",
+        "lessonId": "c3",
+        "type": "click-node",
+        "outcomeId": "LO2",
+        "criteria": [
+          "LO2.2"
+        ],
+        "subSkill": "find-violations",
+        "level": "apply",
+        "concept": "avl-rule",
+        "stem": "The root of this tree is balanced. Click every node that breaks the AVL rule.",
+        "hint": "This checks the AVL rule: every node, not only the root, must have a balance factor of −1, 0 or +1.",
+        "tree": {
+          "insert": [
+            50,
+            25,
+            75,
+            10,
+            30,
+            60,
+            80,
+            5,
+            1,
+            90,
+            95
+          ],
+          "rebalance": false
+        },
+        "target": "all-violations",
+        "answerFrom": "engine",
+        "selectMode": "many-or-none",
+        "expected": {
+          "nodes": [
+            10,
+            25,
+            75,
+            80
+          ]
+        },
+        "wrongAnswers": [
+          {
+            "node": 50,
+            "misconceptionId": "misc-root-only",
+            "feedback": "The root has balance factor 0, so it is fine. Check every node below it as well."
+          }
+        ],
+        "feedback": {
+          "correct": "Node 10: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2. Node 25: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. Node 75: its right branch has height 2 and its left branch has height 0, so bf = 2 − 0 = +2. Node 80: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2. The root has bf 0, but four nodes below it break the rule.",
+          "incorrect": "Node 10: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2. Node 25: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. Node 75: its right branch has height 2 and its left branch has height 0, so bf = 2 − 0 = +2. Node 80: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2. The root has bf 0, but four nodes below it break the rule."
+        }
+      }
+    },
+    {
+      "id": "c3-s11",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Your turn: watch the sign",
+      "task": {
+        "id": "c3-s11-task",
+        "set": "practice",
+        "lessonId": "c3",
+        "type": "enter-values",
+        "outcomeId": "LO2",
+        "criteria": [
+          "LO2.1"
+        ],
+        "subSkill": "compute-height-bf",
+        "level": "apply",
+        "concept": "balance-factor",
+        "stem": "Enter the balance factor of node 10.",
+        "hint": "This checks heights and balance factors: height counts edges down to a leaf, and bf = h(right) − h(left), with an empty branch counted as −1.",
+        "tree": {
+          "insert": [
+            10,
+            20,
+            30,
+            40,
+            50
+          ],
+          "rebalance": false
+        },
+        "targets": [
+          {
+            "node": 10,
+            "quantity": "bf"
+          }
+        ],
+        "answerFrom": "engine",
+        "expected": [
+          4
+        ],
+        "wrongAnswers": [
+          {
+            "target": 0,
+            "value": -4,
+            "misconceptionId": "misc-bf-sign",
+            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 10: its right branch has height 3 and its left branch is empty (height −1), so bf = 3 − (−1) = +4. A taller right branch gives a positive number."
+          },
+          {
+            "target": 0,
+            "value": 3,
+            "misconceptionId": "misc-empty-height",
+            "feedback": "An empty branch has height −1, not 0. Node 10: its right branch has height 3 and its left branch is empty (height −1), so bf = 3 − (−1) = +4."
+          }
+        ],
+        "feedback": {
+          "correct": "Node 10: its right branch has height 3 and its left branch is empty (height −1), so bf = 3 − (−1) = +4.",
+          "incorrect": "Node 10: its right branch has height 3 and its left branch is empty (height −1), so bf = 3 − (−1) = +4."
+        }
+      }
+    },
+    {
+      "id": "c3-s12",
+      "type": "check",
+      "gagneEvent": 8,
+      "merrillPhase": "integration",
+      "representation": "interactive-task",
+      "title": "Lesson check",
+      "checkId": "chk3",
+      "optional": false,
+      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
+    },
+    {
+      "id": "c3-s13",
+      "type": "summary",
+      "gagneEvent": 9,
+      "merrillPhase": "integration",
+      "representation": "written-rule",
+      "title": "Summary",
+      "points": [
+        "Height counts edges: a leaf has height 0, an empty branch −1.",
+        "bf = h(right) − h(left): negative means the left branch is taller.",
+        "AVL rule: every node has bf −1, 0 or +1, not only the root."
+      ],
+      "format": "short-box"
+    }
+  ],
+  "checkId": "chk3"
+}

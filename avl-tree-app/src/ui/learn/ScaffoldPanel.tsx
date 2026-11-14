@@ -13,7 +13,7 @@ export interface Rung {
 }
 
 export interface ScaffoldPanelProps {
-  /** In order. How many and which kinds is the caller's policy (D21 practice, D76 checks; D106). */
+  /** In order. How many and which kinds is the caller's policy (D21 practice, D76 checks; D131). */
   rungs: readonly Rung[]
   /** Hints the student may still open; shown on the Hint button (D23). */
   hintsLeft: number

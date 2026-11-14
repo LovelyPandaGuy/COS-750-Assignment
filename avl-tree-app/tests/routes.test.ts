@@ -26,11 +26,12 @@ describe('FR-LRN-04 paths come from one module', () => {
   })
 
   it('lists the activities of each module in default order', () => {
-    expect(ACTIVITIES_BY_MODULE.C1).toEqual(['check', 'refresher'])
+    expect(ACTIVITIES_BY_MODULE.C1).toEqual(['refresher'])
+    // app-routing (add-live-lesson-content): C2 to C8 are lessons with no activity routes.
     for (const id of ['C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'] as const) {
-      expect(ACTIVITIES_BY_MODULE[id]).toEqual(['explore', 'example', 'check'])
+      expect(ACTIVITIES_BY_MODULE[id]).toEqual([])
     }
-    expect(ACTIVITIES_BY_MODULE.C9).toEqual(['check'])
+    expect(ACTIVITIES_BY_MODULE.C9).toEqual([]) // live-c1-and-c9: C9 is a lesson
     expect(Object.keys(ACTIVITIES_BY_MODULE)).toEqual([...MODULE_IDS])
   })
 

@@ -6,21 +6,16 @@
 //   tests/ui/contracts.test.tsx fails until it does. Widening a contract is a type change at every caller.
 // Text props are strings the screen passes in from src/content/; no contract holds wording.
 import type { ComponentProps, ReactNode } from 'react'
-import type { ItemState, ReadinessReport } from '../assessment/report'
-import type { GuidedStep } from '../assessment/scaffold'
-import type { Tree } from '../engine/tree'
-import type { Representation } from '../modules/schema'
+import type { Key, Tree } from '../engine/tree'
+import type { SkillStatus } from '../live/diagnostic'
+import type { ReadinessReport } from '../live/readiness'
+import type { Question, Representation, Scaffold } from '../live/types'
 import type { LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
 import type { ActivityList } from '../components/ActivityList'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
 import type { ProgressMap } from '../components/ProgressMap'
 import type { ResumeCard } from '../components/ResumeCard'
-import type { SkillStatusList } from '../components/SkillStatusList'
-import type { ScaffoldLadder } from './module/check/ScaffoldLadder'
-import type { FeedbackPanel } from './practice/FeedbackPanel'
 import type { InOrderStrip } from './practice/InOrderStrip'
-import type { PredictionReveal } from './practice/PredictionReveal'
-import type { PredictPrompt } from './practice/PredictPrompt'
 import type { RotationMenu } from './practice/RotationMenu'
 import type { PseudocodePanel } from './replay/PseudocodePanel'
 import type { StepControls } from './replay/StepControls'
@@ -34,37 +29,65 @@ import type { QuestionItem } from './learn/QuestionItem'
 import type { ConfidenceRating } from './learn/ConfidenceRating'
 import type { FullAnswer } from './learn/FullAnswer'
 import type { LectureQuestionDraft } from './learn/LectureQuestionDraft'
+import type { FeedbackPanel } from './learn/FeedbackPanel'
 
-type Mastery = Exclude<ItemState, 'unassessed'>
-
-// ---- Built (23): the components' own props ----
+// ---- Built (19): the components' own props ----
 export type ResumeCardProps = ComponentProps<typeof ResumeCard>
 export type ConfirmDialogProps = ComponentProps<typeof ConfirmDialog>
-export type SkillStatusListProps = ComponentProps<typeof SkillStatusList>
 export type ProgressMapProps = ComponentProps<typeof ProgressMap>
 export type ActivityListProps = ComponentProps<typeof ActivityList>
 export type TreeViewProps = ComponentProps<typeof TreeView>
 export type StepControlsProps = ComponentProps<typeof StepControls>
 export type PseudocodePanelProps = ComponentProps<typeof PseudocodePanel>
 export type StepExplanationProps = ComponentProps<typeof StepExplanation>
-export type PredictPromptProps = ComponentProps<typeof PredictPrompt>
-export type PredictionRevealProps = ComponentProps<typeof PredictionReveal>
 export type RotationMenuProps = ComponentProps<typeof RotationMenu>
 export type InOrderStripProps = ComponentProps<typeof InOrderStrip>
-export type FeedbackPanelProps = ComponentProps<typeof FeedbackPanel>
-export type ScaffoldLadderProps = ComponentProps<typeof ScaffoldLadder>
 export type InsertControlProps = ComponentProps<typeof InsertControl>
 export type RebalanceSwitchProps = ComponentProps<typeof RebalanceSwitch>
 export type TreeStatsProps = ComponentProps<typeof TreeStats>
 export type EventLogProps = ComponentProps<typeof EventLog>
-// revamp-question-and-feedback (D103): built in src/ui/learn/. FeedbackPanel above is still the practice
-// rotation panel; the design's check panel is src/ui/learn/FeedbackPanel.tsx until the wiring change (D104).
+// revamp-question-and-feedback (D128): built in src/ui/learn/. FeedbackPanel is the design's check panel
+// (src/ui/learn/FeedbackPanel.tsx); the old practice panel that D129 kept it apart from was removed with the
+// old assessment layer at the merge with main (14 Nov).
 export type QuestionItemProps = ComponentProps<typeof QuestionItem>
 export type ConfidenceRatingProps = ComponentProps<typeof ConfidenceRating>
 export type FullAnswerProps = ComponentProps<typeof FullAnswer>
 export type LectureQuestionDraftProps = ComponentProps<typeof LectureQuestionDraft>
+export type FeedbackPanelProps = ComponentProps<typeof FeedbackPanel>
 
-// ---- Not built yet (22): only what the frame shows ----
+// ---- Not built yet (26): only what the frame shows ----
+// SkillStatusList, PredictPrompt, PredictionReveal and ScaffoldLadder were built on the old assessment layer;
+// the live content (D94 to D116) removed them, so they are stubs again on the src/live types.
+
+/** 1d: one line per prerequisite skill, with its word (Secure or Needs review) and a symbol; no total. */
+export interface SkillStatusListProps {
+  statuses: readonly { id: string; label: string; status: SkillStatus }[]
+}
+/** 1f: the prediction asked before a replay; the replay starts only after onProceed. */
+export interface PredictPromptProps {
+  tree: Tree
+  keyToInsert: Key
+  onProceed: () => void
+}
+/** 1f: what the student predicted next to what happened, with a jump to the imbalance step. */
+export interface PredictionRevealProps {
+  tree: Tree
+  keyToInsert: Key
+  /** What the student locked in; null means they skipped, and nothing is shown. */
+  choice: string | null
+  onReplayStep: (stepIndex: number) => void
+}
+/** 1j, 1k: the support ladder, hint then worked example then guided step-through (D21). */
+export interface ScaffoldLadderProps {
+  /** Rungs open, 0 to 3. */
+  level: number
+  question: Question
+  scaffold: Scaffold
+  /** The retry cap is reached: every rung is open. */
+  capped: boolean
+  onOpenNext: () => void
+}
+
 
 /** 1b: purpose, start or resume, and the hero diagram slot. */
 export interface StartPanelProps {
@@ -94,7 +117,7 @@ export interface DiagnosticStepperProps {
 /** 1d: secure or needs review per sub-skill, then the route recommendation. */
 export interface DiagnosticResultProps {
   heading: string
-  skills: readonly { id: string; label: string; state: Mastery }[]
+  skills: readonly { id: string; label: string; status: SkillStatus }[]
   recommendation: ReactNode
 }
 /** 1d, after a check (D20, D28): recommend, and let the student choose. */
@@ -152,7 +175,8 @@ export interface CheckHeaderProps {
 }
 /** 1k: the guided step-through, one step at a time. */
 export interface GuidedStepThroughProps {
-  steps: readonly GuidedStep[]
+  /** The step-through from the scaffold (`Scaffold.stepThrough`), one sentence per step. */
+  steps: readonly string[]
   step: number
   onStep: (step: number) => void
 }
@@ -198,10 +222,9 @@ export interface ExportActionsProps {
 }
 
 export const BUILT = [
-  'ResumeCard', 'ConfirmDialog', 'SkillStatusList', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls',
-  'PseudocodePanel', 'StepExplanation', 'PredictPrompt', 'PredictionReveal', 'RotationMenu', 'InOrderStrip',
-  'FeedbackPanel', 'ScaffoldLadder', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
-  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft',
+  'ResumeCard', 'ConfirmDialog', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls', 'PseudocodePanel',
+  'StepExplanation', 'RotationMenu', 'InOrderStrip', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
+  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel',
 ] as const
 
 export const STUBBED = [
@@ -209,7 +232,8 @@ export const STUBBED = [
   'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
   'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
   'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
-  'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions',
+  'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
+  'ScaffoldLadder',
 ] as const
 
 export type StubbedName = (typeof STUBBED)[number]

@@ -2,10 +2,7 @@
  * Session-level learner state (SE §6.2 learnerReducer). Pure: no React, no storage.
  * Only the actions this change needs; later screens add their own.
  */
-import { subSkillStatus } from '../assessment/mastery'
-import { ALL_ITEMS } from '../content/questions/bank'
-import { OWN_LECTURE_QUESTION } from '../modules/config'
-import { MODULE_IDS, type LearnerPath, parseAttempt, type Attempt, type LearnerState, type LectureQuestion, type ModuleId } from './learnerState'
+import { MODULE_IDS, OWN_LECTURE_QUESTION, parseAttempt, type Attempt, type LearnerState, type LectureQuestion, type ModuleId } from './learnerState'
 import type { LoadStatus } from './storage'
 
 /** The load status, or 'reset-by-user' once the student has reset in this session. */
@@ -24,7 +21,6 @@ export type SessionAction =
   | { type: 'module-completed'; module: ModuleId }
   /** A lecture question: drafted at the retry cap (FR-SCA-03) or the student's own, ID `own` (FR-RDY-02, D91). */
   | { type: 'lecture-question'; question: LectureQuestion }
-  | { type: 'path-set'; path: LearnerPath; currentModule?: ModuleId }
 
 export function learnerReducer(state: SessionState, action: SessionAction): SessionState {
   switch (action.type) {
@@ -42,18 +38,8 @@ export function learnerReducer(state: SessionState, action: SessionAction): Sess
       // An attempt the validator rejects is never stored (add-checks-and-feedback).
       const attempt = parseAttempt(action.attempt)
       if (attempt === null) return state
-      const attempts = [...state.learner.attempts, attempt]
-      // The sub-skill's status follows the attempt in the same change (FR-SCA-01).
-      const item = ALL_ITEMS.find((i) => i.id === attempt.questionId)
-      const status = item === undefined ? null : subSkillStatus(attempts, item.subSkill)
-      const subSkillStatuses = item === undefined || status === null ? state.learner.subSkillStatus : { ...state.learner.subSkillStatus, [item.subSkill]: status }
-      return { ...state, learner: { ...state.learner, attempts, subSkillStatus: subSkillStatuses } }
-    }
-    case 'path-set': {
-      const { learner } = state
-      const currentModule = action.currentModule ?? learner.currentModule
-      if (learner.path === action.path && learner.currentModule === currentModule) return state
-      return { ...state, learner: { ...learner, path: action.path, currentModule } }
+      // The attempt only: no sub-skill status is kept (learner-session; the ID's mastery is per lesson).
+      return { ...state, learner: { ...state.learner, attempts: [...state.learner.attempts, attempt] } }
     }
     case 'module-completed': {
       const { learner } = state

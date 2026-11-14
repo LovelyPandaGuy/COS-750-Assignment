@@ -1,3 +1,4 @@
+import { CONVENTIONS } from './conventions'
 import type { Key, Tree, TreeNode } from './tree'
 import type { TraceKind, TraceStep } from './trace'
 
@@ -12,31 +13,24 @@ export interface SearchTraceResult {
 
 type Purpose = 'compare' | 'found' | 'descendLeft' | 'descendRight' | 'notFound'
 
-// Pseudocode lines from the ID (C4). The PDF text lost its line breaks, so
-// this layout is an assumption to check (proposal, open question 1).
-//
-// Loop:                             Recursive:
-//  1 search(root, k):                1 search(v, k):
-//  2   v = root                      2   if v == null: return null
-//  3   while v != null:              3   if k == v.key: return v
-//  4     if k == v.key: return v     4   if k < v.key: return search(v.left, k)
-//  5     else if k < v.key: v = v.left   5 return search(v.right, k)
-//  6     else: v = v.right
-//  7   return null
+// Pseudocode lines from the ID's two listings (ID 7.4), as conventions.json numbers them
+// (pseudocode.lineForStep). The compare step lights the equality test; found, the return under it.
+const LINE_FOR = CONVENTIONS.pseudocode.lineForStep
+
 export const LOOP_LINES: Record<Purpose, number> = {
-  compare: 4,
-  found: 4,
-  descendLeft: 5,
-  descendRight: 6,
-  notFound: 7,
+  compare: LINE_FOR['search-loop'].compareEqual,
+  found: LINE_FOR['search-loop'].found,
+  descendLeft: LINE_FOR['search-loop'].goLeft,
+  descendRight: LINE_FOR['search-loop'].goRight,
+  notFound: LINE_FOR['search-loop'].notFound,
 }
 
 export const RECURSIVE_LINES: Record<Purpose, number> = {
-  compare: 3,
-  found: 3,
-  descendLeft: 4,
-  descendRight: 5,
-  notFound: 2,
+  compare: LINE_FOR['search-recursive'].compareEqual,
+  found: LINE_FOR['search-recursive'].found,
+  descendLeft: LINE_FOR['search-recursive'].goLeft,
+  descendRight: LINE_FOR['search-recursive'].goRight,
+  notFound: LINE_FOR['search-recursive'].notFound,
 }
 
 const KIND: Record<Purpose, TraceKind> = {

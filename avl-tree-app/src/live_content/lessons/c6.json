@@ -1,0 +1,571 @@
+{
+  "id": "c6",
+  "title": "Insertion with rebalancing",
+  "outcomeIds": [
+    "LO5"
+  ],
+  "estimatedMinutes": 9,
+  "screens": [
+    {
+      "id": "c6-s01",
+      "type": "predict",
+      "gagneEvent": 1,
+      "merrillPhase": "problem",
+      "representation": "interactive-task",
+      "title": "What goes wrong?",
+      "text": "Insert 3, then 2, then 1 into an empty AVL tree. What happens when 1 arrives?",
+      "tree": {
+        "insert": [
+          3,
+          2
+        ]
+      },
+      "operation": {
+        "name": "insert",
+        "key": 1,
+        "rebalance": false
+      },
+      "options": [
+        "Nothing: the tree is fine",
+        "Node 3 gets balance factor −2",
+        "Node 1 gets balance factor −2"
+      ],
+      "answer": "Node 3 gets balance factor −2",
+      "reveal": "Node 3’s left branch now has height 1 and its right branch is empty (−1): bf = −1 − 1 = −2. This is Case 1, fixed by a right rotation about 3."
+    },
+    {
+      "id": "c6-s02",
+      "type": "objectives",
+      "gagneEvent": 2,
+      "merrillPhase": "problem",
+      "representation": "text",
+      "title": "Goal",
+      "text": "Insert keys into an AVL tree and keep the AVL property after every insertion (LO5)."
+    },
+    {
+      "id": "c6-s03",
+      "type": "recall",
+      "gagneEvent": 3,
+      "merrillPhase": "activation",
+      "representation": "interactive-task",
+      "title": "Quick recall",
+      "task": {
+        "id": "c6-s03-task",
+        "set": "practice",
+        "lessonId": "c6",
+        "type": "mcq",
+        "outcomeId": "LO5",
+        "criteria": [
+          "LO5.1"
+        ],
+        "subSkill": "bst-insert",
+        "level": "apply",
+        "concept": "insertion",
+        "stem": "Where does a new key go in a BST?",
+        "hint": "This checks that you can place a new key: search for it as in a BST, and it goes in the empty branch where the search ends.",
+        "options": [
+          {
+            "id": "a",
+            "text": "At the root, and the old root moves down",
+            "misconceptionId": "misc-new-key-not-leaf",
+            "explanation": "BST insertion never changes the root. The new key always becomes a leaf."
+          },
+          {
+            "id": "b",
+            "text": "In the empty branch where a search for it ends: it becomes a new leaf",
+            "explanation": "Right. AVL insertion starts exactly like this."
+          },
+          {
+            "id": "c",
+            "text": "Next to the key closest in value, even if that node already has two children",
+            "misconceptionId": "misc-new-key-not-leaf",
+            "explanation": "The search continues until it reaches an empty branch. The new key goes there."
+          }
+        ],
+        "correctOptionId": "b"
+      }
+    },
+    {
+      "id": "c6-s04",
+      "type": "rule",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "written-rule",
+      "title": "The insertion procedure",
+      "points": [
+        "1. Insert the key as in a BST.",
+        "2. Backtrack towards the root, updating the balance factors.",
+        "3. Stop at the first node n with a balance factor below −1 or above +1.",
+        "4. Decide the case. bf negative (left branch too tall): if the new key is larger than n.left, it is Case 2 (LR), otherwise Case 1 (LL). bf positive: if the new key is smaller than n.right, it is Case 3 (RL), otherwise Case 4 (RR).",
+        "5. Rotate, and stop. No ancestor of n needs its balance factor changed."
+      ],
+      "showRule": "Insert, backtrack, stop at the first unbalanced node n, find the case, rotate once (single or double)."
+    },
+    {
+      "id": "c6-s05",
+      "type": "animation",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "worked-example",
+      "title": "Example 1 (fully worked)",
+      "text": "The textbook’s running example, part 1: insert 3, 2, 1, then 4 to 7 into an empty AVL tree. You can check each step in the textbook.",
+      "tree": {
+        "insert": []
+      },
+      "operation": {
+        "name": "insert-sequence",
+        "keys": [
+          3,
+          2,
+          1,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "steps": [
+        "The tree is empty, so 3 becomes the root.",
+        "2 < 3: go left.",
+        "2 goes in the empty left branch of 3.",
+        "Node 3: bf = −1 − 0 = −1.",
+        "1 < 3: go left.",
+        "1 < 2: go left.",
+        "1 goes in the empty left branch of 2.",
+        "Node 2: bf = −1 − 0 = −1.",
+        "Node 3: bf = −1 − 1 = −2.",
+        "Node 3 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).",
+        "Rotate 2 around 3: right rotation about 3.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "4 > 2: go right.",
+        "4 > 3: go right.",
+        "4 goes in the empty right branch of 3.",
+        "Node 3: bf = 0 − (−1) = +1.",
+        "Node 2: bf = 1 − 0 = +1.",
+        "5 > 2: go right.",
+        "5 > 3: go right.",
+        "5 > 4: go right.",
+        "5 goes in the empty right branch of 4.",
+        "Node 4: bf = 0 − (−1) = +1.",
+        "Node 3: bf = 1 − (−1) = +2.",
+        "Node 3 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
+        "Rotate 4 around 3: left rotation about 3.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "6 > 2: go right.",
+        "6 > 4: go right.",
+        "6 > 5: go right.",
+        "6 goes in the empty right branch of 5.",
+        "Node 5: bf = 0 − (−1) = +1.",
+        "Node 4: bf = 1 − 0 = +1.",
+        "Node 2: bf = 2 − 0 = +2.",
+        "Node 2 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
+        "Rotate 4 around 2: left rotation about 2.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "7 > 4: go right.",
+        "7 > 5: go right.",
+        "7 > 6: go right.",
+        "7 goes in the empty right branch of 6.",
+        "Node 6: bf = 0 − (−1) = +1.",
+        "Node 5: bf = 1 − (−1) = +2.",
+        "Node 5 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
+        "Rotate 6 around 5: left rotation about 5.",
+        "Every node has a balance factor of −1, 0 or +1."
+      ],
+      "result": "4(2(1, 3), 6(5, 7))",
+      "pauseAt": "imbalance",
+      "show": [
+        "balanceFactor"
+      ]
+    },
+    {
+      "id": "c6-s06",
+      "type": "animation",
+      "gagneEvent": 5,
+      "merrillPhase": "demonstration",
+      "representation": "worked-example",
+      "title": "Example 2 (guided)",
+      "text": "Part 2: insert 16, 15 and 14. At each imbalance, the app pauses and asks you to click n and name the case before it continues.",
+      "tree": {
+        "insert": [
+          3,
+          2,
+          1,
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "operation": {
+        "name": "insert-sequence",
+        "keys": [
+          16,
+          15,
+          14
+        ]
+      },
+      "steps": [
+        "16 > 4: go right.",
+        "16 > 6: go right.",
+        "16 > 7: go right.",
+        "16 goes in the empty right branch of 7.",
+        "Node 7: bf = 0 − (−1) = +1.",
+        "Node 6: bf = 1 − 0 = +1.",
+        "Node 4: bf = 2 − 1 = +1.",
+        "15 > 4: go right.",
+        "15 > 6: go right.",
+        "15 > 7: go right.",
+        "15 < 16: go left.",
+        "15 goes in the empty left branch of 16.",
+        "Node 16: bf = −1 − 0 = −1.",
+        "Node 7: bf = 1 − (−1) = +2.",
+        "Node 7 has balance factor +2: it is the first unbalanced node, n. Case 3 (RL).",
+        "Rotate 15 around 16: right rotation about 16.",
+        "Rotate 15 around 7: left rotation about 7.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "14 > 4: go right.",
+        "14 > 6: go right.",
+        "14 < 15: go left.",
+        "14 > 7: go right.",
+        "14 goes in the empty right branch of 7.",
+        "Node 7: bf = 0 − (−1) = +1.",
+        "Node 15: bf = 0 − 1 = −1.",
+        "Node 6: bf = 2 − 0 = +2.",
+        "Node 6 has balance factor +2: it is the first unbalanced node, n. Case 3 (RL).",
+        "Rotate 7 around 15: right rotation about 15.",
+        "Rotate 7 around 6: left rotation about 6.",
+        "Every node has a balance factor of −1, 0 or +1."
+      ],
+      "result": "4(2(1, 3), 7(6(5, ·), 15(14, 16)))",
+      "pauseAt": "imbalance",
+      "guided": {
+        "askNode": true,
+        "askCase": true
+      },
+      "show": [
+        "balanceFactor"
+      ]
+    },
+    {
+      "id": "c6-s07",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Example 3 (on your own)",
+      "text": "Part 3: insert 13, 12, 11 and 10, one at a time. After each one, build the rebalanced tree.",
+      "task": {
+        "id": "c6-s07-task",
+        "set": "practice",
+        "lessonId": "c6",
+        "type": "build-tree",
+        "outcomeId": "LO5",
+        "criteria": [
+          "LO5.4"
+        ],
+        "subSkill": "rebalance-insert",
+        "level": "apply",
+        "concept": "insertion",
+        "stem": "Insert 13, 12, 11 and 10, one at a time, and rebalance after each insertion.",
+        "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
+        "tree": {
+          "insert": [
+            3,
+            2,
+            1,
+            4,
+            5,
+            6,
+            7,
+            16,
+            15,
+            14
+          ]
+        },
+        "operation": {
+          "name": "insert-sequence",
+          "keys": [
+            13,
+            12,
+            11,
+            10
+          ]
+        },
+        "answerFrom": "engine",
+        "expected": {
+          "shape": [
+            7,
+            [
+              4,
+              [
+                2,
+                [
+                  1,
+                  null,
+                  null
+                ],
+                [
+                  3,
+                  null,
+                  null
+                ]
+              ],
+              [
+                6,
+                [
+                  5,
+                  null,
+                  null
+                ],
+                null
+              ]
+            ],
+            [
+              13,
+              [
+                11,
+                [
+                  10,
+                  null,
+                  null
+                ],
+                [
+                  12,
+                  null,
+                  null
+                ]
+              ],
+              [
+                15,
+                [
+                  14,
+                  null,
+                  null
+                ],
+                [
+                  16,
+                  null,
+                  null
+                ]
+              ]
+            ]
+          ],
+          "rotations": [
+            {
+              "about": 4,
+              "dir": "left"
+            },
+            {
+              "about": 14,
+              "dir": "right"
+            },
+            {
+              "about": 15,
+              "dir": "right"
+            },
+            {
+              "about": 12,
+              "dir": "right"
+            }
+          ]
+        },
+        "wrongAnswers": [],
+        "feedback": {
+          "correct": "13: Case 4 at 4. 12: Case 1 at 14. 11: Case 1 at 15. 10: Case 1 at 12. Each fix is a single rotation.",
+          "incorrect": "13: Case 4 at 4. 12: Case 1 at 14. 11: Case 1 at 15. 10: Case 1 at 12. Each fix is a single rotation."
+        }
+      }
+    },
+    {
+      "id": "c6-s08",
+      "type": "practice",
+      "gagneEvent": [
+        6,
+        7
+      ],
+      "merrillPhase": "application",
+      "representation": "interactive-task",
+      "title": "Example 3, continued",
+      "text": "Insert 8, then 9.",
+      "task": {
+        "id": "c6-s08-task",
+        "set": "practice",
+        "lessonId": "c6",
+        "type": "build-tree",
+        "outcomeId": "LO5",
+        "criteria": [
+          "LO5.4"
+        ],
+        "subSkill": "rebalance-insert",
+        "level": "apply",
+        "concept": "insertion",
+        "stem": "Insert 8, then 9, and rebalance.",
+        "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
+        "tree": {
+          "insert": [
+            3,
+            2,
+            1,
+            4,
+            5,
+            6,
+            7,
+            16,
+            15,
+            14,
+            13,
+            12,
+            11,
+            10
+          ]
+        },
+        "operation": {
+          "name": "insert-sequence",
+          "keys": [
+            8,
+            9
+          ]
+        },
+        "answerFrom": "engine",
+        "expected": {
+          "shape": [
+            7,
+            [
+              4,
+              [
+                2,
+                [
+                  1,
+                  null,
+                  null
+                ],
+                [
+                  3,
+                  null,
+                  null
+                ]
+              ],
+              [
+                6,
+                [
+                  5,
+                  null,
+                  null
+                ],
+                null
+              ]
+            ],
+            [
+              13,
+              [
+                11,
+                [
+                  9,
+                  [
+                    8,
+                    null,
+                    null
+                  ],
+                  [
+                    10,
+                    null,
+                    null
+                  ]
+                ],
+                [
+                  12,
+                  null,
+                  null
+                ]
+              ],
+              [
+                15,
+                [
+                  14,
+                  null,
+                  null
+                ],
+                [
+                  16,
+                  null,
+                  null
+                ]
+              ]
+            ]
+          ],
+          "rotations": [
+            {
+              "about": 8,
+              "dir": "left"
+            },
+            {
+              "about": 10,
+              "dir": "right"
+            }
+          ]
+        },
+        "wrongAnswers": [],
+        "feedback": {
+          "correct": "8 needs no rotation. 9 makes node 10 unbalanced (bf −2). 9 is between 8 and 10, so it went into the right subtree of 10’s left child: Case 2. Left rotation about 8, then right rotation about 10.",
+          "incorrect": "8 needs no rotation. 9 makes node 10 unbalanced (bf −2). 9 is between 8 and 10, so it went into the right subtree of 10’s left child: Case 2. Left rotation about 8, then right rotation about 10."
+        }
+      }
+    },
+    {
+      "id": "c6-s09",
+      "type": "diagram",
+      "gagneEvent": 5,
+      "merrillPhase": "demonstration",
+      "representation": "static-diagram",
+      "title": "Why one fix is enough",
+      "tree": {
+        "insert": [
+          3,
+          2
+        ]
+      },
+      "compareWith": {
+        "tree": {
+          "insert": [
+            3,
+            2,
+            1
+          ]
+        }
+      },
+      "show": [
+        "height"
+      ],
+      "caption": "Before 1 was inserted, the subtree rooted at 3 had height 1. After the insertion and the right rotation, the subtree (now rooted at 2) has height 1 again. Because the fixed subtree is as tall as before, nothing above it changes."
+    },
+    {
+      "id": "c6-s10",
+      "type": "check",
+      "gagneEvent": 8,
+      "merrillPhase": "integration",
+      "representation": "interactive-task",
+      "title": "Lesson check",
+      "checkId": "chk6",
+      "optional": false,
+      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
+    },
+    {
+      "id": "c6-s11",
+      "type": "summary",
+      "gagneEvent": 9,
+      "merrillPhase": "integration",
+      "representation": "written-rule",
+      "title": "Summary",
+      "points": [
+        "Insert as in a BST, then walk back up updating balance factors.",
+        "Fix only the first unbalanced node n, using the rotation(s) for its case.",
+        "One fix is enough: the subtree gets back its old height."
+      ],
+      "format": "short-box"
+    }
+  ],
+  "checkId": "chk6"
+}

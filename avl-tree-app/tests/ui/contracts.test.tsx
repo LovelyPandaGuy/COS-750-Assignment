@@ -27,9 +27,10 @@ describe('every named component has a contract', () => {
   });
   it('built and stubbed split the names with no overlap', () => {
     expect([...BUILT, ...STUBBED].sort()).toEqual([...CONTRACT_NAMES].sort());
-    // revamp-question-and-feedback (D103): QuestionItem, ConfidenceRating, FullAnswer, LectureQuestionDraft built.
-    expect(BUILT).toHaveLength(23);
-    expect(STUBBED).toHaveLength(22);
+    // 14 and 31 after the merge with the live content (D121); revamp-question-and-feedback then built
+    // QuestionItem, ConfidenceRating, FullAnswer, LectureQuestionDraft and FeedbackPanel (D128): 19 and 26.
+    expect(BUILT).toHaveLength(19);
+    expect(STUBBED).toHaveLength(26);
   });
 });
 

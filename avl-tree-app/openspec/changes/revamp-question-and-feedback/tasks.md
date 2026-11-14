@@ -1,6 +1,6 @@
 # Tasks
 
-Scope: `src/ui/learn/**`, tests, and, as the user agreed (D103):
+Scope: `src/ui/learn/**`, tests, and, as the user agreed (D128):
 - `src/ui/contracts.ts`;
 - the four stubs and `src/ui/stubs/index.ts`;
 - the counts in `tests/ui/contracts.test.tsx`;
@@ -19,7 +19,7 @@ Read proposal questions 1 to 12 first. Fixture text only ("Example verdict"); no
   - the confidence levels by keyboard and their bar counts;
   - axe for each state.
 
-  Name each test after FR-ASM-01, FR-ASM-03, FR-VIS-10, NFR-02 or D105.
+  Name each test after FR-ASM-01, FR-ASM-03, FR-VIS-10, NFR-02 or D130.
 - [x] 1.2 Write `tests/ui/learn/feedback-panel.test.tsx`, `full-answer.test.tsx`, `lecture-question-draft.test.tsx` and `scaffold-panel.test.tsx` for every `ui-feedback` scenario:
   - the four parts in DOM order for all three variants;
   - no red token, cross glyph or fail words (stylesheet and markup);
@@ -30,7 +30,7 @@ Read proposal questions 1 to 12 first. Fixture text only ("Example verdict"); no
   - the Hint count, its accessible name and `aria-disabled` at 0;
   - axe for each state.
 - [x] 1.3 Cross-cutting tests:
-  - update `tests/ui/contracts.test.tsx` counts to 23 built and 22 stubbed;
+  - update `tests/ui/contracts.test.tsx` counts to 23 built and 22 stubbed (19 and 26 after the merge with main, design.md "Merge with main");
   - add a source scan (no `src/content/` import under `src/ui/learn/`);
   - add `tests/ui/learn/keyboard-flow.test.tsx` (the composed flow by keyboard only);
   - write `tests/visual/learn.spec.ts`: the gallery's learn section at 390, 768 and 1366, no page scroll, targets of at least 44 px, text of at least 16 px, screenshots.
@@ -61,7 +61,7 @@ Read proposal questions 1 to 12 first. Fixture text only ("Example verdict"); no
 
 ## Workflow follow-up
 
-- After the human skim, record D103 to D106 in `.claude/docs/decisions.md`. Add the team questions to the open list: the confidence levels (2 or 3), and the confidence FR ID.
-- Content-author: `src/content/learn.ts` with the real labels and verdicts once the balance-factor convention is settled. First-miss reasons must not state the answer (D105, flagged at G3).
+- After the human skim, record D128 to D131 in `.claude/docs/decisions.md`. Add the team questions to the open list: the confidence levels (2 or 3), and the confidence FR ID.
+- Content-author: `src/content/learn.ts` with the real labels and verdicts once the balance-factor convention is settled. First-miss reasons must not state the answer (D130, flagged at G3).
 - The next change wires CheckItem, practice and the diagnostic onto these components. It modifies `module-checks` (stepper), `check-feedback`, `scaffold-ladder` and `retry-cap`, and repoints the `FeedbackPanel` contract.
 - A human merges after `add-ui-foundation` is archived and runs `/opsx:archive`. Agents do not.

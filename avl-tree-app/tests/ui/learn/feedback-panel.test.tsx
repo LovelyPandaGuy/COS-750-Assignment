@@ -63,7 +63,7 @@ describe('D27 NFR-02 feedback is calm', () => {
   });
 });
 
-describe('FR-SCA-03 D105 the answer appears only at the cap', () => {
+describe('FR-SCA-03 D130 the answer appears only at the cap', () => {
   it('not-yet renders no full answer and no lecture draft', () => {
     renderWithRouter(<FeedbackPanel variant="not-yet" {...feedbackBase} next={next()} />);
     expect(screen.queryByTestId('full-answer')).toBeNull();

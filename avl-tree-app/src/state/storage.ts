@@ -3,6 +3,7 @@
  * storage (NFR-05). Load never throws; bad stored data gives a fresh state
  * (NFR-06); blocked or full storage falls back to memory for the session.
  */
+import { CONVENTIONS } from '../engine/conventions'
 import { parseTheme, type Theme } from '../ui/theme'
 import { freshLearnerState, normaliseNickname, parseLearnerState, type LearnerState } from './learnerState'
 
@@ -115,9 +116,9 @@ function serialise(state: LearnerState): string {
       }
       if (a.confidence !== undefined) attempt.confidence = a.confidence
       if (a.misconceptionId !== undefined) attempt.misconceptionId = a.misconceptionId
+      if (a.attempt !== undefined) attempt.attempt = a.attempt
       return attempt
     }),
-    subSkillStatus: state.subSkillStatus,
     lectureQuestions: state.lectureQuestions.map((q) => {
       const question: LearnerState['lectureQuestions'][number] = { questionId: q.questionId, module: q.module, at: q.at, text: q.text }
       if (q.misconceptionId !== undefined) question.misconceptionId = q.misconceptionId
@@ -222,6 +223,32 @@ export function createLearnerStorage(
 
 export interface Settings {
   theme: Theme
+  /** Confetti when a lesson is completed (rewards.json; its effect comes with the rewards change). */
+  confetti: boolean
+  /** Read text aloud; disabled until text-to-speech is built (D26). */
+  narration: boolean
+  textSize: 'normal' | 'large'
+}
+
+const SETTING_DEFAULTS = CONVENTIONS.settings as { confetti?: { default?: string }; narration?: { default?: string }; textSize?: { default?: string } }
+
+/** The display settings with the defaults from conventions.json settings (display-settings). */
+export const DEFAULT_SETTINGS: Settings = {
+  theme: parseTheme(undefined),
+  confetti: SETTING_DEFAULTS.confetti?.default !== 'off',
+  narration: SETTING_DEFAULTS.narration?.default === 'on',
+  textSize: SETTING_DEFAULTS.textSize?.default === 'large' ? 'large' : 'normal',
+}
+
+/** Known settings from a stored value; anything missing or damaged takes its default. */
+export function parseSettings(raw: unknown): Settings {
+  const o = raw !== null && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {}
+  return {
+    theme: parseTheme(o.theme),
+    confetti: typeof o.confetti === 'boolean' ? o.confetti : DEFAULT_SETTINGS.confetti,
+    narration: false,
+    textSize: o.textSize === 'large' ? 'large' : o.textSize === 'normal' ? 'normal' : DEFAULT_SETTINGS.textSize,
+  }
 }
 
 export interface SettingsStorage {
@@ -239,18 +266,16 @@ export function createSettingsStorage(backend: KeyValueBackend | null): Settings
   return {
     load() {
       if (memory !== null) return { ...memory }
-      if (!persistent || backend === null) return { theme: parseTheme(undefined) }
+      if (!persistent || backend === null) return { ...DEFAULT_SETTINGS }
       try {
         const raw = backend.getItem(SETTINGS_KEY)
-        const parsed: unknown = raw === null ? null : JSON.parse(raw)
-        const theme = parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as { theme?: unknown }).theme : undefined
-        return { theme: parseTheme(theme) }
+        return parseSettings(raw === null ? null : JSON.parse(raw))
       } catch {
-        return { theme: parseTheme(undefined) }
+        return { ...DEFAULT_SETTINGS }
       }
     },
     save(settings) {
-      const value: Settings = { theme: parseTheme(settings.theme) }
+      const value: Settings = parseSettings(settings)
       if (persistent && backend !== null) {
         try {
           backend.setItem(SETTINGS_KEY, JSON.stringify(value))

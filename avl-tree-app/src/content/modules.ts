@@ -1,19 +1,13 @@
-// Module titles from decision D1 (docs/decisions.md). Not new wording.
-import type { ModuleId } from '../state/learnerState'
+// Module titles come from the lesson files (ID 7.1; D92 supersedes D1's titles). One source: the
+// loader. A title falls back to the module ID only when the content has problems.
+import { lessonById } from '../live/load'
+import { MODULE_IDS, type ModuleId } from '../state/learnerState'
 
-export const MODULE_TITLES: Record<ModuleId, string> = {
-  C1: 'Getting started and readiness check',
-  C2: 'When BSTs go lopsided',
-  C3: 'The AVL property',
-  C4: 'Search',
-  C5: 'Rotations',
-  C6: 'Insertion with rebalancing',
-  C7: 'Deletion',
-  C8: 'Choosing a structure',
-  C9: 'Am I ready',
-}
+export const MODULE_TITLES: Record<ModuleId, string> = Object.fromEntries(
+  MODULE_IDS.map((id) => [id, lessonById(id.toLowerCase())?.title ?? id]),
+) as Record<ModuleId, string>
 
-/** "C4 Search": the module ID followed by its D1 title. */
+/** "C4 Search (the algorithm)": the module ID followed by its lesson title. */
 export function moduleLabel(id: ModuleId): string {
   return `${id} ${MODULE_TITLES[id]}`
 }

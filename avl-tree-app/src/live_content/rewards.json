@@ -1,0 +1,53 @@
+{
+  "titles": [
+    {
+      "rank": "S",
+      "title": "Structural Savant",
+      "minShare": 1.0,
+      "band": "high",
+      "message": "Every criterion met. You know this structure inside out."
+    },
+    {
+      "rank": "A",
+      "title": "AVL Ace",
+      "minShare": 0.66,
+      "band": "high",
+      "message": "Strong work: you have mastered this lesson."
+    },
+    {
+      "rank": "B",
+      "title": "BST Boss",
+      "minShare": 0.5,
+      "band": "middle",
+      "message": "You’ve got the main idea. A quick review will lock it in."
+    },
+    {
+      "rank": "C",
+      "title": "Complexity Cadet",
+      "minShare": 0,
+      "band": "low",
+      "message": "You’re on your way. A worked example will help the key idea click."
+    }
+  ],
+  "masteryRank": "A",
+  "scoring": "share of the lesson’s criteria met; a criterion is met if its question is right on the first attempt or the re-attempt",
+  "overallTitle": "C9: share of all criteria met across the readiness questions",
+  "confetti": {
+    "default": "on",
+    "canTurnOff": true,
+    "trigger": "lesson-completed",
+    "durationMs": 1500
+  },
+  "certificate": [
+    "studentName",
+    "lessonsCompleted",
+    "title",
+    "date"
+  ],
+  "certificateText": {
+    "heading": "Certificate of completion",
+    "body": "{studentName} completed {lessonsCompleted} of 9 lessons of the COS212 AVL tree app and earned the title {title}.",
+    "footer": "Generated on {date}. The name is not stored by the app.",
+    "bonusNote": "Proposal: completed lessons could earn a bonus of up to 5% on the COS212 module mark, at the module coordinator’s discretion."
+  }
+}

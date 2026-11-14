@@ -49,20 +49,19 @@ Loading SHALL return exactly the learner state that was last saved on the same b
 - **THEN** the loaded state equals the second state
 
 ### Requirement: Stored data is validated on load
-On load, the system SHALL treat stored learner data as corrupt if it is not valid JSON, has a schema version other than 1, or any field is missing or of the wrong type or value. Corrupt data SHALL be replaced by a fresh saved state and the load status SHALL be "reset-corrupt". Load SHALL NOT throw. (NFR-06)
+On load, the system SHALL treat stored learner data as corrupt if it is not valid JSON, has a schema version other than 2, or any field is missing or of the wrong type or value. Corrupt data, including a version-1 save from before the JSON questions, SHALL be replaced by a fresh saved state and the load status SHALL be "reset-corrupt", which shows the "earlier progress was replaced" notice. Load SHALL NOT throw. (NFR-06, proposal item 7)
 
 #### Scenario: Unreadable JSON
 - **WHEN** the stored learner value is `{not json`
 - **THEN** the load status is "reset-corrupt", a fresh state is returned and stored, and no error is thrown
 
 #### Scenario: Unknown schema version
-- **WHEN** the stored learner value is a valid state with schema version 2
+- **WHEN** the stored learner value is a valid state with schema version 1 or 3
 - **THEN** the load status is "reset-corrupt" and a fresh state is returned
 
 #### Scenario: Tampered fields
-- **WHEN** a valid stored state is altered in one way at a time: currentModule "C10", path "skipped", completedModules "C1" (a string), a sub-skill status "mastered", an attempt with correct "yes", an attempt with confidence "maybe", an attempt with hintsUsed -1, profileId empty
+- **WHEN** a valid stored state is altered in one way at a time: currentModule "C10", completedModules "C1" (a string), an attempt with correct "yes", an attempt with confidence "maybe", an attempt with hintsUsed -1, an attempt with attempt 0, profileId empty
 - **THEN** each load has status "reset-corrupt" and returns a fresh state
-
 #### Scenario: Fuzzed storage never crashes
 - **WHEN** arbitrary strings (property test) are stored as the learner value and loaded
 - **THEN** every load returns a valid learner state with status "restored" or "reset-corrupt" and never throws
@@ -127,3 +126,15 @@ The learner state SHALL hold a list of lecture questions, each with a question I
 #### Scenario: Inventory describes it
 - **WHEN** the stored-data inventory is read
 - **THEN** the learner key's description mentions lecture questions
+
+### Requirement: Attempts store their attempt number
+Each stored attempt SHALL carry its attempt number for its question: 1 for a first answer, 2 for a check re-attempt, and the running count for practice. A stored attempt without it SHALL load as attempt 1, so earlier saves stay valid. (ID 9.1, ID 12.2)
+
+#### Scenario: Re-attempt stored
+- **WHEN** a check question is answered twice
+- **THEN** the two stored attempts carry attempt 1 and attempt 2
+
+#### Scenario: Older saves still load
+- **GIVEN** a stored attempt with no attempt number
+- **WHEN** the state is loaded
+- **THEN** it loads, with attempt 1

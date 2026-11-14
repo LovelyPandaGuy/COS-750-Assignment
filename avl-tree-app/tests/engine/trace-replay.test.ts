@@ -64,9 +64,9 @@ describe('FR-ENG-06: trace replay', () => {
     expect(replay(null, [])).toBeNull()
   })
 
-  it('delete steps refused', () => {
+  it('a delete step removes the leaf (ID 7.3, leaf deletion only)', () => {
     const T = avl([20, 10, 30])
-    const step: TraceStep = { index: 0, kind: 'delete', nodes: [10], before: T, after: T, pseudocodeLine: 1 }
-    expect(() => replay(T, [step])).toThrow(/delete/)
+    const step: TraceStep = { index: 0, kind: 'delete', nodes: [10], before: T, after: T, pseudocodeLine: 0 }
+    expect(replay(T, [step])?.left).toBeNull()
   })
 })

@@ -173,9 +173,9 @@ describe('FR-VIS-02 roles during the replay', () => {
     expect(rolesAt(trace, 7)).toEqual({ 10: 'new' })
   })
 
-  it('z and y on the imbalance and rotation steps', () => {
-    expect(rolesAt(trace, 8)).toEqual({ 10: 'new', 30: 'z', 20: 'y' })
-    expect(rolesAt(trace, 9)).toEqual({ 10: 'new', 30: 'z', 20: 'y' })
+  it('ID 11.1: n on the imbalance step, being rotated on the rotation step', () => {
+    expect(rolesAt(trace, 8)).toEqual({ 10: 'new', 30: 'n' })
+    expect(rolesAt(trace, 9)).toEqual({ 10: 'new', 30: 'rotating', 20: 'rotating' })
   })
 })
 
@@ -220,7 +220,7 @@ describe('FR-VIS-07 a sentence for each step (data)', () => {
   it('the imbalance step names z, its bf, y and the case', () => {
     const op: Operation = { kind: 'insert', tree: CHAIN, key: 10 }
     const e = explainAt(op, traceFor(op, 'loop').trace, 8)
-    expect(e).toMatchObject({ tag: 'imbalance', key: 30, other: 20, balanceFactor: 2, rebalanceCase: 'LL' })
+    expect(e).toMatchObject({ tag: 'imbalance', key: 30, other: 20, balanceFactor: -2, rebalanceCase: 'LL' })
   })
 
   it('the rotation step names the case and direction', () => {

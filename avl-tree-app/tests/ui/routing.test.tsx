@@ -15,10 +15,9 @@ const actions = () => within(banner()).queryAllByRole('link').map((a) => a.textC
 const ALL_PATHS = [
   '/',
   '/path',
+  '/module/C1',
   '/module/C4',
-  '/module/C4/explore',
-  '/module/C1/check',
-  '/module/C1/check/result',
+  '/module/C9',
   '/module/C1/refresher',
   '/sandbox',
   '/readiness',
@@ -78,11 +77,18 @@ describe('FR-LRN-04 unknown paths go somewhere safe', () => {
     }
   })
 
-  it('an activity the module lacks goes to the module screen', () => {
-    renderRoutes(backendWith(), '/module/C9/explore')
-    expect(h1s()[0]).toHaveTextContent('C9 Am I ready')
-    renderRoutes(backendWith(), '/module/C1/example')
-    expect(screen.getAllByRole('heading', { level: 1 }).some((h) => h.textContent === 'C1 Getting started and readiness check')).toBe(true)
+  it('old activity paths go to the lesson (app-routing, live-c1-and-c9)', () => {
+    for (const [path, title] of [
+      ['/module/C9/check', 'Am I ready for the lecture?'],
+      ['/module/C9/explore', 'Am I ready for the lecture?'],
+      ['/module/C1/check', 'Getting started and readiness check'],
+      ['/module/C1/check/result', 'Getting started and readiness check'],
+    ]) {
+      const { unmount } = renderRoutes(backendWith(), path)
+      expect(h1s()[0], path).toHaveTextContent(title)
+      expect(screen.getByText(/^Screen 1 of/)).toBeInTheDocument()
+      unmount()
+    }
   })
 
   it('the redirect replaces the history entry', () => {
@@ -131,26 +137,25 @@ describe('NFR-06 every route is in the shell', () => {
 
 describe('FR-LRN-03 breadcrumb per screen', () => {
   it('names the module and the activity with its place', () => {
-    renderRoutes(backendWith(), '/module/C5/explore')
-    expect(crumb()).toContain('C5 Rotations')
-    expect(crumb()).toContain('Explore (1 of 3)')
+    renderRoutes(backendWith(), '/module/C1/refresher')
+    expect(crumb()).toContain('C1 Getting started and readiness check')
+    expect(crumb()).toContain('BST refresher')
   })
 
-  it('names the module and the check position', () => {
+  it('an old lesson activity path redirects to the lesson (app-routing)', () => {
     renderRoutes(backendWith(), '/module/C6/check')
     expect(crumb()).toContain('C6 Insertion with rebalancing')
-    expect(crumb()).toContain('Check (3 of 3)')
+    expect(h1s()[0]).toHaveTextContent('Insertion with rebalancing')
+    expect(screen.getByText('Screen 1 of 11')).toBeInTheDocument()
   })
 
-  it('warm-up check and result', () => {
-    renderRoutes(backendWith(), '/module/C1/check')
+  it('the C1 lesson', () => {
+    renderRoutes(backendWith(), '/module/C1')
     expect(crumb()).toContain('C1 Getting started and readiness check')
-    expect(crumb()).toContain('Warm-up check')
   })
 
   it('result, hub, module, sandbox and readiness', () => {
     const cases: [string, string][] = [
-      ['/module/C1/check/result', 'Result'],
       ['/path', 'Your path'],
       ['/module/C4', 'C4 Search'],
       ['/sandbox', 'Sandbox'],
@@ -174,11 +179,10 @@ describe('FR-VIS-08 TopBar actions per screen', () => {
   const table: [string, string[]][] = [
     ['/path', both],
     ['/module/C4', both],
+    ['/module/C5', both],
     ['/module/C5/explore', both],
-    ['/module/C5/example', both],
-    ['/module/C5/check', ['Lecture questions']],
-    ['/module/C1/check', []],
-    ['/module/C1/check/result', []],
+    ['/module/C9', both],
+    ['/module/C1', []],
     ['/module/C1/refresher', []],
     ['/', []],
     ['/sandbox', ['Lecture questions']],
@@ -221,7 +225,7 @@ describe('NFR-02 browser title per screen', () => {
     expect(document.title).toBe('Your path · AVL Primer')
     first.unmount()
     renderRoutes(backendWith(), '/module/C4')
-    expect(document.title).toBe('C4 Search · AVL Primer')
+    expect(document.title).toBe('Search (the algorithm) · AVL Primer')
   })
 })
 
@@ -229,7 +233,7 @@ describe('NFR-02 focus follows in-app navigation', () => {
   it('moves focus to the heading after following a link', () => {
     renderRoutes(backendWith(progressState()), '/path')
     fireEvent.click(screen.getByRole('link', { name: /^continue/i }))
-    expect(h1s()[0]).toHaveTextContent('C4 Search')
+    expect(h1s()[0]).toHaveTextContent('Search (the algorithm)')
     expect(h1s()[0]).toHaveFocus()
   })
 

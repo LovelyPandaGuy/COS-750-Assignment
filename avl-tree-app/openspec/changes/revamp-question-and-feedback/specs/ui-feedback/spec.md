@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: FeedbackPanel has three variants with four parts
-`src/ui/learn/FeedbackPanel` SHALL take a variant (`correct`, `not-yet`, `cap`, or none), a verdict, a why, a concept link (label and route) and a next step (label and action) as props. Each variant SHALL show, in order, a verdict heading, the why, the concept link and the next-step button, which is the only primary action. (FR-ASM-03, FR-SCA-03, D27, D104)
+`src/ui/learn/FeedbackPanel` SHALL take a variant (`correct`, `not-yet`, `cap`, or none), a verdict, a why, a concept link (label and route) and a next step (label and action) as props. Each variant SHALL show, in order, a verdict heading, the why, the concept link and the next-step button, which is the only primary action. (FR-ASM-03, FR-SCA-03, D27, D129)
 
 #### Scenario: Each variant shows four parts
 - **GIVEN** each variant with verdict "Example verdict", why "Example why", concept "Example concept" and next step "Example next"
@@ -16,7 +16,7 @@ The panel SHALL use the feedback tokens and a neutral icon for its variant, and 
 - **THEN** they use only `--feedback-*` and other non-red tokens, contain no ✗, ✕ or ❌, and the variant is also named in text (the verdict), not by colour alone
 
 ### Requirement: The answer appears only at the cap
-The `not-yet` variant SHALL NOT accept an answer: its props type has no answer field and no full-answer or lecture slot. Only the `cap` variant SHALL take `fullAnswer` (a `FullAnswer` element) and `lectureDraft` (a `LectureQuestionDraft` element) and render them after the why. The `correct` variant MAY take neither. (FR-SCA-03, D105)
+The `not-yet` variant SHALL NOT accept an answer: its props type has no answer field and no full-answer or lecture slot. Only the `cap` variant SHALL take `fullAnswer` (a `FullAnswer` element) and `lectureDraft` (a `LectureQuestionDraft` element) and render them after the why. The `correct` variant MAY take neither. (FR-SCA-03, D130)
 
 #### Scenario: First miss
 - **GIVEN** the `not-yet` variant
@@ -58,7 +58,7 @@ The panel SHALL always render a polite live region (`role="status"`), empty whil
 - **THEN** the status shows the added label and Add is disabled
 
 ### Requirement: ScaffoldPanel shows rungs as given
-`ScaffoldPanel` SHALL render the ordered `rungs` it is given, each with a kind (`nudge`, `fuller-hint`, `worked-example`, `guided`), a state (`open`, `seen`, `available`, `waiting`), a title and a body. Each rung SHALL show its number, its state word from `labels.state` and a border per state, and its body only when open. How many rungs and which kinds SHALL come from props. (FR-SCA-02, D21, D76, D106)
+`ScaffoldPanel` SHALL render the ordered `rungs` it is given, each with a kind (`nudge`, `fuller-hint`, `worked-example`, `guided`), a state (`open`, `seen`, `available`, `waiting`), a title and a body. Each rung SHALL show its number, its state word from `labels.state` and a border per state, and its body only when open. How many rungs and which kinds SHALL come from props. (FR-SCA-02, D21, D76, D131)
 
 #### Scenario: Practice and check ladders from props
 - **GIVEN** two rungs (nudge, fuller hint) for practice, and three rungs (fuller hint, worked example, guided) for a check

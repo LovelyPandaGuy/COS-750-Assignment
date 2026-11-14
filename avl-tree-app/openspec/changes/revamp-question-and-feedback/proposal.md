@@ -4,17 +4,17 @@ Owner: Dev B (lane B, D96). Capabilities: `ui-question`, `ui-feedback`.
 
 ## Open questions
 
-None blocks the work. Questions 1 and 2 were settled by the user on 14 Nov, before drafting. The others have a recommendation that the specs follow; each one is isolated in a prop or a single file (D18). Decision numbers start at D103 because `revamp-tree-view` proposes D100 to D102.
+None blocks the work. Questions 1 and 2 were settled by the user on 14 Nov, before drafting. The others have a recommendation that the specs follow; each one is isolated in a prop or a single file (D18). Decision numbers start at D128: main uses D1 to D124 and `revamp-tree-view` proposes D125 to D127 (renumbered from D128 at the merge with main, 14 Nov).
 
-1. **Scope beyond `src/ui/learn/**` (settled, proposed D103).** `QuestionItem`, `ConfidenceRating`, `FullAnswer` and `LectureQuestionDraft` are stubs in `src/ui/contracts.ts`. `tests/ui/contracts.test.tsx` fails once a real component with a stubbed name exists, and it pins 19 built and 26 stubbed. Their contracts also lack props this change needs.
+1. **Scope beyond `src/ui/learn/**` (settled, proposed D128).** `QuestionItem`, `ConfidenceRating`, `FullAnswer` and `LectureQuestionDraft` are stubs in `src/ui/contracts.ts`. `tests/ui/contracts.test.tsx` fails once a real component with a stubbed name exists, and it pins 19 built and 26 stubbed. Their contracts also lack props this change needs.
    **User's choice:** this change may also:
    - edit `src/ui/contracts.ts`: move the four names to BUILT and widen their props;
    - delete their four stubs and their entries in `src/ui/stubs/index.ts`;
    - have the test-writer change the counts to 23 and 22.
 
    No stub has a caller, so widening breaks nothing.
-2. **Panel name (settled, proposed D104).** The contract name `FeedbackPanel` points at the rotation feedback in `src/ui/practice/FeedbackPanel.tsx` (frame 1h). The design's check panel (correct, not quite yet, retry cap) is built as `src/ui/learn/FeedbackPanel.tsx`. The contract keeps pointing at the practice panel until a later change moves practice and checks onto the new one. For a while two components share the name.
-3. **Answer on a first miss (INDEX conflict 20, D27, proposed D105).** Frame 1j shows the correct reasoning after attempt 1; the design system reveals the correct option only at the cap. The brief follows the design system.
+2. **Panel name (settled, proposed D129).** The contract name `FeedbackPanel` points at the rotation feedback in `src/ui/practice/FeedbackPanel.tsx` (frame 1h). The design's check panel (correct, not quite yet, retry cap) is built as `src/ui/learn/FeedbackPanel.tsx`. The contract keeps pointing at the practice panel until a later change moves practice and checks onto the new one. For a while two components share the name.
+3. **Answer on a first miss (INDEX conflict 20, D27, proposed D130).** Frame 1j shows the correct reasoning after attempt 1; the design system reveals the correct option only at the cap. The brief follows the design system.
    **Recommendation:** the not-quite-yet variant cannot take an answer (type and test), and QuestionItem marks the correct option only when told to at the cap. The "why" text is content: the content-author must write first-miss reasons that do not state the answer. Flagged for the user at G3.
 4. **Confidence levels (D89; frames 1c, 1i).** The design draws three (Guessing, Fairly sure, Certain); the learner state stores two (`CONFIDENCE_LEVELS = ['sure', 'unsure']`), and D89 counts "sure" wrong answers.
    **Recommendation:** `ConfidenceRating` renders the ordered levels it is given (value and label each), with bars filling 1 to n. The stored type stays as it is.
@@ -26,7 +26,7 @@ None blocks the work. Questions 1 and 2 were settled by the user on 14 Nov, befo
    - its response is the value as a signed string the marker accepts (`+2`, `0`, `-1`).
 
    Using it in checks is a later wiring change that modifies `module-checks`. Nothing here changes check screens.
-6. **Ladder levels (D21, D76, proposed D106).** The brief lists four levels (nudge, fuller hint, worked example, guided step-through). Practice uses two (D21) and checks three (D76). The design's ScaffoldPanel draws rungs as open, available or waiting, and frame 1k adds "seen".
+6. **Ladder levels (D21, D76, proposed D131).** The brief lists four levels (nudge, fuller hint, worked example, guided step-through). Practice uses two (D21) and checks three (D76). The design's ScaffoldPanel draws rungs as open, available or waiting, and frame 1k adds "seen".
    **Recommendation:** `ScaffoldPanel` takes an ordered list of rungs from the caller. Each rung has a kind (one of the four), a state (open, seen, available, waiting), a title and a body. The hints left and the Hint action are props. `PRACTICE_HINTS` and `SCAFFOLD_LADDER` stay in config, and the caller decides which rungs a practice or a check gets.
 7. **Hint button at zero.** **Recommendation:** it stays in place with `aria-disabled="true"` and shows 0, so its place in the control strip (D23) never shifts.
 8. **Focus and announcements.** Focus moves to the feedback heading, and the live region also announces the verdict and the reason, so a screen reader may read the verdict twice.

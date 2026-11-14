@@ -201,12 +201,13 @@ describe('FR-VIS-10 NFR-04 focus and z are kept in view (revamp-tree-view)', () 
     expect(spy).toHaveBeenLastCalledWith(expect.objectContaining({ block: 'nearest', inline: 'nearest' }));
   });
 
-  it('scrolls the z node into view when the tree changes', () => {
+  // D97: the node being taught is the first unbalanced node, tagged "n" (it was "z" before the live content).
+  it('scrolls the n node into view when the tree changes', () => {
     const before = chain(14);
     const { rerender } = render(<TreeView tree={before} label="t" />);
     expect(spy).not.toHaveBeenCalled();
     const after: Tree = { key: 15, height: 15, left: before, right: null };
-    rerender(<TreeView tree={after} roles={{ 3: 'z' }} label="t" />);
+    rerender(<TreeView tree={after} roles={{ 3: 'n' }} label="t" />);
     expect(scrolledKeys()).toContain(3);
     expect(spy).toHaveBeenCalledWith(expect.objectContaining({ block: 'nearest', inline: 'nearest' }));
   });

@@ -13,27 +13,28 @@
 
 .tree-edge { stroke: var(--border-control); stroke-width: 2; fill: none; }
 
-[data-role] { --role-color: var(--tree-neutral); }
-[data-role='new'] { --role-color: var(--tree-new); }
-[data-role='z'] { --role-color: var(--tree-z); }
-[data-role='y'] { --role-color: var(--tree-y); }
-[data-role='balanced'] { --role-color: var(--tree-balanced); }
+/* Node states (ID 11.1): a fill with its own text colour, and a ring style as the non-colour backup. */
+[data-state] { --node-fill: var(--bg-surface); --node-text: var(--text-primary); --node-ring: var(--tree-neutral); }
+[data-state='balanced'] { --node-fill: var(--node-balanced); --node-text: var(--node-balanced-text); --node-ring: var(--node-balanced); }
+[data-state='out-of-balance'] { --node-fill: var(--node-unbalanced); --node-text: var(--node-dark-text); --node-ring: var(--node-dark-text); }
+[data-state='rotating'] { --node-fill: var(--node-rotating); --node-text: var(--node-dark-text); --node-ring: var(--node-dark-text); }
+[data-state='new'] { --node-fill: var(--node-new); --node-text: var(--node-dark-text); --node-ring: var(--node-new); }
 
 .tree-hit { fill: transparent; }
-.tree-node-fill { fill: var(--bg-surface); }
-.tree-ring { fill: none; stroke: var(--role-color); stroke-width: 2; }
-[data-ring='dashed'] .tree-ring { stroke-dasharray: 5 4; }
-[data-ring='dotted'] .tree-ring { stroke-dasharray: 1 5; stroke-linecap: round; stroke-width: 3; }
-[data-ring='thick'] .tree-ring { stroke-width: 4; }
-.tree-ring-inner { fill: none; stroke: var(--role-color); stroke-width: 2; }
+.tree-node-fill { fill: var(--node-fill); }
+.tree-ring { fill: none; stroke: var(--node-ring); stroke-width: 2; }
+[data-ring='dashed'] .tree-ring { stroke-dasharray: 5 4; stroke-width: 4; }
+[data-ring='thick'] .tree-ring { stroke-width: 5; }
 
-.tree-key { font: var(--type-body); font-weight: 700; fill: var(--text-primary); text-anchor: middle; dominant-baseline: central; }
+.tree-key { font: var(--type-body); font-weight: 700; fill: var(--node-text); text-anchor: middle; dominant-baseline: central; }
 .tree-metrics,
 .tree-flag { font: var(--type-label); text-anchor: middle; }
 .tree-metrics { font-family: var(--font-mono); fill: var(--text-primary); }
 /* Design "Node anatomy": the unbalanced node's annotation takes the z colour and weight. */
 .tree-metrics[data-unbalanced] { fill: var(--tree-z); font-weight: 700; }
 .tree-flag { fill: var(--tree-z); }
+/* The "!" beside an unbalanced node (ID 11.1), restored from the incoming branch. */
+.tree-marker { font: var(--type-body); font-weight: 700; fill: var(--text-primary); text-anchor: middle; }
 /* Labels sit under the node, where edges pass: a halo in the surface colour keeps them readable (review C1). */
 .tree-metrics,
 .tree-flag {
@@ -43,13 +44,15 @@
   stroke-linejoin: round;
 }
 
-/* Role tags: filled pills in the role colour (design system 01 D); dark theme uses dark text (04B). */
+/* Role tags: filled pills in the role colour (design system 01 D); dark theme uses dark text (04B).
+   Roles after the live content (D97): "NEW" and "n", the first unbalanced node (the old z). */
+[data-role] { --role-color: var(--tree-neutral); }
+[data-role='new'] { --role-color: var(--tree-new); }
+[data-role='n'] { --role-color: var(--tree-z); }
 .tree-tag-pill { fill: var(--role-color); }
 .tree-tag { font: var(--type-label); text-anchor: middle; dominant-baseline: central; fill: var(--bg-surface); }
 :root[data-theme='dark'] .tree-tag { fill: var(--bg-page); }
 
-.tree-badge-ring { fill: var(--bg-surface); stroke: var(--tree-balanced); stroke-width: 2; }
-.tree-badge-check { fill: none; stroke: var(--tree-balanced); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .tree-selected-frame {
   fill: var(--action-primary-tint);

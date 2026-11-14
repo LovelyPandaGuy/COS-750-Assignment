@@ -25,7 +25,7 @@ The design (screens 1c and 1i to 1l, plus the design system's QuestionItem, Conf
 ## Decisions
 
 1. **Contracts widen; their callers are only stubs.** Each built component takes its contract from `contracts.ts`, so `QuestionItemProps` is the component's own prop type. Added props:
-   - QuestionItem: `labels`, `tree?: TreeViewProps`, `editor?: ReactNode`, `revealCorrect?: boolean`, `range?: { min; max; step }`;
+   - QuestionItem: `labels`, `tree?: TreeViewProps`, `editor?: ReactNode`, `revealCorrect?: string` (the engine's correct option ID; changed from a boolean at the merge with main), `range?: { min; max; step }`;
    - ConfidenceRating: `levels`, `optionalNote?`;
    - FullAnswer: `labels`;
    - LectureQuestionDraft: `labels`, `onChange` and `onDecline`.
@@ -55,7 +55,7 @@ The design (screens 1c and 1i to 1l, plus the design system's QuestionItem, Conf
 
 ## Risks and trade-offs
 
-- **Two FeedbackPanels (D104).** This is confusing until the wiring change. Mitigation: a file header comment in each, and the contract comment names the practice one.
+- **Two FeedbackPanels (D129).** This is confusing until the wiring change. Mitigation: a file header comment in each, and the contract comment names the practice one.
 - **Double announcement (proposal question 8).** The a11y-checker listens in task 4.1; if it reads badly, drop the heading's announcement by keeping focus but trimming the live region to the why.
 - **Stepper vs `module-checks`.** The current spec requires a text field. Adoption must modify that spec; flagged as [OPEN].
 - **Confidence levels.** Rendering three levels while two are stored is possible only once the team decides. The component is ready either way.
@@ -76,3 +76,14 @@ See the proposal: questions 4 (confidence levels), 5 (stepper in checks), 9 (gal
 - **FeedbackPanel focus.** It focuses the heading only when the variant changes after the first render. The spec line was updated (a page that opens with feedback shown must not steal focus).
 - **Dev dependency:** `@testing-library/user-event` (user's decision, 14 Nov).
 - **Polish (3.2)** was CSS only: critique items K1 to K3 in `review.md`. K4 (a ✓ on "your answer") needs a label prop and is left `[OPEN]`.
+
+## Merge with main (14 Nov): live content types
+
+Main replaced the old assessment layer (`src/assessment`) with the live content (`src/live`, D94 to D116). This change follows:
+
+- **QuestionItem** takes `question: Question` (was `instance: Instance`). It emits the live `Response` (`{ kind: 'option', id }`; the stepper gives `{ kind: 'values', values: [n] }`) and reads `Mark.verdict`, where `partial` looks like not quite yet. Options give a radio group; no options give the stepper.
+- **revealCorrect** is now the engine's correct option ID, because live options carry no `correct` flag and the shown answer must come from the engine (D95).
+- **FullAnswer** takes the engine's answer (`{ kind: 'option', text } | { kind: 'value', value } | { kind: 'tree', tree }`) and an `explanation`, instead of a `WorkedExample`.
+- **FeedbackPanel:** the old practice panel that D129 kept separate was removed on main, which left a stub. The `FeedbackPanel` contract is now this change's `src/ui/learn/FeedbackPanel.tsx` and its stub is deleted. Contracts are 19 built and 26 stubbed.
+- **Decisions** renumbered from D103–D106 to D128–D131. Main uses D1 to D124, and `revamp-tree-view` proposes D125 to D127.
+- The gallery's example tree now draws in the D97 look, so six learn and gallery phone and tablet baselines were refreshed.

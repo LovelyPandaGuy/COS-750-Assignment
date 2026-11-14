@@ -60,3 +60,10 @@ Checked and passing: no red and no cross anywhere, in either theme. Not-quite-ye
 - Critique K4 is `[OPEN]` (a ✓ on "your answer").
 - Role crossings: one agent wrote the tests (test-writer), the code (implementer) and the CSS (ui-polisher). Two test edits were made during apply, both additions (the FeedbackPanel focus-on-mount test, and the visual checks for collapsed FullAnswer and no initial focus). Both follow from bugs found in the build and are listed above.
 - The red-phase `feedback-types` "not-yet rejects fullAnswer" assertion passed trivially while the module was missing. It is meaningful now; it was checked against the real union.
+
+## Merge with main (14 Nov)
+
+- Learn components, fixtures and tests were ported to the `src/live` types (design.md "Merge with main"). The test edits were the type and shape changes only, with no change to what each test checks, except `revealCorrect`, which now names the engine's option ID.
+- `FeedbackPanel` moved from STUBBED to BUILT, and its stub was deleted. Contract counts are 19 and 26.
+- Baselines refreshed: `learn-{light,dark}-{phone,tablet}`, `gallery-{light,dark}-phone`. The only change is the example tree in the D97 look (checked by the region that differed).
+- Checks: `npm test` (988 passed), typecheck, lint, build, `npm run test:visual` (30 passed), `openspec validate --all` (30 passed).

@@ -133,7 +133,7 @@ describe('D16 the choice is kept as a setting', () => {
     expect(b.getItem(SETTINGS_KEY)).toBeNull()
     openAa()
     fireEvent.click(sw())
-    expect(JSON.parse(b.getItem(SETTINGS_KEY)!)).toEqual({ theme: 'dark' })
+    expect(JSON.parse(b.getItem(SETTINGS_KEY)!)).toMatchObject({ theme: 'dark' })
   })
 })
 

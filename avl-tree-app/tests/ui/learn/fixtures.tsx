@@ -3,42 +3,46 @@
 import type { ReactElement } from 'react';
 import { render } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import type { Instance, Mark, Option } from '../../../src/assessment/types';
+import type { Mark } from '../../../src/live/mark';
+import type { Option, Question } from '../../../src/live/types';
 import type { Tree } from '../../../src/engine/tree';
 import { build } from '../../engine/helpers';
 
 export const threeNodes: Tree = build([20, 10, 30]);
 
-const opt = (id: string, text: string, correct = false): Option => ({ id, value: id, text, correct, explanation: `Example explanation ${id}` });
+const opt = (id: string, text: string): Option => ({ id, text, explanation: `Example explanation ${id}` });
 
-export function choiceInstance(overrides: Partial<Instance> = {}): Instance {
+/** The engine's correct option in the choice fixture (passed to `revealCorrect` at the cap). */
+export const CORRECT_OPTION = 'opt-c';
+
+export function choiceQuestion(overrides: Partial<Question> = {}): Question {
   return {
-    itemId: 'example-choice',
-    seed: 1,
-    attempt: 0,
-    variant: 1,
-    type: 'choice',
+    id: 'example-choice',
+    set: 'example',
+    lessonId: 'example',
+    type: 'mcq',
+    outcomeId: 'example',
+    criteria: [],
+    subSkill: 'example',
+    level: 'apply',
+    concept: 'example',
     stem: 'Example stem',
-    facts: { tree: null, keys: [], values: {} },
-    signature: 'example',
-    answer: 'opt-c',
-    options: [opt('opt-a', 'Option one'), opt('opt-b', 'Option two'), opt('opt-c', 'Option three', true), opt('opt-d', 'Option four')],
-    correctExplanation: 'Example correct explanation',
-    numbers: [],
+    hint: 'Example hint',
+    options: [opt('opt-a', 'Option one'), opt('opt-b', 'Option two'), opt('opt-c', 'Option three'), opt('opt-d', 'Option four')],
     ...overrides,
   };
 }
 
-export function numberInstance(overrides: Partial<Instance> = {}): Instance {
-  return { ...choiceInstance(), itemId: 'example-number', type: 'number', answer: 2, options: undefined, ...overrides };
+export function numberQuestion(overrides: Partial<Question> = {}): Question {
+  return { ...choiceQuestion(), id: 'example-number', type: 'enter-values', options: undefined, ...overrides };
 }
 
-export function treeInstance(): Instance {
-  return { ...choiceInstance(), itemId: 'example-tree', type: 'tree', answer: threeNodes, options: undefined };
+export function treeQuestion(): Question {
+  return { ...choiceQuestion(), id: 'example-tree', type: 'build-tree', options: undefined };
 }
 
-export const correctMark: Mark = { status: 'correct', explanation: 'Example why' };
-export const notYetMark: Mark = { status: 'not-yet', explanation: 'Example why' };
+export const correctMark: Mark = { verdict: 'right', reason: 'Example why' };
+export const notYetMark: Mark = { verdict: 'not-yet', reason: 'Example why' };
 
 export const questionLabels = {
   choiceLegend: 'Example legend',

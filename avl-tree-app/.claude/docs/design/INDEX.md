@@ -99,11 +99,11 @@ T1. **Dark feedback panels (design system 04B vs `tokens.css` and `tests/tokens.
 - ~~Elevation values e1 and e2 are named but not specified.~~ Done (14 Nov import): the section 03 swatches give e1 `0 1px 2px rgba(27,31,42,.06)` and e2 `0 6px 20px rgba(27,31,42,.10)`; now `--elevation-1` and `--elevation-2` in `tokens.css` (light only; the dark section draws no shadow).
 - Dark theme: no values for disabled text and background, the neutral tree node, or pressed. The feedback panels are drawn but not applied (T1). Listed at the bottom of the dark block in `tokens.css`.
 - Primary disabled background `#E4E6EC` and disabled dashed border `#C2C7D2` are drawn in section 04 but not named as tokens; recorded as a comment in `tokens.css`, not added.
-- Fonts: done (add-ui-foundation, D98): Atkinson Hyperlegible Next and Mono are self-hosted in `src/ui/fonts/` with `@font-face` rules.
-- Breakpoints: none stated; 390, 768 and 1366 assumed (D93).
-- Pressed for secondary and quiet buttons, chip hover: not stated; assumed (D94).
-- Bloom level analyse (LO7, LO9): no colour or glyph; OutcomeChip does not show it yet (D95).
-- TopBar progress area ("revealed structure"): not drawn; an empty slot for now (D92).
+- Fonts: done (add-ui-foundation, D123): Atkinson Hyperlegible Next and Mono are self-hosted in `src/ui/fonts/` with `@font-face` rules.
+- Breakpoints: none stated; 390, 768 and 1366 assumed (D118).
+- Pressed for secondary and quiet buttons, chip hover: not stated; assumed (D119).
+- Bloom level analyse (LO7, LO9): no colour or glyph; OutcomeChip does not show it yet (D120).
+- TopBar progress area ("revealed structure"): not drawn; an empty slot for now (D117).
 
 ## Rules for agents
 

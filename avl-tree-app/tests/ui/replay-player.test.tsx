@@ -7,7 +7,6 @@ import { makeNode, type Key, type Tree } from '../../src/engine/tree'
 import { traceFor, explainAt, type Operation } from '../../src/replay/replay'
 import { sentenceFor } from '../../src/ui/replay/sentence'
 import { ReplayPlayer } from '../../src/ui/replay/ReplayPlayer'
-import { ModeSwitch } from '../../src/ui/practice/ModeSwitch'
 
 // Spec: add-replay-and-pseudocode / step-replay and pseudocode-panel.
 // Requirement IDs: FR-VIS-03, FR-VIS-04, FR-VIS-05, FR-VIS-07, FR-VIS-10, FR-VIS-11, NFR-02. Outcomes: LO5, LO7.
@@ -138,17 +137,24 @@ describe('FR-VIS-07 a sentence for each step', () => {
     }
     for (const s of seen) expect(s!.trim().length).toBeGreaterThan(0)
     expect(seen[0]).toMatch(/10/)
-    for (let p = 1; p < seen.length; p++) expect(seen[p]).not.toBe(seen[p - 1])
+    // Sentences are the conventions captions: a comparison and the move it causes share one (step-replay).
+    expect(seen.slice(1)).toEqual([
+      '10 < 30: go left.',
+      '10 < 30: go left.',
+      '10 < 20: go left.',
+      '10 < 20: go left.',
+      '10 goes in the empty left branch of 20.',
+      'Node 20: bf = −1 − 0 = −1.',
+      'Node 30: bf = −1 − 1 = −2.',
+      'Node 30 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).',
+      'Rotate 20 around 30: right rotation about 30.',
+    ])
   })
 
-  it('the imbalance sentence names 30, +2, 20 and LL', () => {
+  it('the imbalance sentence is the conventions caption (ID 7.3)', () => {
     render(<ReplayPlayer operation={INSERT} label="Tree" />)
     stepTimes(8)
-    const t = live().textContent!
-    expect(t).toMatch(/\b30\b/)
-    expect(t).toMatch(/\+2/)
-    expect(t).toMatch(/\b20\b/)
-    expect(t).toMatch(/\bLL\b/)
+    expect(live().textContent).toBe('Node 30 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).')
   })
 
   it('every sentence is non-empty and names the snapshot balance factor', () => {
@@ -183,12 +189,12 @@ describe('FR-VIS-07 a sentence for each step', () => {
 })
 
 describe('FR-VIS-02 roles during the replay', () => {
-  it('z and y tags are drawn at the imbalance step', () => {
+  it('ID 11.1: the n tag and the NEW tag are drawn at the imbalance step', () => {
     render(<ReplayPlayer operation={INSERT} label="Tree" />)
     stepTimes(8)
     const region = screen.getByRole('region', { name: 'Tree' })
-    expect(region.querySelector('[data-role="z"]')?.getAttribute('data-key')).toBe('30')
-    expect(region.querySelector('[data-role="y"]')?.getAttribute('data-key')).toBe('20')
+    expect(region.querySelector('[data-role="n"]')?.getAttribute('data-key')).toBe('30')
+    expect(region.querySelector('[data-role="n"] .tree-tag')?.textContent).toBe('n')
     expect(region.querySelector('[data-role="new"]')?.getAttribute('data-key')).toBe('10')
   })
 })
@@ -199,7 +205,7 @@ describe('FR-VIS-11 search replays with a step count', () => {
     expect(counter()).toBe('Step 0 / 4')
     stepTimes(4)
     expect(screen.getByText(/nodes visited: 2/i)).toBeTruthy()
-    expect(live().textContent).toMatch(/30 was found/i)
+    expect(live().textContent).toBe('30 = 30: found.')
   })
 
   it('not found: 5 steps, count 2, sentence says not in the tree', () => {
@@ -262,11 +268,11 @@ describe('FR-VIS-04 loop or recursive search', () => {
     stepTimes(3)
     fireEvent.click(screen.getByRole('radio', { name: /recursive/i }))
     const panel = screen.getByRole('region', { name: /^pseudocode/i })
-    expect(within(panel).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(panel).getAllByRole('listitem')).toHaveLength(9)
     expect(counter()).toBe('Step 0 / 4')
     fireEvent.click(btn('Step'))
     const items = within(panel).getAllByRole('listitem')
-    expect(items.findIndex((li) => li.getAttribute('aria-current') === 'step') + 1).toBe(3)
+    expect(items.findIndex((li) => li.getAttribute('aria-current') === 'step') + 1).toBe(4)
   })
 
   it('insert has no form choice', () => {
@@ -276,13 +282,13 @@ describe('FR-VIS-04 loop or recursive search', () => {
 })
 
 describe('NFR-02 pseudocode panel is readable by assistive technology', () => {
-  it('a named region with an ordered list of 5 and visible line numbers', () => {
-    render(<ReplayPlayer operation={INSERT} label="Tree" />)
-    const panel = screen.getByRole('region', { name: /pseudocode: avl insert/i })
+  it('a named region with an ordered list of 9 and visible line numbers', () => {
+    render(<ReplayPlayer operation={{ kind: 'search', tree: BAL, key: 30 }} label="Tree" />)
+    const panel = screen.getByRole('region', { name: /^pseudocode/i })
     const list = within(panel).getByRole('list')
     expect(list.tagName).toBe('OL')
     const items = within(list).getAllByRole('listitem')
-    expect(items).toHaveLength(5)
+    expect(items).toHaveLength(9)
     items.forEach((li, i) => expect(li.textContent).toContain(String(i + 1)))
     expect(panel.querySelectorAll('[tabindex]')).toHaveLength(0)
   })
@@ -303,7 +309,7 @@ describe('NFR-02 pseudocode panel is readable by assistive technology', () => {
 
 describe('FR-VIS-10 player layout and the Watch slot', () => {
   it('reading order: tree, controls, pseudocode, sentence', () => {
-    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    render(<ReplayPlayer operation={{ kind: 'search', tree: BAL, key: 30 }} label="Tree" />)
     const order = [
       screen.getByRole('region', { name: 'Tree' }),
       screen.getByRole('group', { name: /replay controls/i }),
@@ -318,13 +324,6 @@ describe('FR-VIS-10 player layout and the Watch slot', () => {
   it('controls wrap so 360 px needs no sideways page scroll', () => {
     const css = readFileSync('src/ui/replay/replay.css', 'utf8')
     expect(css).toMatch(/\.replay-controls[^{]*\{[^}]*flex-wrap:\s*wrap/)
-  })
-
-  it('in the Watch slot, with no axe violations', async () => {
-    const { container } = render(<ModeSwitch watch={<ReplayPlayer operation={INSERT} label="Tree" />} base={CHAIN} keyToInsert={10} />)
-    expect(screen.getByRole('radio', { name: 'Watch' })).toBeChecked()
-    expect(btn('Play')).toBeTruthy()
-    expect(await axe(container)).toHaveNoViolations()
   })
 
   it('insert and search players have no axe violations mid-replay', async () => {

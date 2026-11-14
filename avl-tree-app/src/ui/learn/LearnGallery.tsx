@@ -2,7 +2,8 @@
 // learn components with neutral fixture text, plus a composed keyboard flow. Developer text, not content.
 import { useState, type ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
-import type { Instance, Mark, Response } from '../../assessment/types'
+import type { Mark, Response } from '../../live/mark'
+import type { Question } from '../../live/types'
 import { avlInsert } from '../../engine/avl'
 import type { Tree } from '../../engine/tree'
 import { Button } from '../base'
@@ -16,27 +17,27 @@ import { ScaffoldPanel, type Rung } from './ScaffoldPanel'
 // Built by the engine, so heights follow the conventions module (D2).
 const sample: Tree = [20, 10, 30].reduce<Tree>((t, k) => avlInsert(t, k).tree, null)
 
-const choice = (stem = 'Example stem'): Instance => ({
-  itemId: 'gallery-choice',
-  seed: 1,
-  attempt: 0,
-  variant: 1,
-  type: 'choice',
+/** Gallery fixture only (development, not student-facing): the option the demo flow treats as right. */
+const GALLERY_RIGHT = 'opt-c'
+const choice = (stem = 'Example stem', id = 'gallery-choice'): Question => ({
+  id,
+  set: 'gallery',
+  lessonId: 'gallery',
+  type: 'mcq',
+  outcomeId: 'gallery',
+  criteria: [],
+  subSkill: 'gallery',
+  level: 'apply',
+  concept: 'gallery',
   stem,
-  facts: { tree: null, keys: [], values: {} },
-  signature: 'gallery',
-  answer: 'opt-c',
+  hint: 'Example hint',
   options: ['Option one', 'Option two', 'Option three', 'Option four'].map((text, i) => ({
     id: `opt-${'abcd'[i]}`,
-    value: `opt-${'abcd'[i]}`,
     text,
-    correct: i === 2,
     explanation: 'Example explanation',
   })),
-  correctExplanation: 'Example explanation',
-  numbers: [],
 })
-const number = (): Instance => ({ ...choice('Example compute stem'), itemId: 'gallery-number', type: 'number', answer: 2, options: undefined })
+const number = (): Question => ({ ...choice('Example compute stem', 'gallery-number'), type: 'enter-values', options: undefined })
 
 const labels: QuestionItemLabels = {
   choiceLegend: 'Example options',
@@ -54,8 +55,8 @@ const levels = [
   { value: 'three', text: 'Example certain' },
 ]
 const range = { min: -3, max: 3, step: 1 }
-const notYet: Mark = { status: 'not-yet', explanation: 'Example why' }
-const right: Mark = { status: 'correct', explanation: 'Example why' }
+const notYet: Mark = { verdict: 'not-yet', reason: 'Example why' }
+const right: Mark = { verdict: 'right', reason: 'Example why' }
 const noop = () => {}
 const parts = {
   why: 'Example why: a sentence or two on the reasoning, from the engine and content.',
@@ -85,11 +86,10 @@ export function LearnFlow() {
   const [response, setResponse] = useState<Response | null>(null)
   const [confidence, setConfidence] = useState<string | null>(null)
   const [mark, setMark] = useState<Mark | null>(null)
-  const inst = { ...choice(attempt === 0 ? 'Example flow stem' : 'Example flow stem, new problem'), attempt }
+  const question = choice(attempt === 0 ? 'Example flow stem' : 'Example flow stem, new problem', `gallery-flow-${attempt}`)
   const check = () => {
-    if (response === null || !('choice' in response)) return
-    const ok = inst.options!.find((o) => o.id === response.choice)?.correct === true
-    setMark(ok ? right : notYet)
+    if (response === null || response.kind !== 'option') return
+    setMark(response.id === GALLERY_RIGHT ? right : notYet)
   }
   const tryAgain = () => {
     setAttempt((a) => a + 1)
@@ -99,7 +99,7 @@ export function LearnFlow() {
   }
   return (
     <div className="learn-flow">
-      <QuestionItem instance={inst} response={response} onResponse={setResponse} disabled={mark !== null} mark={mark ?? undefined} labels={labels} />
+      <QuestionItem question={question} response={response} onResponse={setResponse} disabled={mark !== null} mark={mark ?? undefined} labels={labels} />
       <ConfidenceRating value={confidence} onChange={setConfidence} label="Example how sure" optionalNote="Example optional" levels={levels} disabled={mark !== null} />
       {mark === null && (
         <Button variant="primary" onClick={check}>
@@ -108,7 +108,7 @@ export function LearnFlow() {
       )}
       {mark === null ? (
         <FeedbackPanel variant={null} />
-      ) : mark.status === 'correct' ? (
+      ) : mark.verdict === 'right' ? (
         <FeedbackPanel variant="correct" verdict="Example right" why="Example why" concept={parts.concept} next={{ label: 'Example continue', onClick: noop }} />
       ) : (
         <FeedbackPanel variant="not-yet" verdict="Example not quite yet" why="Example why" concept={parts.concept} next={{ label: 'Example try again', onClick: tryAgain }} />
@@ -128,35 +128,35 @@ export function LearnGallery() {
         <h3>QuestionItem, choice</h3>
         <div className="learn-gallery-grid">
           <Cell title="Default, with tree">
-            <QuestionItem instance={choice()} response={null} onResponse={noop} disabled={false} labels={labels} tree={{ tree: sample, label: 'Example tree' }} />
+            <QuestionItem question={choice()} response={null} onResponse={noop} disabled={false} labels={labels} tree={{ tree: sample, label: 'Example tree' }} />
           </Cell>
           <Cell title="Selected">
-            <QuestionItem instance={choice()} response={{ choice: 'opt-b' }} onResponse={noop} disabled={false} labels={labels} />
+            <QuestionItem question={choice()} response={{ kind: 'option', id: 'opt-b' }} onResponse={noop} disabled={false} labels={labels} />
           </Cell>
           <Cell title="Disabled">
-            <QuestionItem instance={choice()} response={null} onResponse={noop} disabled labels={labels} />
+            <QuestionItem question={choice()} response={null} onResponse={noop} disabled labels={labels} />
           </Cell>
           <Cell title="Submitted, correct">
-            <QuestionItem instance={choice()} response={{ choice: 'opt-c' }} onResponse={noop} disabled mark={right} labels={labels} />
+            <QuestionItem question={choice()} response={{ kind: 'option', id: 'opt-c' }} onResponse={noop} disabled mark={right} labels={labels} />
           </Cell>
           <Cell title="Submitted, not quite yet (answer not revealed)">
-            <QuestionItem instance={choice()} response={{ choice: 'opt-b' }} onResponse={noop} disabled mark={notYet} labels={labels} />
+            <QuestionItem question={choice()} response={{ kind: 'option', id: 'opt-b' }} onResponse={noop} disabled mark={notYet} labels={labels} />
           </Cell>
           <Cell title="Revealed at the cap">
-            <QuestionItem instance={choice()} response={{ choice: 'opt-b' }} onResponse={noop} disabled mark={notYet} revealCorrect labels={labels} />
+            <QuestionItem question={choice()} response={{ kind: 'option', id: 'opt-b' }} onResponse={noop} disabled mark={notYet} revealCorrect={GALLERY_RIGHT} labels={labels} />
           </Cell>
         </div>
 
         <h3>QuestionItem, stepper</h3>
         <div className="learn-gallery-grid">
           <Cell title="Empty">
-            <QuestionItem instance={number()} response={null} onResponse={noop} disabled={false} labels={labels} range={range} />
+            <QuestionItem question={number()} response={null} onResponse={noop} disabled={false} labels={labels} range={range} />
           </Cell>
           <Cell title="Value, at the top of the range">
-            <QuestionItem instance={number()} response={{ number: '+3' }} onResponse={noop} disabled={false} labels={labels} range={range} />
+            <QuestionItem question={number()} response={{ kind: 'values', values: [3] }} onResponse={noop} disabled={false} labels={labels} range={range} />
           </Cell>
           <Cell title="Submitted, not quite yet">
-            <QuestionItem instance={number()} response={{ number: '-2' }} onResponse={noop} disabled mark={notYet} labels={labels} range={range} />
+            <QuestionItem question={number()} response={{ kind: 'values', values: [-2] }} onResponse={noop} disabled mark={notYet} labels={labels} range={range} />
           </Cell>
         </div>
 
@@ -184,7 +184,8 @@ export function LearnGallery() {
             {...parts}
             fullAnswer={
               <FullAnswer
-                example={{ instance: number(), answer: 2, explanation: 'Example worked explanation.' }}
+                answer={{ kind: 'value', value: 2 }}
+                explanation="Example worked explanation."
                 labels={{ show: 'Example show the full answer', treeAnswer: 'Example answer tree' }}
               />
             }
