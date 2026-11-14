@@ -7,6 +7,8 @@ const PORT = 5174
 
 export default defineConfig({
   testDir: 'tests/visual',
+  // The state matrix has its own config and script (ui-quality-sweep): `npm run test:matrix`.
+  testIgnore: ['**/matrix*.spec.ts'],
   snapshotPathTemplate: 'tests/visual/__screenshots__/{arg}-{projectName}-{platform}{ext}',
   fullyParallel: true,
   reporter: 'list',

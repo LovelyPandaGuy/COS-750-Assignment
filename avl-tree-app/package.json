@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc -b --noEmit",
-    "test:visual": "playwright test"
+    "test:visual": "playwright test",
+    "test:matrix": "playwright test --config playwright.matrix.config.ts"
   },
   "dependencies": {
     "react": "^19.3.1",

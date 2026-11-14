@@ -9,7 +9,7 @@ No behaviour, logic, content, wording or token changes. Items needing a new toke
 
 ## 1. Gate, matrix harness and failing checks (test-writer)
 
-- [ ] 1.1 **Gate (human).**
+- [x] 1.1 **Gate (human).** Done on `chore/ui-sweep` (39418d1) rather than on main, by the user's choice (14 Nov): the seven changes and `add-lesson-outline` were archived there, and the build was fixed there. The three checks below pass.
   - Archive `add-ui-foundation`, `revamp-tree-view`, `revamp-sandbox-layout`, `revamp-question-and-feedback`, `revamp-progress-and-hub`, `revamp-readiness` and `add-narration`, one at a time on main.
   - Build and merge `add-lesson-outline` as its own change. It must first settle its 960 px query against D118.
 
@@ -19,17 +19,17 @@ No behaviour, logic, content, wording or token changes. Items needing a new toke
   - `openspec validate ui-quality-sweep --strict` passes.
 
   No other task starts before this one.
-- [ ] 1.2 Write the manifest `tests/visual/matrix/states.ts`, the seeding helpers and the step actions (design decision 1). Cover every route, the first screen of each of the 21 screen types with their states, the outline panel, and the gallery component states listed in each capability delta. Write the unit test that checks coverage against `src/routes.ts`, the lesson JSON and the screen frames (ui-foundation "State matrix", "Quality bar 1"). Verify that the coverage test passes.
-- [ ] 1.3 Write `tests/visual/matrix.spec.ts` with the in-page checks (design decision 2) and add the `test:matrix` script. The checks are: no sideways scroll, targets and text size, axe, titles and landmarks, and the live-region recorder. Verify that the spec runs on all entries and writes its JSON results. It is expected to fail, and the failures are the audit input.
-- [ ] 1.4 Write the mode tests over the same manifest (design decisions 3 to 5): greyscale and the three simulations, forced colours, print, larger text at 200%, landscape phone, reduced motion on and off, the keyboard walk, and focus traps, return and scroll after a change. Verify that each runs and records results.
-- [ ] 1.5 Write the source scans in `tests/ui/quality/` (design decision 6): hover-only CSS, harsh words (reported only for `src/live_content/`), red tokens in answer states, and `terms.ts` with the term check. Mark this content flagged for the user. Verify that `npm test` runs them; failures are expected.
+- [x] 1.2 Write the manifest `tests/visual/matrix/states.ts`, the seeding helpers and the step actions (design decision 1). Cover every route, the first screen of each of the 21 screen types with their states, the outline panel, and the gallery component states listed in each capability delta. Write the unit test that checks coverage against `src/routes.ts`, the lesson JSON and the screen frames (ui-foundation "State matrix", "Quality bar 1"). Verify that the coverage test passes.
+- [x] 1.3 Write `tests/visual/matrix.spec.ts` with the in-page checks (design decision 2) and add the `test:matrix` script. The checks are: no sideways scroll, targets and text size, axe, titles and landmarks, and the live-region recorder. Verify that the spec runs on all entries and writes its JSON results. It is expected to fail, and the failures are the audit input.
+- [x] 1.4 Write the mode tests over the same manifest (design decisions 3 to 5): greyscale and the three simulations, forced colours, print, larger text at 200%, landscape phone, reduced motion on and off, the keyboard walk, and focus traps, return and scroll after a change. Verify that each runs and records results.
+- [x] 1.5 Write the source scans in `tests/ui/quality/` (design decision 6): hover-only CSS, harsh words (reported only for `src/live_content/`), red tokens in answer states, and `terms.ts` with the term check. Mark this content flagged for the user. Verify that `npm test` runs them; failures are expected.
 
   Then ask the user before committing the harness and the first baselines, stating their size (proposal question 6).
 
 ## 2. Audit run (read-only; no source edits)
 
-- [ ] 2.1 Run `npm run test:matrix` and the mode tests at the three widths, light and dark. Then run `npm test` and `npm run lint` (stylelint and the contrast test). Collect every failure into a scratch list with its entry, width, theme and mode. Verify that the list exists and every failing check has a row.
-- [ ] 2.2 Critique (read-only) with the `frontend-design` skill: every frame's matrix screenshots against its screen spec and `quality-bar.md`. Look specifically for:
+- [x] 2.1 Run `npm run test:matrix` and the mode tests at the three widths, light and dark. Then run `npm test` and `npm run lint` (stylelint and the contrast test). Collect every failure into a scratch list with its entry, width, theme and mode. Verify that the list exists and every failing check has a row.
+- [x] 2.2 Critique (read-only) with the `frontend-design` skill: every frame's matrix screenshots against its screen spec and `quality-bar.md`. Look specifically for:
   - empty, loading and error states (storage unavailable; the SQLite fallback is recorded as "not built");
   - dark-theme parity;
   - inconsistent terms, spacing or button hierarchy between screens;
