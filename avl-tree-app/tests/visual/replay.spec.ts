@@ -24,13 +24,15 @@ test('FR-VIS-10 NFR-04 the C6 insert replay fits each width with 44 px targets',
   const { scroll, width } = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, width: window.innerWidth }));
   expect(scroll).toBeLessThanOrEqual(width);
 
-  // The strip's two groups: navigation first. They may share a row or wrap; the page never scrolls sideways.
+  // Review C1: at every width the strip asserts only that the navigation group comes first; whether the two
+  // groups share a row or wrap is not asserted (the module page is at most 66ch wide). No horizontal scroll
+  // is the page-level check above. "First" means on an earlier row, or on the same row and to the left.
   const groups = strip.locator(':scope > [role="group"]');
   await expect(groups).toHaveCount(2);
-  const [a, b] = [(await groups.nth(0).boundingBox())!, (await groups.nth(1).boundingBox())!];
-  expect(a.y).toBeLessThanOrEqual(b.y + 1);
-  const stripBox = (await strip.boundingBox())!;
-  expect(stripBox.x + stripBox.width).toBeLessThanOrEqual(width + 1);
+  const [nav, progress] = [(await groups.nth(0).boundingBox())!, (await groups.nth(1).boundingBox())!];
+  const earlierRow = nav.y + nav.height <= progress.y + 1;
+  const sameRowLeft = Math.abs(nav.y - progress.y) < Math.min(nav.height, progress.height) && nav.x < progress.x;
+  expect(earlierRow || sameRowLeft, 'navigation group comes first').toBe(true);
 
   for (const button of await strip.getByRole('button').all()) {
     const box = (await button.boundingBox())!;
