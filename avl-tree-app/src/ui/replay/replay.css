@@ -89,7 +89,7 @@
 .replay-visited { font-weight: 700; }
 
 /* Caption directly under the tree (D23, D105): body type, reading width. */
-.replay-caption { font: var(--type-body); max-width: 66ch; }
+.replay-caption { font: var(--type-body); max-width: var(--reading-column); }
 
 /* Text representation: the whole tree in words (D105). */
 .replay-whole { display: flex; flex-direction: column; gap: var(--space-2); max-width: var(--reading-column); }

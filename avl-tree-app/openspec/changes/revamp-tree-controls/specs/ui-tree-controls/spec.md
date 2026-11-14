@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Caption under the tree
-The replay SHALL show a caption directly below the tree. It SHALL hold the sentence for the current position (at most two sentences) and, for a search, "Nodes visited: n". The caption SHALL be the replay's only polite live region that holds text, and SHALL update on every position change. The tree view's own live region SHALL stay empty, because the replay passes no `announce`. The tree and the caption SHALL be shown whatever representations are switched off. Together they satisfy FR-LRN-02. The caption SHALL use `--type-body` and a reading width of at most 66ch. (D22, D23, FR-LRN-02, FR-VIS-07, FR-VIS-11, screen 1f)
+The replay SHALL show a caption directly below the tree. It SHALL hold the sentence for the current position (at most two sentences) and, for a search, "Nodes visited: n". The caption SHALL be the replay's only polite live region that holds text, and SHALL update on every position change. The tree view's own live region SHALL stay empty, because the replay passes no `announce`. The tree and the caption SHALL be shown whatever representations are switched off. Together they satisfy FR-LRN-02. The caption SHALL use `--type-body` and the `--reading-column` width (66ch). (D22, D23, FR-LRN-02, FR-VIS-07, FR-VIS-11, screen 1f)
 
 #### Scenario: Caption follows the tree (FR-VIS-07)
 - **GIVEN** the 9-step insert of 10 into 30 with left child 20

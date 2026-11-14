@@ -395,10 +395,11 @@ describe('FR-VIS-07 D23 caption under the tree', () => {
     expect(live().textContent).toContain(`Nodes visited: ${visitedAt(trace, 3)}`)
   })
 
-  it('the caption uses the body type and a 66ch reading width (stylesheet)', () => {
+  it('the caption uses the body type and the reading-column width (stylesheet)', () => {
     const css = readFileSync('src/ui/replay/replay.css', 'utf8')
     expect(css).toMatch(/\.replay-caption[^{]*\{[^}]*font:\s*var\(--type-body\)/)
-    expect(css).toMatch(/\.replay-caption[^{]*\{[^}]*max-width:\s*66ch/)
+    // Tokens only (quality bar 2): the 66ch reading width is the --reading-column token in tokens.css.
+    expect(css).toMatch(/\.replay-caption[^{]*\{[^}]*max-width:\s*var\(--reading-column\)/)
     render(<ReplayPlayer operation={INSERT} label="Tree" />)
     expect(live()).toHaveClass('replay-caption')
   })
