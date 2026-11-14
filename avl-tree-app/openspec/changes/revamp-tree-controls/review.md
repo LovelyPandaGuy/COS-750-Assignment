@@ -256,3 +256,31 @@ The tint fill against the surface is 1.16 to 1.20. That is too low to work as a 
 - **Decisions needed:** A1/R3 (Space, needs a team decision), R1, R2, R5, A2, A4 and A5 (fix or defer), and R4 (comment, polish).
 - **Browser checks:** the "Needs a browser" list above.
 - **Before archiving:** the NFR-03 `[OPEN]` marker must be settled.
+
+## Round-2 fixes after the 4.1 reviews (14 Nov 2026)
+
+**Commits:** red tests and spec in `5cf140d`, code in `15df742`.
+
+| Finding | Outcome |
+| --- | --- |
+| A1/R3 (Space on buttons) | **Fixed.** On a focused button or `summary`, Space keeps its native action and does not toggle playback. It still toggles on the tree box and on other places in the player that are not buttons. The keyup handler that blocked the native click was removed. Spec: step-replay "Controls work by keyboard", scenario "Space activates a focused button". |
+| R1 (convention arithmetic in content) | **Fixed.** `conventionsWording()` gains `outOfRangeText` ("+2 or −2"), found with the engine's `isOutOfBalance`. Insert pseudocode line 3 reads it. `src/content/replay.ts` and `src/content/pseudocode.ts` no longer import `src/engine/conventions.ts`; the case type is re-exported from `conventionsWording`. |
+| R2 (keys help) | **Fixed.** "Keys: Space Play or Pause, ← Back, → Step, [ and ] Speed. The Replay button starts again. Inside the tree box, ← and → scroll the tree." It uses the strip's words; the test checks Back, Play, Pause, Step, Replay and Speed, and the tree-box note. |
+| R4 (stale comment and 768 px rule) | **Fixed.** The "one row from 768 px" comment and the `.replay-controls` rule in the 768 px block were removed. The block keeps `.switcher-task { margin-inline-start: auto }`, which puts the task at the end of the switcher bar as in 1f. |
+| A2 (weak selected-speed cue) | **Fixed.** The selected speed is bold and the other speed buttons are regular weight. Every replay button used to be bold, so bold on the selected one alone would have changed nothing. |
+| Reviewer test gaps | **Added:** Text off keeps the tree view's "Describe tree" button; focus when Replay disables at position 0; focus when the replay becomes held. All three passed on first run: the code already behaved correctly, and the tests now guard it. |
+
+**Checks after the fixes:** `npm test` (1464 passed in 100 files), `npm run typecheck`, `npm run lint` (ESLint and stylelint) and `npm run build` all pass.
+
+### Known follow-ups (deferred, user decision 14 Nov 2026)
+
+- **R5: contextual heading level.** "The whole tree" takes its level from the last heading anywhere before it. On predict steps that is `PredictPrompt`'s `<h3>`, so it becomes an `<h4>` nested under the prediction heading. When the prompt unmounts, the level only updates on the next step. Possible fix: take the level from the step's own heading, or let the host pass it.
+- **A4: repeated landmark names.** Two replays on one page would repeat the region names "The whole tree" and "Pseudocode: …" (axe `landmark-unique`). No screen shows two replays today. Possible fix: drop `aria-labelledby` on the whole-tree section.
+- **A5: speed labels read aloud.** "0.5×" may be read as "0.5 multiplication sign". Possible fix (content-author): give the speed buttons a name such as "0.5 times speed", keeping the visible "0.5×".
+- **C6 (from the critique): two "Back" buttons and three meanings of "Step".** Still a question for the team.
+
+### Status of task 4.1
+
+**Still not ticked.** The checks pass, and every reviewer and a11y finding is fixed or deferred by decision. Still open:
+- the "Needs a browser" list above (visual tests, real-browser axe, the vision simulations, the keyboard walk in three browsers including the C4 `focusout` question and Space on buttons, the OS reduced-motion walk, zoom, and a screen reader);
+- settling the NFR-03 `[OPEN]` marker before archiving.
