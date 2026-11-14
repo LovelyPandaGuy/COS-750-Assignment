@@ -34,8 +34,7 @@ export interface TraceStep {
  * Replay a trace on its starting tree (FR-ENG-06) by re-applying each step
  * from its kind and keys. Snapshots are never read, so a test can compare the
  * result with them. A rotation [at, pivot] is a right rotation when the pivot
- * is smaller than the node, else a left one. Delete steps are not supported
- * until delete has a trace.
+ * is smaller than the node, else a left one. A delete step removes a leaf.
  */
 export function replay(start: Tree, trace: TraceStep[]): Tree {
   let tree = start
@@ -61,7 +60,9 @@ export function replay(start: Tree, trace: TraceStep[]): Tree {
         break
       }
       case 'delete':
-        throw new Error('replay: delete steps are not supported until delete has a trace')
+        // Leaf deletion only (ID 7.3): the leaf's place becomes empty.
+        tree = replaceAt(tree, step.nodes[0], () => null)
+        break
     }
   }
   return tree

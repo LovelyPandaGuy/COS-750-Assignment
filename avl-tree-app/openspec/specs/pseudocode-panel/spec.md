@@ -6,17 +6,20 @@ Shows the pseudocode for the operation being replayed and lights up the line the
 ## Requirements
 
 ### Requirement: Listings match the engine's line numbers
-The panel SHALL hold one listing per operation: the insert outline (5 lines), the search loop form (7 lines) and the search recursive form (5 lines). Line k of each listing SHALL be the line the engine means by `pseudocodeLine` k for that operation. Listing text is generic pseudocode (D12) and is flagged for the user. [Assumed: insert uses the ID's five-step C6 outline, proposal question 2.] (FR-VIS-04, D5, D12)
+The panel SHALL hold the ID's two search listings, taken from `conventions.json` (`pseudocode.search-loop` and `pseudocode.search-recursive`, nine lines each). Line k of each listing SHALL be the line the engine means by `pseudocodeLine` k for that form. There SHALL be no insert listing, because the ID has none (ID 7.4, ID 8.1). (FR-VIS-04, D5; supersedes D12's generic text and D30)
 
 #### Scenario: Every engine line exists
-- **WHEN** every value of the engine's insert line map, loop line map and recursive line map is looked up in its listing
-- **THEN** each value is a line number from 1 to that listing's length
+- **WHEN** every value of `lineForStep.search-loop` and `lineForStep.search-recursive` is looked up in its listing
+- **THEN** each value is a line number from 1 to 9
 
 #### Scenario: Line purposes
-- **WHEN** the three listings are read
-- **THEN** in the loop listing line 4 tests `k == v.key`, line 5 goes left, line 6 goes right and line 7 returns null
-- **AND** in the recursive listing line 2 handles the empty subtree and line 3 tests `k == v.key`
-- **AND** in the insert outline line 1 is the BST insert, line 2 updates heights going up, line 3 finds the lowest unbalanced node, line 4 works out the case and line 5 rotates
+- **WHEN** the two listings are read
+- **THEN** in the loop listing line 4 tests "if element in node p equals el", line 7 is "p = p.left", line 8 is "else p = p.right" and line 9 returns null
+- **AND** in the recursive listing line 2 tests "if root is null" and line 4 tests "else if element in root equals el"
+
+#### Scenario: No insert listing
+- **WHEN** an insert is replayed in a lesson or the sandbox
+- **THEN** no pseudocode panel is shown
 
 ### Requirement: Current line is highlighted
 At position p ≥ 1 the panel SHALL highlight exactly one line, the `pseudocodeLine` of trace step p − 1. At position 0 no line SHALL be highlighted. The highlighted line SHALL differ by the `--code-highlight` background, a bold weight, a "▶" marker and `aria-current="step"`, so colour is not the only signal, and its text contrast SHALL be at least 4.5:1. (FR-VIS-04, FR-VIS-02, NFR-02, wireframe 1f note 3)
@@ -33,19 +36,6 @@ At position p ≥ 1 the panel SHALL highlight exactly one line, the `pseudocodeL
 #### Scenario: Greyscale
 - **WHEN** the highlighted line's styles are read
 - **THEN** it has the ▶ marker text and a bold weight, and `--text-primary` on `--code-highlight` has a contrast ratio of at least 4.5:1 in both the light and dark themes
-
-### Requirement: Case named beside the line
-On an imbalance or rotation step the panel SHALL show the step's case (LL, RR, LR or RL) as text beside the highlighted line. On other steps no case SHALL be shown. (FR-VIS-04, FR-ENG-04)
-
-#### Scenario: Case shown
-- **GIVEN** the 9-step insert of 10 into 30 with left child 20
-- **WHEN** the replay is at position 8 or 9
-- **THEN** the panel shows "LL" beside the highlighted line
-- **AND WHEN** it is at position 7 **THEN** no case is shown
-
-#### Scenario: Case equals the engine's case
-- **GIVEN** any insert trace from the property generator
-- **THEN** at every imbalance and rotation step the case shown equals that step's `rebalanceCase`
 
 ### Requirement: Loop or recursive search
 For a search the panel SHALL offer a choice between the loop and recursive forms as two native radio inputs, with loop selected first. Choosing a form SHALL show that listing and SHALL replay the engine's trace for that form from position 0. (FR-VIS-04, D5)

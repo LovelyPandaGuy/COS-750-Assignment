@@ -11,7 +11,7 @@ Build a sound foundation of the prototype and its features now. Some requirement
 All project docs are under `.claude/docs/` (paths below are relative to it).
 
 - `decisions.md`: the decision log (D1 to D28), lecturer questions, questions for the draft's author.
-- `source/ID-content.pdf`: instructional design content (C1 to C9, LO1 to LO9).
+- `source/ID-content.pdf`: the earlier instructional design content (LO1 to LO9). **Superseded** by the two ID documents in `src/live_content/` (D92).
 - `source/SE_Document.pdf`: SE document v1.1 (FR-xxx-nn, NFR-nn).
 - `source/ID_Presentation.pdf`: the team's presentation design decisions draft (advisory, see below).
 - `design/development_plan_(v1.1).md`: phases, gates and the numbered changes 1 to 27.
@@ -21,8 +21,9 @@ All project docs are under `.claude/docs/` (paths below are relative to it).
 
 ## Sources of truth, in this order
 
-1. `decisions.md`. If it conflicts with anything else, it wins.
-2. `source/ID-content.pdf`. Instructional content comes from here and nowhere else.
+0. The two ID documents in `src/live_content/` (`AVL_Tree_App_ID_Document.docx`, `AVL Trees Learning Objectives.docx`; Markdown copies in `docs/`). They are final: where anything disagrees with them, the app changes (D92).
+1. `decisions.md`. If it conflicts with anything below it, it wins.
+2. The JSON content in `src/live_content/` (lessons, questions, conventions, misconceptions, scaffolds, rewards), read only through `src/live/`. Instructional content comes from here and nowhere else; it is never edited by the app or an agent.
 3. The SE document: requirement IDs and acceptance criteria.
 4. The design: `design/INDEX.md`, `design/source/`, per-screen specs in `design/screens/` once imported, and `src/ui/tokens.css`. Layout, tokens and components come from these only; do not invent styles. Refresh with `/design-import <link>`.
 5. `source/ID_Presentation.pdf` (advisory). Its "AGREED" items are one author's proposals. A point from it counts only once a row in `decisions.md` adopts it (D19 to D28 record what was adopted).
@@ -33,11 +34,9 @@ All project docs are under `.claude/docs/` (paths below are relative to it).
 - Otherwise assume a default and keep going. Pick the option that is cheapest to change later, put it in one constant, one config entry or one content record, add an **assumed** row to `decisions.md`, and list it in the proposal under "Assumed, not blocking".
 - Write `[OPEN]` and stop only when the assumption cannot be isolated in one place, or when it would put unverified instructional content in front of a student. Never invent teaching content; mechanics and wording defaults may be assumed.
 
-## Conventions (D2, D19)
+## Conventions (D2, D93)
 
-Height is counted in edges: a leaf is 0 and an empty tree is -1 (settled: the ID's own numbers depend on it). Balance factor is height(left) minus height(right) (working default; the lecturer has not confirmed the sign). Both live in `src/engine/conventions.ts`, together with the case names. Nothing else hard-codes them.
-
-No content string states the balance-factor formula, which way a positive or negative sign leans, or a case name. Content reads these from the conventions module, so a different answer from the lecturer is a one-module change.
+Height is counted in edges: a leaf is 0 and an empty tree is -1. Balance factor is height(right) minus height(left) (ID 7.3; negative means the left branch is taller). Case names are "Case 1 (LL)" to "Case 4 (RR)". All of these, with the labels, captions and pseudocode, come from `src/live_content/conventions.json`, read by `src/engine/conventions.ts`. Nothing else hard-codes them. Every answer, caption and result typed in the JSON is cross-checked against the engine on load (D95).
 
 ## Workflow: OpenSpec, one change at a time
 
@@ -74,10 +73,10 @@ Note: `.claude/agents/` does not exist in this repo yet, so these six subagents 
 - Every answer shown to a student is computed by the engine. No answer is typed into content.
 - Content goes beyond the ID only when flagged for the user to read. Nothing is invented.
 - The app makes no network calls after the first page load and stores nothing outside the storage adapter. localStorage holds progress and settings; the event log is SQLite (sqlite-wasm in the browser), with a JSON fallback (D16).
-- Wrong answers never use red, a cross glyph or "fail"/"wrong" wording; the verdict is "Not quite yet" (D27). Colour is never the only signal. Touch targets are at least 44 px. Tree editing works by touch, pointer and keyboard (D3).
-- Search and deletion are in scope (D4). LO8 is shown on the readiness summary but never blocks Ready.
+- Wrong answers never use red, a cross glyph or "fail"/"wrong" wording; the verdicts come from `conventions.json` ("That's right.", "Not quite.", "Almost there."; ID 10.1, superseding D27's wording once the questions change lands). Colour is never the only signal. Touch targets are at least 44 px. Tree editing works by touch, pointer and keyboard (D3).
+- Search and deletion are in scope (D4). The objectives are LO1 to LO7 (ID 5.1); LO7 (leaf deletion, C7) is shown on the C9 report but never blocks Ready.
 - Navigation: guided path by default, nothing hard-locked, back always free, skip only on content and worked-example steps, never on a check (D20).
-- Checks: retries are new problems (new seeded variant, multiple choice reshuffles), cap of 3 per question, scaffold ladder hint, worked example, guided (D9). Practice: unlimited retries, 2 hints, then offer review (D21). The numbers are constants in one config.
+- Lesson checks (C2 to C8): one question per criterion from `questions/checks.json`, two attempts each, right if either is right, Sure or Not sure required, one static hint (ID 9.1, 9.2, 9.4; D106, D107, D109). Practice: unlimited tries and the same static hint (ID 10.2). Every answer is marked by the engine (`src/live/mark.ts`). C1 (readiness questions, route, refresher re-check) and C9 (readiness questions with returns, report, certificate) run on the same JSON questions (D112, D113). There is no question or lesson content in `src/` outside `src/live_content/`.
 - Never push, merge or archive. Ask first.
 
 ## Commands

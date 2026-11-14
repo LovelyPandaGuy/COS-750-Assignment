@@ -67,34 +67,34 @@ describe('NFR-02 light by default', () => {
 
 describe('D16 the choice is kept as a setting', () => {
   it('no stored settings loads light', () => {
-    expect(createSettingsStorage(memoryBackend()).load()).toEqual({ theme: 'light' })
+    expect(createSettingsStorage(memoryBackend()).load().theme).toBe('light')
   })
 
   it('a saved dark theme loads as dark on the next start', () => {
     const b = memoryBackend()
     createSettingsStorage(b).save({ theme: 'dark' })
-    expect(createSettingsStorage(b).load()).toEqual({ theme: 'dark' })
+    expect(createSettingsStorage(b).load().theme).toBe('dark')
   })
 
   it('an unknown theme or text that is not JSON loads as light', () => {
     for (const raw of ['{"theme":"purple"}', 'not json', '[]', 'null']) {
       const b = memoryBackend()
       b.setItem(SETTINGS_KEY, raw)
-      expect(createSettingsStorage(b).load(), raw).toEqual({ theme: 'light' })
+      expect(createSettingsStorage(b).load(), raw).toMatchObject({ theme: 'light' })
     }
   })
 
   it('a backend that throws never throws out; the choice holds for the session', () => {
     const s = createSettingsStorage(throwing())
-    expect(s.load()).toEqual({ theme: 'light' })
+    expect(s.load().theme).toBe('light')
     expect(() => s.save({ theme: 'dark' })).not.toThrow()
-    expect(s.load()).toEqual({ theme: 'dark' })
+    expect(s.load().theme).toBe('dark')
   })
 
   it('no backend at all works for the session', () => {
     const s = createSettingsStorage(null)
     s.save({ theme: 'dark' })
-    expect(s.load()).toEqual({ theme: 'dark' })
+    expect(s.load().theme).toBe('dark')
   })
 })
 
@@ -110,7 +110,7 @@ describe('NFR-05 the settings key is inventoried', () => {
     }
     const entry = STORAGE_INVENTORY.find((e) => e.key === SETTINGS_KEY)
     expect(entry?.description.length).toBeGreaterThan(0)
-    expect(JSON.parse(inner.getItem(SETTINGS_KEY)!)).toEqual({ theme: 'dark' })
+    expect(JSON.parse(inner.getItem(SETTINGS_KEY)!)).toMatchObject({ theme: 'dark' })
   })
 })
 
@@ -123,6 +123,6 @@ describe('FR-ONB-04 reset removes the settings key', () => {
     learner.reset()
     expect(b.getItem(SETTINGS_KEY)).toBeNull()
     expect(b.getItem(LEARNER_KEY)).not.toBeNull()
-    expect(createSettingsStorage(b).load()).toEqual({ theme: 'light' })
+    expect(createSettingsStorage(b).load().theme).toBe('light')
   })
 })

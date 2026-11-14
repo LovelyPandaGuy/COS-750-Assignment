@@ -4,8 +4,7 @@
  * development double-render cannot turn "new" or "reset-corrupt" into "restored".
  */
 import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from 'react'
-import { OWN_LECTURE_QUESTION, OWN_QUESTION_MAX_LENGTH } from '../modules/config'
-import type { Attempt, LearnerPath, LearnerState, LectureQuestion, ModuleId } from './learnerState'
+import { OWN_LECTURE_QUESTION, OWN_QUESTION_MAX_LENGTH, type Attempt, type LearnerState, type LectureQuestion, type ModuleId } from './learnerState'
 import { learnerReducer, type SessionStatus } from './learnerReducer'
 import type { LoadResult, StorageAdapter } from './storage'
 
@@ -22,7 +21,6 @@ export interface LearnerSession {
   /** Save a lecture question; a drafted one is kept once per item (add-scaffold-ladder-and-retry-cap). */
   recordLectureQuestion: (question: LectureQuestion) => void
   /** Set the learning path, and optionally the current module (skipping the diagnostic, FR-DIA-04). */
-  setPath: (path: LearnerPath, currentModule?: ModuleId) => void
   /** Add one of the student's own lecture questions, stored as a lecture question with ID `own` (FR-RDY-02, D91); blank text changes nothing. */
   addOwnQuestion: (text: string) => void
 }
@@ -68,7 +66,6 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
 
   const recordLectureQuestion = useCallback((question: LectureQuestion) => dispatch({ type: 'lecture-question', question }), [])
 
-  const setPath = useCallback((path: LearnerPath, currentModule?: ModuleId) => dispatch({ type: 'path-set', path, currentModule }), [])
 
   const addOwnQuestion = useCallback((text: string) => {
     const trimmed = text.trim().slice(0, OWN_QUESTION_MAX_LENGTH)
@@ -77,8 +74,8 @@ export function LearnerProvider({ storage, initial, onReset, children }: Learner
   }, [])
 
   const value = useMemo<LearnerSession>(
-    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion, setPath, addOwnQuestion }),
-    [state, reset, recordAttempt, completeModule, recordLectureQuestion, setPath, addOwnQuestion],
+    () => ({ learner: state.learner, loadStatus: state.loadStatus, persistent: state.persistent, reset, recordAttempt, completeModule, recordLectureQuestion, addOwnQuestion }),
+    [state, reset, recordAttempt, completeModule, recordLectureQuestion, addOwnQuestion],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

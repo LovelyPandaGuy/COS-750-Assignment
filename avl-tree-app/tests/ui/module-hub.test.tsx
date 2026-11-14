@@ -2,7 +2,7 @@ import { fireEvent, screen, within } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { describe, it, expect } from 'vitest'
 import { MODULE_IDS } from '../../src/state/learnerState'
-import { moduleLabel } from '../../src/content/modules'
+import { MODULE_TITLES, moduleLabel } from '../../src/content/modules'
 import { screenCopy } from '../../src/content/screens'
 import { LEARNER_KEY } from '../../src/state/storage'
 import { backendWith, progressState, renderRoutes } from './learner-fixtures'
@@ -77,13 +77,11 @@ describe('FR-LRN-03 progress map', () => {
 })
 
 describe('FR-LRN-03 hub screen', () => {
-  it('has the heading, the current module card with activities, and the sandbox card', () => {
+  it('has the heading, the current module card with its link, and the sandbox card', () => {
     renderRoutes(backendWith(progressState()), '/path')
     expect(h1()).toHaveTextContent('Your path')
-    const card = screen.getByRole('region', { name: 'C4 Search' })
-    for (const [name, path] of [['Explore', 'explore'], ['Worked example', 'example'], ['Check', 'check']]) {
-      expect(href(within(card).getByRole('link', { name: new RegExp(`^${name}`) }))).toMatch(new RegExp(`/module/C4/${path}$`))
-    }
+    const card = screen.getByRole('region', { name: 'C4 Search (the algorithm)' })
+    expect(href(within(card).getByRole('link', { name: /^continue/i }))).toMatch(/\/module\/C4$/)
     expect(href(within(main()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
   })
 
@@ -102,7 +100,7 @@ describe('FR-LRN-03 hub screen', () => {
   it('Continue opens the current module', () => {
     renderRoutes(backendWith(progressState()), '/path')
     fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
-    expect(h1()).toHaveTextContent('C4 Search')
+    expect(h1()).toHaveTextContent('Search (the algorithm)')
   })
 
   it('has exactly one primary action', () => {
@@ -117,36 +115,33 @@ describe('FR-LRN-03 hub screen', () => {
 })
 
 describe('FR-LRN-05 module screen', () => {
-  it('shows the D1 heading for every module', () => {
+  it('shows the lesson title as the heading of every module (ID 7.1)', () => {
     for (const id of MODULE_IDS) {
       const { unmount } = renderRoutes(backendWith(), `/module/${id}`)
-      expect(h1(), id).toHaveTextContent(moduleLabel(id))
+      expect(h1(), id).toHaveTextContent(MODULE_TITLES[id])
       unmount()
     }
   })
 
-  it('lists activities in default order with their place', () => {
+  it('a lesson module plays the lesson, with no activity list', () => {
     renderRoutes(backendWith(), '/module/C5')
-    const links = within(main()).getAllByRole('link').filter((a) => /\/module\/C5\//.test(href(a)))
-    expect(links.map((a) => href(a).replace(/^.*\/module\/C5\//, ''))).toEqual(['explore', 'example', 'check'])
-    expect(links[0]).toHaveTextContent('1 of 3')
-    expect(links[2]).toHaveTextContent('3 of 3')
-    expect(links.map((a) => a.textContent!.split(/[·(]/)[0].trim())).toEqual(['Explore', 'Worked example', 'Check'])
+    expect(within(main()).getAllByRole('link').filter((a) => /\/module\/C5\//.test(href(a)))).toHaveLength(0)
+    expect(within(main()).getByText('Lesson 5 of 9')).toBeInTheDocument()
   })
 
-  it('C1 and C9 have their own activities', () => {
-    renderRoutes(backendWith(), '/module/C1')
-    const c1 = within(main()).getAllByRole('link').filter((a) => /\/module\/C1\//.test(href(a)))
-    expect(c1.map((a) => href(a).replace(/^.*\/module\/C1\//, ''))).toEqual(['check', 'refresher'])
-    expect(c1[0]).toHaveTextContent('Warm-up check')
-    expect(c1[1]).toHaveTextContent('BST refresher')
+  it('C1 and C9 are lessons too, with no activity list (live-c1-and-c9)', () => {
+    const a = renderRoutes(backendWith(), '/module/C1')
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Welcome')
+    expect(screen.getByText('Lesson 1 of 9')).toBeInTheDocument()
+    expect(within(main()).queryAllByRole('link').filter((l) => /\/module\/C1\/(check|refresher)$/.test(href(l)))).toHaveLength(0)
+    a.unmount()
     renderRoutes(backendWith(), '/module/C9')
-    const c9 = within(screen.getAllByRole('main')[1]).getAllByRole('link').filter((a) => /\/module\/C9\//.test(href(a)))
-    expect(c9).toHaveLength(1)
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Am I ready for the lecture?')
+    expect(screen.getByText('Lesson 9 of 9')).toBeInTheDocument()
   })
 
   it('Back to path opens the hub', () => {
-    renderRoutes(backendWith(), '/module/C4')
+    renderRoutes(backendWith(), '/readiness')
     fireEvent.click(within(main()).getByRole('link', { name: /back to path/i }))
     expect(h1()).toHaveTextContent('Your path')
   })
@@ -156,7 +151,8 @@ describe('FR-LRN-05 module screen', () => {
     const before = backend.getItem(LEARNER_KEY)
     renderRoutes(backend, '/path')
     fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
-    fireEvent.click(within(main()).getByRole('link', { name: /back to path/i }))
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }))
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
   })
 })

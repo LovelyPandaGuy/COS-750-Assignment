@@ -8,7 +8,7 @@ import { searchTrace } from '../../src/engine/search'
 import { height, type Key, type Tree } from '../../src/engine/tree'
 import { SANDBOX_KEY_MAX, SANDBOX_KEY_MIN, SANDBOX_MAX_NODES, SORTED_DEMO } from '../../src/sandbox/config'
 import { initialSandbox, sandboxReducer, sandboxStats, type SandboxAction, type SandboxState } from '../../src/sandbox/sandbox'
-import { conventionsWording } from '../../src/content/modules/conventionsWording'
+import { caseLabel } from '../../src/engine/conventions'
 import { sandboxCopy } from '../../src/content/sandbox'
 
 // Spec: add-sandbox / sandbox. Requirement IDs: FR-VIS-08, FR-MOT-04, LO1, D3, D11, D19, D27.
@@ -20,7 +20,6 @@ const shape = (t: Tree): unknown => (t === null ? null : [t.key, shape(t.left), 
 const avl = (keys: Key[]): Tree => keys.reduce<Tree>((t, k) => avlInsert(t, k).tree, null)
 const bst = (keys: Key[]): Tree => keys.reduce<Tree>((t, k) => insert(t, k).tree, null)
 const keysOf = (t: Tree): Key[] => (t === null ? [] : [...keysOf(t.left), t.key, ...keysOf(t.right)])
-const w = conventionsWording()
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
 
 describe('FR-VIS-08 config', () => {
@@ -189,8 +188,8 @@ describe('D19 event log from the engine', () => {
   it('rebalancing off: 7 went to the right of 6, no rebalancing', () => {
     const s = run([off, ...ins(6, 7)])
     expect(s.log[0]).toEqual({ kind: 'insert', key: 7, parent: 6, side: 'right', rebalances: [], rebalancing: false })
-    expect(sandboxCopy.log(s.log[0], w)).toMatch(/7/)
-    expect(sandboxCopy.log(s.log[0], w)).toMatch(/right of 6/)
+    expect(sandboxCopy.log(s.log[0])).toMatch(/7/)
+    expect(sandboxCopy.log(s.log[0])).toMatch(/right of 6/)
   })
 
   it('the first key is the root', () => {
@@ -201,9 +200,9 @@ describe('D19 event log from the engine', () => {
     const s = run(ins(10, 20, 30))
     const r = avlInsert(avl([10, 20]), 30).rebalance!
     expect(s.log[0]).toMatchObject({ kind: 'insert', key: 30, parent: 20, side: 'right', rebalances: [r] })
-    const text = sandboxCopy.log(s.log[0], w)
+    const text = sandboxCopy.log(s.log[0])
     expect(text).toContain('10')
-    expect(text).toContain(w.caseName(r.case))
+    expect(text).toContain(caseLabel(r.case)) // conventions.json, ID 7.3
   })
 
   it('delete entries carry the engine rebalances', () => {

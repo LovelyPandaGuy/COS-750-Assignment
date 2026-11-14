@@ -1,7 +1,7 @@
 import { useReducer, useState } from 'react'
 import { Link } from 'react-router-dom'
 import '../ui/screens.css'
-import '../ui/module/module.css'
+import '../ui/lesson/module.css'
 import '../ui/sandbox/sandbox.css'
 import { sandboxCopy as copy } from '../content/sandbox'
 import { screenCopy } from '../content/screens'

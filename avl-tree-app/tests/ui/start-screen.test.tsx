@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import { axe } from 'vitest-axe'
 import { describe, it, expect } from 'vitest'
 import { MODULE_IDS } from '../../src/state/learnerState'
-import { MODULE_TITLES, moduleLabel } from '../../src/content/modules'
+import { MODULE_TITLES } from '../../src/content/modules'
 import { startCopy } from '../../src/content/start'
 import { useLearner } from '../../src/state/LearnerContext'
 import {
@@ -61,7 +61,7 @@ describe('NFR-01 Start reaches C1 in one step', () => {
   it('Start opens module C1', () => {
     renderRoutes(backendWith())
     fireEvent.click(startButton()!)
-    expect(h1()).toHaveTextContent(moduleLabel('C1'))
+    expect(h1()).toHaveTextContent(MODULE_TITLES.C1)
   })
 
   it('Start is a native button, so Enter and Space activate it as a click', () => {
@@ -85,14 +85,13 @@ describe('FR-ONB-03 resume on return', () => {
   it('Resume opens the current module', () => {
     renderRoutes(backendWith(progressState()))
     fireEvent.click(within(resumeCard()!).getByRole('button', { name: startCopy.resumeButton }))
-    expect(h1()).toHaveTextContent(moduleLabel('C4'))
+    expect(h1()).toHaveTextContent(MODULE_TITLES.C4)
   })
 })
 
 describe('D1 module screen placeholder', () => {
-  it.each(MODULE_IDS)('module %s shows its D1 title as the heading', (id) => {
+  it.each(MODULE_IDS)('module %s shows its lesson title as the heading', (id) => {
     renderRoutes(backendWith(), `/module/${id}`)
-    expect(h1()).toHaveTextContent(moduleLabel(id))
     expect(h1()).toHaveTextContent(MODULE_TITLES[id])
   })
 
@@ -181,18 +180,18 @@ describe('CLAUDE.md copy comes from content', () => {
     expect(text, 'labels').not.toMatch(/\b(aria-label|title|placeholder|alt)="[^"]*[A-Za-z]/)
   })
 
-  it('has one D1 title for each of C1 to C9', () => {
+  it('has one title for each of C1 to C9, from its lesson file (D92)', () => {
     expect(Object.keys(MODULE_TITLES).sort()).toEqual([...MODULE_IDS])
     expect(MODULE_TITLES).toEqual({
       C1: 'Getting started and readiness check',
       C2: 'When BSTs go lopsided',
       C3: 'The AVL property',
-      C4: 'Search',
+      C4: 'Search (the algorithm)',
       C5: 'Rotations',
       C6: 'Insertion with rebalancing',
-      C7: 'Deletion',
+      C7: 'Deletion with rebalancing (optional)',
       C8: 'Choosing a structure',
-      C9: 'Am I ready',
+      C9: 'Am I ready for the lecture?',
     })
   })
 })
@@ -227,14 +226,14 @@ describe('NFR-02 focus moves to the module heading', () => {
   it('Start moves focus to the C1 heading', () => {
     renderRoutes(backendWith())
     fireEvent.click(startButton()!)
-    expect(h1()).toHaveTextContent(moduleLabel('C1'))
+    expect(h1()).toHaveTextContent(MODULE_TITLES.C1)
     expect(h1()).toHaveFocus()
   })
 
   it('Resume moves focus to the current module heading', () => {
     renderRoutes(backendWith(progressState()))
     fireEvent.click(within(resumeCard()!).getByRole('button', { name: startCopy.resumeButton }))
-    expect(h1()).toHaveTextContent(moduleLabel('C4'))
+    expect(h1()).toHaveTextContent(MODULE_TITLES.C4)
     expect(h1()).toHaveFocus()
   })
 

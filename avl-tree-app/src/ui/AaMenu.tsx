@@ -1,8 +1,9 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { shellCopy } from '../content/shell'
+import { DisplaySettings } from './DisplaySettings'
 import { ThemeSwitch } from './ThemeSwitch'
 
-/** Opens a panel of display settings: the Dark theme switch (add-dark-mode-toggle) and a line for those still to come. */
+/** Opens a panel of display settings: the Dark theme switch and the settings from lessons/c1.json (display-settings). */
 export function AaMenu() {
   const [open, setOpen] = useState(false)
   const panelId = useId()
@@ -44,6 +45,7 @@ export function AaMenu() {
       {open && (
         <div id={panelId} className="aa-panel" role="region" aria-label={shellCopy.aaButtonName} tabIndex={-1}>
           <ThemeSwitch />
+          <DisplaySettings />
           <p>{shellCopy.aaPanelLine}</p>
         </div>
       )}

@@ -29,26 +29,32 @@ function walk(t: Tree, f: (n: TreeNode) => void) {
 const seven = avl([40, 20, 60, 10, 30, 50, 70]);
 const chain3 = build([30, 20, 10]); // root 30 leans left by two
 
-describe('FR-VIS-02 node roles by shape, text and colour', () => {
-  const roles: Record<number, NodeRole> = { 40: 'new', 20: 'z', 60: 'y', 10: 'balanced' };
+describe('FR-VIS-02 ID 11.1 node states by colour, shape and text', () => {
+  const roles: Record<number, NodeRole> = { 40: 'new', 20: 'rotating', 60: 'n' };
 
-  it('gives each role a different ring style and a text name', () => {
-    const { container } = render(<TreeView tree={seven} roles={roles} label="Example tree" />);
+  it('ID 11.1: each state is distinguishable without colour', () => {
+    const { container } = render(<TreeView tree={seven} roles={{ 40: 'new', 20: 'rotating' }} label="Example tree" />);
     const ring = (k: Key) => node(container, k).getAttribute('data-ring');
-    // new 40, z 20, y 60, balanced 10, neutral 30
-    expect(ring(30)).toBe('solid');
-    expect(ring(40)).toBe('dotted');
-    expect(ring(20)).toBe('double');
-    expect(ring(60)).toBe('dashed');
-    expect(ring(10)).toBe('thick');
-    expect(new Set([30, 40, 20, 60, 10].map(ring)).size).toBe(5);
-    expect(node(container, 30).getAttribute('data-role')).toBe('neutral');
-    expect(node(container, 40).querySelector('.tree-tag')!.textContent).toBe('new');
-    expect(node(container, 20).querySelector('.tree-tag')!.textContent).toBe('z');
-    expect(node(container, 60).querySelector('.tree-tag')!.textContent).toBe('y');
-    expect(node(container, 10).querySelector('.tree-badge')).not.toBeNull();
-    expect(node(container, 10).textContent).toMatch(/balanced/);
-    expect(node(container, 30).querySelector('.tree-tag')).toBeNull();
+    const state = (k: Key) => node(container, k).getAttribute('data-state');
+    expect(state(30)).toBe('balanced');
+    expect(state(40)).toBe('new');
+    expect(state(20)).toBe('rotating');
+    expect(ring(20)).toBe('thick');
+    expect(node(container, 40).querySelector('.tree-tag')!.textContent).toBe('NEW');
+    const bad = render(<TreeView tree={chain3} roles={{ 30: 'n' }} label="t" />).container;
+    expect(node(bad, 30).getAttribute('data-state')).toBe('out-of-balance');
+    expect(node(bad, 30).getAttribute('data-ring')).toBe('dashed');
+    expect(node(bad, 30).querySelector('.tree-marker')!.textContent).toBe('!');
+    expect(node(bad, 30).querySelector('.tree-tag')!.textContent).toBe('n');
+    expect(describeTree(seven, { 40: 'new', 20: 'rotating' })).toMatch(/newly inserted.*|being rotated/);
+  });
+
+  it('ID 11.1: state from the balance factor', () => {
+    const { container } = render(<TreeView tree={build([10, 20, 30])} label="t" />);
+    expect(node(container, 10).getAttribute('data-state')).toBe('out-of-balance');
+    expect(node(container, 10).querySelector('.tree-marker')!.textContent).toBe('!');
+    expect(node(container, 20).getAttribute('data-state')).toBe('balanced');
+    expect(node(container, 30).getAttribute('data-state')).toBe('balanced');
   });
 
   it('keeps shapes and positions the same when only roles change', () => {
@@ -78,7 +84,7 @@ describe('FR-VIS-09 height and balance factor on every node', () => {
     fc.assert(
       fc.property(keysArb, (keys) => {
         for (const tree of [build(keys), avl(keys)]) {
-          const { container, unmount } = render(<TreeView tree={tree} label="t" />);
+          const { container, unmount } = render(<TreeView tree={tree} show={['height', 'balanceFactor']} label="t" />);
           walk(tree, (n) => {
             const text = node(container, n.key).querySelector('.tree-metrics')!.textContent;
             expect(text).toBe(`h${n.height} \u00b7 bf ${sign(balanceFactorOf(n))}`);
@@ -90,11 +96,34 @@ describe('FR-VIS-09 height and balance factor on every node', () => {
     );
   });
 
-  it('follows the D2 convention: a single node is h0, a three-node left chain has bf +2 at the root', () => {
+  it('follows the ID 7.3 convention: a single node is h0, a three-node left chain has bf −2 at the root', () => {
     const one = render(<TreeView tree={makeNode(5, null, null)} label="t" />).container;
-    expect(node(one, 5).querySelector('.tree-metrics')!.textContent).toBe('h0 \u00b7 bf 0');
+    expect(node(one, 5).querySelector('.tree-metrics')!.textContent).toBe('bf 0');
     const three = render(<TreeView tree={chain3} label="t" />).container;
-    expect(node(three, 30).querySelector('.tree-metrics')!.textContent).toBe('h2 \u00b7 bf +2');
+    expect(node(three, 30).querySelector('.tree-metrics')!.textContent).toBe('bf \u22122');
+  });
+
+  it('ID 12.4 show list: only the root shows a balance factor', () => {
+    const t = build([50, 30, 70, 20, 80, 10, 90]);
+    const { container } = render(<TreeView tree={t} show={['balanceFactor:root']} label="t" />);
+    expect(node(container, 50).querySelector('.tree-metrics')!.textContent).toBe('bf 0');
+    for (const k of [30, 70, 20, 80, 10, 90]) {
+      expect(node(container, k).querySelector('.tree-metrics')!.textContent).toBe('');
+      expect(node(container, k).getAttribute('data-state')).toBe('neutral');
+    }
+    expect(container.querySelector('.tree-description')!.textContent).not.toMatch(/unbalanced/);
+  });
+
+  it('ID 8.3 default: every node shows its balance factor and no node its height', () => {
+    const { container } = render(<TreeView tree={seven} label="t" />);
+    for (const k of [40, 20, 60, 10, 30, 50, 70]) expect(node(container, k).querySelector('.tree-metrics')!.textContent).toBe('bf 0');
+  });
+
+  it('letter keys are drawn as letters', () => {
+    const t = build([71, 67, 72]);
+    const { container } = render(<TreeView tree={t} formatKey={(k) => String.fromCharCode(k)} label="t" />);
+    expect(node(container, 71).querySelector('.tree-key')!.textContent).toBe('G');
+    expect(container.querySelector('.tree-description')!.textContent).toMatch(/Root G/);
   });
 
   it('flags an out-of-balance node with the text "Unbalanced" and nothing else', () => {
@@ -112,8 +141,8 @@ describe('FR-VIS-09 height and balance factor on every node', () => {
 
   it('shows stored heights when they differ from the real ones', () => {
     const stale: TreeNode = { key: 20, height: 5, left: makeNode(10, null, null), right: null };
-    const { container } = render(<TreeView tree={stale} label="t" />);
-    expect(node(container, 20).querySelector('.tree-metrics')!.textContent).toBe('h5 \u00b7 bf +1');
+    const { container } = render(<TreeView tree={stale} show={['height', 'balanceFactor']} label="t" />);
+    expect(node(container, 20).querySelector('.tree-metrics')!.textContent).toBe('h5 \u00b7 bf \u22121');
   });
 });
 
@@ -139,18 +168,18 @@ describe('FR-VIS-07 text description', () => {
 
   it('matches the numbers drawn on the nodes', () => {
     const parts = describeTreeParts(seven, {});
-    const { container } = render(<TreeView tree={seven} label="t" />);
+    const { container } = render(<TreeView tree={seven} show={['height', 'balanceFactor']} label="t" />);
     for (const p of parts) {
       expect(node(container, p.key).querySelector('.tree-metrics')!.textContent).toBe(`h${p.height} \u00b7 bf ${sign(p.balanceFactor)}`);
     }
   });
 
-  it('says "unbalanced" and the role in the sentence for an unbalanced z node', () => {
-    const parts = describeTreeParts(chain3, { 30: 'z' });
-    expect(parts[0]).toMatchObject({ key: 30, unbalanced: true, role: 'z' });
-    const text = describeTree(chain3, { 30: 'z' });
+  it('says "unbalanced" and the role in the sentence for the unbalanced node n', () => {
+    const parts = describeTreeParts(chain3, { 30: 'n' });
+    expect(parts[0]).toMatchObject({ key: 30, unbalanced: true, role: 'n' });
+    const text = describeTree(chain3, { 30: 'n' });
     expect(text).toMatch(/unbalanced/i);
-    expect(text).toMatch(/\bz\b/);
+    expect(text).toMatch(/\bn, the first unbalanced node\b/);
   });
 
   it('describes the empty tree as empty and draws no nodes', () => {
@@ -232,7 +261,7 @@ describe('NFR-02 / FR-VIS-10 wide trees keep their size', () => {
 describe('NFR-02 style comes from tokens', () => {
   it('has a stylesheet that imports nothing but uses var(--...) for colours (scan lives in styles.test.ts)', () => {
     const css = readFileSync('src/ui/tree/tree-view.css', 'utf8');
-    expect(css).toMatch(/var\(--tree-z\)/);
+    expect(css).toMatch(/var\(--node-unbalanced\)/);
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b|rgba?\(/);
     expect(readFileSync('src/ui/tree/TreeView.tsx', 'utf8')).toMatch(/import\s+['"]\.\/tree-view\.css['"]/);
   });
@@ -254,16 +283,16 @@ describe('FR-VIS-07 hidden balance factors for practice', () => {
   });
 
   it('a revealed node is drawn as usual', () => {
-    const { container } = render(<TreeView tree={chain3} hideBalance={{ reveal: [30] }} label="Practice tree" />);
-    expect(metrics(container, 30)).toBe('h2 · bf +2');
+    const { container } = render(<TreeView tree={chain3} hideBalance={{ reveal: [30] }} show={['height', 'balanceFactor']} label="Practice tree" />);
+    expect(metrics(container, 30)).toBe('h2 · bf −2');
     expect(node(container, 30).querySelector('.tree-flag')).toHaveTextContent('Unbalanced');
     expect(metrics(container, 20)).toBe('h1 · bf ?');
     expect(metrics(container, 10)).toBe('h0 · bf ?');
   });
 
   it('default rendering is unchanged', () => {
-    const { container } = render(<TreeView tree={chain3} label="Example tree" />);
-    expect(metrics(container, 30)).toBe('h2 · bf +2');
+    const { container } = render(<TreeView tree={chain3} show={['height', 'balanceFactor']} label="Example tree" />);
+    expect(metrics(container, 30)).toBe('h2 · bf −2');
     expect(describeTree(chain3, {})).toBe(describeTree(chain3, {}, undefined));
   });
 

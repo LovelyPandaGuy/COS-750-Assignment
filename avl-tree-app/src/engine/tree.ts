@@ -1,5 +1,6 @@
 import { EMPTY_HEIGHT, balanceFactor, nodeHeight } from './conventions'
 
+/** Keys are numbers. Capital-letter keys from the content are encoded as their char codes at the content boundary (src/live/keys.ts), which keeps alphabetical order (D99). */
 export type Key = number
 
 export interface TreeNode {

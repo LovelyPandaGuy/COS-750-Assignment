@@ -9,6 +9,7 @@ import { PseudocodePanel } from './PseudocodePanel'
 import { StepControls } from './StepControls'
 import { StepExplanation } from './StepExplanation'
 import { sentenceFor } from './sentence'
+import { captionsFor } from '../../engine/captions'
 
 export interface ReplayPlayerProps {
   /** The insert or search to replay. The player asks the engine for its trace. */
@@ -31,6 +32,7 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
   const { kind, tree: start, key } = operation
   const [form, setForm] = useState<SearchForm>('loop')
   const { trace } = useMemo(() => traceFor({ kind, tree: start, key } as Operation, form), [kind, start, key, form])
+  const captions = useMemo(() => captionsFor(kind, trace, key), [kind, trace, key])
   const [state, dispatch] = useReducer(replayReducer, trace.length, (n) => initReplay(n, held))
 
   // Adjust state while rendering when inputs change (no effect, so no stale frame is drawn).
@@ -85,9 +87,10 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
   const p = state.position
   const step = stepAt(trace, p)
   const op = { kind, tree: start, key } as Operation
-  const listing = kind === 'insert' ? pseudocode.insert : form === 'loop' ? pseudocode.searchLoop : pseudocode.searchRecursive
-  const name =
-    kind === 'insert' ? replayCopy.panel.insert : form === 'loop' ? replayCopy.panel.searchLoop : replayCopy.panel.searchRecursive
+  const listing = form === 'loop' ? pseudocode.searchLoop : pseudocode.searchRecursive
+  const name = form === 'loop' ? replayCopy.panel.searchLoop : replayCopy.panel.searchRecursive
+  // Sentences come from the conventions captions (step-replay): a trace step shows its caption group's text.
+  const sentence = p === 0 ? sentenceFor(op, explainAt(op, trace, 0)) : (captions.find((c) => c.steps.includes(p - 1))?.text ?? '')
 
   return (
     <div className="replay" onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
@@ -103,14 +106,8 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
         onStep={() => dispatch({ type: 'step' })}
         onSpeed={(speed) => dispatch({ type: 'setSpeed', speed })}
       />
-      <PseudocodePanel
-        name={name}
-        listing={listing}
-        line={step?.pseudocodeLine ?? null}
-        rebalanceCase={step?.rebalanceCase}
-        {...(kind === 'search' && { form, onForm: setForm })}
-      />
-      <StepExplanation sentence={sentenceFor(op, explainAt(op, trace, p))} visited={kind === 'search' ? visitedAt(trace, p) : undefined} />
+      {kind === 'search' && <PseudocodePanel name={name} listing={listing} line={step?.pseudocodeLine ?? null} form={form} onForm={setForm} />}
+      <StepExplanation sentence={sentence} visited={kind === 'search' ? visitedAt(trace, p) : undefined} />
       <p className="replay-help">{replayCopy.controls.help}</p>
     </div>
   )

@@ -1,7 +1,6 @@
 import { fireEvent, screen, within } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 import { describe, it, expect } from 'vitest'
-import { conventionsWording } from '../../src/content/modules/conventionsWording'
 import { replayCopy } from '../../src/content/replay'
 import { sandboxCopy as copy } from '../../src/content/sandbox'
 import { screenCopy } from '../../src/content/screens'
@@ -10,7 +9,6 @@ import { backendWith, renderRoutes } from './learner-fixtures'
 
 // Spec: add-sandbox / sandbox. Requirement IDs: FR-VIS-08, FR-VIS-03, FR-VIS-09, FR-MOT-04, LO1, NFR-02, D3, D11, D19.
 
-const w = conventionsWording()
 const open = () => renderRoutes(backendWith(), '/sandbox')
 const field = () => screen.getByRole('spinbutton', { name: copy.fieldLabel })
 const button = (name: string | RegExp) => screen.getByRole('button', { name })
@@ -113,7 +111,7 @@ describe('D19 event log', () => {
     insertKeys(6, 7)
     expect(log()).toHaveAttribute('aria-live', 'polite')
     const first = within(log()).getAllByRole('listitem')[0]
-    expect(first).toHaveTextContent(copy.log({ kind: 'insert', key: 7, parent: 6, side: 'right', rebalances: [], rebalancing: false }, w))
+    expect(first).toHaveTextContent(copy.log({ kind: 'insert', key: 7, parent: 6, side: 'right', rebalances: [], rebalancing: false }))
   })
 })
 
@@ -126,7 +124,7 @@ describe('FR-VIS-03 replay the last insert', () => {
     fireEvent.click(b)
     expect(b).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('group', { name: replayCopy.controls.label })).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: replayCopy.panel.title(replayCopy.panel.insert) })).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: /^pseudocode/i })).toBeNull() // ID 7.4: no insert listing
   })
 
   it('not offered with rebalancing off; the availability line shows instead', () => {

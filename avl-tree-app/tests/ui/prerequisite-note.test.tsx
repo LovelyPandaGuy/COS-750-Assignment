@@ -21,17 +21,12 @@ describe('D20 soft prerequisite note on the module screen', () => {
     expect(within(note()).getByRole('link')).toHaveAttribute('href', '/module/C2')
   })
 
-  it('the note sits after the heading and before the activities, which stay enabled', () => {
+  it('the note sits after the lesson top region and before its first screen, which stays usable', () => {
     renderRoutes(backendWith(), '/module/C3')
-    const list = screen.getByRole('list', { name: /activities/i })
+    const first = screen.getByRole('heading', { level: 2, name: 'Spot the problem' })
     expect(h1().compareDocumentPosition(note()) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(note().compareDocumentPosition(list) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    const links = within(list).getAllByRole('link')
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(['/module/C3/explore', '/module/C3/example', '/module/C3/check'])
-    for (const a of links) {
-      expect(a).not.toHaveAttribute('aria-disabled')
-      expect(a.getAttribute('tabindex')).not.toBe('-1')
-    }
+    expect(note().compareDocumentPosition(first) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled()
   })
 
   it('prerequisite done: no note on C3', () => {
@@ -54,7 +49,7 @@ describe('D20 soft prerequisite note on the module screen', () => {
     const before = backend.getItem(LEARNER_KEY)
     renderRoutes(backend, '/module/C3')
     fireEvent.click(within(note()).getByRole('link'))
-    expect(h1()).toHaveTextContent(moduleLabel('C2'))
+    expect(h1()).toHaveTextContent('When BSTs go lopsided')
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
   })
 })
