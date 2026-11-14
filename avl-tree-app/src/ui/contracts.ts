@@ -8,10 +8,9 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Key, Tree } from '../engine/tree'
 import type { SkillStatus } from '../live/diagnostic'
-import type { Mark, Response } from '../live/mark'
 import type { ReadinessReport } from '../live/readiness'
 import type { Question, Representation, Scaffold } from '../live/types'
-import type { Confidence, LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
+import type { LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
 import type { ActivityList } from '../components/ActivityList'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
 import type { ProgressMap } from '../components/ProgressMap'
@@ -26,8 +25,13 @@ import type { InsertControl } from './sandbox/InsertControl'
 import type { RebalanceSwitch } from './sandbox/RebalanceSwitch'
 import type { TreeStats } from './sandbox/TreeStats'
 import type { TreeView } from './tree/TreeView'
+import type { QuestionItem } from './learn/QuestionItem'
+import type { ConfidenceRating } from './learn/ConfidenceRating'
+import type { FullAnswer } from './learn/FullAnswer'
+import type { LectureQuestionDraft } from './learn/LectureQuestionDraft'
+import type { FeedbackPanel } from './learn/FeedbackPanel'
 
-// ---- Built (14): the components' own props ----
+// ---- Built (19): the components' own props ----
 export type ResumeCardProps = ComponentProps<typeof ResumeCard>
 export type ConfirmDialogProps = ComponentProps<typeof ConfirmDialog>
 export type ProgressMapProps = ComponentProps<typeof ProgressMap>
@@ -42,10 +46,18 @@ export type InsertControlProps = ComponentProps<typeof InsertControl>
 export type RebalanceSwitchProps = ComponentProps<typeof RebalanceSwitch>
 export type TreeStatsProps = ComponentProps<typeof TreeStats>
 export type EventLogProps = ComponentProps<typeof EventLog>
+// revamp-question-and-feedback (D128): built in src/ui/learn/. FeedbackPanel is the design's check panel
+// (src/ui/learn/FeedbackPanel.tsx); the old practice panel that D129 kept it apart from was removed with the
+// old assessment layer at the merge with main (14 Nov).
+export type QuestionItemProps = ComponentProps<typeof QuestionItem>
+export type ConfidenceRatingProps = ComponentProps<typeof ConfidenceRating>
+export type FullAnswerProps = ComponentProps<typeof FullAnswer>
+export type LectureQuestionDraftProps = ComponentProps<typeof LectureQuestionDraft>
+export type FeedbackPanelProps = ComponentProps<typeof FeedbackPanel>
 
-// ---- Not built yet (31): only what the frame shows ----
-// SkillStatusList, PredictPrompt, PredictionReveal, FeedbackPanel and ScaffoldLadder were built on the old
-// assessment layer; the live content (D94 to D116) removed them, so they are stubs again on the src/live types.
+// ---- Not built yet (26): only what the frame shows ----
+// SkillStatusList, PredictPrompt, PredictionReveal and ScaffoldLadder were built on the old assessment layer;
+// the live content (D94 to D116) removed them, so they are stubs again on the src/live types.
 
 /** 1d: one line per prerequisite skill, with its word (Secure or Needs review) and a symbol; no total. */
 export interface SkillStatusListProps {
@@ -64,12 +76,6 @@ export interface PredictionRevealProps {
   /** What the student locked in; null means they skipped, and nothing is shown. */
   choice: string | null
   onReplayStep: (stepIndex: number) => void
-}
-/** 1i to 1l: verdict, why, link to the concept and one next step; no red, no cross glyph (D27). */
-export interface FeedbackPanelProps {
-  mark: Mark | null
-  concept: { label: string; to: string }
-  next: { label: string; onClick: () => void }
 }
 /** 1j, 1k: the support ladder, hint then worked example then guided step-through (D21). */
 export interface ScaffoldLadderProps {
@@ -107,23 +113,6 @@ export interface DiagnosticStepperProps {
   total: number
   steps: readonly { id: string; label: string }[]
   currentStepId: string
-}
-/** 1c, 1i, 1j: one question, its tree if any, and the answer input. */
-export interface QuestionItemProps {
-  question: Question
-  response: Response | null
-  onResponse: (response: Response) => void
-  /** Locked once the answer is checked. */
-  disabled: boolean
-  /** Shown once checked: the option the student chose is marked "Your answer". */
-  mark?: Mark
-}
-/** 1c, 1i: "How sure are you?", optional; bars fill 1, 2, 3 so the level reads without colour. */
-export interface ConfidenceRatingProps {
-  value: Confidence | null
-  onChange: (value: Confidence) => void
-  label: string
-  disabled?: boolean
 }
 /** 1d: secure or needs review per sub-skill, then the route recommendation. */
 export interface DiagnosticResultProps {
@@ -191,16 +180,6 @@ export interface GuidedStepThroughProps {
   step: number
   onStep: (step: number) => void
 }
-/** 1l: the full answer at the retry cap. */
-export interface FullAnswerProps {
-  example: Scaffold['workedExample']
-}
-/** 1l: the drafted lecture question, added to the list. */
-export interface LectureQuestionDraftProps {
-  text: string
-  added: boolean
-  onAdd: () => void
-}
 /** 1m: insert, rotations, undo and reset for the tree being edited. */
 export interface TreeEditorToolbarProps {
   nextKey: number | null
@@ -245,15 +224,16 @@ export interface ExportActionsProps {
 export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls', 'PseudocodePanel',
   'StepExplanation', 'RotationMenu', 'InOrderStrip', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
+  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel',
 ] as const
 
 export const STUBBED = [
-  'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper', 'QuestionItem', 'ConfidenceRating',
+  'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper',
   'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
-  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough', 'FullAnswer',
-  'LectureQuestionDraft', 'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
+  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
+  'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
   'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
-  'FeedbackPanel', 'ScaffoldLadder',
+  'ScaffoldLadder',
 ] as const
 
 export type StubbedName = (typeof STUBBED)[number]

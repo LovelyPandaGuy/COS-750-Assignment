@@ -2,6 +2,7 @@
 // The labels here are developer text, not student content.
 import { useState } from 'react'
 import { Button, CHIP_LEVELS, MasteryBadge, OutcomeChip, type ButtonVariant, type MasteryState } from '../ui/base'
+import { LearnGallery } from '../ui/learn/LearnGallery'
 
 const VARIANTS: ButtonVariant[] = ['primary', 'secondary', 'quiet']
 const STATES = ['default', 'hover', 'focus', 'pressed', 'disabled'] as const
@@ -87,6 +88,7 @@ export function Gallery() {
           </div>
         </div>
       </section>
+      <LearnGallery />
     </main>
   )
 }
