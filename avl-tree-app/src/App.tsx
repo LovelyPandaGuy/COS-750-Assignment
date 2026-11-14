@@ -10,6 +10,8 @@ import { LearnerProvider, useLearner } from './state/LearnerContext'
 import { bootLearner, type Booted } from './state/boot'
 import { createSettingsStorage } from './state/storage'
 import { ThemeProvider, useTheme } from './ui/ThemeContext'
+import { NarrationProvider } from './ui/narration/NarrationContext'
+import { browserEngine, type SpeechEngine } from './ui/narration/engine'
 import { DEFAULT_THEME } from './ui/theme'
 import { ACTIVITIES_BY_MODULE, parseActivity, parseModuleId, paths, patterns } from './routes'
 import { useScreen } from './useScreen'
@@ -94,28 +96,31 @@ export function AppRoutes() {
 /** Loaded once per page when App is rendered without an injected start (tests of the shell). */
 let fallbackBoot: Booted | null = null
 
-export function App({ storage, initial, settings, initialTheme }: Partial<Booted>) {
+export function App({ storage, initial, settings, initialTheme, speech }: Partial<Booted> & { /** add-narration: a speech engine (tests pass a fake); default the browser's. */ speech?: SpeechEngine | null }) {
   const booted = storage && initial ? { storage, initial } : (fallbackBoot ??= bootLearner())
   // Settings come with the boot; a test that injects only learner storage gets session-only settings.
   const [themeSettings] = useState(() => settings ?? (storage && initial ? createSettingsStorage(null) : fallbackBoot!.settings))
   const [startTheme] = useState(() => initialTheme ?? themeSettings.load().theme)
+  const [engine] = useState(() => (speech === undefined ? browserEngine() : speech))
   return (
     <HashRouter>
       <ThemeProvider settings={themeSettings} initial={startTheme}>
-        <ThemedLearner storage={booted.storage} initial={booted.initial} />
+        <ThemedLearner storage={booted.storage} initial={booted.initial} engine={engine} />
       </ThemeProvider>
     </HashRouter>
   )
 }
 
 /** Reset clears the settings key with the rest, so the theme goes back to the default at once (decision 7). */
-function ThemedLearner({ storage, initial }: Pick<Booted, 'storage' | 'initial'>) {
+function ThemedLearner({ storage, initial, engine }: Pick<Booted, 'storage' | 'initial'> & { engine: SpeechEngine | null }) {
   const theme = useTheme()
   const onReset = useCallback(() => theme?.setTheme(DEFAULT_THEME, { save: false }), [theme])
   return (
-    <LearnerProvider storage={storage} initial={initial} onReset={onReset}>
-      <AppRoutes />
-    </LearnerProvider>
+    <NarrationProvider engine={engine} on={theme?.settings.narration ?? false}>
+      <LearnerProvider storage={storage} initial={initial} onReset={onReset}>
+        <AppRoutes />
+      </LearnerProvider>
+    </NarrationProvider>
   )
 }
 

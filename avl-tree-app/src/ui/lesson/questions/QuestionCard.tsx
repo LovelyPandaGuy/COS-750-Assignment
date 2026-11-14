@@ -97,7 +97,9 @@ export function QuestionCard({ q, mode, attemptsAllowed, hintsUsed, show, listin
 
   return (
     <div className="q-card">
-      <p className="q-stem">{q.stem}</p>
+      <p className="q-stem" data-narrate>
+        {q.stem}
+      </p>
       {renderControl()}
       {needsConfidence && <ConfidenceControl value={confidence} onChange={setConfidence} disabled={locked} />}
       {unreadable && <p className="q-prompt" role="alert">{copy.readPrompt}</p>}
@@ -106,7 +108,7 @@ export function QuestionCard({ q, mode, attemptsAllowed, hintsUsed, show, listin
           {copy.checkAnswer}
         </button>
       )}
-      <div role="status" aria-live="polite" aria-label={copy.feedbackLabel} className="practice-panel q-feedback" data-verdict={mark === null ? 'none' : mark.verdict === 'right' ? 'right' : 'not-yet'}>
+      <div role="status" aria-live="polite" aria-label={copy.feedbackLabel} data-narrate className="practice-panel q-feedback" data-verdict={mark === null ? 'none' : mark.verdict === 'right' ? 'right' : 'not-yet'}>
         {mark !== null && (
           <>
             <strong>
