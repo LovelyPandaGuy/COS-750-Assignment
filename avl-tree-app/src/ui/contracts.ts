@@ -11,10 +11,16 @@ import type { SkillStatus } from '../live/diagnostic'
 import type { ReadinessReport } from '../live/readiness'
 import type { Question, Representation, Scaffold } from '../live/types'
 import type { LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
-import type { ActivityList } from '../components/ActivityList'
+import type { ActivityList } from './progress/ActivityList'
+import type { StartPanel } from './progress/StartPanel'
+import type { PrivacyNotice } from './progress/PrivacyNotice'
+import type { ResetProgressLink } from './progress/ResetProgressLink'
+import type { UnitCard } from './progress/UnitCard'
+import type { SandboxCard } from './progress/SandboxCard'
+import type { LectureQuestionsCard } from './progress/LectureQuestionsCard'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
-import type { ProgressMap } from '../components/ProgressMap'
-import type { ResumeCard } from '../components/ResumeCard'
+import type { ProgressMap } from './progress/ProgressMap'
+import type { ResumeCard } from './progress/ResumeCard'
 import type { InOrderStrip } from './practice/InOrderStrip'
 import type { RotationMenu } from './practice/RotationMenu'
 import type { PseudocodePanel } from './replay/PseudocodePanel'
@@ -36,6 +42,13 @@ export type ResumeCardProps = ComponentProps<typeof ResumeCard>
 export type ConfirmDialogProps = ComponentProps<typeof ConfirmDialog>
 export type ProgressMapProps = ComponentProps<typeof ProgressMap>
 export type ActivityListProps = ComponentProps<typeof ActivityList>
+// revamp-progress-and-hub (D132): built in src/ui/progress/.
+export type StartPanelProps = ComponentProps<typeof StartPanel>
+export type PrivacyNoticeProps = ComponentProps<typeof PrivacyNotice>
+export type ResetProgressLinkProps = ComponentProps<typeof ResetProgressLink>
+export type UnitCardProps = ComponentProps<typeof UnitCard>
+export type SandboxCardProps = ComponentProps<typeof SandboxCard>
+export type LectureQuestionsCardProps = ComponentProps<typeof LectureQuestionsCard>
 export type TreeViewProps = ComponentProps<typeof TreeView>
 export type StepControlsProps = ComponentProps<typeof StepControls>
 export type PseudocodePanelProps = ComponentProps<typeof PseudocodePanel>
@@ -89,24 +102,6 @@ export interface ScaffoldLadderProps {
 }
 
 
-/** 1b: purpose, start or resume, and the hero diagram slot. */
-export interface StartPanelProps {
-  heading: string
-  intro: string
-  startLabel: string
-  onStart: () => void
-  /** The chain-versus-balanced hero diagram (a TreeView pair), passed in by the screen. */
-  hero?: ReactNode
-}
-/** 1b: always visible on Start, not behind a link. */
-export interface PrivacyNoticeProps {
-  text: string
-}
-/** 1b: a deliberate two-step: the link opens a ConfirmDialog. */
-export interface ResetProgressLinkProps {
-  label: string
-  onRequestReset: () => void
-}
 /** 1c: "Question 3 of 6" and the sub-skill steps, current one marked. */
 export interface DiagnosticStepperProps {
   current: number
@@ -125,30 +120,10 @@ export interface RouteRecommendationProps {
   recommended: { label: string; onChoose: () => void }
   others: readonly { label: string; onChoose: () => void }[]
 }
-/** 1e: one module on the hub; done, current or upcoming. */
-export interface UnitCardProps {
-  module: ModuleId
-  title: string
-  status: 'done' | 'current' | 'upcoming'
-  onOpen: () => void
-  /** The soft prerequisite note (D20); never a lock. */
-  note?: string
-}
 /** 1e: Guided path or Choose my own (D20), never locked. */
 export interface PathModeToggleProps {
   mode: LearnerPath | 'own'
   onChange: (mode: LearnerPath | 'own') => void
-}
-/** 1e: the way into the sandbox. */
-export interface SandboxCardProps {
-  title: string
-  text: string
-  onOpen: () => void
-}
-/** 1e: the lecture questions gathered so far. */
-export interface LectureQuestionsCardProps {
-  questions: readonly LectureQuestion[]
-  onOpen: () => void
 }
 /** 1f (D22): one primary representation per step; the rest are toggles. */
 export interface RepresentationSwitcherProps {
@@ -225,11 +200,12 @@ export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls', 'PseudocodePanel',
   'StepExplanation', 'RotationMenu', 'InOrderStrip', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
   'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel',
+  'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'UnitCard', 'SandboxCard', 'LectureQuestionsCard',
 ] as const
 
 export const STUBBED = [
-  'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper',
-  'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
+  'DiagnosticStepper',
+  'DiagnosticResult', 'RouteRecommendation', 'PathModeToggle',
   'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
   'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
   'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
