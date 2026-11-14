@@ -39,54 +39,67 @@
 - **WHEN** the two layouts are compared
 - **THEN** every key present in both trees has the same x in both, and the no-overlap and in-order rules still hold in each
 
-### Requirement: Node roles by shape, text and colour
-`TreeView` SHALL draw each node with a role from its `roles` prop (new, z, y, balanced) or neutral when it has none. Each role SHALL differ in ring style, in text and in colour: neutral a thin solid grey ring; new a dotted ring and the tag "new"; z a double ring and the tag "z"; y a dashed ring and the tag "y"; balanced a thick solid ring and a check badge with the text "balanced" for assistive technology. The tags "new", "z" and "y" SHALL be drawn as filled pills in the role colour with text in the surface colour (design system section 01 D). Role colours SHALL be the `--tree-*` tokens and tag text SHALL be at least 4.5:1 against its pill. No role SHALL use red. (FR-VIS-02, NFR-02, D25)
+### Requirement: Node states by colour, shape and text
+`TreeView` SHALL draw each node in one of the ID's states: balanced (fill `#0072B2`, white text), unbalanced (fill `#E69F00`, near-black text, a "!" marker and a thick dashed outline), being rotated (fill `#F0E442`, near-black text, a bold outline) or newly inserted (fill `#56B4E9`, near-black text, a "NEW" tag beside the node). Balanced and unbalanced come from the node's balance factor and `isOutOfBalance`; being rotated and newly inserted come from the `roles` prop, and a role wins over the balance state. The first unbalanced node of a step SHALL carry the tag "n" (`conventions.unbalancedNode`). The "NEW" and "n" tags SHALL be drawn as filled pills in the role colour (`--tree-new` for NEW, `--tree-z` for n) with text in the surface colour (`--bg-page` in the dark theme), design system section 01 D. Every state SHALL carry text naming it for assistive technology. The fills SHALL be tokens. No state SHALL use red or colour alone. (ID 11.1, FR-VIS-02, NFR-02, D97; supersedes D25 for tree nodes)
 
 #### Scenario: Each role is distinguishable without colour
-- **WHEN** one node of each role is rendered
-- **THEN** the five roles (neutral, new, z, y, balanced) have five different ring style values (solid, dotted, double, dashed, thick), and every role other than neutral has text (visible or screen-reader only) naming it
+- **WHEN** one node of each state is rendered
+- **THEN** balanced shows its balance factor, unbalanced shows "!" and a dashed outline, being rotated has a bold outline, newly inserted has a "NEW" tag, and each node's accessible name names its state
 
-#### Scenario: Greyscale keeps every role apart
-- **WHEN** one node of each role is rendered and every colour value is ignored
-- **THEN** each pair of roles still differs in ring style or in tag text, so no two roles look the same in greyscale
+#### Scenario: Greyscale keeps every state apart
+- **GIVEN** the plain BST from 40, 30, 20, 10, 50 with roles n on 30, rotating on 20 and new on 10
+- **WHEN** it is rendered and every colour value is ignored
+- **THEN** 50 is balanced, 10 new, 20 rotating, and 30 and 40 unbalanced, and the five nodes differ pairwise in ring style or tag text
 
 #### Scenario: Pill tags
-- **WHEN** a node with role new, z or y is rendered
-- **THEN** its tag is a rounded rectangle filled with that role's `--tree-*` colour, behind tag text filled with `--bg-surface`
+- **WHEN** a node tagged "NEW" or "n" is rendered
+- **THEN** its tag is a rounded rectangle filled with that role's `--tree-*` colour, behind tag text filled with `--bg-surface`; a rotating node and a node without a role have no pill
 
 #### Scenario: Tag text contrast
-- **WHEN** `--bg-surface` is compared with `--tree-new`, `--tree-z` and `--tree-y` in the light theme, and `--bg-page` with `--tree-z` in the dark theme
+- **WHEN** each state's text colour is compared with its fill, and the "NEW" and "n" tag colours with `--bg-surface` in both themes (and `--tree-z` with `--bg-page` in the dark theme)
 - **THEN** each ratio is at least 4.5:1
 
 #### Scenario: Roles are data
 - **WHEN** the same tree is rendered with different `roles`
-- **THEN** the shapes and positions are identical and only ring style, tags and colours change
+- **THEN** the shapes and positions are identical and only fills, outlines and tags change
 
-### Requirement: Height and balance factor on every node
-`TreeView` SHALL show on every node its height and its balance factor, in the form "h2 · bf +1" (a minus sign for negative, "0" for zero), and SHALL show the text "Unbalanced" on every node for which `isOutOfBalance` is true. The numbers SHALL be the node's stored height and the balance factor from its children's stored heights, using the conventions module. On an out-of-balance node the "h · bf" line SHALL take the `--tree-z` colour and bold weight (design system "Node anatomy"). (FR-VIS-09, D2)
+#### Scenario: State from the balance factor
+- **WHEN** the plain BST from 10, 20, 30 is rendered with no roles
+- **THEN** node 10 is drawn unbalanced with "!" and nodes 20 and 30 are drawn balanced
+
+### Requirement: Node values follow the screen's show list
+`TreeView` SHALL show on each node the values its `show` prop names: `height` (as "h2"), `balanceFactor` (as "bf +1", a true minus sign for negative, "0" for zero), or `balanceFactor:root` (the root's balance factor only). With no `show` prop it SHALL show the balance factor on every node (ID 8.3 "Every node shows its balance factor"). The numbers SHALL be the node's stored height and the balance factor from its children's stored heights, using the conventions module. On an out-of-balance node the values line SHALL take the `--tree-z` colour and bold weight (design system "Node anatomy"). (FR-VIS-09, ID 7.3, ID 8.3, D98)
 
 #### Scenario: Values match the engine
 - **GIVEN** random AVL trees and random BSTs of up to 15 nodes with correct heights
-- **WHEN** they are rendered
+- **WHEN** they are rendered with `show` of height and balance factor
 - **THEN** for every node the shown height equals the node's height and the shown balance factor equals `balanceFactorOf` of its subtree
 
 #### Scenario: Convention
-- **WHEN** a single node and a three-node chain are rendered
-- **THEN** the single node shows "h0 · bf 0" and the chain's root shows "h2 · bf +2"
+- **WHEN** a single node and the three-node chain from 10, 20, 30 are rendered
+- **THEN** the single node shows "bf 0" and the chain's root shows "bf +2"
+
+#### Scenario: Show list
+- **WHEN** the tree of `c3-s01` is rendered with `show` of `balanceFactor:root`
+- **THEN** only the root shows a balance factor, "bf 0", and no other node shows a number
+
+#### Scenario: Default
+- **WHEN** a tree is rendered with no `show` prop
+- **THEN** every node shows its balance factor and no node shows its height
 
 #### Scenario: Flag is text
 - **GIVEN** a tree with an out-of-balance node and a balanced tree
 - **WHEN** both are rendered
-- **THEN** "Unbalanced" appears once on each out-of-balance node and nowhere in the balanced tree, and the text is present with all styles removed (so it survives greyscale)
+- **THEN** "!" and the accessible text "Unbalanced" appear once on each out-of-balance node and nowhere in the balanced tree, and both are present with all styles removed (so they survive greyscale)
 
 #### Scenario: Unbalanced annotation is marked
 - **GIVEN** the plain BST from 30, 20, 10
 - **WHEN** it is rendered
-- **THEN** node 30's "h · bf" line is marked as out of balance (styled with `--tree-z` and bold in the stylesheet) and the lines of 20 and 10 are not
+- **THEN** node 30's values line is marked as out of balance (styled with `--tree-z` and bold in the stylesheet) and the lines of 20 and 10 are not
 
 #### Scenario: Stale heights are shown as stored
 - **GIVEN** a tree whose stored height on one node differs from its real height
-- **WHEN** it is rendered
+- **WHEN** it is rendered with `show` of height
 - **THEN** the shown values follow the stored heights
 
 ### Requirement: Keyboard navigation and selection
@@ -135,7 +148,7 @@ An interactive `TreeView` SHALL have one tab stop (roving tabindex): the selecte
 - **THEN** nothing is selected and `onSelect` is not called
 
 ### Requirement: Wide trees keep their size
-`TreeView` SHALL draw nodes at their natural size and put the drawing in a horizontally scrollable region, instead of shrinking it, so node text stays readable and targets stay at least 44 px. The region SHALL be keyboard-scrollable and labelled. It SHALL scroll the focused node into view, and when the tree changes, the node with role z if there is one. The page SHALL NOT scroll horizontally at 390, 768 or 1366 px wide with a 15-node tree. (FR-VIS-10, NFR-02, NFR-04, D17)
+`TreeView` SHALL draw nodes at their natural size and put the drawing in a horizontally scrollable region, instead of shrinking it, so node text stays readable and targets stay at least 44 px. The region SHALL be keyboard-scrollable and labelled. It SHALL scroll the focused node into view, and when the tree changes, the node tagged "n" (the first unbalanced node, D97) if there is one. The page SHALL NOT scroll horizontally at 390, 768 or 1366 px wide with a 15-node tree. (FR-VIS-10, NFR-02, NFR-04, D17)
 
 #### Scenario: No shrinking
 - **WHEN** a 15-node chain is rendered
@@ -145,12 +158,12 @@ An interactive `TreeView` SHALL have one tab stop (roving tabindex): the selecte
 - **WHEN** the tree view stylesheet is read
 - **THEN** the container has `overflow-x: auto`, and in the DOM it has `tabindex="0"`, a role of region and an accessible name
 
-#### Scenario: Focus and z kept in view
+#### Scenario: Focus and the n node kept in view
 - **GIVEN** an interactive 15-node chain in a region narrower than the drawing
-- **WHEN** focus moves to the last node, and separately when the tree changes so that a node has role z
+- **WHEN** focus moves to the last node, and separately when the tree changes so that a node has role n
 - **THEN** the region is asked to scroll that node into view (its `scrollIntoView` is called with `block: 'nearest'` and `inline: 'nearest'`)
 
-#### Scenario: Three widths (visual, D93)
+#### Scenario: Three widths (visual, D118)
 - **GIVEN** the Sandbox with keys 1 to 15 inserted in order with rebalancing off (the widest 15-node tree)
 - **WHEN** it is shown at 390, 768 and 1366 px wide
 - **THEN** the page's scroll width is no greater than the viewport width at every width, the tree region scrolls sideways where the drawing is wider than it, and every node's hit area measures at least 44 by 44 CSS px
@@ -239,12 +252,12 @@ After every change of `tree`, `roles` or hidden-balance mode, the text descripti
 - **THEN** the drawing is exactly as before
 
 ### Requirement: Labels follow the conventions module
-Every height and balance factor the tree view shows or speaks SHALL come from the engine's stored heights and the conventions module, with no height base, sign or range written in `src/ui/tree/`. (D2, D19, FR-ENG-10)
+Every height and balance factor the tree view shows or speaks SHALL come from the engine's stored heights and the conventions module, with no height base, sign or range written in `src/ui/tree/`. (D2, D93, FR-ENG-10)
 
 #### Scenario: Sign follows the module
-- **GIVEN** the conventions module is replaced in the test with one whose balance factor is right minus left
+- **GIVEN** the conventions module is replaced in the test with one whose balance factor is left minus right (the opposite of D93)
 - **WHEN** the plain BST from 30, 20, 10 is rendered
-- **THEN** node 30 shows "bf −2" in the drawing, the name and the description
+- **THEN** node 30 shows "bf +2" in the drawing, the name and the description, where the real convention gives −2
 
 #### Scenario: Nothing hard-coded
 - **WHEN** the files in `src/ui/tree/` are scanned

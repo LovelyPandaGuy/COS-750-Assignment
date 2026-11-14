@@ -27,8 +27,10 @@ describe('every named component has a contract', () => {
   });
   it('built and stubbed split the names with no overlap', () => {
     expect([...BUILT, ...STUBBED].sort()).toEqual([...CONTRACT_NAMES].sort());
-    expect(BUILT).toHaveLength(19);
-    expect(STUBBED).toHaveLength(26);
+    // 14 and 31 since the merge with the live content (14 Nov): five components built on the old
+    // assessment layer were removed and are stubs again (D121).
+    expect(BUILT).toHaveLength(14);
+    expect(STUBBED).toHaveLength(31);
   });
 });
 

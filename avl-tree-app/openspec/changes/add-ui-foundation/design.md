@@ -121,3 +121,7 @@ None of these changes what gets built. Each has an assumed default (proposal, op
 - How the lanes split.
 - The baseline OS.
 - Breakpoints, if the design ever states them.
+
+## Merge note (14 Nov)
+
+The merge with the live content removed the old assessment layer (`src/assessment`, `src/modules`, the practice and check UIs). SkillStatusList, PredictPrompt, PredictionReveal, FeedbackPanel and ScaffoldLadder are stubs again, so the contracts are now **14 built and 31 stubbed** (still 45, D121). The stub interfaces use the `src/live` types (`Question`, `Response`, `Mark`, `Scaffold`, `ReadinessReport`, `SkillStatus`). MasteryBadge owns its three-state type. The decision rows this change added are now D117 to D124 (first written as D92 to D99).

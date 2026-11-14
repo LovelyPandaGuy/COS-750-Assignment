@@ -12,8 +12,9 @@ import { describeTree, describeTreeParts } from '../../src/ui/tree/describe';
 import { layoutTree } from '../../src/ui/tree/layout';
 
 // Spec: add-tree-view / tree-view. Requirement IDs: FR-VIS-02, FR-VIS-07, FR-VIS-09, NFR-02.
-// DOM contract (see design.md): each node is <g data-key data-role data-ring>, with .tree-metrics,
-// .tree-tag, .tree-flag, .tree-badge; the live region is [aria-live=polite]; the scroll region is .tree-scroll.
+// DOM contract (see design.md; node states per D97): each node is <g data-key data-role data-state data-ring>,
+// with .tree-metrics, .tree-tag, .tree-flag, .tree-marker; the live region is [aria-live=polite]; the scroll
+// region is .tree-scroll.
 
 const avl = (keys: Key[]): Tree => keys.reduce<Tree>((t, k) => avlInsert(t, k).tree, null);
 const keysArb = fc.uniqueArray(fc.integer({ min: 1, max: 99 }), { minLength: 0, maxLength: 15 });
@@ -324,36 +325,44 @@ const rule = (selector: string) => {
   return '';
 };
 
-describe('FR-VIS-02 D25 roles survive greyscale and use pill tags (revamp-tree-view)', () => {
-  const roles: Record<number, NodeRole> = { 40: 'new', 20: 'z', 60: 'y', 10: 'balanced' };
+describe('FR-VIS-02 D97 node states survive greyscale and roles use pill tags (revamp-tree-view)', () => {
+  // ID 11.1 / D97: states come from the balance factor (balanced, out-of-balance) and the roles new and
+  // rotating; the first unbalanced node is tagged "n". 40 30 20 10 50: 30 (bf −2) and 40 (bf −3) are out
+  // of balance; 20, 10 and 50 are balanced.
+  const tree = build([40, 30, 20, 10, 50]);
+  const roles: Record<number, NodeRole> = { 30: 'n', 20: 'rotating', 10: 'new' };
 
-  it('keeps every pair of roles apart by ring style or tag text when colour is ignored', () => {
-    const { container } = render(<TreeView tree={seven} roles={roles} label="t" />);
+  it('keeps every state apart by ring style or tag text when colour is ignored', () => {
+    const { container } = render(<TreeView tree={tree} roles={roles} label="t" />);
+    const state = (k: Key) => node(container, k).getAttribute('data-state');
+    expect([50, 10, 20, 30, 40].map(state)).toEqual(['balanced', 'new', 'rotating', 'out-of-balance', 'out-of-balance']);
     const look = (k: Key) => {
       const g = node(container, k);
-      const tag = g.querySelector('.tree-tag')?.textContent ?? g.querySelector('.tree-badge title')?.textContent ?? '';
-      return `${g.getAttribute('data-ring')}|${tag}`;
+      return `${g.getAttribute('data-ring')}|${g.querySelector('.tree-tag')?.textContent ?? ''}`;
     };
-    const looks = [30, 40, 20, 60, 10].map(look);
-    expect(new Set(looks).size).toBe(5);
+    // Balanced, new, rotating, the tagged first unbalanced node, and another unbalanced node.
+    expect(new Set([50, 10, 20, 30, 40].map(look)).size).toBe(5);
   });
 
-  it('draws the new, z and y tags as filled pills behind surface-coloured text', () => {
-    const { container } = render(<TreeView tree={seven} roles={roles} label="t" />);
-    for (const k of [40, 20, 60]) {
+  it('draws the NEW and n tags as filled pills behind surface-coloured text; untagged nodes have none', () => {
+    const { container } = render(<TreeView tree={tree} roles={roles} label="t" />);
+    for (const k of [10, 30]) {
       const pill = node(container, k).querySelector('rect.tree-tag-pill');
       const text = node(container, k).querySelector('.tree-tag')!;
       expect(pill, `pill on ${k}`).not.toBeNull();
       expect(Number(pill!.getAttribute('rx'))).toBeGreaterThan(0);
       expect(pill!.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     }
-    expect(node(container, 30).querySelector('.tree-tag-pill')).toBeNull();
+    // Rotating has no tag (ID 11.1: a bold ring), and a node without a role has none.
+    for (const k of [20, 50, 40]) expect(node(container, k).querySelector('.tree-tag-pill'), `no pill on ${k}`).toBeNull();
     expect(rule('.tree-tag-pill')).toMatch(/fill:\s*var\(--role-color\)/);
+    expect(rule("[data-role='new']")).toMatch(/--role-color:\s*var\(--tree-new\)/);
+    expect(rule("[data-role='n']")).toMatch(/--role-color:\s*var\(--tree-z\)/);
     expect(rule('.tree-tag')).toMatch(/fill:\s*var\(--bg-surface\)/);
     expect(treeCss()).toMatch(/\[data-theme='dark'\][^{]*\.tree-tag\s*\{[^}]*fill:\s*var\(--bg-page\)/);
   });
 
-  it('has pill text contrast of at least 4.5:1 (light: surface on new, z, y; dark: page on z)', () => {
+  it('has pill text contrast of at least 4.5:1 (light: surface on the NEW and n pills; dark: page on n)', () => {
     const css = readFileSync('src/ui/tokens.css', 'utf8');
     const block = (start: RegExp) => {
       const i = css.search(start);
@@ -370,7 +379,7 @@ describe('FR-VIS-02 D25 roles survive greyscale and use pill tags (revamp-tree-v
     };
     const light = block(/^:root\s*\{/m);
     const dark = block(/^:root\[data-theme='dark'\]\s*\{\s*--/m);
-    for (const n of ['tree-new', 'tree-z', 'tree-y']) expect(ratio(pick(light, 'bg-surface'), pick(light, n)), n).toBeGreaterThanOrEqual(4.5);
+    for (const n of ['tree-new', 'tree-z']) expect(ratio(pick(light, 'bg-surface'), pick(light, n)), n).toBeGreaterThanOrEqual(4.5);
     expect(ratio(pick(dark, 'bg-page'), pick(dark, 'tree-z'))).toBeGreaterThanOrEqual(4.5);
   });
 });

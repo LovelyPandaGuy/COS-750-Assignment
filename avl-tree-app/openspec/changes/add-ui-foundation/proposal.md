@@ -101,4 +101,8 @@ Two developers are about to build screens in parallel. Without a shared base, ea
   - New: `tests/ui/base/*.test.tsx`, `tests/ui/fonts.test.ts`, `tests/ui/breakpoints.test.ts`, `tests/ui/contracts.test.tsx` and `tests/visual/*.spec.ts` (Playwright).
   - Changed: `tests/ui/shell.test.tsx` (progress slot).
   - Must still pass: `tests/ui/styles.test.ts` and all existing tests.
-- **Decisions:** new assumed rows D92 onwards, one for each assumption above.
+- **Decisions:** new assumed rows D117 onwards (first written as D92 onwards; renumbered at the merge), one for each assumption above.
+
+## Merge note (14 Nov)
+
+The merge with the live content removed the old assessment layer (`src/assessment`, `src/modules`, the practice and check UIs). SkillStatusList, PredictPrompt, PredictionReveal, FeedbackPanel and ScaffoldLadder are stubs again, so the contracts are now **14 built and 31 stubbed** (still 45, D121). The stub interfaces use the `src/live` types (`Question`, `Response`, `Mark`, `Scaffold`, `ReadinessReport`, `SkillStatus`). MasteryBadge owns its three-state type. The decision rows this change added are now D117 to D124 (first written as D92 to D99).

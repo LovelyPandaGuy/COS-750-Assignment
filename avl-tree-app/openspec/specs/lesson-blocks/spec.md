@@ -43,7 +43,7 @@ A `rule` screen SHALL show its `text` and its `points` as a list, its tree (when
 - **THEN** a table with four rows lists Case 1 (LL), Case 2 (LR), Case 3 (RL) and Case 4 (RR) with their fixes from `conventions.json`, followed by the five points
 
 ### Requirement: Diagram block
-A `diagram` screen SHALL draw its tree read-only with the values its `show` list names, its caption under it and its `text` as supporting text. With `compareWith`, it SHALL draw both trees side by side (stacked below 600 px), each with its own accessible name, and the first tree SHALL be labelled first. (ID 8.1 "Static labelled diagram")
+A `diagram` screen SHALL draw its tree read-only with the values its `show` list names, its caption under it and its `text` as supporting text. With `compareWith`, it SHALL draw both trees side by side (stacked below 768 px, D118), each with its own accessible name, and the first tree SHALL be labelled first. (ID 8.1 "Static labelled diagram")
 
 #### Scenario: Two trees
 - **WHEN** `c3-s08` is shown
@@ -72,7 +72,7 @@ An `animation` screen SHALL replay its `operation` on its tree step by step thro
 - **THEN** 50 is removed, the captions update node 40 and then node 20, and no rotation happens
 
 ### Requirement: Animation comparison
-An animation with `compareWith` SHALL replay both operations side by side (stacked below 600 px), with one step counter each. (ID 8.1 "step counter on a chain vs a balanced tree")
+An animation with `compareWith` SHALL replay both operations side by side (stacked below 768 px, D118), with one step counter each. (ID 8.1 "step counter on a chain vs a balanced tree")
 
 #### Scenario: Two searches compared
 - **WHEN** `c2-s06` is played to its end

@@ -1,8 +1,9 @@
-import type { ItemState } from '../../assessment/report'
 import { baseCopy } from '../../content/base'
 import './base.css'
 
-export type MasteryState = Exclude<ItemState, 'unassessed'>
+/** The three mastery states the design draws (design system "MasteryBadge"). Owned here since the old
+ *  assessment layer was replaced by the live content (merge, 14 Nov). */
+export type MasteryState = 'secure' | 'developing' | 'not-yet'
 
 export interface MasteryBadgeProps {
   state: MasteryState

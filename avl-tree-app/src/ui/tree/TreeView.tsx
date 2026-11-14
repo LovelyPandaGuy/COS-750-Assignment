@@ -85,6 +85,10 @@ export function TreeView({
   onSelect,
   label,
   hideBalance,
+  show = DEFAULT_SHOW,
+  formatKey = String,
+  highlightKey = null,
+  selectedKeys,
   slots,
   transitionMs = TREE_TRANSITION_MS,
   announce,
@@ -115,7 +119,7 @@ export function TreeView({
 
   // Live region: whichever changed last, the screen's announcement or the selection (on first render
   // the announcement wins). Taken in during render, so no effect sets state.
-  const selectionText = interactive && selectedKey !== null ? copy.selected(selectedKey) : null
+  const selectionText = interactive && selectedKey !== null ? copy.selected(formatKey(selectedKey)) : null
   const [live, setLive] = useState({ announce, selectionText, text: announce ?? selectionText ?? '' })
   let liveText = live.text
   if (live.announce !== announce || live.selectionText !== selectionText) {
@@ -124,15 +128,16 @@ export function TreeView({
     setLive({ announce, selectionText, text: liveText })
   }
 
-  // When the tree changes (not on first render), keep the node being taught, z, in view.
+  // When the tree changes (not on first render), keep the node being taught in view: the first
+  // unbalanced node, tagged "n" (ID 11.1; the role was called z before the live content, D97).
   const firstTree = useRef(true)
   useEffect(() => {
     if (firstTree.current) {
       firstTree.current = false
       return
     }
-    const z = Object.keys(roles).map(Number).find((k) => roles[k] === 'z')
-    if (z !== undefined) items.current.get(z)?.scrollIntoView?.(scrollOptions())
+    const n = Object.keys(roles).map(Number).find((k) => roles[k] === 'n')
+    if (n !== undefined) items.current.get(n)?.scrollIntoView?.(scrollOptions())
     // Only a tree change should scroll; roles arrive with it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tree])
@@ -220,10 +225,13 @@ export function TreeView({
                 )}
                 <circle className="tree-node-fill" r={R - 2} />
                 <circle className="tree-ring" r={R - 2} />
-                {role === 'z' && <circle className="tree-ring-inner" r={R - 6} />}
-                <text className="tree-key">{n.key}</text>
+                <text className="tree-key">{part.label}</text>
                 <text className="tree-metrics" y={R + 16} data-unbalanced={part.unbalanced && !part.hidden ? '' : undefined}>
-                  {part.hidden ? copy.metricsHidden(part.height) : copy.metrics(part.height, signed(part.balanceFactor))}
+                  {part.hidden
+                    ? hideBalance !== undefined
+                      ? copy.metricsHidden(part.height)
+                      : copy.metrics(showHeight ? part.height : null, null)
+                    : copy.metrics(showHeight ? part.height : null, signed(part.balanceFactor))}
                 </text>
                 {part.unbalanced && !part.hidden && (
                   <>
@@ -235,7 +243,7 @@ export function TreeView({
                     </text>
                   </>
                 )}
-                {tag !== null && (
+                {tag !== undefined && (
                   <>
                     <rect className="tree-tag-pill" x={PILL_X} y={PILL_Y} width={pillWidth(tag)} height={PILL_HEIGHT} rx={PILL_HEIGHT / 2} />
                     <text className="tree-tag" x={PILL_X + pillWidth(tag) / 2} y={PILL_Y + PILL_HEIGHT / 2}>

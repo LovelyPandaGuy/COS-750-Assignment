@@ -36,9 +36,10 @@
 .lesson-figure { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .lesson-figure figcaption { font: var(--type-body); color: var(--text-secondary); }
 
-/* Two trees side by side, stacked below 600 px (lesson-blocks "Diagram block", "Animation comparison"). */
+/* Two trees side by side from tablet width, stacked below 768 px (lesson-blocks "Diagram block", "Animation comparison";
+   D118 allows only the 768 and 1366 width queries; was 600 px before the merge, 14 Nov). */
 .lesson-pair { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
-@media (min-width: 600px) {
+@media (min-width: 768px) {
   .lesson-pair { grid-template-columns: 1fr 1fr; }
 }
 .lesson-pair > * { min-width: 0; }
@@ -68,7 +69,8 @@
 .lesson-table thead th { background: var(--action-primary-tint); }
 
 .lesson-listings { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
-@media (min-width: 720px) {
+/* Listings side by side from tablet width (D118; was 720 px before the merge). */
+@media (min-width: 768px) {
   .lesson-listings { grid-template-columns: 1fr 1fr; }
 }
 .lesson-listing { min-width: 0; overflow-x: auto; }

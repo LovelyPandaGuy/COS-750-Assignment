@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// Spec: revamp-tree-view / tree-view "Wide trees keep their size", scenario "Three widths" (D93).
+// Spec: revamp-tree-view / tree-view "Wide trees keep their size", scenario "Three widths" (D118).
 // FR-VIS-10, NFR-04; quality bar 4 and 8. The widest 15-node tree: keys 1 to 15 in order with rebalancing off,
 // built on the existing Sandbox page so nothing outside src/ui/tree changes. Projects: phone 390, tablet 768, desktop 1366.
 

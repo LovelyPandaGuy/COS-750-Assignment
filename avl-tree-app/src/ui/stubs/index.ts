@@ -27,6 +27,11 @@ import { OutcomeStatusTable } from './OutcomeStatusTable'
 import { ConfidenceFlags } from './ConfidenceFlags'
 import { LectureQuestionsList } from './LectureQuestionsList'
 import { ExportActions } from './ExportActions'
+import { SkillStatusList } from './SkillStatusList'
+import { PredictPrompt } from './PredictPrompt'
+import { PredictionReveal } from './PredictionReveal'
+import { FeedbackPanel } from './FeedbackPanel'
+import { ScaffoldLadder } from './ScaffoldLadder'
 
 export const STUBS: Record<StubbedName, ComponentType<never>> = {
   StartPanel,
@@ -55,6 +60,11 @@ export const STUBS: Record<StubbedName, ComponentType<never>> = {
   ConfidenceFlags,
   LectureQuestionsList,
   ExportActions,
+  SkillStatusList,
+  PredictPrompt,
+  PredictionReveal,
+  FeedbackPanel,
+  ScaffoldLadder,
 }
 
 export {
@@ -84,4 +94,9 @@ export {
   ConfidenceFlags,
   LectureQuestionsList,
   ExportActions,
+  SkillStatusList,
+  PredictPrompt,
+  PredictionReveal,
+  FeedbackPanel,
+  ScaffoldLadder,
 }

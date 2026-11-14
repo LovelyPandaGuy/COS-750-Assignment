@@ -1,6 +1,6 @@
 # Review notes: revamp-tree-view
 
-## Visual baselines (task 2.4, D97)
+## Visual baselines (task 2.4, D122)
 
 New: `tests/visual/__screenshots__/tree-chain15-{phone,tablet,desktop}-darwin.png` (15-key chain on the Sandbox, rebalancing off). No existing baseline changed: the gallery draws no tree. `npm run test:visual` passed twice in a row (23 tests).
 
@@ -65,3 +65,8 @@ Lines 1 and 6 therefore do not yet read pass, so task 3.2 stays open.
 | Reduced motion | Pass by test, and in Chromium with `prefers-reduced-motion` emulated. **Not yet done:** a run with the macOS setting turned on. |
 | Reviewer (fresh context) | **Not yet done.** No reviewer agent is defined in `.claude/agents/`. The implementer's own check is not a fresh-context review. |
 | a11y-checker | **Not yet done** as a separate pass (same reason). The axe and keyboard results above come from the test suite. |
+
+## Merge with the live content (14 Nov)
+
+- `tree-chain15-{phone,tablet,desktop}-darwin.png` regenerated. Nodes now follow D97 (orange fill, thick dashed ring and "!" when unbalanced), the sign follows D93 (`bf +14` on the root of the 1-to-15 chain), and height is hidden by default (D98). Layout, scroll and 44 px checks are unchanged and pass.
+- The tree tests and the spec delta follow D97 and D98 (proposal merge note). TreeView's merge errors were fixed: missing `show`, `formatKey`, `highlightKey` and `selectedKeys` props; key labels; the show list; the tag check; the selection wording; the z role becomes n. In CSS, the role colours for `new` and `n` and the "!" marker were restored.

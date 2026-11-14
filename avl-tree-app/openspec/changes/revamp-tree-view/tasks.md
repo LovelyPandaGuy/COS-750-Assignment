@@ -10,7 +10,7 @@ Scope: `src/ui/tree/**` and tests only. Read proposal questions 1 to 11 first; t
   - keyboard reachability of every node (property);
   - the description and drawn keys after a sequence of up to 10 engine operations (property);
   - the `announce` prop and `overlay` (positions and 4 empty slots);
-  - `scrollIntoView` on focus and on z;
+  - `scrollIntoView` on focus and on the n node (formerly z, D97);
   - the conventions `vi.mock` sign flip, and the source scan of `src/ui/tree/`.
 
   Name each after FR-VIS-02, 07, 09, 10, NFR-02 or D2. Verify the new cases fail for the expected reason and the old cases still pass.
@@ -24,11 +24,11 @@ Scope: `src/ui/tree/**` and tests only. Read proposal questions 1 to 11 first; t
   - draw nodes and edges from the tweened layout;
   - take ARIA, names and description from the target tree;
   - add the optional props `slots`, `transitionMs`, `announce` and `overlay`;
-  - add scroll-into-view for focus and z;
+  - add scroll-into-view for focus and the n node (formerly z, D97);
   - add the `data-unbalanced` mark on the metrics line, and the pill-tag `<rect>` (design decisions 5, 6 and 8).
 
   Verify that every tree test passes and that the whole `npm test` suite still passes with no caller changed (15 callers).
-- [x] 2.4 Update `tree-view.css` (tokens only): pill tags with a surface-colour text and the dark-theme text, hover, the selected frame filled with the tint, and the z-coloured bold annotation (design decision 7). Verify that `npm run lint` and the style scan pass, run `npm run test:visual`, and update only the tree baselines that changed (D97). List them in the change's review notes.
+- [x] 2.4 Update `tree-view.css` (tokens only): pill tags with a surface-colour text and the dark-theme text, hover, the selected frame filled with the tint, and the z-coloured bold annotation (design decision 7). Verify that `npm run lint` and the style scan pass, run `npm run test:visual`, and update only the tree baselines that changed (D122). List them in the change's review notes.
 
 ## 3. Critique, then polish
 
@@ -41,6 +41,6 @@ Scope: `src/ui/tree/**` and tests only. Read proposal questions 1 to 11 first; t
 
 ## Workflow follow-up
 
-- After the human skim, record in `.claude/docs/decisions.md`: D17 settled as the S1 outcome (in-order layout), D100 transition timing, D101 phone fit (scroll in its own box, scroll into view), D102 role look (design pills, current ring styles). Add the role-ring difference to `.claude/docs/design/INDEX.md` for the designer.
+- After the human skim, record in `.claude/docs/decisions.md`: D17 settled as the S1 outcome (in-order layout), D125 transition timing, D126 phone fit (scroll in its own box, scroll into view), D127 role look (design pill tags for "NEW" and "n"; ring styles per D97). (The old role-ring difference for the designer is moot under D97.)
 - Follow-up for change A2: the replay passes `slots` (its final tree's keys) so steps keep stable x.
 - A human merges (the developer who did not write it) and runs `/opsx:archive`. Agents do not.
