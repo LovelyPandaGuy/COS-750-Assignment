@@ -8,10 +8,13 @@
 import type { ComponentProps, ReactNode } from 'react'
 import type { Key, Tree } from '../engine/tree'
 import type { SkillStatus } from '../live/diagnostic'
-import type { ReadinessReport } from '../live/readiness'
 import type { Question, Representation, Scaffold } from '../live/types'
-import type { LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
+import type { LearnerPath, ModuleId } from '../state/learnerState'
 import type { ActivityList } from './progress/ActivityList'
+import type { OutcomeStatusTable } from './readiness/OutcomeStatusTable'
+import type { ConfidenceFlags } from './readiness/ConfidenceFlags'
+import type { LectureQuestionsList } from './readiness/LectureQuestionsList'
+import type { ExportActions } from './readiness/ExportActions'
 import type { StartPanel } from './progress/StartPanel'
 import type { PrivacyNotice } from './progress/PrivacyNotice'
 import type { ResetProgressLink } from './progress/ResetProgressLink'
@@ -67,6 +70,11 @@ export type ConfidenceRatingProps = ComponentProps<typeof ConfidenceRating>
 export type FullAnswerProps = ComponentProps<typeof FullAnswer>
 export type LectureQuestionDraftProps = ComponentProps<typeof LectureQuestionDraft>
 export type FeedbackPanelProps = ComponentProps<typeof FeedbackPanel>
+// revamp-readiness (D138): built in src/ui/readiness/.
+export type OutcomeStatusTableProps = ComponentProps<typeof OutcomeStatusTable>
+export type ConfidenceFlagsProps = ComponentProps<typeof ConfidenceFlags>
+export type LectureQuestionsListProps = ComponentProps<typeof LectureQuestionsList>
+export type ExportActionsProps = ComponentProps<typeof ExportActions>
 
 // ---- Not built yet (26): only what the frame shows ----
 // SkillStatusList, PredictPrompt, PredictionReveal and ScaffoldLadder were built on the old assessment layer;
@@ -174,41 +182,20 @@ export interface EditLogProps {
 export interface LiveBalanceReadoutProps {
   tree: Tree
 }
-/** 1o: one row per outcome, from the readiness report. */
-export interface OutcomeStatusTableProps {
-  report: ReadinessReport
-}
-/** 1o: the outcomes answered with confidence but not yet right. */
-export interface ConfidenceFlagsProps {
-  outcomes: readonly string[]
-}
-/** 1o: the questions to bring to the lecture. */
-export interface LectureQuestionsListProps {
-  heading: string
-  questions: readonly LectureQuestion[]
-}
-/** 1o: print, save and copy. */
-export interface ExportActionsProps {
-  onPrint: () => void
-  onSave: () => void
-  onCopy: () => void
-  /** Export waits for the student's own question (D91). */
-  disabled: boolean
-}
 
 export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls', 'PseudocodePanel',
   'StepExplanation', 'RotationMenu', 'InOrderStrip', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
   'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel',
   'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'UnitCard', 'SandboxCard', 'LectureQuestionsCard',
+  'OutcomeStatusTable', 'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions',
 ] as const
 
 export const STUBBED = [
   'DiagnosticStepper',
   'DiagnosticResult', 'RouteRecommendation', 'PathModeToggle',
   'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
-  'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
-  'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
+  'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
   'ScaffoldLadder',
 ] as const
 

@@ -13,10 +13,6 @@ import { GuidedStepThrough } from './GuidedStepThrough'
 import { TreeEditorToolbar } from './TreeEditorToolbar'
 import { EditLog } from './EditLog'
 import { LiveBalanceReadout } from './LiveBalanceReadout'
-import { OutcomeStatusTable } from './OutcomeStatusTable'
-import { ConfidenceFlags } from './ConfidenceFlags'
-import { LectureQuestionsList } from './LectureQuestionsList'
-import { ExportActions } from './ExportActions'
 import { SkillStatusList } from './SkillStatusList'
 import { PredictPrompt } from './PredictPrompt'
 import { PredictionReveal } from './PredictionReveal'
@@ -35,10 +31,6 @@ export const STUBS: Record<StubbedName, ComponentType<never>> = {
   TreeEditorToolbar,
   EditLog,
   LiveBalanceReadout,
-  OutcomeStatusTable,
-  ConfidenceFlags,
-  LectureQuestionsList,
-  ExportActions,
   SkillStatusList,
   PredictPrompt,
   PredictionReveal,
@@ -58,10 +50,6 @@ export {
   TreeEditorToolbar,
   EditLog,
   LiveBalanceReadout,
-  OutcomeStatusTable,
-  ConfidenceFlags,
-  LectureQuestionsList,
-  ExportActions,
   SkillStatusList,
   PredictPrompt,
   PredictionReveal,

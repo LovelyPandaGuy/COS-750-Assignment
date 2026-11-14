@@ -151,7 +151,8 @@
 }
 .certificate { padding: var(--space-6); border: 4px double var(--border-control); border-radius: var(--radius-md); background: var(--bg-surface); text-align: center; display: flex; flex-direction: column; gap: var(--space-3); }
 @media print {
-  body * { visibility: hidden; }
+  /* Only on a page with a certificate, so other pages that load this file still print (revamp-readiness). */
+  body:has(.certificate) * { visibility: hidden; }
   .certificate, .certificate * { visibility: visible; }
   .certificate { position: absolute; inset: 0 auto auto 0; width: 100%; border-color: currentColor; }
 }
