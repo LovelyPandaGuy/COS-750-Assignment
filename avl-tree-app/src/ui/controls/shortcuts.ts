@@ -18,9 +18,11 @@ export interface Shortcut {
 const a = controlsCopy.actions
 
 export const SHORTCUTS = {
-  treeMove: { aria: 'ArrowUp ArrowLeft ArrowRight', caps: '↑ ← →', action: a.treeMove, screens: ['editor'], match: [] },
-  treeSelect: { aria: 'Enter', caps: 'Enter', action: a.treeSelect, screens: ['editor'], match: [] },
-  barMove: { aria: 'ArrowLeft ArrowRight Home End', caps: '← → Home End', action: a.barMove, screens: ['editor'], match: [] },
+  treeMove: { aria: 'ArrowUp ArrowLeft ArrowRight', caps: '↑ ← →', action: a.treeMove, screens: ['editor', 'sandbox'], match: [] },
+  treeSelect: { aria: 'Enter', caps: 'Enter', action: a.treeSelect, screens: ['editor', 'sandbox'], match: [] },
+  barMove: { aria: 'ArrowLeft ArrowRight Home End', caps: '← → Home End', action: a.barMove, screens: ['editor', 'sandbox'], match: [] },
+  // The sandbox's key field: the form submits on Enter, so no handler matches it (revamp-sandbox-layout).
+  fieldInsert: { aria: 'Enter', caps: controlsCopy.caps.fieldInsert, action: a.fieldInsert, screens: ['sandbox'], match: [] },
   rotateRight: { aria: 'R', caps: 'R', action: a.rotateRight, screens: ['editor'], match: [{ key: 'r' }] },
   rotateLeft: { aria: 'L', caps: 'L', action: a.rotateLeft, screens: ['editor'], match: [{ key: 'l' }] },
   cancel: { aria: 'Escape', caps: 'Esc', action: a.cancel, screens: ['editor'], match: [{ key: 'escape' }] },

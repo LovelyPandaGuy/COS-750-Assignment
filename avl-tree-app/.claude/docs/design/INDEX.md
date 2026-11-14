@@ -45,7 +45,7 @@ Frame IDs are the wireframe IDs. Each frame has a spec in `screens/<id>.md` (las
 
 Design-system components beyond the wireframes: Button (primary, secondary, quiet), OutcomeChip, MasteryBadge, ScaffoldPanel, FeedbackPanel (correct, not quite yet, retry cap), ReadinessSummary. Every component is specified with default, hover, focus, selected, disabled and "not quite yet" states.
 
-Built since the import: `TreeEditorToolbar` and `EditLog` (revamp-tree-editor, D132 to D135), `KeyboardHelp` and the shared control bar for tree screens (revamp-tree-controls, D136 to D139). In the app the editor's control bar sits below the tree (D136), unlike frame 1m.
+Built since the import: `TreeEditorToolbar` and `EditLog` (revamp-tree-editor, D132 to D135), `KeyboardHelp` and the shared control bar for tree screens (revamp-tree-controls, D136 to D139). In the app the editor's control bar sits below the tree (D136), unlike frame 1m. The sandbox follows 1n's two columns from 768 px, with its phone order (tree, then controls) built (revamp-sandbox-layout, D140, D141).
 
 ## What must change before the first UI proposal
 

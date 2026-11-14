@@ -10,6 +10,7 @@ export const controlsCopy = {
     treeMove: 'Move between nodes (up: parent; left and right: children)',
     treeSelect: 'Select a node',
     barMove: 'Move between buttons',
+    fieldInsert: 'Insert the key in the field',
     rotateRight: 'Rotate right at the selected node',
     rotateLeft: 'Rotate left at the selected node',
     cancel: 'Let go of the key or close the menu',
@@ -26,5 +27,9 @@ export const controlsCopy = {
     reset: '⟲',
     rotateRight: '↻',
     rotateLeft: '↺',
+  },
+  /** Key caps that need words (revamp-sandbox-layout). */
+  caps: {
+    fieldInsert: 'Enter (in the key field)',
   },
 } as const

@@ -13,6 +13,13 @@ const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one :
 
 export const sandboxCopy = {
   intro: 'Insert and delete keys, and turn rebalancing on or off to compare the shapes.',
+  /** Section headings in the control column (revamp-sandbox-layout, D141). Flagged for the user to read. */
+  sections: {
+    change: 'Change the tree',
+    rebalancing: 'Rebalancing',
+    numbers: 'Numbers',
+    log: 'What happened',
+  },
   controlsLabel: 'Change the tree',
   fieldLabel: `Key (${range})`,
   insert: 'Insert',
@@ -44,7 +51,6 @@ export const sandboxCopy = {
   treeLabel: (on: boolean) => (on ? 'Sandbox tree, AVL' : 'Sandbox tree, plain BST'),
   emptyTree: 'The tree is empty. Insert a key to start.',
 
-  statsLabel: 'Tree statistics',
   stats: {
     nodes: (n: number, max: number) => `Nodes: ${n} / ${max}`,
     height: (n: number) => `Height: ${h(n)}`,
