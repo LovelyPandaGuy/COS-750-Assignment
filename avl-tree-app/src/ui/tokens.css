@@ -71,9 +71,14 @@
   --radius-sm: 4px;
   --radius-md: 8px;              /* default */
   --radius-pill: 999px;
-  /* The design system names e1 (cards, rare) and e2 (popovers and menus only) but gives no values. */
-  /* --elevation-1: [OPEN] */
-  /* --elevation-2: [OPEN] */
+  /* Elevation: e1 cards (rare), e2 popovers and menus only. Values from the section 03 swatches
+     (design-import 14 Nov). Light theme only; the dark section draws no shadow. */
+  --elevation-1: 0 1px 2px rgba(27, 31, 42, 0.06);
+  --elevation-2: 0 6px 20px rgba(27, 31, 42, 0.10);
+
+  /* Disabled, as drawn in section 04 (design-import 14 Nov) but not named as tokens, so not added:
+     primary button disabled background E4E6EC; secondary and tile disabled border 1px dashed C2C7D2.
+     disabled-bg and disabled-text above match the secondary disabled state. */
 
   /* ---- Targets ---- */
   --target-min: 44px;
@@ -112,8 +117,10 @@
     --tree-y: #DDB04F;
     --tree-balanced: #3FC79A;
     /* Dark values the design system does not state (confirm before use):
-       disabled text/bg, feedback-correct bg/border/icon, feedback-notyet border/icon, tree-neutral,
-       action-primary-pressed. */
+       disabled text/bg, tree-neutral, action-primary-pressed.
+       Feedback panels: section 04B draws them (correct bg 16312F, border 2D5C57, icon 4FC3B5;
+       not-quite-yet border 435069, icon A9B8D0) but they are not applied: see the ASSUMED block
+       below and docs/design/INDEX.md conflict T1. */
   }
 }
 
@@ -144,7 +151,11 @@
 
 :root[data-theme='dark'] { /* ASSUMED dark values (add-dark-mode-toggle, D18): the design system states none.
      Each reuses a stated dark value, copying the relationship the light theme already has
-     (design.md decision 2). Replace this block on /design-import. */
+     (design.md decision 2). Replace this block on /design-import.
+     design-import 14 Nov: section 04B draws dark feedback values that differ from three below
+     (correct border 2D5C57, not-quite-yet border 435069, not-quite-yet icon A9B8D0). Not applied:
+     both borders are about 2:1 on bg-surface, under the 3:1 that tests/tokens.contrast.test.ts
+     requires, and that test pins this block to reused values. Human decision: INDEX.md conflict T1. */
   --feedback-correct-bg: #16312F;      /* = mastery-secure-tint (light correct-bg equals it too) */
   --feedback-correct-border: #4FC3B5;  /* = mastery-secure */
   --feedback-correct-icon: #4FC3B5;    /* = mastery-secure (light correct-icon equals it too) */

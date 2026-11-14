@@ -1,0 +1,16 @@
+{
+  "source": {
+    "design_project": "https://claude.ai/design/p/f6bc9423-7d01-49c7-afc5-6ca972add5c6",
+    "published_artifact": "https://claude.ai/artifact/MRc3Z7VWz5iEJR3ESkKNnR",
+    "imported_from": "existing folder .claude/docs/design/source (no new export or fetch)"
+  },
+  "exported": "2026-11-04",
+  "committed_to_repo": "2026-11-10",
+  "imported": "2026-11-14",
+  "files": {
+    "source/AVL Primer Design System.dc.html": "sha256:1dfea0681c1d5045486910e6f90f3de5477e8acd922c38bcb9b2f8589d3f67ab",
+    "source/AVL Primer Wireframes.dc.html": "sha256:b7f5fcf39f51ee5fd68fc561518caa0669b30ceb44ae66d82e74f12d426cba8f"
+  },
+  "screens": ["1a", "1b", "1c", "1d", "1e", "1f", "1g", "1h", "1i", "1j", "1k", "1l", "1m", "1n", "1o", "1p"],
+  "changes_since_last_import": "First manifest; no earlier one to compare. Source files are byte-identical to commit 4e6d297."
+}
