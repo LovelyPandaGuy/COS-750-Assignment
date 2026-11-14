@@ -27,8 +27,11 @@ describe('every named component has a contract', () => {
   });
   it('built and stubbed split the names with no overlap', () => {
     expect([...BUILT, ...STUBBED].sort()).toEqual([...CONTRACT_NAMES].sort());
-    expect(BUILT).toHaveLength(19);
-    expect(STUBBED).toHaveLength(26);
+    // revamp-tree-controls: RepresentationSwitcher is built (proposal question 10).
+    expect(BUILT).toHaveLength(20);
+    expect(STUBBED).toHaveLength(25);
+    expect(BUILT).toContain('RepresentationSwitcher');
+    expect(STUBBED).not.toContain('RepresentationSwitcher');
   });
 });
 

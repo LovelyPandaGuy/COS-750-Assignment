@@ -4,13 +4,18 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import { axe } from 'vitest-axe'
 import { avlInsert } from '../../src/engine/avl'
 import { makeNode, type Key, type Tree } from '../../src/engine/tree'
-import { traceFor, explainAt, type Operation } from '../../src/replay/replay'
+import { traceFor, explainAt, treeAt, rolesAt, visitedAt, type Operation } from '../../src/replay/replay'
+import { describeTree } from '../../src/ui/tree/describe'
+import { conventionsWording } from '../../src/content/modules/conventionsWording'
 import { sentenceFor } from '../../src/ui/replay/sentence'
 import { ReplayPlayer } from '../../src/ui/replay/ReplayPlayer'
 import { ModeSwitch } from '../../src/ui/practice/ModeSwitch'
 
 // Spec: add-replay-and-pseudocode / step-replay and pseudocode-panel.
 // Requirement IDs: FR-VIS-03, FR-VIS-04, FR-VIS-05, FR-VIS-07, FR-VIS-10, FR-VIS-11, NFR-02. Outcomes: LO5, LO7.
+// revamp-tree-controls / ui-tree-controls "Caption under the tree", "Replay control strip", "Step timing",
+// "Text representation", and the modified step-replay requirements (reading order, caption is the live region).
+// D22, D23, D29, D104, D105; FR-LRN-02.
 
 afterEach(() => vi.useRealTimers())
 
@@ -21,7 +26,14 @@ const BAL = makeNode(20, leaf(10), leaf(30))
 const INSERT: Operation = { kind: 'insert', tree: CHAIN, key: 10 }
 
 const btn = (name: string | RegExp) => screen.getByRole('button', { name })
-const live = () => screen.getByRole('status', { name: /step explanation/i })
+/** The caption: the one role=status element outside the tree view (D105). */
+const live = () => {
+  const found = screen.getAllByRole('status').filter((el) => !el.closest('.tree-view'))
+  expect(found, 'exactly one caption status region').toHaveLength(1)
+  return found[0]
+}
+const treeRegion = () => screen.getByRole('region', { name: 'Tree' })
+const wholeTree = () => screen.queryByRole('heading', { name: /^the whole tree$/i })
 const counter = () => screen.getByText(/^Step \d+ \/ \d+$/).textContent
 const stepTimes = (n: number) => {
   for (let i = 0; i < n; i++) fireEvent.click(btn('Step'))
@@ -148,7 +160,7 @@ describe('FR-VIS-07 a sentence for each step', () => {
     expect(t).toMatch(/\b30\b/)
     expect(t).toMatch(/\+2/)
     expect(t).toMatch(/\b20\b/)
-    expect(t).toMatch(/\bLL\b/)
+    expect(t).toContain(conventionsWording().caseName('LL'))
   })
 
   it('every sentence is non-empty and names the snapshot balance factor', () => {
@@ -290,9 +302,10 @@ describe('NFR-02 pseudocode panel is readable by assistive technology', () => {
   it('listing uses the mono token, the highlight token and bold for the current line', () => {
     const css = readFileSync('src/ui/replay/replay.css', 'utf8')
     expect(css).toMatch(/\.pseudo-list[^{]*\{[^}]*font:\s*var\(--type-mono\)/)
-    expect(css).toMatch(/\.pseudo-line\[aria-current[^{]*\{[^}]*background:\s*var\(--code-highlight\)/)
+    // D104: inverted, from existing tokens (was the pale --code-highlight fill).
+    expect(css).toMatch(/\.pseudo-line\[aria-current[^{]*\{[^}]*background:\s*var\(--text-primary\)/)
     expect(css).toMatch(/\.pseudo-line\[aria-current[^{]*\{[^}]*font-weight:\s*700/)
-    expect(css).toMatch(/\.pseudo-line\[aria-current[^{]*\{[^}]*color:\s*var\(--text-primary\)/)
+    expect(css).toMatch(/\.pseudo-line\[aria-current[^{]*\{[^}]*color:\s*var\(--bg-surface\)/)
   })
 
   it('long lines wrap', () => {
@@ -302,13 +315,14 @@ describe('NFR-02 pseudocode panel is readable by assistive technology', () => {
 })
 
 describe('FR-VIS-10 player layout and the Watch slot', () => {
-  it('reading order: tree, controls, pseudocode, sentence', () => {
+  it('reading order: tree, caption, controls, pseudocode, whole-tree text', () => {
     render(<ReplayPlayer operation={INSERT} label="Tree" />)
     const order = [
-      screen.getByRole('region', { name: 'Tree' }),
+      treeRegion(),
+      live(),
       screen.getByRole('group', { name: /replay controls/i }),
       screen.getByRole('region', { name: /^pseudocode/i }),
-      live(),
+      wholeTree()!,
     ]
     for (let i = 1; i < order.length; i++) {
       expect(order[i - 1].compareDocumentPosition(order[i]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
@@ -335,5 +349,109 @@ describe('FR-VIS-10 player layout and the Watch slot', () => {
     const b = render(<ReplayPlayer operation={{ kind: 'search', tree: BAL, key: 25 }} label="Tree" />)
     stepTimes(3)
     expect(await axe(b.container)).toHaveNoViolations()
+  })
+})
+
+// ---- revamp-tree-controls ----
+
+const follows = (a: Element, b: Element) => Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
+
+describe('FR-VIS-07 D23 caption under the tree', () => {
+  it('the caption comes after the tree and before the controls, and names 30, +2 and 20 at position 8', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(8)
+    const cap = live()
+    expect(follows(treeRegion(), cap)).toBe(true)
+    expect(follows(cap, screen.getByRole('group', { name: /replay controls/i }))).toBe(true)
+    // Directly under the tree: the tree view's next sibling is the caption (or holds it).
+    const next = treeRegion().closest('.tree-view')!.nextElementSibling!
+    expect(next === cap || next.contains(cap), 'caption directly after the tree view').toBe(true)
+    const t = cap.textContent!
+    expect(t).toMatch(/\b30\b/)
+    expect(t).toMatch(/\+2/)
+    expect(t).toMatch(/\b20\b/)
+  })
+
+  it('D23 the caption is the only live region with text; the tree view region stays empty', () => {
+    const { container } = render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    const check = () => {
+      const cap = live()
+      expect(cap).toHaveAttribute('aria-live', 'polite')
+      const others = [...container.querySelectorAll('[aria-live]')].filter((el) => el !== cap && !cap.contains(el))
+      for (const o of others) expect(o.textContent!.trim(), 'a second live region has text').toBe('')
+    }
+    check()
+    stepTimes(1)
+    check()
+    stepTimes(7)
+    check()
+  })
+
+  it('FR-VIS-11 the visited count is in the caption', () => {
+    const op: Operation = { kind: 'search', tree: BAL, key: 30 }
+    render(<ReplayPlayer operation={op} label="Tree" />)
+    stepTimes(3)
+    const { trace } = traceFor(op, 'loop')
+    expect(live().textContent).toContain(`Nodes visited: ${visitedAt(trace, 3)}`)
+  })
+
+  it('the caption uses the body type and a 66ch reading width (stylesheet)', () => {
+    const css = readFileSync('src/ui/replay/replay.css', 'utf8')
+    expect(css).toMatch(/\.replay-caption[^{]*\{[^}]*font:\s*var\(--type-body\)/)
+    expect(css).toMatch(/\.replay-caption[^{]*\{[^}]*max-width:\s*66ch/)
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    expect(live()).toHaveClass('replay-caption')
+  })
+})
+
+describe('FR-VIS-03 Replay restarts the replay', () => {
+  it('from position 5, paused: Replay goes to 0 and plays one step per 1200 ms', () => {
+    vi.useFakeTimers()
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(5)
+    fireEvent.click(btn('Replay'))
+    expect(counter()).toBe('Step 0 / 9')
+    expect(btn('Pause')).toBeTruthy()
+    advance(1200)
+    expect(counter()).toBe('Step 1 / 9')
+  })
+
+  it('disabled at 0 while paused and while held', () => {
+    const { rerender } = render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    expect(btn('Replay')).toBeDisabled()
+    stepTimes(2)
+    expect(btn('Replay')).toBeEnabled()
+    rerender(<ReplayPlayer operation={{ ...INSERT, key: 25 }} label="Tree" held />)
+    expect(btn('Replay')).toBeDisabled()
+  })
+})
+
+describe('D29 step timing: speed ends', () => {
+  it('[ at 0.5× stays at 0.5×; ] three times reaches 2× and stays', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    fireEvent.click(btn('0.5×'))
+    const step = btn('Step')
+    fireEvent.keyDown(step, { key: '[' })
+    expect(btn('0.5×')).toHaveAttribute('aria-pressed', 'true')
+    for (let i = 0; i < 3; i++) fireEvent.keyDown(step, { key: ']' })
+    expect(btn('2×')).toHaveAttribute('aria-pressed', 'true')
+  })
+})
+
+describe('FR-VIS-07 D105 text representation: the whole tree', () => {
+  it('a visible paragraph under "The whole tree" holds describeTree at the current position, not live', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(8)
+    const h = wholeTree()
+    expect(h).not.toBeNull()
+    const { trace } = traceFor(INSERT, 'loop')
+    const expected = describeTree(treeAt(CHAIN, trace, 8), rolesAt(trace, 8))
+    const section = h!.closest('section, div')!
+    expect(section.textContent).toContain(expected)
+    expect(section.closest('details')).toBeNull()
+    expect(section.closest('[aria-live]')).toBeNull()
+    expect(section.querySelector('[aria-live]')).toBeNull()
+    // The tree view's own Describe button is unchanged.
+    expect(within(treeRegion().closest('.tree-view') as HTMLElement).getByRole('button', { name: /describe tree/i })).toBeTruthy()
   })
 })

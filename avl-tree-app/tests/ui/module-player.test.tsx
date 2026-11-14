@@ -206,3 +206,42 @@ describe('D21 practice in the player', () => {
     expect(button(playerCopy.hint(2))).toBeInTheDocument()
   })
 })
+
+// ---- revamp-tree-controls / ui-tree-controls "Learning aids on the step strip" (D20, D21, D23) ----
+// Characterization of src/ui/module/ControlStrip.tsx: this change verifies, it does not edit the strip.
+
+const stripOf = () => within(screen.getByRole('group', { name: playerCopy.stripLabel }))
+const replayGroup = () => screen.queryByRole('group', { name: /replay controls/i })
+
+describe('D21 the hint button states how many hints are left', () => {
+  it('after one hint the name contains 1 and says it is the number left', () => {
+    renderRoutes(backendWith(), '/module/C3/example')
+    goTo(headingOf('c3-fill-in'))
+    const first = stripOf().getByRole('button', { name: /^hint/i })
+    expect(first.textContent).toMatch(/\b2\b/)
+    expect(first.textContent).toMatch(/\bleft\b/i)
+    fireEvent.click(first)
+    const after = stripOf().getByRole('button', { name: /^hint/i })
+    expect(after.textContent).toMatch(/\b1\b/)
+    expect(after.textContent).toMatch(/\bleft\b/i)
+  })
+})
+
+describe('D20 skip on a replay step, never on a check', () => {
+  it('the C6 watch replay step offers skip in the module strip, not inside the replay', () => {
+    renderRoutes(backendWith(), '/module/C6/example')
+    expect(replayGroup()).not.toBeNull()
+    expect(stripOf().getByRole('button', { name: playerCopy.skip })).toBeInTheDocument()
+    expect(within(replayGroup()!).queryByRole('button', { name: playerCopy.skip })).toBeNull()
+    expect(within(replayGroup()!).queryByRole('button', { name: /^hint|show the rule/i })).toBeNull()
+  })
+
+  it.each([['C2'], ['C3'], ['C6']] as const)('%s Check: no skip on any step', (id) => {
+    renderRoutes(backendWith(), `/module/${id}/check`)
+    const n = stepsFor(MODULE_CONTENT[id]!, 'check').length
+    for (let i = 0; i < n; i++) {
+      expect(screen.queryByRole('button', { name: playerCopy.skip }), `${id} check step ${i + 1}`).toBeNull()
+      if (i < n - 1) fireEvent.click(stripOf().getByRole('button', { name: playerCopy.next }))
+    }
+  })
+})

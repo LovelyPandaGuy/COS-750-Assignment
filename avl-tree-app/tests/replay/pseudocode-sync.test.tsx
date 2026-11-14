@@ -5,10 +5,13 @@ import { INSERT_LINES, avlInsert } from '../../src/engine/avl'
 import { LOOP_LINES, RECURSIVE_LINES, type SearchForm } from '../../src/engine/search'
 import { makeNode, type Key, type Tree } from '../../src/engine/tree'
 import { pseudocode } from '../../src/content/pseudocode'
+import { conventionsWording } from '../../src/content/modules/conventionsWording'
+import type { RebalanceCase } from '../../src/engine/conventions'
 import { traceFor, type Operation } from '../../src/replay/replay'
 import { ReplayPlayer } from '../../src/ui/replay/ReplayPlayer'
 
 // Spec: add-replay-and-pseudocode / pseudocode-panel. Requirement IDs: FR-VIS-04, FR-VIS-02, FR-ENG-04, D5, D12.
+// revamp-tree-controls / pseudocode-panel "Case named beside the line": the name comes from conventionsWording().caseName (D19, D31).
 
 afterEach(cleanup)
 
@@ -24,7 +27,8 @@ const currentLine = () => {
   return c.length === 0 ? null : lines().indexOf(c[0]) + 1
 }
 const step = () => fireEvent.click(screen.getByRole('button', { name: /^step$/i }))
-const caseLabel = () => within(panel()).queryByText(/^Case (LL|RR|LR|RL)$/)
+const caseLabel = () => panel().querySelector('.pseudo-case')
+const nameOf = (c: RebalanceCase) => conventionsWording().caseName(c)
 
 describe('FR-VIS-04 listings match the engine line numbers', () => {
   it('has 5, 7 and 5 lines', () => {
@@ -119,9 +123,9 @@ describe('FR-VIS-04 case named beside the line', () => {
     for (let p = 1; p <= 7; p++) step()
     expect(caseLabel()).toBeNull()
     step()
-    expect(within(current()[0]).getByText('Case LL')).toBeTruthy()
+    expect(current()[0].querySelector('.pseudo-case')?.textContent).toContain(nameOf('LL'))
     step()
-    expect(within(current()[0]).getByText('Case LL')).toBeTruthy()
+    expect(current()[0].querySelector('.pseudo-case')?.textContent).toContain(nameOf('LL'))
   })
 
   it('property: the case shown equals the step case', () => {
@@ -134,7 +138,8 @@ describe('FR-VIS-04 case named beside the line', () => {
         for (const s of trace) {
           step()
           const shown = caseLabel()?.textContent ?? null
-          expect(shown).toBe(s.rebalanceCase ? `Case ${s.rebalanceCase}` : null)
+          if (s.rebalanceCase) expect(shown).toContain(nameOf(s.rebalanceCase))
+          else expect(shown).toBeNull()
         }
         cleanup()
       }),

@@ -45,7 +45,7 @@ const lightPairs: Pair[] = [
   ['bloom-remember', 'bloom-remember-tint', 4.5], ['bloom-understand', 'bloom-understand-tint', 4.5], ['bloom-apply', 'bloom-apply-tint', 4.5],
   ['mastery-secure', 'bg-surface', 4.5], ['mastery-developing', 'mastery-developing-tint', 4.5], ['mastery-notyet', 'mastery-notyet-tint', 4.5],
   ['text-primary', 'feedback-correct-bg', 4.5], ['text-primary', 'feedback-notyet-bg', 4.5], ['feedback-notyet-icon', 'feedback-notyet-bg', 3],
-  ['text-primary', 'code-highlight', 4.5],
+  ['text-primary', 'code-highlight', 4.5], ['bg-surface', 'text-primary', 4.5], // D104 inverted pseudocode line
   ['tree-new', 'bg-surface', 3], ['tree-z', 'bg-page', 4.5], ['tree-y', 'bg-surface', 3], ['tree-balanced', 'bg-surface', 3],
   ['bg-surface', 'tree-new', 4.5], ['bg-surface', 'tree-z', 4.5], ['bg-surface', 'tree-y', 4.5],
   ['border-control', 'bg-surface', 3], ['focus-ring-color', 'bg-page', 3], ['disabled-text', 'disabled-bg', 4.5],
@@ -55,7 +55,7 @@ const darkPairs: Pair[] = [
   ['bg-page', 'action-primary', 4.5],
   ['mastery-secure', 'mastery-secure-tint', 4.5], ['mastery-developing', 'mastery-developing-tint', 4.5], ['mastery-notyet', 'mastery-notyet-tint', 4.5],
   ['bloom-understand', 'bloom-understand-tint', 4.5], ['bloom-apply', 'bloom-apply-tint', 4.5],
-  ['text-primary', 'feedback-notyet-bg', 4.5], ['text-primary', 'code-highlight', 4.5],
+  ['text-primary', 'feedback-notyet-bg', 4.5], ['text-primary', 'code-highlight', 4.5], ['bg-surface', 'text-primary', 4.5],
   ['tree-new', 'bg-surface', 3], ['tree-z', 'bg-surface', 4.5], ['tree-y', 'bg-surface', 3], ['tree-balanced', 'bg-surface', 3],
   ['bg-page', 'tree-z', 4.5], ['border-control', 'bg-surface', 3], ['focus-ring-color', 'bg-surface', 3],
 ];
