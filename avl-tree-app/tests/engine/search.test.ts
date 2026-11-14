@@ -100,15 +100,15 @@ describe('FR-ENG-09: pseudocode line maps', () => {
       RECURSIVE_LINES.notFound,
     ])
   })
-  it('found uses the same line as compare in both maps (one line in the ID)', () => {
-    expect(LOOP_LINES.found).toBe(LOOP_LINES.compare)
-    expect(RECURSIVE_LINES.found).toBe(RECURSIVE_LINES.compare)
+  it('found lights the return under the equality test (ID 7.4)', () => {
+    expect(LOOP_LINES.found).toBe(LOOP_LINES.compare + 1)
+    expect(RECURSIVE_LINES.found).toBe(RECURSIVE_LINES.compare + 1)
     const found = searchTrace(T, 15, 'loop').trace.at(-1)
     expect(found?.pseudocodeLine).toBe(LOOP_LINES.found)
   })
-  it('pinned layout from the ID (open question 1: check against the PDF)', () => {
-    expect(LOOP_LINES).toEqual({ compare: 4, found: 4, descendLeft: 5, descendRight: 6, notFound: 7 })
-    expect(RECURSIVE_LINES).toEqual({ compare: 3, found: 3, descendLeft: 4, descendRight: 5, notFound: 2 })
+  it('layout from conventions.json lineForStep (ID 7.4)', () => {
+    expect(LOOP_LINES).toEqual({ compare: 4, found: 5, descendLeft: 7, descendRight: 8, notFound: 9 })
+    expect(RECURSIVE_LINES).toEqual({ compare: 4, found: 5, descendLeft: 7, descendRight: 9, notFound: 3 })
   })
   it('the two forms differ only in pseudocode lines', () => {
     for (const key of [15, 12, 20, 5, 99]) {

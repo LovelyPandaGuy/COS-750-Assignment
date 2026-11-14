@@ -1,0 +1,547 @@
+{
+  "id": "diagnostic",
+  "lessonId": "c1",
+  "questionIds": [
+    "dia-01",
+    "dia-02",
+    "dia-03",
+    "dia-04",
+    "dia-05"
+  ],
+  "recheckIds": {
+    "dia-01": "dia-01-r",
+    "dia-02": "dia-02-r",
+    "dia-03": "dia-03-r",
+    "dia-04": "dia-04-r",
+    "dia-05": "dia-05-r"
+  },
+  "route": {
+    "minCorrect": 4,
+    "of": 5,
+    "pass": "c2",
+    "fail": "c1-refresher"
+  },
+  "questions": [
+    {
+      "id": "dia-01",
+      "set": "diagnostic",
+      "lessonId": "c1",
+      "type": "mcq",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.1"
+      ],
+      "subSkill": "tree-terms",
+      "level": "remember",
+      "concept": "bst-basics",
+      "stem": "In this tree, what is node 7 to node 9?",
+      "hint": "This checks the tree terms from the BST lectures: a parent is directly above its children, and a leaf has no children.",
+      "tree": {
+        "insert": [
+          5,
+          3,
+          7,
+          1,
+          6,
+          9
+        ],
+        "rebalance": false
+      },
+      "options": [
+        {
+          "id": "a",
+          "text": "Its parent",
+          "explanation": "Right. 7 is directly above 9, so 7 is 9’s parent."
+        },
+        {
+          "id": "b",
+          "text": "Its child",
+          "misconceptionId": "misc-tree-terms",
+          "explanation": "It is the other way round: 9 is the child of 7, and 7 is the parent."
+        },
+        {
+          "id": "c",
+          "text": "Its sibling",
+          "misconceptionId": "misc-tree-terms",
+          "explanation": "Siblings share a parent, like 6 and 9. 7 is directly above 9, so it is 9’s parent."
+        }
+      ],
+      "correctOptionId": "a"
+    },
+    {
+      "id": "dia-01-r",
+      "set": "recheck",
+      "lessonId": "c1",
+      "type": "mcq",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.1"
+      ],
+      "subSkill": "tree-terms",
+      "level": "remember",
+      "concept": "bst-basics",
+      "stem": "In this tree, which two nodes are siblings?",
+      "hint": "This checks the tree terms from the BST lectures: a parent is directly above its children, and a leaf has no children.",
+      "tree": {
+        "insert": [
+          50,
+          30,
+          70,
+          20,
+          40,
+          80
+        ],
+        "rebalance": false
+      },
+      "options": [
+        {
+          "id": "a",
+          "text": "30 and 70",
+          "explanation": "Right. They share the parent 50."
+        },
+        {
+          "id": "b",
+          "text": "30 and 20",
+          "misconceptionId": "misc-tree-terms",
+          "explanation": "30 is 20’s parent. Siblings share the same parent."
+        },
+        {
+          "id": "c",
+          "text": "20 and 80",
+          "misconceptionId": "misc-tree-terms",
+          "explanation": "They are on the same level, but their parents are different (30 and 70)."
+        }
+      ],
+      "correctOptionId": "a",
+      "recheckOf": "dia-01"
+    },
+    {
+      "id": "dia-02",
+      "set": "diagnostic",
+      "lessonId": "c1",
+      "type": "mcq",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.2"
+      ],
+      "subSkill": "bst-property",
+      "level": "apply",
+      "concept": "bst-basics",
+      "stem": "Is this a binary search tree?",
+      "hint": "This checks the BST rule: every key in a node’s left subtree is smaller than the node, and every key in its right subtree is larger.",
+      "tree": {
+        "structure": [
+          8,
+          [
+            4,
+            [
+              2
+            ],
+            [
+              9
+            ]
+          ],
+          [
+            12,
+            [
+              10
+            ],
+            [
+              14
+            ]
+          ]
+        ]
+      },
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes: every node has at most two children",
+          "misconceptionId": "misc-tree-terms",
+          "explanation": "That makes it a binary tree. A BST also needs the ordering rule at every node."
+        },
+        {
+          "id": "b",
+          "text": "No: 9 is in the left subtree of 8, but it is larger than 8",
+          "explanation": "Right. Every key in the left subtree must be smaller than the node, not just the left child."
+        },
+        {
+          "id": "c",
+          "text": "Yes: 9 is larger than its parent 4, so it is correctly on the right",
+          "misconceptionId": "misc-bst-local-check",
+          "explanation": "9 is fine compared with 4, but it is also in 8’s left subtree, where every key must be smaller than 8."
+        }
+      ],
+      "correctOptionId": "b"
+    },
+    {
+      "id": "dia-02-r",
+      "set": "recheck",
+      "lessonId": "c1",
+      "type": "mcq",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.2"
+      ],
+      "subSkill": "bst-property",
+      "level": "apply",
+      "concept": "bst-basics",
+      "stem": "Is this a binary search tree?",
+      "hint": "This checks the BST rule: every key in a node’s left subtree is smaller than the node, and every key in its right subtree is larger.",
+      "tree": {
+        "structure": [
+          20,
+          [
+            10,
+            [
+              5
+            ],
+            [
+              15
+            ]
+          ],
+          [
+            30,
+            [
+              17
+            ],
+            [
+              35
+            ]
+          ]
+        ]
+      },
+      "options": [
+        {
+          "id": "a",
+          "text": "Yes: 17 is smaller than its parent 30, so it is correctly on the left",
+          "misconceptionId": "misc-bst-local-check",
+          "explanation": "17 is fine compared with 30, but it is also in 20’s right subtree, where every key must be larger than 20."
+        },
+        {
+          "id": "b",
+          "text": "No: 17 is in the right subtree of 20, but it is smaller than 20",
+          "explanation": "Right. Every key in the right subtree must be larger than the node."
+        },
+        {
+          "id": "c",
+          "text": "Yes: every node has at most two children",
+          "misconceptionId": "misc-tree-terms",
+          "explanation": "That makes it a binary tree. A BST also needs the ordering rule at every node."
+        }
+      ],
+      "correctOptionId": "b",
+      "recheckOf": "dia-02"
+    },
+    {
+      "id": "dia-03",
+      "set": "diagnostic",
+      "lessonId": "c1",
+      "type": "click-node",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.3"
+      ],
+      "subSkill": "bst-insert-position",
+      "level": "apply",
+      "concept": "bst-basics",
+      "stem": "4 is about to be inserted. Click the node that 4 becomes a child of.",
+      "hint": "This checks BST insertion: search for the new key, and it goes in the empty branch where the search ends.",
+      "tree": {
+        "insert": [
+          5,
+          3,
+          7,
+          1,
+          6,
+          9
+        ],
+        "rebalance": false
+      },
+      "operation": {
+        "name": "insert",
+        "key": 4,
+        "rebalance": false
+      },
+      "target": "parent-of-new-key",
+      "answerFrom": "engine",
+      "expected": {
+        "nodes": [
+          3
+        ],
+        "side": "right"
+      },
+      "selectMode": "one",
+      "wrongAnswers": [
+        {
+          "node": 1,
+          "misconceptionId": "misc-bst-order-reversed",
+          "feedback": "4 is larger than 3, so the search goes right at 3, not left towards 1."
+        },
+        {
+          "node": 5,
+          "misconceptionId": "misc-new-key-not-leaf",
+          "feedback": "A new key never goes in at the root. Search for 4; it becomes a leaf where the search ends."
+        }
+      ],
+      "feedback": {
+        "correct": "4 < 5: go left. 4 > 3: go right. The right branch of 3 is empty, so 4 becomes the right child of 3.",
+        "incorrect": "4 < 5: go left. 4 > 3: go right. The right branch of 3 is empty, so 4 becomes the right child of 3."
+      }
+    },
+    {
+      "id": "dia-03-r",
+      "set": "recheck",
+      "lessonId": "c1",
+      "type": "click-node",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.3"
+      ],
+      "subSkill": "bst-insert-position",
+      "level": "apply",
+      "concept": "bst-basics",
+      "stem": "45 is about to be inserted. Click the node that 45 becomes a child of.",
+      "hint": "This checks BST insertion: search for the new key, and it goes in the empty branch where the search ends.",
+      "tree": {
+        "insert": [
+          50,
+          30,
+          70,
+          20,
+          40,
+          80
+        ],
+        "rebalance": false
+      },
+      "operation": {
+        "name": "insert",
+        "key": 45,
+        "rebalance": false
+      },
+      "target": "parent-of-new-key",
+      "answerFrom": "engine",
+      "expected": {
+        "nodes": [
+          40
+        ],
+        "side": "right"
+      },
+      "selectMode": "one",
+      "wrongAnswers": [
+        {
+          "node": 30,
+          "misconceptionId": "misc-new-key-not-leaf",
+          "feedback": "30 already has a right child (40), so the search continues down to an empty branch."
+        }
+      ],
+      "feedback": {
+        "correct": "45 < 50: go left. 45 > 30: go right. 45 > 40: go right. That branch is empty, so 45 becomes the right child of 40.",
+        "incorrect": "45 < 50: go left. 45 > 30: go right. 45 > 40: go right. That branch is empty, so 45 becomes the right child of 40."
+      },
+      "recheckOf": "dia-03"
+    },
+    {
+      "id": "dia-04",
+      "set": "diagnostic",
+      "lessonId": "c1",
+      "type": "trace",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.4"
+      ],
+      "subSkill": "bst-search-path",
+      "level": "apply",
+      "concept": "bst-basics",
+      "stem": "Search for 6. Click the nodes in the order they are visited.",
+      "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
+      "tree": {
+        "insert": [
+          5,
+          3,
+          7,
+          1,
+          6,
+          9
+        ],
+        "rebalance": false
+      },
+      "searchKey": 6,
+      "answerFrom": "engine",
+      "expected": {
+        "path": [
+          5,
+          7,
+          6
+        ],
+        "found": true
+      },
+      "wrongAnswers": [
+        {
+          "pattern": "goes-wrong-direction",
+          "misconceptionId": "misc-bst-order-reversed",
+          "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
+        },
+        {
+          "pattern": "visits-extra-nodes",
+          "misconceptionId": "misc-search-is-traversal",
+          "feedback": "Search follows one path from the root. It never visits both branches of a node."
+        }
+      ],
+      "feedback": {
+        "correct": "6 > 5: go right; 6 < 7: go left; 6 = 6: found. That is 3 comparisons.",
+        "incorrect": "6 > 5: go right; 6 < 7: go left; 6 = 6: found. That is 3 comparisons."
+      }
+    },
+    {
+      "id": "dia-04-r",
+      "set": "recheck",
+      "lessonId": "c1",
+      "type": "trace",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.4"
+      ],
+      "subSkill": "bst-search-path",
+      "level": "apply",
+      "concept": "bst-basics",
+      "stem": "Search for 40. Click the nodes in the order they are visited.",
+      "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
+      "tree": {
+        "insert": [
+          50,
+          30,
+          70,
+          20,
+          40,
+          80
+        ],
+        "rebalance": false
+      },
+      "searchKey": 40,
+      "answerFrom": "engine",
+      "expected": {
+        "path": [
+          50,
+          30,
+          40
+        ],
+        "found": true
+      },
+      "wrongAnswers": [
+        {
+          "pattern": "goes-wrong-direction",
+          "misconceptionId": "misc-bst-order-reversed",
+          "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
+        },
+        {
+          "pattern": "visits-extra-nodes",
+          "misconceptionId": "misc-search-is-traversal",
+          "feedback": "Search follows one path from the root. It never visits both branches of a node."
+        }
+      ],
+      "feedback": {
+        "correct": "40 < 50: go left; 40 > 30: go right; 40 = 40: found. That is 3 comparisons.",
+        "incorrect": "40 < 50: go left; 40 > 30: go right; 40 = 40: found. That is 3 comparisons."
+      },
+      "recheckOf": "dia-04"
+    },
+    {
+      "id": "dia-05",
+      "set": "diagnostic",
+      "lessonId": "c1",
+      "type": "enter-values",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.5"
+      ],
+      "subSkill": "node-height",
+      "level": "apply",
+      "concept": "height",
+      "stem": "What is the height of node 5, the root?",
+      "hint": "This checks node height: count the edges on the longest path from the node down to a leaf. A leaf has height 0.",
+      "tree": {
+        "insert": [
+          5,
+          3,
+          7,
+          1,
+          6,
+          9
+        ],
+        "rebalance": false
+      },
+      "targets": [
+        {
+          "node": 5,
+          "quantity": "height"
+        }
+      ],
+      "answerFrom": "engine",
+      "expected": [
+        2
+      ],
+      "wrongAnswers": [
+        {
+          "target": 0,
+          "value": 3,
+          "misconceptionId": "misc-height-counts-nodes",
+          "feedback": "That counts nodes rather than edges. Height is the number of edges on the longest path down to a leaf. Node 5: the longest path down to a leaf has 2 edges, so its height is 2."
+        }
+      ],
+      "feedback": {
+        "correct": "Node 5: the longest path down to a leaf has 2 edges, so its height is 2.",
+        "incorrect": "Node 5: the longest path down to a leaf has 2 edges, so its height is 2."
+      }
+    },
+    {
+      "id": "dia-05-r",
+      "set": "recheck",
+      "lessonId": "c1",
+      "type": "enter-values",
+      "outcomeId": "PRE",
+      "criteria": [
+        "PRE.5"
+      ],
+      "subSkill": "node-height",
+      "level": "apply",
+      "concept": "height",
+      "stem": "What is the height of node 30?",
+      "hint": "This checks node height: count the edges on the longest path from the node down to a leaf. A leaf has height 0.",
+      "tree": {
+        "insert": [
+          50,
+          30,
+          70,
+          20,
+          40,
+          80,
+          10
+        ],
+        "rebalance": false
+      },
+      "targets": [
+        {
+          "node": 30,
+          "quantity": "height"
+        }
+      ],
+      "answerFrom": "engine",
+      "expected": [
+        2
+      ],
+      "wrongAnswers": [
+        {
+          "target": 0,
+          "value": 3,
+          "misconceptionId": "misc-height-counts-nodes",
+          "feedback": "That counts nodes rather than edges. Height is the number of edges on the longest path down to a leaf. Node 30: the longest path down to a leaf has 2 edges, so its height is 2."
+        }
+      ],
+      "feedback": {
+        "correct": "Node 30: the longest path down to a leaf has 2 edges, so its height is 2.",
+        "incorrect": "Node 30: the longest path down to a leaf has 2 edges, so its height is 2."
+      },
+      "recheckOf": "dia-05"
+    }
+  ]
+}

@@ -22,7 +22,7 @@ describe('FR-ENG-03: height', () => {
 describe('FR-ENG-03: balance factor', () => {
   it('empty tree is 0', () => expect(balanceFactorOf(null)).toBe(0))
   it('single node is 0', () => expect(balanceFactorOf(leaf(1))).toBe(0))
-  it('left-heavy chain 3,2,1 is +2', () => expect(balanceFactorOf(build([3, 2, 1]))).toBe(2))
-  it('right-heavy chain 1,2,3 is -2', () => expect(balanceFactorOf(build([1, 2, 3]))).toBe(-2))
-  it('one left child is +1', () => expect(balanceFactorOf(build([2, 1]))).toBe(1))
+  it('ID 7.3: left-heavy chain 3,2,1 is -2', () => expect(balanceFactorOf(build([3, 2, 1]))).toBe(-2))
+  it('ID 7.3: right-heavy chain 1,2,3 is +2', () => expect(balanceFactorOf(build([1, 2, 3]))).toBe(2))
+  it('ID 7.3: one left child is -1', () => expect(balanceFactorOf(build([2, 1]))).toBe(-1))
 })

@@ -1,4 +1,4 @@
-import { caseFor, type RebalanceCase } from './conventions'
+import { caseFor, leansLeft, leansRight, type RebalanceCase } from './conventions'
 import { rotateLeft, rotateRight } from './rotations'
 import type { TraceKind, TraceStep } from './trace'
 import {
@@ -36,10 +36,11 @@ export function rebalance(tree: Tree): { tree: Tree; rebalance: Rebalance | null
   const bf = balanceFactorOf(tree)
   if (Math.abs(bf) <= 1) return { tree, rebalance: null }
 
-  const zLeansLeft = bf > 0
+  const zLeansLeft = leansLeft(bf)
   const y = zLeansLeft ? tree.left : tree.right
   const yBf = balanceFactorOf(y)
-  const yLeansLeft = zLeansLeft ? yBf >= 0 : yBf > 0
+  // A balanced taller child (possible only on delete) counts as leaning with z: one rotation.
+  const yLeansLeft = zLeansLeft ? !leansRight(yBf) : leansLeft(yBf)
   const caseName = caseFor(zLeansLeft, yLeansLeft)
 
   let result: Tree
@@ -146,13 +147,13 @@ export function avlInsertTrace(tree: Tree, key: Key): AvlInsertTraceResult {
     if (fixed.rebalance === null) continue
 
     const found = fixed.rebalance
-    const zLeansLeft = balanceFactorOf(z) > 0
+    const zLeansLeft = leansLeft(balanceFactorOf(z))
     const y = (zLeansLeft ? z.left : z.right) as TreeNode
     push('imbalance', [z.key, y.key], current, found.case)
 
     const towardZ = zLeansLeft ? rotateRight : rotateLeft
     const awayFromZ = zLeansLeft ? rotateLeft : rotateRight
-    const yLeansAway = zLeansLeft ? balanceFactorOf(y) < 0 : balanceFactorOf(y) > 0
+    const yLeansAway = zLeansLeft ? leansRight(balanceFactorOf(y)) : leansLeft(balanceFactorOf(y))
     if (yLeansAway) {
       const x = (zLeansLeft ? y.right : y.left) as TreeNode
       push('rotation', [y.key, x.key], replaceAt(current, y.key, awayFromZ), found.case)

@@ -49,6 +49,8 @@ const lightPairs: Pair[] = [
   ['tree-new', 'bg-surface', 3], ['tree-z', 'bg-page', 4.5], ['tree-y', 'bg-surface', 3], ['tree-balanced', 'bg-surface', 3],
   ['bg-surface', 'tree-new', 4.5], ['bg-surface', 'tree-z', 4.5], ['bg-surface', 'tree-y', 4.5],
   ['border-control', 'bg-surface', 3], ['focus-ring-color', 'bg-page', 3], ['disabled-text', 'disabled-bg', 4.5],
+  // ID 11.1 node states (tree-view "Tag text contrast"): each state's text on its fill.
+  ['node-balanced-text', 'node-balanced', 4.5], ['node-dark-text', 'node-unbalanced', 4.5], ['node-dark-text', 'node-rotating', 4.5], ['node-dark-text', 'node-new', 4.5],
 ];
 const darkPairs: Pair[] = [
   ['text-primary', 'bg-page', 4.5], ['text-primary', 'bg-surface', 4.5], ['text-secondary', 'bg-surface', 4.5],

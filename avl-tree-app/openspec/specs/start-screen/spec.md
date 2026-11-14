@@ -34,17 +34,17 @@ Activating the Start button SHALL open module C1 at once, with no step in betwee
 - **THEN** the module screen for `C1` is shown, with its D1 title as the level-1 heading
 
 ### Requirement: Resume on return
-When the learner has saved progress, the Start screen SHALL show the ResumeCard instead of the Start button. The card SHALL name the current module by its ID and D1 title. Its Resume button SHALL open that module. (FR-ONB-03; wireframe 1b note 2)
+When the learner has saved progress, the Start screen SHALL show the ResumeCard instead of the Start button. The card SHALL name the current module by its ID and its lesson title (from its lesson file, D92). Its Resume button SHALL open that module. (FR-ONB-03; wireframe 1b note 2; ID 7.1)
 
 #### Scenario: Return visit
 - **GIVEN** storage holds a valid state with current module `C4` and completed modules `C1` to `C3`
 - **WHEN** the app starts
-- **THEN** the ResumeCard is shown and contains "C4" and the D1 title of C4, the Start button is absent, and the reset link is present
+- **THEN** the ResumeCard is shown and contains "C4" and "Search (the algorithm)", the Start button is absent, and the reset link is present
 
 #### Scenario: Resume
 - **GIVEN** the return visit above
-- **WHEN** Resume is activated
-- **THEN** the module screen for `C4` is shown
+- **WHEN** a save fails because storage is full and the Start screen is shown again
+- **THEN** the pill shows the not-saved text and the not-being-saved message is shown
 
 ### Requirement: Reset asks first
 Activating the reset link SHALL open a confirmation dialog and SHALL NOT clear anything yet. The dialog SHALL be modal, SHALL be named by its title and described by its body text, and SHALL move focus to its Cancel button. (FR-ONB-04: reset needs a confirmation step; wireframe 1b note 4)
@@ -121,7 +121,7 @@ When persistence is off, the Start screen SHALL show a short message that progre
 - **THEN** the pill shows the not-saved text and the not-being-saved message is shown
 
 ### Requirement: Copy comes from content
-Every piece of text on the Start screen, ResumeCard, confirmation dialog, status messages, pill and module placeholder SHALL come from `src/content/`. The module titles SHALL be the D1 titles. (CLAUDE.md content rules; D1)
+Every piece of text on the Start screen, ResumeCard, confirmation dialog, status messages, pill and module placeholder SHALL come from `src/content/`. The module titles SHALL be the lesson titles from `src/live_content/lessons/` (D92 supersedes D1's titles). (CLAUDE.md content rules; ID 7.1)
 
 #### Scenario: No literal copy in components
 - **WHEN** the Start page, ResumeCard, ConfirmDialog, StorageNotice and module placeholder sources are read
@@ -129,7 +129,7 @@ Every piece of text on the Start screen, ResumeCard, confirmation dialog, status
 
 #### Scenario: D1 titles
 - **WHEN** the module titles are read from content
-- **THEN** there is one title for each of `C1` to `C9`, matching D1
+- **THEN** there is one title for each of `C1` to `C9`, each equal to the `title` of its lesson file
 
 ### Requirement: Accessible Start screen
 The Start screen and dialog SHALL pass axe in every state, every control SHALL be operable by keyboard alone, and every button and the reset link SHALL have a target of at least 44 px. (NFR-02, D3, FR-VIS-10)

@@ -17,3 +17,9 @@ export function parseTheme(value: unknown): Theme {
 export function applyTheme(theme: Theme, root: HTMLElement = document.documentElement): void {
   root.dataset.theme = theme
 }
+
+/** Larger text scales the root font size; every rem-based type token grows with it (display-settings). */
+export function applyTextSize(size: 'normal' | 'large', root: HTMLElement = document.documentElement): void {
+  if (size === 'large') root.dataset.textSize = 'large'
+  else delete root.dataset.textSize
+}

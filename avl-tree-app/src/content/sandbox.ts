@@ -5,7 +5,7 @@
 import type { Key } from '../engine/tree'
 import type { LogEntry, Notice } from '../sandbox/sandbox'
 import { SANDBOX_KEY_MAX, SANDBOX_KEY_MIN, SANDBOX_MAX_NODES, SORTED_DEMO } from '../sandbox/config'
-import type { ConventionsWording } from './modules/conventionsWording'
+import { caseLabel, type RebalanceCase } from '../engine/conventions'
 
 const h = (n: number) => (n < 0 ? `−${-n}` : String(n))
 const range = `${SANDBOX_KEY_MIN} to ${SANDBOX_KEY_MAX}`
@@ -56,9 +56,10 @@ export const sandboxCopy = {
 
   logLabel: 'What happened',
   logEmpty: 'Nothing yet.',
-  log: (e: LogEntry, w: ConventionsWording): string => {
-    const fixes = (rs: readonly { node: Key; case: Parameters<ConventionsWording['caseName']>[0] }[]) =>
-      rs.map((r) => `${r.node} was out of balance (${w.caseName(r.case)} case), so the tree was rotated there.`).join(' ')
+  log: (e: LogEntry): string => {
+    // Case names come from conventions.json ("Case 1 (LL)"; ID 7.3).
+    const fixes = (rs: readonly { node: Key; case: RebalanceCase }[]) =>
+      rs.map((r) => `${r.node} was out of balance (${caseLabel(r.case)}), so the tree was rotated there.`).join(' ')
     switch (e.kind) {
       case 'insert': {
         const where = e.parent === null ? `Inserted ${e.key} as the root.` : `Inserted ${e.key} to the ${e.side} of ${e.parent}.`

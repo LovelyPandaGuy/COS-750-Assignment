@@ -3,7 +3,7 @@ import type { RebalanceCase } from '../engine/conventions'
 import { searchTrace, type SearchForm } from '../engine/search'
 import type { TraceStep } from '../engine/trace'
 import { balanceFactorOf, subtreeAt, type Key, type Tree } from '../engine/tree'
-import type { Roles } from '../ui/tree/describe'
+import type { NodeRole, Roles } from '../ui/tree/describe'
 
 // Replay of an engine trace (FR-VIS-03). Pure: no React. Every tree, role and
 // number here is read from the trace; the UI only words and draws it.
@@ -98,21 +98,20 @@ export function stepAt(trace: TraceStep[], p: number): TraceStep | null {
   return p <= 0 || trace.length === 0 ? null : trace[Math.min(p, trace.length) - 1]
 }
 
-/** Roles at position p (FR-VIS-02): new from the insert step on; z and y on imbalance and rotation steps. */
+/**
+ * Roles at position p (FR-VIS-02, ID 11.1): the inserted key is new from its insert step on; on an
+ * imbalance step the unbalanced node is n; on a rotation step the node it rotates about and the
+ * node that moves up are being rotated.
+ */
 export function rolesAt(trace: TraceStep[], p: number): Roles {
   const shown = trace.slice(0, Math.max(0, p))
-  const roles: Record<Key, 'new' | 'z' | 'y'> = {}
-  const inserted = shown.find((s) => s.kind === 'insert')
+  const roles: Record<Key, NodeRole> = {}
+  // Only the latest insert is new, so an insert sequence tags one key at a time.
+  const inserted = [...shown].reverse().find((s) => s.kind === 'insert')
   if (inserted) roles[inserted.nodes[0]] = 'new'
   const last = shown[shown.length - 1]
-  if (last && (last.kind === 'imbalance' || last.kind === 'rotation')) {
-    const imbalance = [...shown].reverse().find((s) => s.kind === 'imbalance')
-    if (imbalance) {
-      const [z, y] = imbalance.nodes
-      roles[z] = 'z'
-      roles[y] = 'y'
-    }
-  }
+  if (last?.kind === 'imbalance') roles[last.nodes[0]] = 'n'
+  if (last?.kind === 'rotation') for (const k of last.nodes) roles[k] = 'rotating'
   return roles
 }
 

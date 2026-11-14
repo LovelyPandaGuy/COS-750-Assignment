@@ -20,7 +20,7 @@ export function counterIds(prefix = 'id'): () => string {
 
 export function progressState(overrides: Partial<LearnerState> = {}): LearnerState {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     profileId: 'profile-abc',
     path: 'guided',
     currentModule: 'C4',
@@ -29,7 +29,6 @@ export function progressState(overrides: Partial<LearnerState> = {}): LearnerSta
       { questionId: 'c3-q1', at: '2026-11-10T10:00:00.000Z', answer: 'b', correct: false, confidence: 'sure', hintsUsed: 1 },
       { questionId: 'c3-q2', at: '2026-11-10T10:01:00.000Z', answer: { keys: [3, 2, 1] }, correct: true, hintsUsed: 0 },
     ],
-    subSkillStatus: { 'bf-compute': 'developing', 'height-count': 'secure' },
     lectureQuestions: [],
     ...overrides,
   }

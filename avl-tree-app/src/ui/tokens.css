@@ -52,17 +52,26 @@
   --tree-balanced: #00755A;  /* check badge */
   --tree-neutral: #4A5163;   /* solid grey ring: not yet checked in this step */
 
+  /* ---- Tree node states (ID 11.1, Okabe-Ito; D97). Same in both themes: each fill carries its own text colour.
+     Non-colour backups: the balance factor, a "!" and a thick dashed ring, a bold ring, a "NEW" tag. ---- */
+  --node-balanced: #0072B2;       /* balanced node */
+  --node-balanced-text: #FFFFFF;
+  --node-unbalanced: #E69F00;     /* unbalanced node */
+  --node-rotating: #F0E442;       /* node being rotated */
+  --node-new: #56B4E9;            /* newly inserted node */
+  --node-dark-text: #111418;      /* near-black text on the three light fills */
+
   /* ---- Type ---- */
   --font-sans: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
   --font-mono: 'Atkinson Hyperlegible Mono', ui-monospace, monospace;
   /* size / line-height, weight */
-  --type-display: 700 40px/48px var(--font-sans);
-  --type-h1: 700 30px/38px var(--font-sans);
-  --type-h2: 700 22px/30px var(--font-sans);
-  --type-body-lg: 400 18px/28px var(--font-sans);
-  --type-body: 400 16px/24px var(--font-sans);   /* minimum for running text */
-  --type-label: 700 14px/20px var(--font-sans);  /* metadata only: counters, tags, diagram annotations */
-  --type-mono: 400 15px/24px var(--font-mono);
+  --type-display: 700 2.5rem/3rem var(--font-sans);
+  --type-h1: 700 1.875rem/2.375rem var(--font-sans);
+  --type-h2: 700 1.375rem/1.875rem var(--font-sans);
+  --type-body-lg: 400 1.125rem/1.75rem var(--font-sans);
+  --type-body: 400 1rem/1.5rem var(--font-sans);   /* minimum for running text */
+  --type-label: 700 0.875rem/1.25rem var(--font-sans);  /* metadata only: counters, tags, diagram annotations */
+  --type-mono: 400 0.9375rem/1.5rem var(--font-mono);
   --reading-column: 66ch;
 
   /* ---- Space, shape ---- */
@@ -116,6 +125,12 @@
     --tree-z: #F0884B;
     --tree-y: #DDB04F;
     --tree-balanced: #3FC79A;
+    --node-balanced: #0072B2;
+    --node-balanced-text: #FFFFFF;
+    --node-unbalanced: #E69F00;
+    --node-rotating: #F0E442;
+    --node-new: #56B4E9;
+    --node-dark-text: #111418;
     /* Dark values the design system does not state (confirm before use):
        disabled text/bg, tree-neutral, action-primary-pressed.
        Feedback panels: section 04B draws them (correct bg 16312F, border 2D5C57, icon 4FC3B5;
@@ -147,6 +162,12 @@
   --tree-z: #F0884B;
   --tree-y: #DDB04F;
   --tree-balanced: #3FC79A;
+  --node-balanced: #0072B2;
+  --node-balanced-text: #FFFFFF;
+  --node-unbalanced: #E69F00;
+  --node-rotating: #F0E442;
+  --node-new: #56B4E9;
+  --node-dark-text: #111418;
 }
 
 :root[data-theme='dark'] { /* ASSUMED dark values (add-dark-mode-toggle, D18): the design system states none.
@@ -174,6 +195,9 @@
   outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: var(--focus-ring-gap);
 }
+
+/* Larger text (display-settings): every rem-based type token grows together. */
+:root[data-text-size='large'] { font-size: 125%; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

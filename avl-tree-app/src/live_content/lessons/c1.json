@@ -1,0 +1,340 @@
+{
+  "id": "c1",
+  "title": "Getting started and readiness check",
+  "outcomeIds": [],
+  "estimatedMinutes": 6,
+  "screens": [
+    {
+      "id": "c1-s01",
+      "type": "intro",
+      "gagneEvent": 1,
+      "merrillPhase": "problem",
+      "representation": "text",
+      "title": "Welcome",
+      "text": "This app prepares you for the COS212 lecture on AVL trees. In about an hour, split into nine short lessons, you’ll see why a binary search tree can become slow, how an AVL tree keeps itself balanced, and how search, rotations and insertion work. Everything here is private practice: nothing is marked."
+    },
+    {
+      "id": "c1-s02",
+      "type": "objectives",
+      "gagneEvent": 2,
+      "merrillPhase": "problem",
+      "representation": "text",
+      "title": "Your route",
+      "text": "You can stop between lessons and pick up where you left off.",
+      "points": [
+        "C1 Getting started and a quick readiness check",
+        "C2 When BSTs go lopsided",
+        "C3 The AVL property",
+        "C4 Search: the algorithm",
+        "C5 Rotations",
+        "C6 Insertion with rebalancing",
+        "C7 Deletion with rebalancing (optional)",
+        "C8 Choosing a structure",
+        "C9 Am I ready for the lecture?"
+      ],
+      "objectives": [
+        "Explain how AVL trees fix the problem of lopsided BSTs (LO1).",
+        "Calculate heights and balance factors and decide whether a tree is an AVL tree (LO2).",
+        "Trace a search in an AVL tree and explain why it takes O(log n) steps (LO3).",
+        "Choose and perform the rotation(s) that restore balance (LO4).",
+        "Insert keys into an AVL tree and rebalance it (LO5).",
+        "Judge when an AVL tree is a good choice, and why (LO6).",
+        "Delete a leaf and restore the AVL property (LO7, optional)."
+      ]
+    },
+    {
+      "id": "c1-s03",
+      "type": "info",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "text",
+      "title": "How the app works",
+      "points": [
+        "Next and Back are always in the same place. Replay shows the current step again.",
+        "Show the rule opens the written rule for the screen you are on.",
+        "Hint tells you what a question checks and which idea it relies on.",
+        "With each answer, tap Sure or Not sure. It helps the app spot ideas that need another look.",
+        "Practice tasks allow as many tries as you like. Check questions allow one re-attempt.",
+        "After each check you get a title, from Structural Savant to Complexity Cadet, and a suggested next step. You always decide where to go.",
+        "Any lesson you have completed can be opened again from the lesson list."
+      ]
+    },
+    {
+      "id": "c1-s04",
+      "type": "conventions",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "static-diagram",
+      "title": "The conventions card",
+      "text": "These are the conventions from the COS212 slides. The card is always available from the menu.",
+      "tree": {
+        "insert": [
+          20,
+          10,
+          40,
+          30,
+          50
+        ]
+      },
+      "show": [
+        "height",
+        "balanceFactor"
+      ],
+      "points": [
+        "Height: the number of edges on the longest path from a node down to a leaf. A leaf has height 0; an empty branch has height −1.",
+        "Balance factor: bf = h(right) − h(left). Valid values are −1, 0 and +1. Negative means the left branch is taller.",
+        "The unbalanced node is called n, with children n.left and n.right.",
+        "Case 1 (LL), Case 2 (LR), Case 3 (RL) and Case 4 (RR) name where a new key went below n.",
+        "O(lg n) and O(log n) mean the same thing."
+      ],
+      "caption": "Node 20: bf = 1 − 0 = +1. Node 40: bf = 0 − 0 = 0. Each leaf: bf = −1 − (−1) = 0."
+    },
+    {
+      "id": "c1-s05",
+      "type": "settings",
+      "gagneEvent": 4,
+      "merrillPhase": "demonstration",
+      "representation": "text",
+      "title": "Settings",
+      "text": "You can change these at any time from the menu.",
+      "settings": [
+        {
+          "id": "confetti",
+          "label": "Confetti when a lesson is completed",
+          "default": "on"
+        },
+        {
+          "id": "narration",
+          "label": "Read text aloud (text-to-speech)",
+          "default": "off"
+        },
+        {
+          "id": "textSize",
+          "label": "Larger text",
+          "default": "off"
+        }
+      ],
+      "points": [
+        "Every tree also has a text description for screen readers.",
+        "Colour is never the only signal: balance factors are always shown as numbers, and feedback uses words and icons."
+      ]
+    },
+    {
+      "id": "c1-s06",
+      "type": "question-set",
+      "gagneEvent": 3,
+      "merrillPhase": "activation",
+      "representation": "interactive-task",
+      "title": "Quick readiness check",
+      "text": "Five quick questions from the BST lectures. They show which ideas are fresh and which need a short refresher. This is private practice, not a test.",
+      "questionSet": "diagnostic"
+    },
+    {
+      "id": "c1-s07",
+      "type": "route",
+      "gagneEvent": 3,
+      "merrillPhase": "activation",
+      "representation": "text",
+      "title": "Your result",
+      "text": "The app shows each prerequisite skill as Secure or Needs review, then suggests a route.",
+      "route": {
+        "minCorrect": 4,
+        "pass": "c2",
+        "fail": "c1-refresher",
+        "passMessage": "Your BST basics are secure. On to C2.",
+        "failMessage": "A short BST refresher first will make the next lessons easier. It takes about five minutes.",
+        "studentCanChoose": true
+      }
+    }
+  ],
+  "refresher": {
+    "id": "c1-refresher",
+    "title": "BST refresher",
+    "screens": [
+      {
+        "id": "c1-r01",
+        "type": "rule",
+        "gagneEvent": 4,
+        "merrillPhase": "demonstration",
+        "representation": "static-diagram",
+        "title": "The BST rule",
+        "tree": {
+          "insert": [
+            5,
+            3,
+            7,
+            1,
+            6,
+            9
+          ],
+          "rebalance": false
+        },
+        "text": "In a binary search tree, every key in a node’s left subtree is smaller than the node, and every key in its right subtree is larger. Every subtree is itself a BST.",
+        "caption": "5 is the root. 3 and 1 are smaller, so they are on the left. 7, 6 and 9 are larger, so they are on the right."
+      },
+      {
+        "id": "c1-r02",
+        "type": "animation",
+        "gagneEvent": 4,
+        "merrillPhase": "demonstration",
+        "representation": "animated-tree",
+        "title": "Searching a BST",
+        "text": "Start at the root. Compare the key with the node: equal, stop; smaller, go left; larger, go right.",
+        "tree": {
+          "insert": [
+            5,
+            3,
+            7,
+            1,
+            6,
+            9
+          ],
+          "rebalance": false
+        },
+        "operation": {
+          "name": "search",
+          "key": 6
+        },
+        "steps": [
+          "6 > 5: go right.",
+          "6 < 7: go left.",
+          "6 = 6: found."
+        ],
+        "result": "5(3(1, ·), 7(6, 9))"
+      },
+      {
+        "id": "c1-r03",
+        "type": "animation",
+        "gagneEvent": 4,
+        "merrillPhase": "demonstration",
+        "representation": "animated-tree",
+        "title": "Inserting into a BST",
+        "text": "Search for the new key. It goes in the empty branch where the search ends, so it always becomes a leaf.",
+        "tree": {
+          "insert": [
+            5,
+            3,
+            7,
+            1,
+            6,
+            9
+          ],
+          "rebalance": false
+        },
+        "operation": {
+          "name": "insert",
+          "key": 4,
+          "rebalance": false
+        },
+        "steps": [
+          "4 < 5: go left.",
+          "4 > 3: go right.",
+          "4 goes in the empty right branch of 3.",
+          "Node 3: bf = 0 − 0 = 0.",
+          "Node 5: bf = 1 − 1 = 0.",
+          "Every node has a balance factor of −1, 0 or +1."
+        ],
+        "result": "5(3(1, 4), 7(6, 9))"
+      },
+      {
+        "id": "c1-r04",
+        "type": "rule",
+        "gagneEvent": 4,
+        "merrillPhase": "demonstration",
+        "representation": "static-diagram",
+        "title": "Tree terms and height",
+        "tree": {
+          "insert": [
+            5,
+            3,
+            7,
+            1,
+            6,
+            9
+          ],
+          "rebalance": false
+        },
+        "show": [
+          "height"
+        ],
+        "points": [
+          "The root has no parent. A leaf has no children. Nodes with the same parent are siblings.",
+          "The height of a node is the number of edges on the longest path down to a leaf.",
+          "Here the leaves 1, 6 and 9 have height 0, nodes 3 and 7 have height 1, and the root 5 has height 2."
+        ]
+      },
+      {
+        "id": "c1-r05",
+        "type": "practice",
+        "gagneEvent": [
+          6,
+          7
+        ],
+        "merrillPhase": "application",
+        "representation": "interactive-task",
+        "title": "Try it",
+        "task": {
+          "id": "c1-r05-task",
+          "set": "practice",
+          "lessonId": "c1",
+          "type": "click-node",
+          "outcomeId": "PRE",
+          "criteria": [
+            "PRE.3"
+          ],
+          "subSkill": "bst-insert-position",
+          "level": "apply",
+          "concept": "bst-basics",
+          "stem": "8 is about to be inserted. Click the node that 8 becomes a child of.",
+          "hint": "This checks BST insertion: search for the new key, and it goes in the empty branch where the search ends.",
+          "tree": {
+            "insert": [
+              5,
+              3,
+              7,
+              1,
+              6,
+              9
+            ],
+            "rebalance": false
+          },
+          "operation": {
+            "name": "insert",
+            "key": 8,
+            "rebalance": false
+          },
+          "target": "parent-of-new-key",
+          "answerFrom": "engine",
+          "expected": {
+            "nodes": [
+              9
+            ],
+            "side": "left"
+          },
+          "selectMode": "one",
+          "wrongAnswers": [
+            {
+              "node": 7,
+              "misconceptionId": "misc-new-key-not-leaf",
+              "feedback": "7 already has a right child (9), so the search continues: 8 < 9, so 8 goes in the empty left branch of 9."
+            }
+          ],
+          "feedback": {
+            "correct": "8 > 5: go right. 8 > 7: go right. 8 < 9: go left. The left branch of 9 is empty, so 8 becomes the left child of 9.",
+            "incorrect": "8 > 5: go right. 8 > 7: go right. 8 < 9: go left. The left branch of 9 is empty, so 8 becomes the left child of 9."
+          }
+        }
+      },
+      {
+        "id": "c1-r06",
+        "type": "question-set",
+        "gagneEvent": 8,
+        "merrillPhase": "integration",
+        "representation": "interactive-task",
+        "title": "Short re-check",
+        "text": "A new question for each skill you missed.",
+        "questionSet": "recheck"
+      }
+    ]
+  }
+}

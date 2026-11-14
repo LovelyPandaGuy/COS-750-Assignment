@@ -1,0 +1,95 @@
+{
+  "id": "c9",
+  "title": "Am I ready for the lecture?",
+  "outcomeIds": [
+    "LO1",
+    "LO2",
+    "LO3",
+    "LO4",
+    "LO5",
+    "LO6",
+    "LO7"
+  ],
+  "estimatedMinutes": 8,
+  "screens": [
+    {
+      "id": "c9-s01",
+      "type": "intro",
+      "gagneEvent": [
+        1,
+        2
+      ],
+      "merrillPhase": "problem",
+      "representation": "text",
+      "title": "Am I ready for the lecture?",
+      "text": "Nine questions: one for each objective, then two combined questions in which you build an AVL tree and search it. If you miss a question, it comes back once in a new form. This is still private practice."
+    },
+    {
+      "id": "c9-s02",
+      "type": "question-set",
+      "gagneEvent": 8,
+      "merrillPhase": "integration",
+      "representation": "interactive-task",
+      "title": "Readiness questions",
+      "questionSet": "readiness"
+    },
+    {
+      "id": "c9-s03",
+      "type": "report",
+      "gagneEvent": 9,
+      "merrillPhase": "integration",
+      "representation": "text",
+      "title": "Your readiness report",
+      "text": "For each objective you see Ready or Revise, with a link to the matching examples. Answers you got wrong while marked Sure are flagged, because those ideas are worth another look. Your overall title is shown at the top.",
+      "report": {
+        "perObjective": [
+          "LO1",
+          "LO2",
+          "LO3",
+          "LO4",
+          "LO5",
+          "LO6",
+          "LO7"
+        ],
+        "ready": "Ready",
+        "revise": "Revise",
+        "optionalObjectives": [
+          "LO7"
+        ],
+        "flagConfidentWrong": true,
+        "lectureQuestionsFrom": "misconceptions",
+        "listenFor": [
+          "Deleting a node with two children (delete by copying), and the extra rebalancing it can need.",
+          "The deletion cases that need a double rotation.",
+          "How the four insertion cases are coded, and why only one fix is needed."
+        ]
+      }
+    },
+    {
+      "id": "c9-s04",
+      "type": "free-text",
+      "gagneEvent": 9,
+      "merrillPhase": "integration",
+      "representation": "text",
+      "title": "Your question for the lecture",
+      "text": "Write down one question you would like to ask in the lecture. It is added to your list, together with any questions the app suggested.",
+      "stored": "local"
+    },
+    {
+      "id": "c9-s05",
+      "type": "certificate",
+      "gagneEvent": 9,
+      "merrillPhase": "integration",
+      "representation": "text",
+      "title": "Certificate of completion",
+      "text": "Type your name to generate a certificate that shows your name, the lessons you completed, your title and today’s date. The name is used only for the certificate and is not stored by the app.",
+      "certificateFields": [
+        "studentName",
+        "lessonsCompleted",
+        "title",
+        "date"
+      ]
+    }
+  ],
+  "questionSet": "readiness"
+}

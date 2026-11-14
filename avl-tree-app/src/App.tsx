@@ -13,16 +13,12 @@ import { ThemeProvider, useTheme } from './ui/ThemeContext'
 import { DEFAULT_THEME } from './ui/theme'
 import { ACTIVITIES_BY_MODULE, parseActivity, parseModuleId, paths, patterns } from './routes'
 import { useScreen } from './useScreen'
-import { Activity } from './pages/Activity'
 import { Hub } from './pages/Hub'
 import { Module } from './pages/Module'
 import { Readiness } from './pages/Readiness'
 import { Sandbox } from './pages/Sandbox'
 import { Start } from './pages/Start'
-import { ReadinessCheck } from './pages/ReadinessCheck'
 import { Refresher } from './pages/Refresher'
-import { WarmUpCheck } from './pages/WarmUpCheck'
-import { WarmUpResult } from './pages/WarmUpResult'
 
 type ActionKey = 'sandbox' | 'lectureQuestions'
 const BOTH: ActionKey[] = ['sandbox', 'lectureQuestions']
@@ -58,7 +54,7 @@ function ModuleRoute() {
   const id = parseModuleId(useParams().moduleId)
   if (id === null) return <Navigate to={paths.start()} replace />
   return (
-    <Screen breadcrumb={breadcrumb(moduleLabel(id))} actions={BOTH}>
+    <Screen breadcrumb={breadcrumb(moduleLabel(id))} actions={id === 'C1' ? [] : BOTH}>
       <Module id={id} />
     </Screen>
   )
@@ -72,13 +68,10 @@ function ActivityRoute() {
   const list = ACTIVITIES_BY_MODULE[id]
   if (activity === null || !list.includes(activity)) return <Navigate to={paths.module(id)} replace />
 
-  const label = activityLabel(id, activity)
-  // C1's screens are the diagnostic flow, not "n of m" steps, and show no actions (wireframes 1c, 1d).
-  const where = id === 'C1' ? label : screenCopy.activity.crumbPlace(label, list.indexOf(activity) + 1, list.length)
-  const actions: ActionKey[] = id === 'C1' ? [] : activity === 'check' ? ['lectureQuestions'] : BOTH
+  // The only activity path left is C1's BST refresher (app-routing); it shows no actions.
   return (
-    <Screen breadcrumb={breadcrumb(moduleLabel(id), where)} actions={actions}>
-      {id === 'C1' && activity === 'check' ? <WarmUpCheck /> : id === 'C1' && activity === 'refresher' ? <Refresher /> : id === 'C9' && activity === 'check' ? <ReadinessCheck /> : <Activity module={id} activity={activity} />}
+    <Screen breadcrumb={breadcrumb(moduleLabel(id), activityLabel(id, activity))} actions={[]}>
+      <Refresher />
     </Screen>
   )
 }
@@ -89,10 +82,7 @@ export function AppRoutes() {
       <Route path={patterns.start} element={<Screen><Start /></Screen>} />
       <Route path={patterns.hub} element={<Screen breadcrumb={breadcrumb(screenCopy.crumbs.hub)} actions={BOTH}><Hub /></Screen>} />
       <Route path={patterns.module} element={<ModuleRoute />} />
-      <Route
-        path={patterns.warmUpResult}
-        element={<Screen breadcrumb={breadcrumb(moduleLabel('C1'), screenCopy.crumbs.warmUpResult)}><WarmUpResult /></Screen>}
-      />
+      <Route path={patterns.warmUpResult} element={<Navigate to={paths.module('C1')} replace />} />
       <Route path={patterns.activity} element={<ActivityRoute />} />
       <Route path={patterns.sandbox} element={<Screen breadcrumb={breadcrumb(screenCopy.crumbs.sandbox)} actions={['lectureQuestions']}><Sandbox /></Screen>} />
       <Route path={patterns.readiness} element={<Screen breadcrumb={breadcrumb(screenCopy.crumbs.readiness)} actions={['sandbox']}><Readiness /></Screen>} />
