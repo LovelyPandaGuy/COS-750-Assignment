@@ -1,4 +1,5 @@
 import { useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useFocusWrap } from '../base/useFocusWrap'
 import { LessonLink } from './LessonLink'
 import type { LessonItem, StateLabels } from './types'
 import './progress.css'
@@ -22,6 +23,7 @@ export function LessonMenu({ buttonLabel, panelLabel, lessons, labels, onNavigat
   const panelId = useId()
   const button = useRef<HTMLButtonElement>(null)
   const panel = useRef<HTMLDivElement>(null)
+  useFocusWrap(panel, open)
 
   const close = () => {
     const inside = panel.current?.contains(document.activeElement) ?? false

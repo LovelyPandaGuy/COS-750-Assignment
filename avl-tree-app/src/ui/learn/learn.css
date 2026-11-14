@@ -139,7 +139,8 @@
 .learn-feedback[data-variant='correct'] .learn-feedback-icon { color: var(--feedback-correct-icon); }
 .learn-feedback-why { margin: 0; font: var(--type-body); }
 .learn-feedback-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); }
-.learn-feedback-link { display: inline-flex; align-items: center; min-height: var(--target-min); min-width: var(--target-min); }
+.learn-feedback-link { display: inline-flex; align-items: center; min-height: var(--target-min); min-width: var(--target-min); padding-inline: 0; }
+/* No inline padding: the link lines up with the panel's text column (F-017). */
 
 /* ---- FullAnswer ---- */
 .learn-full-answer { display: grid; gap: var(--space-2); min-width: 0; }

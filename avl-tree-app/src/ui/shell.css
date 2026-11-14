@@ -107,6 +107,8 @@ a.topbar-action {
   font-weight: 700;
   cursor: pointer;
 }
+/* With 200% text the label and the On/Off track wrap instead of running off the panel (F-012). */
+.theme-switch { flex-wrap: wrap; }
 .theme-switch:hover { background: var(--action-primary-tint); }
 .theme-switch-state { display: inline-flex; align-items: center; gap: var(--space-2); font: var(--type-label); color: var(--text-secondary); }
 .theme-switch-track {
@@ -141,3 +143,9 @@ a.topbar-action {
 .setting-row { display: flex; flex-direction: column; gap: var(--space-1); }
 .setting-note { margin: 0; font: var(--type-label); color: var(--text-secondary); }
 .theme-switch:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Print: only the screen's content goes on paper, on every page (quality bar 7, ui-readiness "Print view"; F-009). */
+@media print {
+  /* body raises specificity above each component's own display rule (module.css loads after this file). */
+  body :is(.skip-link, header, .lesson-outline, .control-strip) { display: none; }
+}

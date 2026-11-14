@@ -4,7 +4,7 @@
 
 export const navigationCopy = {
   /** Soft prerequisite note on a module screen. `label` is e.g. "C2 When BSTs go lopsided". */
-  note: (label: string) => `This module builds on ${label}. You can start here, or look at that module first.`,
+  note: (label: string) => `This lesson builds on ${label}. You can start here, or look at that lesson first.`,
   noteLink: (label: string) => `Go to ${label}`,
 
   /** Panel on the last step of a module's Check activity. */

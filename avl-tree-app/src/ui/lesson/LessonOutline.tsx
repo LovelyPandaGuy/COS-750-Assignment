@@ -84,7 +84,8 @@ export function LessonOutline({
         // React owns `open`: the summary's click (Enter and Space click it too) toggles the state, and the
         // native toggle is prevented so the two never disagree (`toggle` events arrive late, in a task).
         <details className="lesson-outline-disclosure" open={open}>
-          <summary
+          {/* tabIndex puts the summary in the shared [tabindex]:focus-visible ring of tokens.css (F-008). */}
+          <summary tabIndex={0}
             className="lesson-outline-summary"
             onClick={(ev) => {
               ev.preventDefault()

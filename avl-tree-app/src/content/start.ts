@@ -9,9 +9,9 @@
 export const startCopy = {
   heading: 'Get ready for your AVL trees lecture',
   intro:
-    'About an hour, in nine short modules you can stop and pick up again. You will see why search trees need balancing and how AVL trees keep themselves balanced, so the lecture makes sense first time.',
+    'About an hour, in nine short lessons you can stop and pick up again. You will see why search trees need balancing and how AVL trees keep themselves balanced, so the lecture makes sense first time.',
   bullets: [
-    'Nine short modules, one idea at a time',
+    'Nine short lessons, one idea at a time',
     'Practice is private, retryable and never graded',
     'You finish with a list of questions to bring to the lecture',
   ],

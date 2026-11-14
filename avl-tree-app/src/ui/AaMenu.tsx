@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { shellCopy } from '../content/shell'
 import { DisplaySettings } from './DisplaySettings'
 import { ThemeSwitch } from './ThemeSwitch'
+import { useFocusWrap } from './base/useFocusWrap'
 
 /** Opens a panel of display settings: the Dark theme switch and the settings from lessons/c1.json (display-settings). */
 export function AaMenu() {
@@ -9,6 +10,8 @@ export function AaMenu() {
   const panelId = useId()
   const root = useRef<HTMLDivElement>(null)
   const button = useRef<HTMLButtonElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  useFocusWrap(panel, open)
 
   useEffect(() => {
     if (!open) return
@@ -43,7 +46,7 @@ export function AaMenu() {
         {shellCopy.aaButtonText}
       </button>
       {open && (
-        <div id={panelId} className="aa-panel" role="region" aria-label={shellCopy.aaButtonName} tabIndex={-1}>
+        <div ref={panel} id={panelId} className="aa-panel" role="region" aria-label={shellCopy.aaButtonName} tabIndex={-1}>
           <ThemeSwitch />
           <DisplaySettings />
         </div>
