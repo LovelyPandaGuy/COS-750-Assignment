@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button, CHIP_LEVELS, MasteryBadge, OutcomeChip, type ButtonVariant, type MasteryState } from '../ui/base'
 import { LearnGallery } from '../ui/learn/LearnGallery'
 import { ProgressGallery } from '../ui/progress/ProgressGallery'
+import { ReadinessGallery } from '../ui/readiness/ReadinessGallery'
 
 const VARIANTS: ButtonVariant[] = ['primary', 'secondary', 'quiet']
 const STATES = ['default', 'hover', 'focus', 'pressed', 'disabled'] as const
@@ -91,6 +92,7 @@ export function Gallery() {
       </section>
       <LearnGallery />
       <ProgressGallery />
+      <ReadinessGallery />
     </main>
   )
 }

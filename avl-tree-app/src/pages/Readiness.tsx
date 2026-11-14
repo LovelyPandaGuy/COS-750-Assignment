@@ -10,7 +10,7 @@ export function Readiness() {
     <div className="screen-stack lesson">
       <h1 tabIndex={-1}>{screenCopy.headings.readiness}</h1>
       <ReadinessReportView level={2} />
-      <OwnQuestion />
+      <OwnQuestion showList={false} />
       <Link className="screen-link" to={paths.hub()}>
         {screenCopy.links.backToPath}
       </Link>
