@@ -1,11 +1,12 @@
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { axe } from 'vitest-axe';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import fc from 'fast-check';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { build } from '../engine/helpers';
-import { avlInsert } from '../../src/engine/avl';
-import { balanceFactorOf, makeNode, type Key, type Tree, type TreeNode } from '../../src/engine/tree';
+import { avlDelete, avlInsert } from '../../src/engine/avl';
+import { rotateLeft, rotateRight } from '../../src/engine/rotations';
+import { balanceFactorOf, makeNode, replaceAt, type Key, type Tree, type TreeNode } from '../../src/engine/tree';
 import { TreeView, type NodeRole } from '../../src/ui/tree/TreeView';
 import { describeTree, describeTreeParts } from '../../src/ui/tree/describe';
 import { layoutTree } from '../../src/ui/tree/layout';
@@ -276,5 +277,201 @@ describe('FR-VIS-07 hidden balance factors for practice', () => {
       expect(name).not.toMatch(/balance factor [+−]?\d/);
     }
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+// ---- Spec: revamp-tree-view / tree-view (modified and added requirements) ----
+// DOM contract added by this change: a role tag is a <rect class="tree-tag-pill"> drawn before its
+// <text class="tree-tag">; an out-of-balance node's <text class="tree-metrics"> has data-unbalanced;
+// each edge is <line class="tree-edge" data-child="k">; props `announce` and `overlay`.
+
+const treeCss = () => readFileSync('src/ui/tree/tree-view.css', 'utf8');
+/** The declarations of the first rule whose selector list contains `selector`. */
+const rule = (selector: string) => {
+  const css = treeCss().replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+    if (m[1].split(',').some((s) => s.trim() === selector)) return m[2];
+  }
+  return '';
+};
+
+describe('FR-VIS-02 D25 roles survive greyscale and use pill tags (revamp-tree-view)', () => {
+  const roles: Record<number, NodeRole> = { 40: 'new', 20: 'z', 60: 'y', 10: 'balanced' };
+
+  it('keeps every pair of roles apart by ring style or tag text when colour is ignored', () => {
+    const { container } = render(<TreeView tree={seven} roles={roles} label="t" />);
+    const look = (k: Key) => {
+      const g = node(container, k);
+      const tag = g.querySelector('.tree-tag')?.textContent ?? g.querySelector('.tree-badge title')?.textContent ?? '';
+      return `${g.getAttribute('data-ring')}|${tag}`;
+    };
+    const looks = [30, 40, 20, 60, 10].map(look);
+    expect(new Set(looks).size).toBe(5);
+  });
+
+  it('draws the new, z and y tags as filled pills behind surface-coloured text', () => {
+    const { container } = render(<TreeView tree={seven} roles={roles} label="t" />);
+    for (const k of [40, 20, 60]) {
+      const pill = node(container, k).querySelector('rect.tree-tag-pill');
+      const text = node(container, k).querySelector('.tree-tag')!;
+      expect(pill, `pill on ${k}`).not.toBeNull();
+      expect(Number(pill!.getAttribute('rx'))).toBeGreaterThan(0);
+      expect(pill!.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    }
+    expect(node(container, 30).querySelector('.tree-tag-pill')).toBeNull();
+    expect(rule('.tree-tag-pill')).toMatch(/fill:\s*var\(--role-color\)/);
+    expect(rule('.tree-tag')).toMatch(/fill:\s*var\(--bg-surface\)/);
+    expect(treeCss()).toMatch(/\[data-theme='dark'\][^{]*\.tree-tag\s*\{[^}]*fill:\s*var\(--bg-page\)/);
+  });
+
+  it('has pill text contrast of at least 4.5:1 (light: surface on new, z, y; dark: page on z)', () => {
+    const css = readFileSync('src/ui/tokens.css', 'utf8');
+    const block = (start: RegExp) => {
+      const i = css.search(start);
+      return css.slice(i, css.indexOf('}', i));
+    };
+    const pick = (text: string, n: string) => new RegExp(`--${n}:\\s*(#[0-9A-Fa-f]{6})`).exec(text)![1];
+    const lum = (hex: string) => {
+      const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a: string, b: string) => {
+      const [x, y] = [lum(a), lum(b)];
+      return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+    };
+    const light = block(/^:root\s*\{/m);
+    const dark = block(/^:root\[data-theme='dark'\]\s*\{\s*--/m);
+    for (const n of ['tree-new', 'tree-z', 'tree-y']) expect(ratio(pick(light, 'bg-surface'), pick(light, n)), n).toBeGreaterThanOrEqual(4.5);
+    expect(ratio(pick(dark, 'bg-page'), pick(dark, 'tree-z'))).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
+describe('FR-VIS-09 the unbalanced annotation is marked (revamp-tree-view)', () => {
+  it('marks only the out-of-balance node and styles it with --tree-z and bold', () => {
+    const { container } = render(<TreeView tree={chain3} label="t" />);
+    expect(node(container, 30).querySelector('.tree-metrics')).toHaveAttribute('data-unbalanced');
+    for (const k of [20, 10]) expect(node(container, k).querySelector('.tree-metrics')).not.toHaveAttribute('data-unbalanced');
+    const decl = rule('.tree-metrics[data-unbalanced]');
+    expect(decl).toMatch(/fill:\s*var\(--tree-z\)/);
+    expect(decl).toMatch(/font-weight:\s*(700|bold)/);
+  });
+
+  it('does not mark a hidden balance factor (nothing leaks in practice)', () => {
+    const { container } = render(<TreeView tree={chain3} hideBalance={{}} label="t" />);
+    expect(container.querySelector('[data-unbalanced]')).toBeNull();
+  });
+});
+
+describe('FR-VIS-10 selected and hover look from tokens (revamp-tree-view)', () => {
+  it('fills the selected frame with the tint and outlines it with the action colour', () => {
+    const decl = rule('.tree-selected-frame');
+    expect(decl).toMatch(/fill:\s*var\(--action-primary-tint\)/);
+    expect(decl).toMatch(/stroke:\s*var\(--action-primary\)/);
+  });
+
+  it('fills a hovered node with the tint and rings it with the action colour', () => {
+    expect(rule("[role='treeitem']:hover .tree-node-fill")).toMatch(/fill:\s*var\(--action-primary-tint\)/);
+    expect(rule("[role='treeitem']:hover .tree-ring")).toMatch(/stroke:\s*var\(--action-primary\)/);
+  });
+});
+
+describe('FR-VIS-07 NFR-02 the description matches the drawing after every update', () => {
+  type Op = { kind: 'insert' | 'delete' | 'rotate'; key: number; left: boolean };
+  const opArb = fc.record({
+    kind: fc.constantFrom<Op['kind']>('insert', 'insert', 'delete', 'rotate'),
+    key: fc.integer({ min: 1, max: 30 }),
+    left: fc.boolean(),
+  });
+  const apply = (t: Tree, op: Op): Tree => {
+    if (op.kind === 'insert') return avlInsert(t, op.key).tree;
+    if (op.kind === 'delete') return avlDelete(t, op.key).tree;
+    const keys: Key[] = [];
+    walk(t, (n) => {
+      if (op.left ? n.right : n.left) keys.push(n.key);
+    });
+    if (keys.length === 0) return t;
+    return replaceAt(t, keys[op.key % keys.length], op.left ? rotateLeft : rotateRight);
+  };
+  const drawnKeys = (c: HTMLElement) => [...c.querySelectorAll('[data-key]')].map((g) => Number(g.getAttribute('data-key'))).sort((a, b) => a - b);
+
+  it('re-describes and re-draws exactly the current tree after each operation', () => {
+    fc.assert(
+      fc.property(fc.array(opArb, { minLength: 1, maxLength: 10 }), (ops) => {
+        let t: Tree = null;
+        const { container, rerender, unmount } = render(<TreeView tree={t} label="t" />);
+        for (const op of ops) {
+          t = apply(t, op);
+          rerender(<TreeView tree={t} label="t" />);
+          const keys: Key[] = [];
+          walk(t, (n) => keys.push(n.key));
+          if (t === null) {
+            expect(container.querySelectorAll('[data-key]')).toHaveLength(0);
+            continue;
+          }
+          expect(container.querySelector('.tree-description')!.textContent).toBe(describeTree(t, {}));
+          expect(drawnKeys(container)).toEqual(keys.sort((a, b) => a - b));
+        }
+        unmount();
+      }),
+      { numRuns: 30 },
+    );
+  });
+});
+
+describe('NFR-02 FR-VIS-07 screen-supplied announcements', () => {
+  const live = (c: HTMLElement) => c.querySelector('[aria-live="polite"]')!;
+
+  it('puts each announcement in the polite live region', () => {
+    const { container, rerender } = render(<TreeView tree={seven} announce="Inserted 5" label="t" />);
+    expect(live(container)).toHaveTextContent('Inserted 5');
+    rerender(<TreeView tree={avl([40, 20, 60, 10, 30, 50, 70, 5])} announce="Rotated right at 20" label="t" />);
+    expect(live(container)).toHaveTextContent('Rotated right at 20');
+  });
+
+  it('says nothing about a tree change when no announcement is passed', () => {
+    const { container, rerender } = render(<TreeView tree={seven} label="t" />);
+    const before = live(container).textContent;
+    rerender(<TreeView tree={avl([40, 20, 60, 10, 30, 50, 70, 5])} label="t" />);
+    expect(live(container).textContent).toBe(before);
+  });
+});
+
+describe('FR-VIS-06 overlay extension point (change A3)', () => {
+  const three = avl([20, 10, 30]);
+  const centre = (g: Element) => {
+    const m = /translate\(([-\d.]+)[ ,]+([-\d.]+)\)/.exec(g.getAttribute('transform') ?? '')!;
+    return { x: Number(m[1]), y: Number(m[2]) };
+  };
+
+  it('passes the drawn layout and the empty slots, and draws the result inside the SVG after the nodes', () => {
+    const overlay = vi.fn(() => <circle data-testid="overlay-mark" r={3} />);
+    const { container } = render(<TreeView tree={three} overlay={overlay} label="t" />);
+    expect(overlay).toHaveBeenCalled();
+    const arg = overlay.mock.calls.at(-1)![0] as { nodes: { key: Key; x: number; y: number }[]; emptySlots: unknown[] };
+    expect(arg.nodes).toHaveLength(3);
+    for (const n of arg.nodes) expect({ x: n.x, y: n.y }).toEqual(centre(node(container, n.key)));
+    expect(arg.emptySlots).toHaveLength(4);
+    const mark = screen.getByTestId('overlay-mark');
+    expect(container.querySelector('svg')!.contains(mark)).toBe(true);
+    for (const g of container.querySelectorAll('[data-key]'))
+      expect(g.compareDocumentPosition(mark) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('draws nothing extra without an overlay', () => {
+    const a = render(<TreeView tree={three} label="t" />).container.querySelector('svg')!.innerHTML;
+    const b = render(<TreeView tree={three} overlay={undefined} label="t" />).container.querySelector('svg')!.innerHTML;
+    expect(b).toBe(a);
+  });
+});
+
+describe('D2 D19 nothing about the conventions is hard-coded in src/ui/tree', () => {
+  it('has no height or balance-factor comparison with a number and no left-minus-right arithmetic', () => {
+    for (const f of ['layout.ts', 'describe.ts', 'TreeView.tsx', 'motion.ts']) {
+      if (!existsSync(`src/ui/tree/${f}`)) continue;
+      const src = readFileSync(`src/ui/tree/${f}`, 'utf8');
+      expect(src, f).not.toMatch(/\b(height|balance(Factor)?|bf)\b\s*(<=?|>=?|===?|!==?)\s*-?\d/i);
+      expect(src, f).not.toMatch(/\.left\b[^;\n]*height[^;\n]*-[^;\n]*\.right\b[^;\n]*height/);
+      expect(src, f).not.toMatch(/\.right\b[^;\n]*height[^;\n]*-[^;\n]*\.left\b[^;\n]*height/);
+    }
   });
 });

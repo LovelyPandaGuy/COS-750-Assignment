@@ -22,26 +22,26 @@ Original Claude Design project: `https://claude.ai/design/p/f6bc9423-7d01-49c7-a
 
 ## Screens
 
-Frame IDs are the wireframe IDs. Each frame has a spec in `screens/<id>.md` (first written by `/design-import` on 14 Nov 2026): component tree with the design's tag names, states, links, the numbered notes word for word, keyboard and accessibility rules, the FR and LO IDs, and that frame's conflicts. File hashes are in `manifest.json`.
+Frame IDs are the wireframe IDs. Each frame has a spec in `screens/<id>.md` (last column; the Main components column is read by `tests/ui/contracts.test.tsx`, so keep its names and position) (first written by `/design-import` on 14 Nov 2026): component tree with the design's tag names, states, links, the numbered notes word for word, keyboard and accessibility rules, the FR and LO IDs, and that frame's conflicts. File hashes are in `manifest.json`.
 
-| Frame | Spec | Screen | Main components | States in the frame |
+| Frame | Screen | Main components | States in the frame | Spec |
 | --- | --- | --- | --- | --- |
-| 1a | [1a](screens/1a.md) | Screen flow | n/a (diagram) | first visit, returning, needs review, retry |
-| 1b | [1b](screens/1b.md) | 1 Start | StartPanel, ResumeCard, PrivacyNotice, ResetProgressLink, ConfirmDialog | with and without saved progress |
-| 1c | [1c](screens/1c.md) | 2 Diagnostic question | DiagnosticStepper, QuestionItem, TreeView (read-only), ConfidenceRating | one question per screen, skip |
-| 1d | [1d](screens/1d.md) | 2b Diagnostic result | DiagnosticResult, SkillStatusList, RouteRecommendation | needs review, all secure |
-| 1e | [1e](screens/1e.md) | 3 Unit hub | ProgressMap, UnitCard, ActivityList, PathModeToggle, SandboxCard, LectureQuestionsCard | done, current, upcoming |
-| 1f | [1f](screens/1f.md) | 4 Explore / worked example (core) | RepresentationSwitcher, TreeView, StepControls, PseudocodePanel, StepExplanation | watch mode |
-| 1g | [1g](screens/1g.md) | 4 Predict first | TreeView (selectable), PredictPrompt, PredictionReveal | before and after replay |
-| 1h | [1h](screens/1h.md) | 4 Do it yourself | TreeView (interactive), RotationMenu, InOrderStrip, TaskPrompt, FeedbackPanel, KeyboardHelp | selected node, after action |
-| 1i | [1i](screens/1i.md) | 5 Check: identify the case | CheckHeader, QuestionItem, TreeView, ConfidenceRating, FeedbackPanel | correct |
-| 1j | [1j](screens/1j.md) | 5 Check: compute balance factor | CheckHeader, TreeView, QuestionItem, FeedbackPanel, ScaffoldLadder | wrong answer, hint open |
-| 1k | [1k](screens/1k.md) | 5 Check: guided step-through | CheckHeader, TreeView, GuidedStepThrough, ScaffoldLadder | scaffold level 3 |
-| 1l | [1l](screens/1l.md) | 5 Check: retry cap | FeedbackPanel, FullAnswer, LectureQuestionDraft | cap of 3 reached |
-| 1m | [1m](screens/1m.md) | 5 Check: trace an insert | QuestionItem, TreeEditorToolbar, TreeView (editable), EditLog, LiveBalanceReadout, KeyboardHelp | student edits the tree |
-| 1n | [1n](screens/1n.md) | 6 Sandbox | InsertControl, RebalanceSwitch, TreeStats, EventLog, TreeView | rebalancing off, chain |
-| 1o | [1o](screens/1o.md) | 7 Readiness summary | ReadinessSummary, OutcomeStatusTable, ConfidenceFlags, LectureQuestionsList, ExportActions | per-outcome status |
-| 1p | [1p](screens/1p.md) | Assumptions and open questions | n/a | n/a |
+| 1a | Screen flow | n/a (diagram) | first visit, returning, needs review, retry | [1a](screens/1a.md) |
+| 1b | 1 Start | StartPanel, ResumeCard, PrivacyNotice, ResetProgressLink, ConfirmDialog | with and without saved progress | [1b](screens/1b.md) |
+| 1c | 2 Diagnostic question | DiagnosticStepper, QuestionItem, TreeView (read-only), ConfidenceRating | one question per screen, skip | [1c](screens/1c.md) |
+| 1d | 2b Diagnostic result | DiagnosticResult, SkillStatusList, RouteRecommendation | needs review, all secure | [1d](screens/1d.md) |
+| 1e | 3 Unit hub | ProgressMap, UnitCard, ActivityList, PathModeToggle, SandboxCard, LectureQuestionsCard | done, current, upcoming | [1e](screens/1e.md) |
+| 1f | 4 Explore / worked example (core) | RepresentationSwitcher, TreeView, StepControls, PseudocodePanel, StepExplanation | watch mode | [1f](screens/1f.md) |
+| 1g | 4 Predict first | TreeView (selectable), PredictPrompt, PredictionReveal | before and after replay | [1g](screens/1g.md) |
+| 1h | 4 Do it yourself | TreeView (interactive), RotationMenu, InOrderStrip, TaskPrompt, FeedbackPanel, KeyboardHelp | selected node, after action | [1h](screens/1h.md) |
+| 1i | 5 Check: identify the case | CheckHeader, QuestionItem, TreeView, ConfidenceRating, FeedbackPanel | correct | [1i](screens/1i.md) |
+| 1j | 5 Check: compute balance factor | QuestionItem, FeedbackPanel, ScaffoldLadder | wrong answer, hint open | [1j](screens/1j.md) |
+| 1k | 5 Check: guided step-through | GuidedStepThrough, ScaffoldLadder | scaffold level 3 | [1k](screens/1k.md) |
+| 1l | 5 Check: retry cap | FeedbackPanel, FullAnswer, LectureQuestionDraft | cap of 3 reached | [1l](screens/1l.md) |
+| 1m | 5 Check: trace an insert | TreeEditorToolbar, TreeView (editable), EditLog, LiveBalanceReadout, KeyboardHelp | student edits the tree | [1m](screens/1m.md) |
+| 1n | 6 Sandbox | InsertControl, RebalanceSwitch, TreeStats, EventLog, TreeView | rebalancing off, chain | [1n](screens/1n.md) |
+| 1o | 7 Readiness summary | OutcomeStatusTable, ConfidenceFlags, LectureQuestionsList, ExportActions | per-outcome status | [1o](screens/1o.md) |
+| 1p | Assumptions and open questions | n/a | n/a | [1p](screens/1p.md) |
 
 Design-system components beyond the wireframes: Button (primary, secondary, quiet), OutcomeChip, MasteryBadge, ScaffoldPanel, FeedbackPanel (correct, not quite yet, retry cap), ReadinessSummary. Every component is specified with default, hover, focus, selected, disabled and "not quite yet" states.
 
