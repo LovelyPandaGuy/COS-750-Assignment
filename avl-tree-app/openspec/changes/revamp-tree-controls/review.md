@@ -135,3 +135,124 @@ C1, C4, C5 and C6 need a decision or a spec, test or content change first. They 
 | 10 | Wording | Calm: pass. Consistency: **open**, C6 deferred to the team. |
 
 **Task 3.2 stays unticked.** Its check needs `npm run test:visual` to pass and every line to read pass. Lines 4, 7, 8 and 9 need a browser, and line 10 waits on the team's answer to C6.
+
+## Full check and review (task 4.1)
+
+**Date:** 14 Nov 2026, at commit `4ae2476` (diff reviewed: `83b71ca..HEAD`).
+
+### Checks
+
+| Command | Result |
+| --- | --- |
+| `npm test` | Pass: 1458 tests in 100 files. The flaky C6-module test "a wrong case leaves the tool hidden" passed on this run; it is outside this change. |
+| `npm run typecheck` | Pass |
+| `npm run lint` (ESLint and stylelint) | Pass |
+| `npm run build` | Pass (JS 494 kB, 151 kB gzip) |
+| `npm run test:visual` | **Not run**: no Playwright browsers in this environment (also blocks task 1.3). |
+| `openspec validate revamp-tree-controls --strict` | **Not run**: the `openspec` CLI is not installed here. |
+
+### Who ran the passes
+
+No `reviewer` or `a11y-checker` agent is defined in this repo (`.claude/agents/` does not exist). Each pass was run as a fresh, read-only general-purpose agent. Each was briefed only from the repo (CLAUDE.md, decisions, the change, the design and the diff), not from the build conversation.
+
+### Reviewer: pass with findings (none high)
+
+**Spec conformance:**
+- Every requirement in the three delta specs has code behind it, and nearly every scenario has a test named after its ID.
+- **Test gaps:**
+  - "Text off" has no test that unticks Text and then checks that "Describe tree" remains.
+  - In "Focus is never lost", the Replay-at-0 and held cases are in the requirement text but untested.
+  - The pseudocode-panel spec says the case text "equals" `caseName`, but the panel shows "Case LL" and the test uses `toContain`. The spec wording is loose; the code is fine.
+
+**D2 and D19:**
+- `src/content/replay.ts` and `src/ui/replay/*` are clean.
+- See R1 for `src/content/pseudocode.ts`.
+
+**Guardrails:**
+- Engine-computed answers, calm wording, no feedback tokens, non-colour signals, 44 px targets, tokens only, no network, write lanes respected.
+- One new `[OPEN]` marker: "NFR-03 [OPEN: confirm the ID]" (proposal question 12). It must be settled before archiving (definition of done: no new `[OPEN]` markers).
+
+**Quality bar:** the reviewer agrees with the Polish table above. It adds R3 to line 6 and R2 to line 10.
+
+**Findings:**
+- **R1 (low): content does convention arithmetic.** `src/content/pseudocode.ts:14-20` imports `BALANCE_RANGE` and works out the first out-of-range values (`max + 1`, `min − 1`) itself, rather than reading them through `conventionsWording` (D19). The D19 mock test mocks only `num`, so it would not catch a range change.
+  - **Fix:** add an out-of-range field to `conventionsWording` and read it from there (content-author, with a test).
+- **R2 (low): the keys help is out of step with the strip** (`src/content/replay.ts:35`).
+  - It never says "Back", although ← is Back.
+  - It leaves out Replay, which task 2.1 asked to add and the build skipped.
+  - It does not mention that the arrows scroll inside the tree box (C5).
+  - The QB10 test checks only Play, Pause, Step and Speed.
+  - **Fix:** content-author rewords the help, and test-writer adds Back to the check. This ties in with C6.
+- **R3 (low): Space is taken from buttons inside the player** (`src/ui/replay/ReplayPlayer.tsx:116-136`). This existed before the change and is the same issue as a11y A1.
+  - **Scenario:** focus is on the tree view's "Describe tree" button and the student presses Space. Playback toggles and the disclosure does not open.
+  - Enter still works, so WCAG 2.1.1 holds.
+- **R4 (low): stale comment** (`src/ui/replay/replay.css:6` and the 768 px block). The comment says "one row from 768 px", which C1 replaced, and `space-between` assumes a row the strip rarely gets.
+  - **Fix:** the polisher updates the comment and the block.
+- **R5 (low): the contextual heading level reads the last heading anywhere before it** (`src/ui/replay/StepExplanation.tsx`).
+  - On predict steps, `PredictPrompt`'s `<h3>` comes first, so "The whole tree" becomes an `<h4>` nested under the prediction heading.
+  - When the prompt unmounts, the level only updates on the next step, because the effect depends on `[description, level]`.
+  - **Fix:** take the level from the step's own heading (for example the nearest ancestor region's heading plus one), or let the host pass it.
+
+**Could not check:**
+- **Rendered-page checks:** everything that needs a rendered page.
+- **C4 in real browsers:** if a browser fires `focusout` synchronously when `disabled` is set, `onBlur` clears the remembered button before the layout effect runs, and focus would still be lost. This needs a keyboard walk in Chrome, Firefox and Safari.
+
+### A11y-checker: pass with findings (no WCAG 2.2 AA failure found in code, CSS or tokens)
+
+**Checked:**
+- The 9 replay test files pass (170 tests: jsdom axe, tab order, reduced-motion snap, one live region, C4, C5).
+- **Semantics:** named groups; fieldsets with legends; `aria-pressed`; `aria-current`; native disabled; "main" in the locked box's name; caption as the only live region with text; contextual heading level.
+- **C4 and C5 fixes:** verified in code.
+- **Focus style:** no `:focus` override.
+- **Reduced motion:** no transitions in the replay CSS, a global reduced-motion rule in the tokens, and a snap in `motion.ts`.
+- **WCAG 2.2.2:** playback never starts on its own, and Pause is present.
+
+**Contrast:** every token pair the replay CSS uses passes in light and dark. Text is at least 4.5:1 and component edges at least 3:1. Examples:
+
+| Pair | Light | Dark |
+| --- | --- | --- |
+| Inverted current line | 16.46 | 13.68 |
+| Text on tint | 14.24 | 11.36 |
+| Secondary button text | 8.82 | 7.21 |
+| Control edges | 4.12 | 4.57 |
+| Focus ring | 8.43 or more | 7.21 or more |
+
+The tint fill against the surface is 1.16 to 1.20. That is too low to work as a cue (A2).
+
+**Findings:**
+- **A1 (medium): Space toggles playback on every button in the player.** This is the same issue as R3.
+  - The current spec behaviour ("Space toggles while focus is inside the player") needs a team decision.
+  - Suggested rule: Space toggles only on the tree box and the player itself, or skips buttons outside the strip. A scenario and a test come first.
+- **A2 (low): selected speed has a weak cue in greyscale** (`replay.css:37`).
+  - All replay buttons are already bold, and the tint is invisible.
+  - What is left is the 1 px to 2 px border change and the text colour.
+  - **Fix:** add a shape cue (for example an inset bar from existing tokens, or a ✓ glyph through content), and correct the CSS comment.
+- **A3 (low, advisory): disabled and enabled buttons differ mainly by a faint border** (`replay.css:38`). Disabled controls are exempt from contrast. The design's dashed disabled border would fix it, but it is not a token (already recorded under C3).
+- **A4 (low): landmarks repeat if one page shows two replays.** Each replay adds three named regions, so two replays would repeat "The whole tree" and "Pseudocode: …" (axe `landmark-unique`).
+  - **Fix:** confirm no screen shows two replays at once, or drop `aria-labelledby` on the whole-tree section.
+- **A5 (low): speed labels may be read badly.** "0.5×" may be read as "0.5 multiplication sign".
+  - **Fix:** content-author gives the speed buttons a name such as "0.5 times speed".
+
+**Comment:** in dark mode `--action-primary-pressed` equals hover (an assumed token), so a pressed primary button looks the same as a hovered one. Cosmetic.
+
+### Needs a browser (developer machine, before ticking 4.1)
+
+- [ ] `npm run test:visual` at 390, 768 and 1366 (also closes task 1.3); update only the replay baselines (D97).
+- [ ] axe DevTools on a module replay step and on the Sandbox, light and dark (real contrast, `landmark-unique`, native control colours).
+- [ ] Chrome DevTools, Rendering, Emulate vision deficiencies: achromatopsia, protanopia, deuteranopia, tritanopia (D25). Check that the selected speed (A2), disabled vs enabled (A3), checked boxes, the locked "main" box and the current line still read apart.
+- [ ] The locked box's native disabled checkbox must not look "off" in Chrome, Firefox or Safari.
+- [ ] Keyboard-only walk in Chrome, Firefox and Safari:
+  - the tab order and a visible ring on every stop;
+  - Step to the end and Back to 0 with focus on them (C4; confirms the reviewer's `focusout` question);
+  - arrows scroll a wide tree in the tree box at 390 (C5);
+  - Space on "Describe tree" (A1/R3).
+- [ ] OS reduced motion on: nodes snap on every step and on Replay.
+- [ ] 200% zoom and Firefox text-only zoom at the three widths: the marker and number columns do not overlap the code; no page scroll.
+- [ ] Screen reader (NVDA or VoiceOver): one caption announcement per step and none from the tree; the speed names (A5); "Diagram main, checked, unavailable".
+
+### Status of task 4.1
+
+**Not ticked.** The four commands pass and both passes report pass with findings. Still open:
+- **Decisions needed:** A1/R3 (Space, needs a team decision), R1, R2, R5, A2, A4 and A5 (fix or defer), and R4 (comment, polish).
+- **Browser checks:** the "Needs a browser" list above.
+- **Before archiving:** the NFR-03 `[OPEN]` marker must be settled.
