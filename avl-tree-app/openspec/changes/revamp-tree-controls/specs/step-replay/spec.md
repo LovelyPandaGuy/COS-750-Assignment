@@ -8,13 +8,18 @@ Every control SHALL be a native button with a text label (a glyph alone is not a
 - **THEN** each button has a text accessible name (Back, Play or Pause, Step, Replay, 0.5×, 1×, 2×) and is at least 44 px high and wide, the selected speed has `aria-pressed="true"`, and the player has no axe violations
 
 ### Requirement: Controls work by keyboard
-While focus is inside the player, Space SHALL toggle Play and Pause, "[" SHALL choose the next slower speed and "]" the next faster one. Left Arrow SHALL step back and Right Arrow SHALL step forward, except while focus is inside the tree's scroll box (`.tree-scroll`), where the arrows SHALL keep their default behaviour (scrolling a wide tree, D17) and SHALL NOT step. These keys SHALL do nothing when focus is outside the player or when Ctrl, Alt or Meta is held. (FR-VIS-03, NFR-02, WCAG 2.1.4, review C5)
+While focus is inside the player, Space SHALL toggle Play and Pause, except when focus is on a button or a `summary`: there Space SHALL keep its native action (activating that control) and SHALL NOT toggle playback (review A1/R3). "[" SHALL choose the next slower speed and "]" the next faster one. Left Arrow SHALL step back and Right Arrow SHALL step forward, except while focus is inside the tree's scroll box (`.tree-scroll`), where the arrows SHALL keep their default behaviour (scrolling a wide tree, D17) and SHALL NOT step. These keys SHALL do nothing when focus is outside the player or when Ctrl, Alt or Meta is held. (FR-VIS-03, NFR-02, WCAG 2.1.4, review C5)
 
 #### Scenario: Keyboard only
 - **GIVEN** focus is on a control inside the player at position 0
 - **WHEN** the student presses Right Arrow twice, Left Arrow once and "]"
 - **THEN** the position is 1 and 2× is selected
-- **AND WHEN** Space is pressed **THEN** playback starts, and Space again pauses it, with one toggle per key press
+- **AND WHEN** focus is on the tree's scroll box and Space is pressed **THEN** playback starts, and Space again pauses it, with one toggle per key press
+
+#### Scenario: Space activates a focused button (review A1/R3)
+- **GIVEN** focus is on the tree view's "Describe tree" button, or on Back, Step or a speed button
+- **WHEN** the student presses Space
+- **THEN** the key down and key up events are not default-prevented (so the browser activates the button) and playback does not toggle
 
 #### Scenario: Keys are scoped
 - **GIVEN** focus is outside the player

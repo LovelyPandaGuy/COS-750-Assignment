@@ -114,9 +114,11 @@ describe('FR-VIS-03 controls work by keyboard', () => {
     expect(btn('2×')).toHaveAttribute('aria-pressed', 'true')
     fireEvent.keyDown(step, { key: '[' })
     expect(btn('1×')).toHaveAttribute('aria-pressed', 'true')
-    fireEvent.keyDown(step, { key: ' ' })
+    // Space toggles from a non-button place in the player; on a button it activates the button (review A1/R3).
+    const box = screen.getByRole('region', { name: 'Tree' })
+    fireEvent.keyDown(box, { key: ' ' })
     expect(btn('Pause')).toBeTruthy()
-    fireEvent.keyDown(step, { key: ' ' })
+    fireEvent.keyDown(box, { key: ' ' })
     expect(btn('Play')).toBeTruthy()
   })
 
@@ -488,11 +490,33 @@ describe('WCAG 2.4.3 review C4: focus is never lost in the strip', () => {
     stepTimes(7)
     const step = btn('Step')
     step.focus()
-    fireEvent.keyDown(step, { key: ' ' })
+    fireEvent.click(btn('Play'))
     advance(1200 * 2)
     expect(counter()).toBe('Step 9 / 9')
     expect(step).toBeDisabled()
     expect(document.activeElement).toBe(btn('Replay'))
+  })
+
+  it('Replay disabling at the start: focus moves to the next enabled button (0.5×)', () => {
+    const { rerender } = render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(3)
+    const replay = btn('Replay')
+    replay.focus()
+    rerender(<ReplayPlayer operation={{ ...INSERT, key: 25 }} label="Tree" />)
+    expect(counter()).toMatch(/^Step 0 \//)
+    expect(btn('Replay')).toBeDisabled()
+    expect(document.activeElement).toBe(btn('0.5×'))
+  })
+
+  it('held for a prediction: focus moves from Play to the next enabled button (0.5×)', () => {
+    const { rerender } = render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    const play = btn('Play')
+    play.focus()
+    rerender(<ReplayPlayer operation={INSERT} label="Tree" held />)
+    expect(btn('Play')).toBeDisabled()
+    expect(btn('Step')).toBeDisabled()
+    expect(btn('Replay')).toBeDisabled()
+    expect(document.activeElement).toBe(btn('0.5×'))
   })
 
   it('focus outside the replay is left alone', () => {
@@ -529,5 +553,33 @@ describe('FR-VIS-03 review C5: arrows scroll the tree box instead of stepping', 
     const play = btn('Play')
     expect(fireEvent.keyDown(play, { key: 'ArrowRight' })).toBe(false)
     expect(counter()).toBe('Step 1 / 9')
+  })
+})
+
+describe('FR-VIS-03 review A1/R3: Space activates a focused button', () => {
+  it('on Describe tree, Back, Step and a speed button: Space is not prevented and playback does not toggle', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(2)
+    const targets = [
+      within(treeRegion().closest('.tree-view') as HTMLElement).getByRole('button', { name: /describe tree/i }),
+      btn('Back'),
+      btn('Step'),
+      btn('2×'),
+    ]
+    for (const t of targets) {
+      t.focus()
+      expect(fireEvent.keyDown(t, { key: ' ' }), `${t.textContent} keydown`).toBe(true)
+      expect(fireEvent.keyUp(t, { key: ' ' }), `${t.textContent} keyup`).toBe(true)
+      expect(btn('Play'), `${t.textContent}: still paused`).toBeTruthy()
+    }
+    expect(counter()).toBe('Step 2 / 9')
+  })
+
+  it('on the tree box, Space still toggles playback', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    const box = treeRegion()
+    box.focus()
+    expect(fireEvent.keyDown(box, { key: ' ' })).toBe(false)
+    expect(btn('Pause')).toBeTruthy()
   })
 })

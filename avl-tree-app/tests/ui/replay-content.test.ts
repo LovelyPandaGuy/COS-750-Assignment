@@ -18,9 +18,10 @@ describe('D19 replay content types no case, range, signed value or formula', () 
     expect(s, 'formula').not.toMatch(/height\(|h\(node\.left\)|h\(L\)/)
   })
 
-  it('the replay copy and the insert listing read the conventions wording', () => {
+  it('the replay copy and the insert listing read the conventions wording, not the engine (review R1)', () => {
     expect(src('src/content/replay.ts')).toMatch(/conventionsWording/)
-    expect(src('src/content/pseudocode.ts')).toMatch(/conventionsWording|BALANCE_RANGE/)
+    expect(src('src/content/pseudocode.ts')).toMatch(/outOfRangeText/)
+    for (const f of FILES) expect(src(f), f).not.toMatch(/engine\/conventions['"]/)
   })
 })
 
@@ -29,10 +30,12 @@ describe('QB10 D27 calm, consistent replay wording', () => {
     expect(src('src/content/replay.ts')).not.toMatch(/\b(wrong|fail\w*|incorrect|error\w*)\b/i)
   })
 
-  it('the keys help uses the same words as the buttons', () => {
+  it('the keys help uses the same words as the buttons, and notes the tree-box arrows (review R2)', () => {
     const c = replayCopy.controls
     const help = c.help.toLowerCase()
-    for (const w of [c.play, c.pause, c.step, c.speed]) expect(help, w).toContain(w.toLowerCase())
+    for (const w of [c.back, c.play, c.pause, c.step, c.replay, c.speed]) expect(help, w).toContain(w.toLowerCase())
+    expect(help).toMatch(/tree/)
+    expect(help).toMatch(/scroll/)
   })
 
   it('the strip has a Replay label, a navigation group and a progress group, all distinct', () => {

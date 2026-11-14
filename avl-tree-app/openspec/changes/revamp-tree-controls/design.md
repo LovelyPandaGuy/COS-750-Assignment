@@ -110,6 +110,15 @@ The red tests pin these names. The implementer and content-author build to them,
 - **C4, focus in the strip:** buttons keep native `disabled`. `StepControls` remembers the last focused button (focus in the strip, cleared when focus leaves it). After each render, if that button is now disabled and focus has not gone elsewhere (the active element is that button or the body), focus moves to the next enabled strip button in DOM order, else the previous. Chosen over `aria-disabled`, which would change the meaning of disabled for every replay button and a dozen existing `toBeDisabled()` checks.
 - **C5, arrows and the tree box:** `ReplayPlayer`'s key handler skips ← and → when the event target is inside `.tree-scroll`. Space and the brackets still work there.
 
+## Review fixes, round 2 (14 Nov 2026, after task 4.1)
+
+- **A1/R3, Space:** the key handler lets Space through (no `preventDefault` on key down or key up) when the target is a `button` or `summary`, so the browser activates it. Space still toggles playback on the tree box and other non-button targets in the player.
+- **R1:** `conventionsWording()` gains `outOfRangeText` ("+2 or −2" today). It is derived from the engine's own `isOutOfBalance` (the first values past the range on each side), so content does no convention arithmetic and `pseudocode.ts` no longer imports the engine.
+- **R2:** the keys help names Back, Step, Replay, Play or Pause and Speed, and says the arrows scroll inside the tree box.
+- **R4:** the stale "one row from 768 px" comment and the `.replay-controls` rule in the 768 px block are removed. The block keeps `.switcher-task { margin-inline-start: auto }` (1f puts the task at the right of the bar).
+- **A2:** the selected speed is bold and the other speed buttons are regular weight, so weight is a real cue (every replay button was already bold).
+- **Deferred:** R5, A4 and A5 (review.md, "Known follow-ups").
+
 ## Risks / Trade-offs
 
 - **Changing `StepExplanation`'s props is a contract change.** Mitigation: it has one caller (checked), and contracts re-export the props, so the type follows.

@@ -46,3 +46,17 @@ describe('D19 sign and lean wording comes from the conventions', () => {
     }
   })
 })
+
+// revamp-tree-controls review R1: the first values outside the range come from the conventions wording,
+// derived from the engine's own isOutOfBalance, so content does no convention arithmetic (D19).
+describe('D19 R1 out-of-range values come from the conventions wording', () => {
+  it('outOfRangeText names the first value past the range on each side, in the display format', () => {
+    const w = conventionsWording()
+    let above = 1
+    while (!isOutOfBalance(above)) above++
+    let below = -1
+    while (!isOutOfBalance(below)) below--
+    expect(w.outOfRangeText).toBe(`${w.num(above)} or ${w.num(below)}`)
+    expect(w.outOfRangeText).toBe('+2 or −2')
+  })
+})

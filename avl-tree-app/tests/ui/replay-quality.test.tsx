@@ -114,6 +114,9 @@ describe('QB7 colour is never the only signal', () => {
   it('selected speed: aria-pressed and a 2 px border; locked box: "main" and disabled; current line: marker, bold, aria-current', () => {
     const s = css()
     expect(s).toMatch(/\.replay-button\[aria-pressed='true'\][^{]*\{[^}]*border-width:\s*2px/)
+    // Review A2: weight is a real cue only if the other speed buttons are not bold.
+    expect(s).toMatch(/\.replay-button\[aria-pressed='true'\][^{]*\{[^}]*font-weight:\s*700/)
+    expect(s).toMatch(/\.replay-button\[aria-pressed='false'\][^{]*\{[^}]*font-weight:\s*400/)
     expect(s).toMatch(/\.pseudo-line\[aria-current='step'\][^{]*\{[^}]*font-weight:\s*700/)
     render(<ReplayPlayer operation={INSERT} label="Tree" representations={{ ...ALL, supporting: [...ALL.supporting] }} />)
     steps(1)

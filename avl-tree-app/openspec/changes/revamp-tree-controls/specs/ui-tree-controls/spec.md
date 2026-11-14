@@ -70,6 +70,15 @@ When a control in the replay strip has focus and becomes disabled (Back at posit
 - **WHEN** playback reaches position n
 - **THEN** Step is disabled and focus is on Replay
 
+#### Scenario: Replay disables at the start (review C4)
+- **GIVEN** Replay has focus and the operation changes, so the replay returns to position 0, paused
+- **THEN** Replay is disabled and focus is on the next enabled strip button (0.5×)
+
+#### Scenario: Held for a prediction (review C4)
+- **GIVEN** Play has focus at position 0
+- **WHEN** the replay becomes held
+- **THEN** Play, Step and Replay are disabled and focus is on the next enabled strip button (0.5×)
+
 #### Scenario: Focus elsewhere is left alone (review C4)
 - **GIVEN** focus is on a button outside the replay
 - **WHEN** a replay control becomes disabled
@@ -166,7 +175,7 @@ When Text is shown, the replay SHALL show a visible paragraph headed "The whole 
 - **THEN** the "The whole tree" paragraph is not rendered, and the tree view's own "Describe tree" button is still present
 
 ### Requirement: Case and range wording come from the conventions
-Replay content (`src/content/replay.ts`) and the insert listing (`src/content/pseudocode.ts`) SHALL NOT type a case code (LL, RR, LR, RL), the balance range, a signed out-of-range value or the balance-factor formula. The case name SHALL come from `conventionsWording().caseName`, the range from `rangeText` and signed numbers from `num`. (D19, D2, screen 1f conflicts)
+Replay content (`src/content/replay.ts`) and the insert listing (`src/content/pseudocode.ts`) SHALL NOT type a case code (LL, RR, LR, RL), the balance range, a signed out-of-range value or the balance-factor formula. The case name SHALL come from `conventionsWording().caseName`, the range from `rangeText`, signed numbers from `num`, and the first values outside the range (insert listing line 3) from `outOfRangeText`. Content SHALL NOT import from `src/engine/conventions.ts` or do convention arithmetic itself (review R1). (D19, D2, screen 1f conflicts)
 
 #### Scenario: Source scan (D19)
 - **WHEN** `src/content/replay.ts` and `src/content/pseudocode.ts` are scanned
@@ -175,7 +184,7 @@ Replay content (`src/content/replay.ts`) and the insert listing (`src/content/ps
 #### Scenario: Wording follows a convention change (D19)
 - **GIVEN** `conventionsWording()` mocked so that `caseName` maps LL to "left-left", `rangeText` is a different string and `num` formats numbers differently
 - **WHEN** the replay is at the imbalance step of the insert of 10 into 30 with left child 20
-- **THEN** the caption and the panel's case label both say "left-left" and never "LL", the caption contains the mocked `rangeText`, and insert listing line 3 shows the out-of-range values in the mocked `num` format
+- **THEN** the caption and the panel's case label both say "left-left" and never "LL", the caption contains the mocked `rangeText`, and insert listing line 3 contains the mocked `outOfRangeText`
 
 ### Requirement: Learning aids on the step strip
 The module control strip SHALL show Hint with the number of hints left on practice steps, and that number SHALL fall by one per hint used. "I know this, skip" SHALL be offered on content and worked-example steps, including steps that play a replay, and never on a check step. These are existing behaviours of `src/ui/module/ControlStrip.tsx`. This change verifies them and does not edit them. (D20, D21, D23)
@@ -227,7 +236,7 @@ The caption, `StepControls`, `PseudocodePanel` and `RepresentationSwitcher` SHAL
 
 #### Scenario: QB7 colour never alone
 - **WHEN** the selected speed, the locked primary box and the current pseudocode line are read
-- **THEN** each carries a non-colour signal: `aria-pressed` plus a 2 px border, the word "main" plus disabled, and the ▶ marker, bold weight and `aria-current="step"`
+- **THEN** each carries a non-colour signal: `aria-pressed` plus a 2 px border and bold weight (the other speed buttons are regular weight, review A2), the word "main" plus disabled, and the ▶ marker, bold weight and `aria-current="step"`
 - **AND** the a11y-checker confirms greyscale and the three colour-vision simulations (D25)
 
 #### Scenario: QB8 targets and text size
@@ -241,4 +250,4 @@ The caption, `StepControls`, `PseudocodePanel` and `RepresentationSwitcher` SHAL
 
 #### Scenario: QB10 calm wording
 - **WHEN** `src/content/replay.ts` and the replay's rendered text are scanned
-- **THEN** none contains "wrong", "fail", "incorrect" or "error", the button labels are the same words in the strip, the help line and the keyboard hint (Back, Play, Pause, Step, Replay, Speed), and no replay style uses a `--feedback-*` token (the replay gives no verdicts)
+- **THEN** none contains "wrong", "fail", "incorrect" or "error", the keys help uses the strip's words (Back, Play, Pause, Step, Replay, Speed) and says that the arrows scroll inside the tree box (review R2), and no replay style uses a `--feedback-*` token (the replay gives no verdicts)

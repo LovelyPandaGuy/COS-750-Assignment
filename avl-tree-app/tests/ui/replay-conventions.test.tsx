@@ -15,6 +15,7 @@ vi.mock('../../src/content/modules/conventionsWording', async (importOriginal) =
       caseName: (c: string) => (c === 'LL' ? 'left-left' : `mock-${c}`),
       rangeText: 'RANGE-MOCK',
       num: (n: number) => `<${n}>`,
+      outOfRangeText: 'OUT-MOCK',
     }),
   }
 })
@@ -52,9 +53,8 @@ describe('D19 replay wording follows the conventions wording', () => {
     expect(currentLine().textContent).toContain('left-left')
   })
 
-  it('insert listing line 3 builds its out-of-range values with the conventions number format', () => {
-    expect(pseudocode.insert[2]).toContain('<2>')
-    expect(pseudocode.insert[2]).toContain('<-2>')
+  it('R1 insert listing line 3 takes its out-of-range values from outOfRangeText', () => {
+    expect(pseudocode.insert[2]).toContain('OUT-MOCK')
     expect(pseudocode.insert).toHaveLength(5)
   })
 })

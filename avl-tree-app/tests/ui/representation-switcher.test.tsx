@@ -162,6 +162,14 @@ describe('D22 FR-LRN-02 the replay hosts the switcher from step defaults', () =>
     expect(caption().textContent).not.toBe(before)
   })
 
+  it('D22 Text off: unticking Text removes the whole-tree text and keeps the tree view Describe button', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" representations={{ primary: 'animation', supporting: ['text'] }} />)
+    expect(wholeTree()).not.toBeNull()
+    fireEvent.click(box(/text/i))
+    expect(wholeTree()).toBeNull()
+    expect(screen.getByRole('button', { name: /describe tree/i })).toBeTruthy()
+  })
+
   it('a new operation resets the boxes to the defaults', () => {
     const reps = { primary: 'animation' as const, supporting: [] as Representation[] }
     const { rerender } = render(<ReplayPlayer operation={INSERT} label="Tree" representations={reps} />)
