@@ -5,6 +5,7 @@ import { Button, CHIP_LEVELS, MasteryBadge, OutcomeChip, type ButtonVariant, typ
 import { LearnGallery } from '../ui/learn/LearnGallery'
 import { ProgressGallery } from '../ui/progress/ProgressGallery'
 import { ReadinessGallery } from '../ui/readiness/ReadinessGallery'
+import { NarrationGallery } from '../ui/narration/NarrationGallery'
 
 const VARIANTS: ButtonVariant[] = ['primary', 'secondary', 'quiet']
 const STATES = ['default', 'hover', 'focus', 'pressed', 'disabled'] as const
@@ -93,6 +94,7 @@ export function Gallery() {
       <LearnGallery />
       <ProgressGallery />
       <ReadinessGallery />
+      <NarrationGallery />
     </main>
   )
 }

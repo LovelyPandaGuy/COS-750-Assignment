@@ -46,7 +46,6 @@ export function AaMenu() {
         <div id={panelId} className="aa-panel" role="region" aria-label={shellCopy.aaButtonName} tabIndex={-1}>
           <ThemeSwitch />
           <DisplaySettings />
-          <p>{shellCopy.aaPanelLine}</p>
         </div>
       )}
     </div>

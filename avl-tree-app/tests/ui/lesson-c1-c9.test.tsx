@@ -4,6 +4,9 @@ import { axe } from 'vitest-axe'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import App from '../../src/App'
 import { lessonCopy } from '../../src/content/lesson'
+import { narrationCopy } from '../../src/content/narration'
+import type { SpeechEngine } from '../../src/ui/narration/engine'
+import { fakeEngine } from './narration/fake'
 import { readinessCopy } from '../../src/content/readiness'
 import { loadContent, lessonById } from '../../src/live/load'
 import { setRouteEventSink, type RouteEvent } from '../../src/navigation/routeEvents'
@@ -262,11 +265,11 @@ describe('NFR-02 axe on every C1 and C9 screen', () => {
 })
 
 describe('display-settings (ID 10.4, 11.2)', () => {
-  function renderApp(backend = memoryBackend(), path = '#/module/C1') {
+  function renderApp(backend = memoryBackend(), path = '#/module/C1', speech: SpeechEngine | null = null) {
     window.location.hash = path
     const storage = createLearnerStorage(backend)
     const settings = createSettingsStorage(backend)
-    const r = render(<App storage={storage} initial={storage.load()} settings={settings} initialTheme={settings.load().theme} />)
+    const r = render(<App storage={storage} initial={storage.load()} settings={settings} initialTheme={settings.load().theme} speech={speech} />)
     for (let i = 0; i < 4; i++) fireEvent.click(screen.getByRole('button', { name: c.next }))
     return { ...r, backend }
   }
@@ -301,10 +304,31 @@ describe('display-settings (ID 10.4, 11.2)', () => {
     a.unmount()
   })
 
-  it('narration comes later', () => {
+  // add-narration (display-settings delta) replaces "narration comes later". jsdom has no speech, so
+  // renderApp's default engine is none; the cases with a voice pass a fake engine.
+  it('no on-device voice: narration off and disabled, with the note', () => {
     renderApp()
     expect(sw('Read text aloud')).toBeDisabled()
-    expect(screen.getByText(lessonCopy.settings.later)).toBeInTheDocument()
+    expect(sw('Read text aloud')).toHaveAttribute('aria-checked', 'false')
+    expect(screen.getByText(narrationCopy.unavailable)).toBeInTheDocument()
+    expect(screen.queryByText(lessonCopy.settings.later)).toBeNull()
+  })
+
+  it('narration turned on and kept across a reload', () => {
+    const backend = memoryBackend()
+    const a = renderApp(backend, '#/module/C1', fakeEngine())
+    expect(sw('Read text aloud')).toBeEnabled()
+    fireEvent.click(sw('Read text aloud'))
+    expect(sw('Read text aloud')).toHaveAttribute('aria-checked', 'true')
+    a.unmount()
+    renderApp(backend, '#/module/C1', fakeEngine())
+    expect(sw('Read text aloud')).toHaveAttribute('aria-checked', 'true')
+  })
+
+  it('a damaged narration value takes the default and keeps the rest', () => {
+    const backend = memoryBackend()
+    backend.setItem(SETTINGS_KEY, JSON.stringify({ theme: 'light', confetti: false, narration: 'yes', textSize: 'large' }))
+    expect(createSettingsStorage(backend).load()).toMatchObject({ confetti: false, narration: false, textSize: 'large' })
   })
 })
 

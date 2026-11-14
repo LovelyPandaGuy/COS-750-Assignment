@@ -38,13 +38,14 @@ afterEach(() => {
 })
 
 describe('NFR-02 dark theme switch', () => {
-  it('the Aa panel holds the switch, off by default, and the placeholder line', () => {
+  // add-narration: read-aloud is built, so the "coming in a later update" placeholder line is gone.
+  it('the Aa panel holds the switch, off by default, and no placeholder line', () => {
     renderApp(memoryBackend())
     expect(html()).toHaveAttribute('data-theme', 'light')
     openAa()
     const panel = screen.getByRole('region', { name: shellCopy.aaButtonName })
     expect(within(panel).getByRole('switch', { name: shellCopy.darkTheme })).toHaveAttribute('aria-checked', 'false')
-    expect(panel).toHaveTextContent(shellCopy.aaPanelLine)
+    expect(panel).not.toHaveTextContent(/later update/i)
   })
 
   it('click turns dark on, then off again', () => {

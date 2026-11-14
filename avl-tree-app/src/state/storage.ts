@@ -246,7 +246,8 @@ export function parseSettings(raw: unknown): Settings {
   return {
     theme: parseTheme(o.theme),
     confetti: typeof o.confetti === 'boolean' ? o.confetti : DEFAULT_SETTINGS.confetti,
-    narration: false,
+    // add-narration: kept like the others; whether it can take effect depends on an on-device voice.
+    narration: typeof o.narration === 'boolean' ? o.narration : DEFAULT_SETTINGS.narration,
     textSize: o.textSize === 'large' ? 'large' : o.textSize === 'normal' ? 'normal' : DEFAULT_SETTINGS.textSize,
   }
 }
