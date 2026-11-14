@@ -33,8 +33,10 @@ describe('every named component has a contract', () => {
     // LectureQuestionsCard (proposal question 1, D132): 25 and 20.
     // revamp-readiness built OutcomeStatusTable, ConfidenceFlags, LectureQuestionsList and ExportActions
     // (proposal question 1, D138): 29 and 16.
-    expect(BUILT).toHaveLength(29);
-    expect(STUBBED).toHaveLength(16);
+    // The tree-editor revamp (113549b) built KeyboardHelp, TreeEditorToolbar and EditLog; they were moved
+    // to BUILT when the build was fixed on chore/ui-sweep (14 Nov): 32 and 13.
+    expect(BUILT).toHaveLength(32);
+    expect(STUBBED).toHaveLength(13);
   });
 });
 

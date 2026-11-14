@@ -70,15 +70,23 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** the TopBar wraps (it does not set a fixed width wider than the viewport) and `main` has a side gutter of at least `--space-4`
 
 ### Requirement: TopBar content comes from its props
-`TopBar` SHALL show the app title, an optional breadcrumb, an optional status pill and an optional list of actions, then the Aa menu last. An action SHALL be a button that calls its handler, or, when it has an `href`, a link to that address. It SHALL render only the text it is given. The title SHALL NOT be a heading. (Wireframes 1b to 1o; NFR-02)
+`TopBar` SHALL show the app title, an optional breadcrumb, an optional progress area, an optional status pill and an optional list of actions, then the Aa menu last. An action SHALL be a button that calls its handler, or, when it has an `href`, a link to that address. It SHALL render only the text it is given. The title SHALL NOT be a heading. [OPEN] The design does not show what the progress area holds ("revealed structure"). The slot takes whatever a screen passes, and this change passes nothing. (Wireframes 1b to 1o; NFR-02; D20, D23)
 
 #### Scenario: Slots render in order
-- **WHEN** `TopBar` renders with a title, a breadcrumb, a pill and two actions
-- **THEN** the text appears in the order title, breadcrumb, pill, actions, and the Aa button is last
+- **WHEN** `TopBar` renders with a title, a breadcrumb, a progress area, a pill and two actions
+- **THEN** the content appears in the order title, breadcrumb, progress area, pill, actions, and the Aa button is last
 
 #### Scenario: Optional parts are absent
 - **WHEN** `TopBar` renders with only a title
-- **THEN** no empty breadcrumb, pill or action container is in the document, and the Aa button is still present
+- **THEN** no empty breadcrumb, progress area, pill or action container is in the document, and the Aa button is still present
+
+#### Scenario: Progress area is a labelled region
+- **WHEN** `TopBar` renders with a progress area and a label for it
+- **THEN** the progress content is inside a `nav` element whose accessible name is that label, and the TopBar adds no text of its own to it
+
+#### Scenario: Progress area fits a phone
+- **WHEN** the TopBar stylesheet is read
+- **THEN** below 768 px the progress area wraps onto its own row under the title rather than widening the bar, and from 768 px it sits in line
 
 #### Scenario: Title is not a heading
 - **WHEN** `App` renders
@@ -93,7 +101,7 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** it is an `<a>` with that `href` and the action's label, not a button, and an action without an `href` is still a button that calls its handler on click
 
 ### Requirement: Aa menu stub
-The TopBar SHALL contain an Aa button that opens and closes a small panel of display settings. The panel SHALL hold the "Dark theme" switch (capability `display-theme`) and one line of placeholder copy for the settings still to come. The button SHALL have a 44 px target, an accessible name that is more than "Aa", and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10, D26)
+The TopBar SHALL contain an Aa button that opens and closes a small panel of display settings. The panel SHALL hold the "Dark theme" switch (capability `display-theme`) and the display settings (capability `display-settings`), including the narration switch. It SHALL NOT show a placeholder line saying read-aloud comes later, because narration is built (add-narration, D145). The button SHALL have a 44 px target, an accessible name that is more than "Aa", and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10, D26)
 
 #### Scenario: Button name and state
 - **WHEN** `App` renders
@@ -101,7 +109,7 @@ The TopBar SHALL contain an Aa button that opens and closes a small panel of dis
 
 #### Scenario: Open by pointer or keyboard
 - **WHEN** the button is activated by click, then separately by Enter and by Space
-- **THEN** `aria-expanded` becomes `true` and the panel is visible with the "Dark theme" switch and the placeholder copy
+- **THEN** `aria-expanded` becomes `true` and the panel is visible with the "Dark theme" switch and the display settings, and no "later update" line
 
 #### Scenario: Close with Escape
 - **GIVEN** the panel is open and focus is inside it or on the button
@@ -119,7 +127,7 @@ The TopBar SHALL contain an Aa button that opens and closes a small panel of dis
 
 #### Scenario: Stub copy is content
 - **WHEN** the component source is read
-- **THEN** the button name, the switch label and the panel line come from `src/content/shell.ts`, not from the component
+- **THEN** the button name and the switch labels come from `src/content/`, not from the component
 
 #### Scenario: Accessible when open
 - **WHEN** the panel is open

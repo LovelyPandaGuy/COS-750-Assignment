@@ -6,7 +6,7 @@ One set of controls for the tree screens: a control bar that sits in the same pl
 ## Requirements
 
 ### Requirement: The control bar
-A tree screen's controls SHALL be one `ControlBar` with `role="toolbar"` and an accessible name, placed directly below the tree region. Its buttons SHALL appear in the order: main action, other actions, undo and reset. It SHALL wrap onto more lines rather than cause a horizontal page scroll. (ID 8.3, D136, wireframes 1f, 1h)
+A tree screen's controls SHALL be one `ControlBar` with `role="toolbar"` and an accessible name. In the DOM it SHALL follow the tree region, and below 768 px it SHALL be shown below the tree; from 768 px a screen MAY show it in a side column beside the tree (the sandbox, wireframe 1n). Its buttons SHALL appear in the order: main action, other actions, undo and reset. It SHALL wrap onto more lines rather than cause a horizontal page scroll. (ID 8.3, D136, D140, wireframes 1f, 1h, 1n)
 
 #### Scenario: Below the tree
 - **WHEN** a screen with a tree and a control bar is rendered

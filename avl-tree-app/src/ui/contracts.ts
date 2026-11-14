@@ -28,6 +28,9 @@ import type { InOrderStrip } from './practice/InOrderStrip'
 import type { RotationMenu } from './practice/RotationMenu'
 import type { PseudocodePanel } from './replay/PseudocodePanel'
 import type { StepControls } from './replay/StepControls'
+import type { KeyboardHelp } from './controls/KeyboardHelp'
+import type { TreeEditorToolbar } from './editor/TreeEditorToolbar'
+import type { EditLog } from './editor/EditLog.tsx'
 import type { StepExplanation } from './replay/StepExplanation'
 import type { EventLog } from './sandbox/EventLog'
 import type { InsertControl } from './sandbox/InsertControl'
@@ -175,13 +178,14 @@ export const BUILT = [
   'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel',
   'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'UnitCard', 'SandboxCard', 'LectureQuestionsCard',
   'OutcomeStatusTable', 'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions',
+  'KeyboardHelp', 'TreeEditorToolbar', 'EditLog',
 ] as const
 
 export const STUBBED = [
   'DiagnosticStepper',
   'DiagnosticResult', 'RouteRecommendation', 'PathModeToggle',
-  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
-  'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
+  'RepresentationSwitcher', 'TaskPrompt', 'CheckHeader', 'GuidedStepThrough',
+  'LiveBalanceReadout', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
   'ScaffoldLadder',
 ] as const
 
