@@ -101,4 +101,37 @@ C1, C4, C5 and C6 need a decision or a spec, test or content change first. They 
 
 ## Polish (task 3.2)
 
-Not started.
+**Date:** 14 Nov 2026. CSS only, in `src/ui/replay/replay.css`. No tokens, logic, tests or content changed. The `frontend-design` skill is not available in this session (see Critique); the changes reuse the patterns already in `src/ui/base/base.css`.
+
+**Changes:**
+- **C2, pressed states:**
+  - `.replay-button:active` uses the tint fill with an `--action-primary` border (D94, as `.btn-secondary`).
+  - `.replay-button[data-primary]:active` uses `--action-primary-pressed` (as `.btn-primary`).
+  - `.switcher-option:active` (not on the locked box) and `.pseudo-option:active` match the secondary pressed look.
+- **C3, hover and locked look:**
+  - `.pseudo-option:hover` (the search-form radios) now has the tint fill and underline, matching `.switcher-option:hover`.
+  - The locked primary box keeps the "on" look (tint, border, bold) with a 2 px border and the word "main". It never uses the disabled greys and has no hover.
+  - The design's dashed disabled border for buttons stays recorded only: the value is not a token.
+
+**Code fixes made before the polish** (not polish; tests first in `51903b7`, code in `c325ba4`):
+- C4: focus moves to the next enabled strip button when the focused one disables.
+- C5: ← and → scroll the tree box instead of stepping.
+
+**Checks:** `npm test` (1458 passed), `npm run typecheck` and `npm run lint` (stylelint included) are clean. `npm run test:visual` was **not run**: there are no Playwright browsers here.
+
+**Quality bar after the polish:**
+
+| # | Line | Status |
+| --- | --- | --- |
+| 1 | Screen spec | Pass with recorded assumptions: C1 (wraps, no 1f grid in a 66ch page) and C7. |
+| 2 | Tokens only | Pass. |
+| 3 | Every state | Pass: default, hover, focus, pressed, selected and disabled for buttons, boxes and radios. "Not quite yet" does not apply. |
+| 4 | Three widths | **Not checked here** (needs `npm run test:visual` on a developer machine). |
+| 5 | axe | Pass in jsdom; a browser run is for 4.1. |
+| 6 | Keyboard only | Pass (C4 and C5 fixed and tested). |
+| 7 | Colour never alone | Pass by inspection; **greyscale and colour-vision simulations not checked here** (browser, a11y-checker in 4.1). |
+| 8 | Targets and text | Pass by stylesheet; **measurement not checked here** (visual test). |
+| 9 | Reduced motion | Pass by tests; **OS setting not checked here**. |
+| 10 | Wording | Calm: pass. Consistency: **open**, C6 deferred to the team. |
+
+**Task 3.2 stays unticked.** Its check needs `npm run test:visual` to pass and every line to read pass. Lines 4, 7, 8 and 9 need a browser, and line 10 waits on the team's answer to C6.
