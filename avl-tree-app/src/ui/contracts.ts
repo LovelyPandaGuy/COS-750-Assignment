@@ -7,11 +7,10 @@
 // Text props are strings the screen passes in from src/content/; no contract holds wording.
 import type { ComponentProps, ReactNode } from 'react'
 import type { ItemState, ReadinessReport } from '../assessment/report'
-import type { GuidedStep, WorkedExample } from '../assessment/scaffold'
-import type { Instance, Mark, Response } from '../assessment/types'
+import type { GuidedStep } from '../assessment/scaffold'
 import type { Tree } from '../engine/tree'
 import type { Representation } from '../modules/schema'
-import type { Confidence, LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
+import type { LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
 import type { ActivityList } from '../components/ActivityList'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
 import type { ProgressMap } from '../components/ProgressMap'
@@ -31,10 +30,14 @@ import type { InsertControl } from './sandbox/InsertControl'
 import type { RebalanceSwitch } from './sandbox/RebalanceSwitch'
 import type { TreeStats } from './sandbox/TreeStats'
 import type { TreeView } from './tree/TreeView'
+import type { QuestionItem } from './learn/QuestionItem'
+import type { ConfidenceRating } from './learn/ConfidenceRating'
+import type { FullAnswer } from './learn/FullAnswer'
+import type { LectureQuestionDraft } from './learn/LectureQuestionDraft'
 
 type Mastery = Exclude<ItemState, 'unassessed'>
 
-// ---- Built (19): the components' own props ----
+// ---- Built (23): the components' own props ----
 export type ResumeCardProps = ComponentProps<typeof ResumeCard>
 export type ConfirmDialogProps = ComponentProps<typeof ConfirmDialog>
 export type SkillStatusListProps = ComponentProps<typeof SkillStatusList>
@@ -54,8 +57,14 @@ export type InsertControlProps = ComponentProps<typeof InsertControl>
 export type RebalanceSwitchProps = ComponentProps<typeof RebalanceSwitch>
 export type TreeStatsProps = ComponentProps<typeof TreeStats>
 export type EventLogProps = ComponentProps<typeof EventLog>
+// revamp-question-and-feedback (D103): built in src/ui/learn/. FeedbackPanel above is still the practice
+// rotation panel; the design's check panel is src/ui/learn/FeedbackPanel.tsx until the wiring change (D104).
+export type QuestionItemProps = ComponentProps<typeof QuestionItem>
+export type ConfidenceRatingProps = ComponentProps<typeof ConfidenceRating>
+export type FullAnswerProps = ComponentProps<typeof FullAnswer>
+export type LectureQuestionDraftProps = ComponentProps<typeof LectureQuestionDraft>
 
-// ---- Not built yet (26): only what the frame shows ----
+// ---- Not built yet (22): only what the frame shows ----
 
 /** 1b: purpose, start or resume, and the hero diagram slot. */
 export interface StartPanelProps {
@@ -81,23 +90,6 @@ export interface DiagnosticStepperProps {
   total: number
   steps: readonly { id: string; label: string }[]
   currentStepId: string
-}
-/** 1c, 1i, 1j: one question, its tree if any, and the answer input. */
-export interface QuestionItemProps {
-  instance: Instance
-  response: Response | null
-  onResponse: (response: Response) => void
-  /** Locked once the answer is checked. */
-  disabled: boolean
-  /** Shown once checked: the option the student chose is marked "Your answer". */
-  mark?: Mark
-}
-/** 1c, 1i: "How sure are you?", optional; bars fill 1, 2, 3 so the level reads without colour. */
-export interface ConfidenceRatingProps {
-  value: Confidence | null
-  onChange: (value: Confidence) => void
-  label: string
-  disabled?: boolean
 }
 /** 1d: secure or needs review per sub-skill, then the route recommendation. */
 export interface DiagnosticResultProps {
@@ -164,16 +156,6 @@ export interface GuidedStepThroughProps {
   step: number
   onStep: (step: number) => void
 }
-/** 1l: the full answer at the retry cap. */
-export interface FullAnswerProps {
-  example: WorkedExample
-}
-/** 1l: the drafted lecture question, added to the list. */
-export interface LectureQuestionDraftProps {
-  text: string
-  added: boolean
-  onAdd: () => void
-}
 /** 1m: insert, rotations, undo and reset for the tree being edited. */
 export interface TreeEditorToolbarProps {
   nextKey: number | null
@@ -219,13 +201,14 @@ export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'SkillStatusList', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls',
   'PseudocodePanel', 'StepExplanation', 'PredictPrompt', 'PredictionReveal', 'RotationMenu', 'InOrderStrip',
   'FeedbackPanel', 'ScaffoldLadder', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
+  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft',
 ] as const
 
 export const STUBBED = [
-  'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper', 'QuestionItem', 'ConfidenceRating',
+  'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper',
   'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
-  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough', 'FullAnswer',
-  'LectureQuestionDraft', 'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
+  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
+  'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
   'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions',
 ] as const
 

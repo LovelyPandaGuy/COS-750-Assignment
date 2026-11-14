@@ -1,0 +1,117 @@
+## ADDED Requirements
+
+### Requirement: QuestionItem shows what it is given
+`QuestionItem` SHALL render the instance's stem, then a read-only `TreeView` from its optional `tree` prop (`TreeViewProps`), then the answer input for the instance's type, or the optional `editor` slot in its place (change A3). It SHALL render options in the order given and SHALL NOT shuffle, mark or compute anything. (FR-ASM-01, D103)
+
+#### Scenario: Stem, tree and options in the given order
+- **GIVEN** a choice instance with stem "Example stem" and options "Option one" to "Option four", and `tree` props for a 3-node tree
+- **WHEN** `QuestionItem` renders
+- **THEN** the stem appears first, the tree is a read-only image named by the tree label, and the four options appear in exactly the order given
+
+#### Scenario: The editor slot replaces the answer input
+- **GIVEN** a tree instance and an `editor` element with test id "editor-slot"
+- **WHEN** `QuestionItem` renders
+- **THEN** "editor-slot" is rendered and no radio group or stepper is
+
+### Requirement: Question wording comes from props
+Every word a learn component shows that is not from its instance or data SHALL come from its `labels` prop. No file in `src/ui/learn/` SHALL import from `src/content/`. (D103)
+
+#### Scenario: No content import and no hard-coded wording
+- **WHEN** every source file under `src/ui/learn/` is read
+- **THEN** none imports from `src/content/`, and rendering each component with fixture labels shows no text that is not in the instance or the labels
+
+### Requirement: Choice answers are a lettered radio group
+A choice instance (multiple choice and identify-the-case alike) SHALL render as a radio group named by `labels.choiceLegend`, each option a radio with a visible letter A, B, C and so on, in order. Arrow keys SHALL move the selection within the group (native radio behaviour), and pressing an option's letter SHALL select it while focus is inside the group and SHALL do nothing outside it. Selecting an option SHALL call `onResponse({ choice: option.id })`. (FR-ASM-01, FR-VIS-10)
+
+#### Scenario: Pick by click, arrows and letter
+- **GIVEN** a choice instance with four options and no response
+- **WHEN** the student clicks option B, presses ArrowDown, then presses "a"
+- **THEN** `onResponse` is called with options B, C, then A in that order, and each option's accessible name starts with its letter
+
+#### Scenario: Letters do nothing outside the group
+- **WHEN** focus is on the stem's surrounding page and the student presses "b"
+- **THEN** `onResponse` is not called
+
+### Requirement: Compute-a-value answers are a stepper
+A number instance SHALL render a minus button, the value as a spin button, and a plus button, named by `labels.decrease`, `labels.value` and `labels.increase`, with no free text entry. ArrowUp and ArrowDown on the value SHALL match plus and minus. Each change SHALL call `onResponse({ number })` with the value as a signed string (`+2`, `0`, `-1`). [OPEN] Using it in module checks changes the `module-checks` text-field requirement in the wiring change. (FR-ASM-01, FR-VIS-10)
+
+#### Scenario: Stepping within the range
+- **GIVEN** a number instance with `min` -3, `max` 3, `step` 1 and no response
+- **WHEN** the student presses plus three times, then ArrowDown on the value once
+- **THEN** `onResponse` receives "0", "+1", "+2", then "+1", and there is no text input on the page
+
+### Requirement: Stepper range
+With a null response the stepper SHALL show `labels.empty`. The first press of either button SHALL go to the value nearest 0 within `[min, max]`; later presses SHALL move by `step`. Each button SHALL be disabled at its end of the range. (FR-ASM-01)
+
+#### Scenario: Empty start
+- **GIVEN** `min` 1, `max` 5 and no response
+- **WHEN** the student presses minus
+- **THEN** `onResponse` receives "+1"
+
+#### Scenario: Ends of the range
+- **GIVEN** the response "+3" with `max` 3
+- **THEN** the plus button is disabled and the minus button is enabled
+
+### Requirement: QuestionItem states
+`QuestionItem` SHALL show default, hover, focus (shared ring), selected (thicker border), disabled (every input disabled while `disabled` is true) and submitted (`mark` given). When submitted, the chosen option SHALL carry `labels.yourAnswer`; on a correct mark it SHALL also have the correct style, and on a not-quite-yet mark a dashed border and a neutral bulb glyph, with no red and no cross. (FR-ASM-03, NFR-02, D27)
+
+#### Scenario: Locked after submit
+- **GIVEN** `disabled` true
+- **THEN** every radio, stepper button and the spin button is disabled or read-only, and clicking them does not call `onResponse`
+
+#### Scenario: Every state reachable in the gallery
+- **WHEN** the learn gallery renders
+- **THEN** it shows a QuestionItem in each of default, selected, disabled, submitted correct, submitted not quite yet and revealed at the cap, for both a choice and a number instance, and the stylesheet has hover and focus rules for options and stepper buttons
+
+### Requirement: Correct option revealed only at the cap
+`QuestionItem` SHALL mark the correct option with `labels.correct` only when `revealCorrect` is true, which the caller sets only at the retry cap. (FR-ASM-07, FR-SCA-03, D105)
+
+#### Scenario: First miss does not reveal the answer
+- **GIVEN** a choice instance, the response option B (not correct), a not-quite-yet mark and `revealCorrect` false
+- **THEN** option B carries "Your answer" and `data-state="not-yet"`, no option carries the correct label or `data-state="correct"`, and no element has a red token or a cross glyph
+
+#### Scenario: At the cap the correct option is marked
+- **GIVEN** the same props with `revealCorrect` true
+- **THEN** the correct option carries the correct label and `data-state="correct"`, and option B still carries "Your answer"
+
+### Requirement: Try again returns focus to the first input
+When `disabled` changes from true to false, `QuestionItem` SHALL move focus to its first answer input (the first radio, or the stepper's minus button). It SHALL NOT take focus on its first render. (FR-VIS-10, NFR-02)
+
+#### Scenario: Focus after Try again
+- **GIVEN** a QuestionItem rendered with `disabled` true
+- **WHEN** it re-renders with a new instance and `disabled` false
+- **THEN** the first radio has focus
+
+#### Scenario: No focus on mount
+- **WHEN** a QuestionItem first renders with `disabled` false
+- **THEN** focus is not moved
+
+### Requirement: ConfidenceRating levels
+`ConfidenceRating` SHALL render a radio group named by `label`, with the optional note when given, and one radio per entry of `levels` in order, each named by its text and drawn with n bars of which its position (1 to n) are filled. [OPEN] Two stored levels or the design's three (proposal question 4). (FR-RDY-01, NFR-02, D89)
+
+#### Scenario: Bars per level
+- **GIVEN** two levels
+- **THEN** the first shows 1 of 2 bars filled and the second 2 of 2
+
+### Requirement: ConfidenceRating input
+Arrow keys SHALL move between levels and selecting SHALL call `onChange(value)`. With `value` null no level SHALL be checked; with `disabled` every radio SHALL be disabled. (NFR-02, FR-VIS-10)
+
+#### Scenario: Three levels by keyboard
+- **GIVEN** levels "Level one", "Level two", "Level three" with values and `value` null
+- **WHEN** the student tabs into the group and presses ArrowRight twice
+- **THEN** `onChange` is called for the second then the third level, and the levels show 1, 2 and 3 filled bars
+
+#### Scenario: Labels, not colour
+- **WHEN** the rating renders in greyscale
+- **THEN** each level is identified by its text label and bar count, and the checked level also has the selected border
+
+### Requirement: Question components at three widths
+At 390, 768 and 1366 px the learn gallery page SHALL have no horizontal scroll. Every radio row, stepper button and confidence level SHALL measure at least 44 by 44 CSS px. Stem, option and label text SHALL be at least 16 px. axe SHALL report no violations. Styles SHALL use tokens only (stylelint). (NFR-02, FR-VIS-10, D93)
+
+#### Scenario: Visual check
+- **WHEN** `tests/visual/learn.spec.ts` opens the gallery's learn section at each width
+- **THEN** the page scroll width is at most the viewport width, the measured targets are at least 44 px, and the screenshot matches the baseline
+
+#### Scenario: axe clean in every state
+- **WHEN** each gallery state is rendered in the unit tests
+- **THEN** axe reports no violations

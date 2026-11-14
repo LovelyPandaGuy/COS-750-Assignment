@@ -27,8 +27,9 @@ describe('every named component has a contract', () => {
   });
   it('built and stubbed split the names with no overlap', () => {
     expect([...BUILT, ...STUBBED].sort()).toEqual([...CONTRACT_NAMES].sort());
-    expect(BUILT).toHaveLength(19);
-    expect(STUBBED).toHaveLength(26);
+    // revamp-question-and-feedback (D103): QuestionItem, ConfidenceRating, FullAnswer, LectureQuestionDraft built.
+    expect(BUILT).toHaveLength(23);
+    expect(STUBBED).toHaveLength(22);
   });
 });
 
