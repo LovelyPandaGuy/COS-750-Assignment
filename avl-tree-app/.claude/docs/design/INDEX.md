@@ -22,32 +22,34 @@ Original Claude Design project: `https://claude.ai/design/p/f6bc9423-7d01-49c7-a
 
 ## Screens
 
-Frame IDs are the wireframe IDs. A screen spec per frame will live in `screens/<id>.md` once `/design-import` has run.
+Frame IDs are the wireframe IDs. Each frame has a spec in `screens/<id>.md` (last column; the Main components column is read by `tests/ui/contracts.test.tsx`, so keep its names and position) (first written by `/design-import` on 14 Nov 2026): component tree with the design's tag names, states, links, the numbered notes word for word, keyboard and accessibility rules, the FR and LO IDs, and that frame's conflicts. File hashes are in `manifest.json`.
 
-| Frame | Screen | Main components | States in the frame |
-| --- | --- | --- | --- |
-| 1a | Screen flow | n/a (diagram) | first visit, returning, needs review, retry |
-| 1b | 1 Start | StartPanel, ResumeCard, PrivacyNotice, ResetProgressLink, ConfirmDialog | with and without saved progress |
-| 1c | 2 Diagnostic question | DiagnosticStepper, QuestionItem, TreeView (read-only), ConfidenceRating | one question per screen, skip |
-| 1d | 2b Diagnostic result | DiagnosticResult, SkillStatusList, RouteRecommendation | needs review, all secure |
-| 1e | 3 Unit hub | ProgressMap, UnitCard, ActivityList, PathModeToggle, SandboxCard, LectureQuestionsCard | done, current, upcoming |
-| 1f | 4 Explore / worked example (core) | RepresentationSwitcher, TreeView, StepControls, PseudocodePanel, StepExplanation | watch mode |
-| 1g | 4 Predict first | TreeView (selectable), PredictPrompt, PredictionReveal | before and after replay |
-| 1h | 4 Do it yourself | TreeView (interactive), RotationMenu, InOrderStrip, TaskPrompt, FeedbackPanel, KeyboardHelp | selected node, after action |
-| 1i | 5 Check: identify the case | CheckHeader, QuestionItem, TreeView, ConfidenceRating, FeedbackPanel | correct |
-| 1j | 5 Check: compute balance factor | QuestionItem, FeedbackPanel, ScaffoldLadder | wrong answer, hint open |
-| 1k | 5 Check: guided step-through | GuidedStepThrough, ScaffoldLadder | scaffold level 3 |
-| 1l | 5 Check: retry cap | FeedbackPanel, FullAnswer, LectureQuestionDraft | cap of 3 reached |
-| 1m | 5 Check: trace an insert | TreeEditorToolbar, TreeView (editable), EditLog, LiveBalanceReadout, KeyboardHelp | student edits the tree |
-| 1n | 6 Sandbox | InsertControl, RebalanceSwitch, TreeStats, EventLog, TreeView | rebalancing off, chain |
-| 1o | 7 Readiness summary | OutcomeStatusTable, ConfidenceFlags, LectureQuestionsList, ExportActions | per-outcome status |
-| 1p | Assumptions and open questions | n/a | n/a |
+| Frame | Screen | Main components | States in the frame | Spec |
+| --- | --- | --- | --- | --- |
+| 1a | Screen flow | n/a (diagram) | first visit, returning, needs review, retry | [1a](screens/1a.md) |
+| 1b | 1 Start | StartPanel, ResumeCard, PrivacyNotice, ResetProgressLink, ConfirmDialog | with and without saved progress | [1b](screens/1b.md) |
+| 1c | 2 Diagnostic question | DiagnosticStepper, QuestionItem, TreeView (read-only), ConfidenceRating | one question per screen, skip | [1c](screens/1c.md) |
+| 1d | 2b Diagnostic result | DiagnosticResult, SkillStatusList, RouteRecommendation | needs review, all secure | [1d](screens/1d.md) |
+| 1e | 3 Unit hub | ProgressMap, UnitCard, ActivityList, PathModeToggle, SandboxCard, LectureQuestionsCard | done, current, upcoming | [1e](screens/1e.md) |
+| 1f | 4 Explore / worked example (core) | RepresentationSwitcher, TreeView, StepControls, PseudocodePanel, StepExplanation | watch mode | [1f](screens/1f.md) |
+| 1g | 4 Predict first | TreeView (selectable), PredictPrompt, PredictionReveal | before and after replay | [1g](screens/1g.md) |
+| 1h | 4 Do it yourself | TreeView (interactive), RotationMenu, InOrderStrip, TaskPrompt, FeedbackPanel, KeyboardHelp | selected node, after action | [1h](screens/1h.md) |
+| 1i | 5 Check: identify the case | CheckHeader, QuestionItem, TreeView, ConfidenceRating, FeedbackPanel | correct | [1i](screens/1i.md) |
+| 1j | 5 Check: compute balance factor | QuestionItem, FeedbackPanel, ScaffoldLadder | wrong answer, hint open | [1j](screens/1j.md) |
+| 1k | 5 Check: guided step-through | GuidedStepThrough, ScaffoldLadder | scaffold level 3 | [1k](screens/1k.md) |
+| 1l | 5 Check: retry cap | FeedbackPanel, FullAnswer, LectureQuestionDraft | cap of 3 reached | [1l](screens/1l.md) |
+| 1m | 5 Check: trace an insert | TreeEditorToolbar, TreeView (editable), EditLog, LiveBalanceReadout, KeyboardHelp | student edits the tree | [1m](screens/1m.md) |
+| 1n | 6 Sandbox | InsertControl, RebalanceSwitch, TreeStats, EventLog, TreeView | rebalancing off, chain | [1n](screens/1n.md) |
+| 1o | 7 Readiness summary | OutcomeStatusTable, ConfidenceFlags, LectureQuestionsList, ExportActions | per-outcome status | [1o](screens/1o.md) |
+| 1p | Assumptions and open questions | n/a | n/a | [1p](screens/1p.md) |
 
 Design-system components beyond the wireframes: Button (primary, secondary, quiet), OutcomeChip, MasteryBadge, ScaffoldPanel, FeedbackPanel (correct, not quite yet, retry cap), ReadinessSummary. Every component is specified with default, hover, focus, selected, disabled and "not quite yet" states.
 
 ## What must change before the first UI proposal
 
 These are conflicts between the design and the decisions in `.claude/docs/decisions.md`. Fix them in the design, then re-run `/design-import`. Until then the decision log wins: the `spec-writer` builds to the decision and lists the frame difference under "Assumed, not blocking" (D18), not as `[OPEN]`.
+
+Import 14 Nov 2026: the source files are unchanged since they were added (same bytes as commit 4e6d297), so the design fixes none of items 1 to 14 yet. Nothing is ticked off.
 
 1. **Height convention (D2).** The wireframes count a leaf as height 1 and an empty subtree as 0 (frame 1p assumption 1, and every `h` label). The decision is leaf 0, empty -1, balance factor = left minus right.
    - Every `h` label drops by 1. Every `bf` stays the same, because both sides shift together.
@@ -69,10 +71,34 @@ These are conflicts between the design and the decisions in `.claude/docs/decisi
 13. **Control strip (1f, D23).** Navigation on one side, learning aids (Show rule, Hint with remaining count) on the other, in the same place on every screen.
 14. **Read-aloud (1f, 1p, D26).** Stretch only; the toggle may stay hidden until change 24 builds it.
 
+### Further conflicts found by the 14 Nov import
+
+Same rule: the decision log wins until the design changes. Items marked **human** need a decision because the log does not settle them.
+
+15. **Diagnostic routing (1a, 1c, 1d, D6, FR-DIA-01, FR-DIA-03).** Frames show 6 questions and "any needs review → U0". The decision is five items, fewer than 4 of 5 correct → refresher, then a short re-check, then C2.
+16. **Unlocking (1a, D20).** "next unit unlocked as current" implies locking; nothing is ever hard-locked.
+17. **Activity reorder (1e, D10, D34).** The ActivityList reorders Explore, Worked example and Check. D10 lets only content, worked example and practice move; Check holds the check and summary, which are fixed. **Human:** build activity reorder at all, and if so which rows move?
+18. **Insert pseudocode (1f, D19, D30).** Frame draws line-level code with `# LL`; the panel shows the ID's five-step C6 outline and never names a case.
+19. **Verdict wording (1h, 1i, D27).** Frames say "✓ Correct" and "✓ Balanced"; the design system says "That's it"; D27 says "That's right". **Human:** which string?
+20. **Answer shown on a first miss (1j vs design-system assumption).** The design system assumes the correct option is not revealed until the cap; 1j's FeedbackPanel shows the correct reasoning (+2) after attempt 1. **Human:** reveal on a first miss or not?
+21. **Guided step-through (1k, D79).** Frame has a per-field numeric step-through; D79 builds a sentence-by-sentence walk (or the insert trace). **Human:** build the interactive form, and when?
+22. **Ladder at the cap (1l, D77).** D77 opens every rung at the cap; 1l shows no ladder. **Human:** show the open ladder on the cap screen?
+23. **Two primary buttons (1m, D41).** "Place key" and "Submit final tree" are both primary.
+24. **Sandbox (1n, D56, D57, D59).** No Delete control; "Saved on this device" pill although the sandbox is not saved; "balanced would be 3" becomes 2 under D57 (floor of log2 7).
+25. **Readiness summary (1o, D8, D88, D90, D91, FR-RDY-03).** Five outcome rows vs LO1 to LO9; three states vs Ready or Revise; "Save as PDF" vs a plain-text download; review links go to units, not worked examples; the required own question is not drawn. **Human:** show the three stored states on the summary, or only Ready / Revise?
+26. **Motion (1h note 2, D32).** "in U2 it animates"; replay steps snap until a later change.
+27. **Core-screen layout (1p question 8).** Still open; no alternative layouts exist.
+28. **Diagnostic answers (1p question 2).** D6 settles the per-skill list; whether answers are revealed at the end is not settled. **Human.**
+
+### Token conflict
+
+T1. **Dark feedback panels (design system 04B vs `tokens.css` and `tests/tokens.contrast.test.ts`).** Section 04B draws the dark correct panel border `#2D5C57` and the not-quite-yet border `#435069` and icon `#A9B8D0`. `tokens.css` uses assumed values (`#4FC3B5`, `#7F879A`, `#A3AEC2`). The drawn borders are 2.18:1 and 2.03:1 on `bg-surface`; the contrast test requires 3:1 for them and pins the assumed block to reused values, so the import did not apply them. The light borders (`#9FD3CC`, `#B8C3D4`) are also under 3:1, which suggests the design treats panel borders as decorative. **Human:** (a) keep the assumed values, or (b) adopt the design's values and have the `test-writer` relax the border pairs to match the light theme (decorative) and move the three values out of the assumed block. The icon `#A9B8D0` passes (7.18:1 on the panel).
+
 ## Design-system gaps
 
-- Elevation values e1 and e2 are named but not specified (`tokens.css`: `[OPEN]`).
-- Dark theme: no values for disabled text and background, the correct-panel colours, the not-quite-yet border and icon, the neutral tree node, or pressed. Listed at the bottom of the dark block in `tokens.css`.
+- ~~Elevation values e1 and e2 are named but not specified.~~ Done (14 Nov import): the section 03 swatches give e1 `0 1px 2px rgba(27,31,42,.06)` and e2 `0 6px 20px rgba(27,31,42,.10)`; now `--elevation-1` and `--elevation-2` in `tokens.css` (light only; the dark section draws no shadow).
+- Dark theme: no values for disabled text and background, the neutral tree node, or pressed. The feedback panels are drawn but not applied (T1). Listed at the bottom of the dark block in `tokens.css`.
+- Primary disabled background `#E4E6EC` and disabled dashed border `#C2C7D2` are drawn in section 04 but not named as tokens; recorded as a comment in `tokens.css`, not added.
 - Fonts: done (add-ui-foundation, D98): Atkinson Hyperlegible Next and Mono are self-hosted in `src/ui/fonts/` with `@font-face` rules.
 - Breakpoints: none stated; 390, 768 and 1366 assumed (D93).
 - Pressed for secondary and quiet buttons, chip hover: not stated; assumed (D94).

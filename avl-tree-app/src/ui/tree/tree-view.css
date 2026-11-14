@@ -1,5 +1,6 @@
 /* Tree view. Tokens only. The focus ring comes from tokens.css. */
-.tree-view { display: flex; flex-direction: column; gap: var(--space-2); }
+/* max-width: in a column that aligns items to the start, a wide tree must not widen the page (NFR-04). */
+.tree-view { display: flex; flex-direction: column; gap: var(--space-2); max-width: 100%; }
 
 .tree-scroll {
   overflow-x: auto;
@@ -28,22 +29,40 @@
 
 .tree-key { font: var(--type-body); font-weight: 700; fill: var(--text-primary); text-anchor: middle; dominant-baseline: central; }
 .tree-metrics,
-.tree-flag,
-.tree-tag { font: var(--type-label); text-anchor: middle; }
+.tree-flag { font: var(--type-label); text-anchor: middle; }
 .tree-metrics { font-family: var(--font-mono); fill: var(--text-primary); }
+/* Design "Node anatomy": the unbalanced node's annotation takes the z colour and weight. */
+.tree-metrics[data-unbalanced] { fill: var(--tree-z); font-weight: 700; }
 .tree-flag { fill: var(--tree-z); }
-.tree-tag { fill: var(--role-color); }
+/* Labels sit under the node, where edges pass: a halo in the surface colour keeps them readable (review C1). */
+.tree-metrics,
+.tree-flag {
+  paint-order: stroke;
+  stroke: var(--bg-surface);
+  stroke-width: var(--space-2);
+  stroke-linejoin: round;
+}
+
+/* Role tags: filled pills in the role colour (design system 01 D); dark theme uses dark text (04B). */
+.tree-tag-pill { fill: var(--role-color); }
+.tree-tag { font: var(--type-label); text-anchor: middle; dominant-baseline: central; fill: var(--bg-surface); }
+:root[data-theme='dark'] .tree-tag { fill: var(--bg-page); }
 
 .tree-badge-ring { fill: var(--bg-surface); stroke: var(--tree-balanced); stroke-width: 2; }
 .tree-badge-check { fill: none; stroke: var(--tree-balanced); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .tree-selected-frame {
-  fill: none;
+  fill: var(--action-primary-tint);
   stroke: var(--action-primary);
   stroke-width: 3;
   rx: var(--radius-md);
   ry: var(--radius-md);
 }
+
+/* Hover (design "Node anatomy"): tinted fill, action-colour ring. Pointer only; focus keeps the shared ring. */
+[role='treeitem'] { cursor: pointer; }
+[role='treeitem']:hover .tree-node-fill { fill: var(--action-primary-tint); }
+[role='treeitem']:hover .tree-ring { stroke: var(--action-primary); }
 
 .tree-describe-button {
   align-self: flex-start;
