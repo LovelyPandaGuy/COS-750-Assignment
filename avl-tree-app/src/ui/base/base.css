@@ -198,3 +198,6 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* At 200% text a long word in a heading is wider than a phone's column; it breaks instead of scrolling (F-013). */
+h1, h2, h3 { overflow-wrap: break-word; }

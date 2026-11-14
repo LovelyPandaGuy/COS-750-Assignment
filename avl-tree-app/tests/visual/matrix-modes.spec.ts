@@ -132,8 +132,11 @@ for (const id of ['readiness-ready', 'readiness-revise', 'screen-certificate']) 
         const s = getComputedStyle(e)
         return e.getBoundingClientRect().height > 0 && s.visibility !== 'hidden' && s.display !== 'none' && (e.textContent ?? '').trim() !== ''
       }).length
-      const chrome = [...document.querySelectorAll('header, .skip-link, .control-strip, .lesson-outline')].filter((e) => e.getBoundingClientRect().height > 0).length
-      return { visibleText, chromeShown: chrome }
+      // Chrome that would put ink on paper: laid out, and not hidden with visibility (the certificate's approach).
+      const chrome = [...document.querySelectorAll('header, .skip-link, .control-strip, .lesson-outline')]
+        .filter((e) => e.getBoundingClientRect().height > 0 && getComputedStyle(e).visibility !== 'hidden')
+        .map((e) => e.outerHTML.slice(0, 80))
+      return { visibleText, chromeShown: chrome.length, chrome }
     })
     await page.screenshot({ path: `${OUT}/print/${id}.png`, fullPage: true })
     save(`print-${id}`, r)
@@ -279,7 +282,7 @@ for (const entry of PAGES) {
     test.skip(info.project.name === 'tablet', 'keyboard walk at 390 and 1366 px')
     await open(page, entry, 'light')
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
-    const stops: { what: string; top: number; visible: boolean; ring: boolean; landmark: string }[] = []
+    const stops: { what: string; top: number; left: number; right: number; visible: boolean; ring: boolean; landmark: string }[] = []
     let first: string | null = null
     let bodies = 0
     for (let i = 0; i < 200; i++) {
@@ -292,7 +295,7 @@ for (const entry of PAGES) {
         const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) >= 2) || cs.boxShadow !== 'none'
         const visible = r.width > 0 && r.height > 0 && cs.visibility !== 'hidden' && r.bottom > 0 && r.right > 0 && r.left < innerWidth
         const lm = e.closest('header, nav, main, aside, footer, [role="region"]')
-        return { what: `${e.tagName} ${(e.getAttribute('aria-label') ?? e.textContent ?? '').trim().slice(0, 40)}`, top: r.top + scrollY, visible, ring, landmark: lm ? lm.tagName + (lm.getAttribute('aria-label') ?? '') : '' }
+        return { what: `${e.tagName} ${(e.getAttribute('aria-label') ?? e.textContent ?? '').trim().slice(0, 40)}`, top: r.top + scrollY, left: r.left, right: r.right, visible, ring, landmark: lm ? lm.tagName + (lm.getAttribute('aria-label') ?? '') : '' }
       })
       // From a blurred last control, Chromium's first Tab can rest on <body> before wrapping to the start.
       if (s === null) {
@@ -306,8 +309,12 @@ for (const entry of PAGES) {
     }
     const hidden = stops.filter((s) => !s.visible).map((s) => s.what)
     const noRing = stops.filter((s) => s.visible && !s.ring).map((s) => s.what)
-    // Reading order: a stop more than one row (48 px) above the previous, in the same landmark.
-    const inversions = stops.filter((s, i) => i > 0 && s.landmark === stops[i - 1].landmark && s.top < stops[i - 1].top - 48).map((s) => s.what)
+    // Reading order: a stop more than one row (48 px) above the previous, in the same landmark and the same column
+    // (the two overlap sideways). Moving from the foot of one column to the head of the next is reading order.
+    const sameColumn = (a: (typeof stops)[number], b: (typeof stops)[number]) => a.left < b.right && b.left < a.right
+    const inversions = stops
+      .filter((s, i) => i > 0 && s.landmark === stops[i - 1].landmark && sameColumn(s, stops[i - 1]) && s.top < stops[i - 1].top - 48)
+      .map((s) => s.what)
     save(`keyboard-${entry.id}-${info.project.name}`, { stops: stops.length, hidden, noRing, inversions })
     expect.soft(stops.length, 'something can be focused').toBeGreaterThan(0)
     expect.soft(hidden, 'focus on hidden elements').toEqual([])
@@ -383,6 +390,8 @@ test('mode focus after a change: lesson Next and a route change', async ({ page 
   })
   await page.locator('header').getByText('Sandbox', { exact: true }).click()
   await page.waitForURL(/#\/sandbox/)
+  // The route's effect moves focus after the new screen renders; give it up to a second before reading.
+  await page.waitForFunction(() => document.activeElement?.tagName === 'H1', null, { timeout: 1000 }).catch(() => {})
   const route = await page.evaluate(() => {
     const e = document.activeElement as HTMLElement
     const r = e.getBoundingClientRect()

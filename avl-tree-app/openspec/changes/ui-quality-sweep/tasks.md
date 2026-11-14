@@ -47,7 +47,7 @@ No behaviour, logic, content, wording or token changes. Items needing a new toke
 
 ## 3. Findings
 
-- [ ] 3.1 Write `openspec/changes/ui-quality-sweep/findings.md` (design decision 7):
+- [x] 3.1 Write `openspec/changes/ui-quality-sweep/findings.md` (design decision 7):
   - one row per finding, with ID, screen, state, width, theme or mode, severity, bar line, proposed fix, new token (yes = `[OPEN]`), lane and source;
   - duplicates merged.
 
