@@ -10,7 +10,6 @@ import type { ItemState, ReadinessReport } from '../assessment/report'
 import type { GuidedStep, WorkedExample } from '../assessment/scaffold'
 import type { Instance, Mark, Response } from '../assessment/types'
 import type { Tree } from '../engine/tree'
-import type { Representation } from '../modules/schema'
 import type { Confidence, LearnerPath, LectureQuestion, ModuleId } from '../state/learnerState'
 import type { ActivityList } from '../components/ActivityList'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
@@ -24,6 +23,7 @@ import type { PredictionReveal } from './practice/PredictionReveal'
 import type { PredictPrompt } from './practice/PredictPrompt'
 import type { RotationMenu } from './practice/RotationMenu'
 import type { PseudocodePanel } from './replay/PseudocodePanel'
+import type { RepresentationSwitcher } from './replay/RepresentationSwitcher'
 import type { StepControls } from './replay/StepControls'
 import type { StepExplanation } from './replay/StepExplanation'
 import type { EventLog } from './sandbox/EventLog'
@@ -34,7 +34,7 @@ import type { TreeView } from './tree/TreeView'
 
 type Mastery = Exclude<ItemState, 'unassessed'>
 
-// ---- Built (19): the components' own props ----
+// ---- Built (20): the components' own props ----
 export type ResumeCardProps = ComponentProps<typeof ResumeCard>
 export type ConfirmDialogProps = ComponentProps<typeof ConfirmDialog>
 export type SkillStatusListProps = ComponentProps<typeof SkillStatusList>
@@ -54,8 +54,9 @@ export type InsertControlProps = ComponentProps<typeof InsertControl>
 export type RebalanceSwitchProps = ComponentProps<typeof RebalanceSwitch>
 export type TreeStatsProps = ComponentProps<typeof TreeStats>
 export type EventLogProps = ComponentProps<typeof EventLog>
+export type RepresentationSwitcherProps = ComponentProps<typeof RepresentationSwitcher>
 
-// ---- Not built yet (26): only what the frame shows ----
+// ---- Not built yet (25): only what the frame shows ----
 
 /** 1b: purpose, start or resume, and the hero diagram slot. */
 export interface StartPanelProps {
@@ -135,12 +136,6 @@ export interface LectureQuestionsCardProps {
   questions: readonly LectureQuestion[]
   onOpen: () => void
 }
-/** 1f (D22): one primary representation per step; the rest are toggles. */
-export interface RepresentationSwitcherProps {
-  primary: Representation
-  shown: readonly Representation[]
-  onToggle: (representation: Representation) => void
-}
 /** 1h, 1m: what to do, in one line. */
 export interface TaskPromptProps {
   text: string
@@ -219,12 +214,13 @@ export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'SkillStatusList', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls',
   'PseudocodePanel', 'StepExplanation', 'PredictPrompt', 'PredictionReveal', 'RotationMenu', 'InOrderStrip',
   'FeedbackPanel', 'ScaffoldLadder', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
+  'RepresentationSwitcher',
 ] as const
 
 export const STUBBED = [
   'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper', 'QuestionItem', 'ConfidenceRating',
   'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
-  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough', 'FullAnswer',
+  'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough', 'FullAnswer',
   'LectureQuestionDraft', 'TreeEditorToolbar', 'EditLog', 'LiveBalanceReadout', 'OutcomeStatusTable',
   'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions',
 ] as const

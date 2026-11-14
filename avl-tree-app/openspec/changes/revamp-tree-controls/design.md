@@ -79,7 +79,7 @@ The decisions here follow proposal questions 1 to 11.
 
 6. **PseudocodePanel.**
    - `.pseudo-line[aria-current='step']` uses `background: var(--text-primary); color: var(--bg-surface)`. The number and the case pill inherit `currentColor` on that line.
-   - The case text is `copy.caseLabel(conventionsWording().caseName(c))`, so `caseLabel` takes a name and not a code.
+   - The case text is `copy.caseLabel(c)`. Content applies `conventionsWording().caseName(c)` inside `caseLabel` and inside the imbalance and rotation sentences, so D19 lives only in `src/content/` and the panel passes the engine's case through. (Changed during build, 14 Nov 2026: same output as designed, fewer places that touch case names.)
    - The test-writer adds the inverted pair to the contrast test in `tests/tokens.contrast.test.ts`. The pair is the same as body text on a surface, so it passes.
 
 7. **Content (content-author, flagged beyond the ID).**
@@ -98,7 +98,8 @@ The red tests pin these names. The implementer and content-author build to them,
 - **Strip:** the outer group keeps the name "Replay controls" and has exactly two direct `role="group"` children with different names. The navigation group's buttons read Back, Play or Pause, Step, Replay. `.replay-controls` stacks by default, and from `@media (min-width: 768px)` it uses `justify-content: space-between` or `flex-direction: row`.
 - **Content keys:** `replayCopy.controls.replay === 'Replay'`, plus `controls.navGroup` and `controls.progressGroup` (distinct strings). The help line contains the play, pause, step and speed labels.
 - **Switcher:** a group whose name starts with "Show", with three checkboxes named Diagram, Text and Pseudocode in that order. The locked box's `<label>` contains the word "main". The label class sets `min-height: var(--target-min)`. The Mode group's name starts with "Mode", with radios named exactly "Watch" and "Do it yourself".
-- **Whole-tree text:** a heading named exactly "The whole tree", inside a `section` or `div` that holds the `describeTree` text. It is not in a `details` element and not live.
+- **Whole-tree text:** a heading named exactly "The whole tree", inside a `section` or `div` that holds the `describeTree` text. It is not in a `details` element and not live. Its level is one below the heading before it in the page (h3 under a module step's h2, h2 under the Sandbox's h1, h2 when there is none), worked out after render. No fixed level is valid on both pages: h3 breaks axe heading-order on the Sandbox, and h2 adds a second h2 to module steps. (Build, 14 Nov 2026.)
+- **Caption width:** `max-width: 66ch`, the raw value the test asks for. The same value exists as the token `--reading-column`; switching to it needs a test change first. (User instruction, 14 Nov 2026.)
 - **Panel:** the case text stays in `.pseudo-case` and contains `caseName(c)`. The current line uses `background: var(--text-primary); color: var(--bg-surface); font-weight: 700`.
 - **Stylesheet:** checkbox and radio states are written with `:has(input:checked)` and `:has(input:disabled)` (or `input:checked` and `input:disabled`). There are no `transition` or `animation` declarations in `replay.css`.
 - **Hint:** the hint button's text contains the number and the word "left" (for example "Hint, 2 left").

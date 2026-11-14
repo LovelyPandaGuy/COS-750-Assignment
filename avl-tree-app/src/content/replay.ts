@@ -1,7 +1,12 @@
 // Replay wording (FR-VIS-03, FR-VIS-07, FR-VIS-11). Flagged for the user to read:
 // none of this comes from the ID content. Sentence style follows wireframe 1f note 4.
 // Numbers are passed in from the engine's trace; nothing here computes an answer.
+// Case names and the balance range come from the conventions wording (D19), read at call time.
+// revamp-tree-controls adds the switcher, Replay, group, caption and whole-tree labels (flagged, beyond the ID).
 import type { RebalanceCase } from '../engine/conventions'
+import { conventionsWording } from './modules/conventionsWording'
+
+const w = () => conventionsWording()
 
 type Dir = 'left' | 'right'
 
@@ -14,6 +19,10 @@ export const replayCopy = {
     play: 'Play',
     pause: 'Pause',
     step: 'Step',
+    replay: 'Replay',
+    iconReplay: '↺',
+    navGroup: 'Replay navigation',
+    progressGroup: 'Progress and speed',
     iconBack: '⏮',
     iconPlay: '▶',
     iconPause: '⏸',
@@ -27,6 +36,19 @@ export const replayCopy = {
   },
   visited: (n: number) => `Nodes visited: ${n}`,
   explanationLabel: 'Step explanation',
+  /** Heading of the Text representation: the whole tree in words (D105). */
+  wholeTree: 'The whole tree',
+  /** The representation switcher (D106): choices, never learning styles. Read aloud waits for change 24 (D26). */
+  switcher: {
+    show: 'Show',
+    mode: 'Mode',
+    watch: 'Watch',
+    doIt: 'Do it yourself',
+    main: 'main',
+    diagram: 'Diagram',
+    text: 'Text',
+    pseudocode: 'Pseudocode',
+  },
   panel: {
     title: (name: string) => `Pseudocode: ${name}`,
     insert: 'AVL insert',
@@ -36,7 +58,7 @@ export const replayCopy = {
     loop: 'Loop',
     recursive: 'Recursive',
     marker: '▶',
-    caseLabel: (c: RebalanceCase) => `Case ${c}`,
+    caseLabel: (c: RebalanceCase) => `Case ${w().caseName(c)}`,
   },
   sentence: {
     startInsert: (k: number) => `Inserting ${k}. Press Play or Step to watch.`,
@@ -54,8 +76,8 @@ export const replayCopy = {
     height: (at: number, h: number, bf: string) =>
       `Walking back up: node ${at} now has height ${h} and balance factor ${bf}.`,
     imbalance: (z: number, bf: string, y: number, c: RebalanceCase) =>
-      `Node ${z} has balance factor ${bf}, outside −1 to +1, so it is the lowest unbalanced node. Its taller child is ${y}, so this is case ${c}.`,
+      `Node ${z} has balance factor ${bf}, outside ${w().rangeText}, so it is the lowest unbalanced node. Its taller child is ${y}, so this is case ${w().caseName(c)}.`,
     rotation: (at: number, pivot: number, dir: Dir, c: RebalanceCase) =>
-      `Case ${c}: rotate ${dir} at ${at}, lifting ${pivot} up.`,
+      `Case ${w().caseName(c)}: rotate ${dir} at ${at}, lifting ${pivot} up.`,
   },
 } as const

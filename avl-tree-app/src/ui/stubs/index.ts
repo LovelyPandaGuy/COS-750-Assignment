@@ -13,7 +13,6 @@ import { UnitCard } from './UnitCard'
 import { PathModeToggle } from './PathModeToggle'
 import { SandboxCard } from './SandboxCard'
 import { LectureQuestionsCard } from './LectureQuestionsCard'
-import { RepresentationSwitcher } from './RepresentationSwitcher'
 import { TaskPrompt } from './TaskPrompt'
 import { KeyboardHelp } from './KeyboardHelp'
 import { CheckHeader } from './CheckHeader'
@@ -41,7 +40,6 @@ export const STUBS: Record<StubbedName, ComponentType<never>> = {
   PathModeToggle,
   SandboxCard,
   LectureQuestionsCard,
-  RepresentationSwitcher,
   TaskPrompt,
   KeyboardHelp,
   CheckHeader,
@@ -70,7 +68,6 @@ export {
   PathModeToggle,
   SandboxCard,
   LectureQuestionsCard,
-  RepresentationSwitcher,
   TaskPrompt,
   KeyboardHelp,
   CheckHeader,

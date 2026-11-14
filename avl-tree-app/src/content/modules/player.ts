@@ -8,7 +8,8 @@ export const playerCopy = {
   skip: 'I know this, skip',
   showRule: 'Show the rule',
   ruleLabel: 'The rule',
-  hint: (left: number) => `Hint (${left})`,
+  /** Says the number is the hints left (D21, revamp-tree-controls question 2). */
+  hint: (left: number) => `Hint, ${left} left`,
   reviewRule: 'Review the rule',
   stripLabel: 'Step controls',
   navLabel: 'Move between steps',

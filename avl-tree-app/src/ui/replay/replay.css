@@ -3,12 +3,13 @@
 .replay { display: flex; flex-direction: column; gap: var(--space-4); max-width: 100%; min-width: 0; }
 .replay p { margin: 0; font: var(--type-body); }
 
-.replay-controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
-.replay-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-.replay-progress { flex: 1 1 12rem; }
+/* Replay strip (D23): navigation first, then progress and speed. Stacked on a phone, one row from 768 px. */
+.replay-controls { display: flex; flex-direction: column; flex-wrap: wrap; align-items: flex-start; gap: var(--space-3); }
+.replay-side { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.replay-progress { flex: 1 1 auto; }
 .replay-progress progress { flex: 1 1 auto; min-width: var(--space-8); height: var(--space-3); accent-color: var(--action-primary); }
 .replay-speed-label { font: var(--type-body); color: var(--text-secondary); }
-.replay-note, .replay-help { color: var(--text-secondary); }
+.replay-note, .replay-help { color: var(--text-secondary); flex-basis: 100%; }
 
 .replay-button {
   display: inline-flex;
@@ -72,17 +73,60 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-/* Current line: highlight fill, bold, a ▶ marker and aria-current; never colour alone (FR-VIS-04, wireframe 1f note 3). */
-.pseudo-line[aria-current='step'] { background: var(--code-highlight); color: var(--text-primary); font-weight: 700; }
+/* Current line: inverted, bold, a ▶ marker and aria-current; never colour alone (FR-VIS-04, wireframe 1f, D104). */
+.pseudo-line[aria-current='step'] { background: var(--text-primary); color: var(--bg-surface); font-weight: 700; }
+.pseudo-line[aria-current='step'] .pseudo-number { color: inherit; }
 .pseudo-number { color: var(--text-secondary); text-align: end; }
 .pseudo-code { font: inherit; }
 .pseudo-case {
   font: var(--type-label);
   padding-inline: var(--space-2);
-  border: 1px solid var(--text-primary);
+  border: 1px solid currentColor;
   border-radius: var(--radius-pill);
   white-space: nowrap;
 }
 
-.replay-explanation { display: flex; flex-direction: column; gap: var(--space-2); }
 .replay-visited { font-weight: 700; }
+
+/* Caption directly under the tree (D23, D105): body type, reading width. */
+.replay-caption { font: var(--type-body); max-width: 66ch; }
+
+/* Text representation: the whole tree in words (D105). */
+.replay-whole { display: flex; flex-direction: column; gap: var(--space-2); max-width: var(--reading-column); }
+.replay-whole-heading { margin: 0; font: var(--type-body); font-weight: 700; }
+
+/* Representation switcher (D22, D106, wireframes 1f and 1h): "Show" choices, then Mode, then the task.
+   Checked: fill, border and weight; the locked primary also carries the word "main" (not colour alone). */
+.switcher { display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4); }
+.switcher-group { display: flex; flex-wrap: wrap; gap: var(--space-2); border: 0; margin: 0; padding: 0; min-width: 0; }
+.switcher-group legend { font: var(--type-body); font-weight: 700; padding: 0; margin-bottom: var(--space-2); }
+.switcher-option {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding-inline: var(--space-3);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  cursor: pointer;
+}
+.switcher-option:hover:not(:has(input:disabled)) { background: var(--action-primary-tint); text-decoration: underline; }
+.switcher-option:has(input:checked) { background: var(--action-primary-tint); border-color: var(--action-primary); font-weight: 700; }
+.switcher-option:has(input:disabled) { cursor: default; }
+.switcher-option input { width: var(--space-5); height: var(--space-5); margin: 0; }
+.switcher-main {
+  font: var(--type-label);
+  padding-inline: var(--space-2);
+  border: 1px solid currentColor;
+  border-radius: var(--radius-pill);
+}
+.switcher-task { font-weight: 700; }
+
+@media (min-width: 768px) {
+  .replay-controls { flex-direction: row; justify-content: space-between; align-items: center; }
+  .switcher-task { margin-inline-start: auto; }
+}
