@@ -15,13 +15,13 @@ const copy = lessonCopy.questions
 const labels = CONVENTIONS.labels as unknown as { found: string; notFound: string; none: string; confidence: { sure: string; unsure: string } }
 
 /** A radio group of options (mcq, case-id, predict). */
-export function ChoiceControl({ options, value, onChange, legend = copy.answerLegend, disabled }: { options: readonly Pick<Option, 'id' | 'text'>[]; value: string | null; onChange: (id: string) => void; legend?: string; disabled: boolean }) {
+export function ChoiceControl({ options, value, onChange, legend = copy.answerLegend, disabled, narrate = true }: { options: readonly Pick<Option, 'id' | 'text'>[]; value: string | null; onChange: (id: string) => void; legend?: string; disabled: boolean; /** Read the options aloud (add-narration); confidence is not. */ narrate?: boolean }) {
   const name = useId()
   return (
     <fieldset className="q-choices" disabled={disabled}>
       <legend>{legend}</legend>
       {options.map((o) => (
-        <label key={o.id} className="q-choice">
+        <label key={o.id} className="q-choice" data-narrate={narrate ? '' : undefined}>
           <input type="radio" name={name} value={o.id} checked={value === o.id} onChange={() => onChange(o.id)} />
           <span>{o.text}</span>
         </label>
@@ -42,6 +42,7 @@ export function ConfidenceControl({ value, onChange, disabled }: { value: 'sure'
       value={value}
       onChange={(v) => onChange(v as 'sure' | 'unsure')}
       disabled={disabled}
+      narrate={false}
     />
   )
 }

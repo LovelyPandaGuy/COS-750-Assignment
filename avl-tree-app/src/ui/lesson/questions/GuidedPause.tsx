@@ -42,7 +42,9 @@ export function GuidedPause({
   }
   return (
     <section className="q-card lesson-guided" aria-label={g.legend}>
-      <p className="q-stem">{g.legend}</p>
+      <p className="q-stem" data-narrate>
+        {g.legend}
+      </p>
       {askNode && <NodePicker legend={g.askNode} shown={{ tree, formatKey, label: `${label}, ${g.askNode}` }} selected={picked} none={false} mode="one" onChange={(k) => setPicked(k)} disabled={verdict === 'right'} />}
       {askCase && <ChoiceControl legend={g.askCase} options={cases.map((c) => ({ id: c, text: caseLabel(c) }))} value={choice} onChange={setChoice} disabled={verdict === 'right'} />}
       {verdict !== 'right' && (

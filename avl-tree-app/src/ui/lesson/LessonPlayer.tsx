@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import './lesson.css'
 import './module.css'
 import '../replay/replay.css'
+import { narrationCopy } from '../../content/narration'
+import { NarrationControls } from '../narration/NarrationControls'
+import { useNarration } from '../narration/NarrationContext'
 import { lessonCopy } from '../../content/lesson'
 import { lessonPosition } from '../../live/load'
 import type { Lesson, Question } from '../../live/types'
@@ -36,6 +39,8 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
   const [caption, setCaption] = useState<string | null>(null)
   const [atEnd, setAtEnd] = useState(false)
   const heading = useRef<HTMLHeadingElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const stopNarration = useNarration()?.stop
   const [replayNonce, setReplayNonce] = useState(0)
   const [checkNav, setCheckNav] = useState<CheckNav | null>(null)
   // Questions whose hint was opened (ID 9.4: hintsUsed in the attempt record).
@@ -64,6 +69,9 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
     }
     heading.current?.focus()
   }, [index])
+
+  // A screen change (or leaving the lesson) stops speech; the new screen starts idle (D148).
+  useEffect(() => () => stopNarration?.(), [screen.id, stopNarration])
 
   const onCaption = useCallback((t: string) => setCaption(t), [])
   const onEnd = useCallback((e: boolean) => setAtEnd(e), [])
@@ -116,22 +124,23 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
         </p>
       </div>
       {note}
-      <section className="lesson-screen" aria-labelledby={`${screen.id}-h`} key={screen.id}>
-        <h2 id={`${screen.id}-h`} ref={heading} tabIndex={-1}>
+      <section ref={sectionRef} className="lesson-screen" aria-labelledby={`${screen.id}-h`} key={screen.id}>
+        <h2 id={`${screen.id}-h`} ref={heading} tabIndex={-1} data-narrate>
           {screen.title}
         </h2>
+        <NarrationControls getRoot={() => sectionRef.current} labels={narrationCopy} />
         <div className="lesson-main">{regions.main}</div>
-        <p className="lesson-caption" aria-live={screen.type === 'animation' ? 'polite' : undefined}>
+        <p className="lesson-caption" aria-live={screen.type === 'animation' ? 'polite' : undefined} data-narrate>
           {regions.caption ?? ''}
         </p>
         {screen.showRule !== undefined && (
-          <div id={ruleId} className="module-rule lesson-rule-panel" hidden={!ruleOpen}>
+          <div id={ruleId} className="module-rule lesson-rule-panel" hidden={!ruleOpen} data-narrate>
             <strong>{lessonCopy.ruleLabel}: </strong>
             {screen.showRule}
           </div>
         )}
         {hint !== undefined && (
-          <div id={hintId} className="module-rule lesson-hint-panel" hidden={!hintOpen}>
+          <div id={hintId} className="module-rule lesson-hint-panel" hidden={!hintOpen} data-narrate>
             <strong>{lessonCopy.hintLabel}: </strong>
             {hint}
           </div>

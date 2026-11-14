@@ -29,10 +29,12 @@ describe('every named component has a contract', () => {
     expect([...BUILT, ...STUBBED].sort()).toEqual([...CONTRACT_NAMES].sort());
     // 14 and 31 after the merge with the live content (D121); revamp-question-and-feedback then built
     // QuestionItem, ConfidenceRating, FullAnswer, LectureQuestionDraft and FeedbackPanel (D128): 19 and 26.
-    // revamp-tree-editor built TreeEditorToolbar and EditLog (D132, D134): 21 and 24.
-    // revamp-tree-controls built KeyboardHelp (D138): 22 and 23.
-    expect(BUILT).toHaveLength(22);
-    expect(STUBBED).toHaveLength(23);
+    // revamp-progress-and-hub built StartPanel, PrivacyNotice, ResetProgressLink, UnitCard, SandboxCard and
+    // LectureQuestionsCard (proposal question 1, D132): 25 and 20.
+    // revamp-readiness built OutcomeStatusTable, ConfidenceFlags, LectureQuestionsList and ExportActions
+    // (proposal question 1, D138): 29 and 16.
+    expect(BUILT).toHaveLength(29);
+    expect(STUBBED).toHaveLength(16);
   });
 });
 

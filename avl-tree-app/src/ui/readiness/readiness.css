@@ -1,0 +1,179 @@
+/* Readiness summary (revamp-readiness, frame 1o). Tokens only. Status reads by symbol, word and border,
+   never colour alone (note 1, D25); nothing is red (D27). No transitions: states snap (quality bar 9).
+   Mobile first: stacked cards below 768 px, a table from 768 px (design decision 3; D118 queries only). */
+
+.readiness-summary { display: grid; gap: var(--space-5); min-width: 0; color: var(--text-primary); }
+
+/* ---- Headline ---- */
+.readiness-headline {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+.readiness-headline[data-overall='ready'] { border-color: var(--text-primary); }
+.readiness-headline[data-overall='revise'] { border-style: dotted; }
+.readiness-headline-heading { margin: 0; font: var(--type-h1); color: var(--text-primary); }
+.readiness-headline-line { margin: 0; font: var(--type-body); color: var(--text-primary); }
+.readiness-title { display: grid; gap: var(--space-1); margin: 0; }
+.readiness-title-words { font: var(--type-h2); color: var(--text-primary); }
+
+/* ---- Objective table: stacked cards by default ---- */
+.readiness-table { width: 100%; border-collapse: collapse; }
+.readiness-caption { text-align: left; font: var(--type-h2); color: var(--text-primary); padding-bottom: var(--space-3); }
+.readiness-table thead {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.readiness-table tbody { display: grid; gap: var(--space-3); }
+.readiness-table tbody tr {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+}
+.readiness-table th,
+.readiness-table td { display: block; padding: 0; text-align: left; font: var(--type-body); vertical-align: top; min-width: 0; }
+/* The column name before each cell on a card; the column header still names it for assistive technology. */
+.readiness-table td[data-label]::before {
+  content: attr(data-label);
+  display: block;
+  font: var(--type-label);
+  color: var(--text-secondary);
+}
+.readiness-table td[data-cell='change']:empty,
+.readiness-table td[data-cell='change']:not(:has(.readiness-note)) { display: none; }
+
+.readiness-objective { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-1) var(--space-2); font-weight: 400; }
+.readiness-id { font-weight: 700; }
+.readiness-name { font: var(--type-body); overflow-wrap: break-word; }
+.readiness-optional { font: var(--type-label); font-style: italic; color: var(--text-secondary); }
+.readiness-note { font: var(--type-body); color: var(--text-secondary); }
+
+.readiness-levels { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.readiness-level-chip .chip-text { display: none; }
+.readiness-level {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--text-secondary);
+  border-radius: var(--radius-pill);
+  font: var(--type-label);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+}
+
+/* Status: symbol, word and border. Ready solid, Revise dotted; neutral ink, never red. */
+.readiness-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  font: var(--type-body);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.readiness-status[data-status='ready'] { border: 2px solid var(--text-primary); background: var(--action-primary-tint); }
+.readiness-status[data-status='revise'] { border: 2px dotted var(--text-primary); background: var(--bg-surface); }
+.readiness-mastery { display: inline-flex; margin-left: var(--space-2); }
+
+.readiness-review {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  font: var(--type-body);
+  color: var(--action-primary);
+}
+
+/* ---- Blocks: flags, listen-for, questions ---- */
+.readiness-block { display: grid; gap: var(--space-3); min-width: 0; }
+.readiness-block-heading { margin: 0; font: var(--type-h2); color: var(--text-primary); }
+.readiness-flag-list,
+.readiness-question-list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.readiness-flag {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--text-primary);
+  background: var(--bg-page);
+}
+.readiness-flag-symbol { font: var(--type-body); }
+.readiness-flag-body { display: grid; gap: var(--space-1); min-width: 0; }
+.readiness-flag-text { font: var(--type-body); }
+.readiness-points { display: grid; gap: var(--space-2); margin: 0; padding-left: var(--space-5); }
+.readiness-points li { font: var(--type-body); }
+
+.readiness-question { display: grid; gap: var(--space-2); padding: var(--space-3) var(--space-4); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
+.readiness-question-text { margin: 0; font: var(--type-body); overflow-wrap: break-word; }
+.readiness-question-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.readiness-question-edit { display: grid; gap: var(--space-2); }
+.readiness-field-label { font: var(--type-label); color: var(--text-secondary); }
+.readiness-field {
+  width: 100%;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--border-control);
+  border-radius: var(--radius-sm);
+  font: var(--type-body);
+  color: var(--text-primary);
+  background: var(--bg-surface);
+  box-sizing: border-box;
+}
+.readiness-empty { margin: 0; font: var(--type-body); color: var(--text-secondary); }
+
+/* ---- Export ---- */
+.readiness-export { display: grid; gap: var(--space-3); }
+.readiness-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.readiness-live { margin: 0; min-height: var(--space-5); font: var(--type-body); color: var(--text-primary); }
+.readiness-fallback { display: grid; gap: var(--space-2); }
+
+/* ---- From 768 px: a real table ---- */
+@media (min-width: 768px) {
+  .readiness-table thead { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip-path: none; white-space: normal; display: table-header-group; }
+  .readiness-table tbody { display: table-row-group; }
+  .readiness-table tbody tr { display: table-row; padding: 0; border: 0; border-radius: 0; background: none; }
+  .readiness-table th,
+  .readiness-table td { display: table-cell; padding: var(--space-3); border-bottom: 1px solid var(--border-subtle); }
+  .readiness-table thead th { font: var(--type-label); color: var(--text-secondary); }
+  .readiness-table td[data-label]::before { content: none; }
+  .readiness-table td[data-cell='change']:not(:has(.readiness-note)) { display: table-cell; }
+}
+
+/* ---- Print: questions and statuses, plain, black on white (frame 1o note 4; proposal question 8) ---- */
+@media print {
+  @page { margin: 15mm; }
+  /* The page around the summary prints plainly too: ink on paper in either theme, no app controls. */
+  /* System colours follow color-scheme, so the dark theme would print light ink: force the light scheme. */
+  :root:has(.readiness-summary) { color-scheme: light; }
+  body:has(.readiness-summary),
+  body:has(.readiness-summary) * { color: CanvasText; background: Canvas; }
+  body:has(.readiness-summary) :is(header, nav, button, textarea, input, label) { display: none; }
+  .readiness-summary { color: CanvasText; background: Canvas; font-size: 12pt; }
+  .readiness-summary * { color: CanvasText; background: Canvas; }
+  .readiness-summary button,
+  .readiness-summary textarea,
+  .readiness-actions,
+  .readiness-live,
+  .readiness-fallback,
+  .readiness-question-actions { display: none; }
+  .readiness-name,
+  .readiness-note,
+  .readiness-flag-text,
+  .readiness-question-text,
+  .readiness-points li,
+  .readiness-headline-line { font-size: 12pt; }
+  .readiness-status[data-status='ready'],
+  .readiness-status[data-status='revise'] { border-color: CanvasText; color: CanvasText; background: Canvas; }
+  .readiness-review { min-height: 0; text-decoration: none; }
+}

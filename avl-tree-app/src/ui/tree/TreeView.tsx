@@ -186,7 +186,8 @@ export function TreeView({
   if (tree === null) return <p className="tree-empty">{copy.emptyTree}</p>
 
   return (
-    <div className="tree-view">
+    // add-narration: the tree's own text description is read aloud, even while its paragraph is closed.
+    <div className="tree-view" data-narrate data-narrate-text={describeTree(tree, roles, hide, formatKey)}>
       <div className="tree-scroll" role="region" aria-label={label} tabIndex={0}>
         <svg
           role={interactive ? 'tree' : 'img'}

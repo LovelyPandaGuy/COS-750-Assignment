@@ -1,0 +1,190 @@
+/* Progress components (revamp-progress-and-hub): Start, hub, lesson progress and lesson menu. Tokens only.
+   States read by word, symbol and border, never colour alone (wireframe 1e note 1, D25). Completion is
+   neutral ink, never a mastery colour (design system ProgressMap). No transitions: states snap (quality
+   bar 9). Mobile first; D118 width queries only. */
+
+/* ---- Lesson items (map and menu) ---- */
+.progress-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  text-decoration: none;
+  box-sizing: border-box;
+}
+.progress-symbol { font: var(--type-body); line-height: inherit; }
+.progress-text { display: flex; flex: 1 1 auto; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.progress-title { font: var(--type-body); overflow-wrap: break-word; }
+.progress-id { font-weight: 700; }
+.progress-state,
+.progress-optional { font: var(--type-label); color: var(--text-secondary); }
+.progress-optional { font-style: italic; }
+/* P1: under the state word, in the text column. */
+.progress-reason { font: var(--type-body); color: var(--text-secondary); overflow-wrap: break-word; }
+.progress-item:hover .progress-title { text-decoration: underline; }
+
+/* Done: solid border in neutral ink, quiet fill. */
+.progress-item[data-state='done'] { border-style: solid; border-width: 2px; border-color: var(--text-primary); background: var(--bg-page); }
+/* You are here: thick solid border. */
+.progress-item[data-state='current'] { border-style: solid; border-width: 4px; border-color: var(--action-primary); background: var(--action-primary-tint); }
+/* Open: dashed, where the student can go next. */
+.progress-item[data-state='open'] { border-style: dashed; border-width: 2px; border-color: var(--border-control); }
+/* Not yet open: dotted, with its reason as text (ID 8.2). */
+.progress-item[data-state='locked'] { border-style: dotted; border-width: 2px; border-color: var(--border-control); color: var(--text-secondary); cursor: default; }
+.progress-item[data-state='locked']:hover .progress-title { text-decoration: none; }
+.progress-item[data-state='current'] .progress-state { color: var(--text-primary); font-weight: 700; }
+
+/* ---- ProgressMap: a column, one row from 1366 px (proposal question 8) ---- */
+.progress-map-nav { width: 100%; min-width: 0; }
+.progress-map { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.progress-map-entry { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.progress-map-entry > .progress-item { flex: 1 1 auto; }
+/* P3: the badge wraps inside its own column. */
+.progress-mastery { display: flex; min-width: 0; max-width: 100%; padding-left: var(--space-3); overflow-wrap: break-word; }
+.progress-mastery .badge,
+.progress-mastery .badge-pill { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+.progress-summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  /* P4: double, so the summary never reads as a lesson state. */
+  border: 4px double var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-body);
+  color: var(--action-primary);
+  box-sizing: border-box;
+}
+
+/* ---- ActivityList: the current lesson's phases ---- */
+.activity-phases { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.activity-phase {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-height: var(--target-min);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+.activity-phase-title { flex: 1 1 12ch; font: var(--type-body); color: var(--text-primary); }
+.activity-phase[data-state='done'] { border: 2px solid var(--text-primary); background: var(--bg-page); }
+.activity-phase[data-state='next'] { border: 4px solid var(--action-primary); background: var(--action-primary-tint); }
+.activity-phase[data-state='to-do'] { border: 2px dashed var(--border-control); }
+
+/* ---- Cards ---- */
+.progress-card {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  padding: var(--space-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  min-width: 0;
+}
+.progress-card-title { margin: 0; font: var(--type-h2); color: var(--text-primary); }
+.progress-card-text { margin: 0; font: var(--type-body); color: var(--text-primary); }
+.progress-suggestion { color: var(--text-secondary); }
+.progress-card-link { justify-self: start; text-decoration: none; }
+.unit-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+.unit-title { margin: 0; font: var(--type-h2); color: var(--text-primary); }
+.unit-meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.unit-time { font: var(--type-label); color: var(--text-secondary); }
+.unit-goal { margin: 0; font: var(--type-body-lg); color: var(--text-primary); max-width: var(--reading-column); }
+
+/* ---- HubView ---- */
+.hub-view { display: grid; gap: var(--space-5); min-width: 0; }
+.hub-heading { margin: 0; font: var(--type-h1); color: var(--text-primary); }
+.hub-grid { display: grid; gap: var(--space-4); min-width: 0; }
+.hub-side { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+.hub-continue { justify-self: start; text-decoration: none; }
+
+/* ---- Start ---- */
+.start-view { display: grid; gap: var(--space-5); min-width: 0; }
+.start-panel { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+.start-panel h1 { margin: 0; font: var(--type-h1); color: var(--text-primary); }
+.start-panel > .btn { justify-self: start; }
+.start-intro { margin: 0; font: var(--type-body-lg); color: var(--text-primary); max-width: var(--reading-column); }
+.start-points { display: grid; gap: var(--space-2); margin: 0; padding-left: var(--space-5); font: var(--type-body); color: var(--text-primary); }
+.start-side { display: grid; gap: var(--space-4); align-content: start; min-width: 0; }
+.privacy-notice {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-left: 4px solid var(--text-primary);
+  background: var(--bg-page);
+  font: var(--type-body);
+  color: var(--text-primary);
+}
+.reset-link {
+  justify-self: start;
+  min-height: var(--target-min);
+  min-width: var(--target-min);
+  padding: var(--space-2) 0;
+  border: 0;
+  background: none;
+  font: var(--type-body);
+  color: var(--action-primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.reset-link:hover { color: var(--action-primary-hover); }
+
+/* ---- LessonProgress (TopBar progress slot, D117) ---- */
+.lesson-progress { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) var(--space-3); min-width: 0; }
+.lesson-progress-label { margin: 0; font: var(--type-body); color: var(--text-primary); white-space: nowrap; }
+.lesson-progress-track {
+  display: block;
+  flex: 1 1 var(--space-8);
+  min-width: var(--space-8);
+  height: var(--space-2);
+  border: 1px solid var(--text-primary);
+  border-radius: var(--radius-pill);
+  background: var(--bg-surface);
+  overflow: hidden;
+}
+.lesson-progress-fill { display: block; height: 100%; inline-size: calc(var(--progress-share, 0) * 100%); background: var(--text-primary); }
+
+/* ---- LessonMenu: in the page flow on a phone (proposal question 4) ---- */
+.lesson-menu { display: grid; gap: var(--space-2); min-width: 0; }
+.lesson-menu-button { justify-self: start; }
+.lesson-menu-panel {
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  box-shadow: var(--elevation-2);
+  min-width: 0;
+}
+.lesson-menu-panel[hidden] { display: none; }
+.lesson-menu-list { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.lesson-menu-list .progress-item { width: 100%; }
+
+@media (min-width: 768px) {
+  .lesson-menu { position: relative; justify-items: start; }
+  .lesson-menu-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 2;
+    width: max-content;
+    max-width: calc(100vw - 2 * var(--space-5));
+    margin-top: var(--space-2);
+  }
+}
+
+@media (min-width: 1366px) {
+  .progress-map { flex-direction: row; align-items: stretch; }
+  .progress-map-entry { flex: 1 1 0; }
+  .progress-mastery { padding-left: 0; }
+  /* P2: in the row, the symbol sits above the text so the title keeps the column's full width. */
+  .progress-map .progress-item { flex-direction: column; gap: var(--space-1); padding: var(--space-2); }
+  .hub-grid { grid-template-columns: minmax(0, 1fr) calc(var(--space-8) * 7.5); }
+  .start-view { grid-template-columns: minmax(0, 1fr) calc(var(--space-8) * 9); }
+}
