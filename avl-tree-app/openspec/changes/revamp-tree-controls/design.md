@@ -95,7 +95,7 @@ The decisions here follow proposal questions 1 to 11.
 
 The red tests pin these names. The implementer and content-author build to them, and they do not edit the tests.
 - **Caption:** `<p class="replay-caption" role="status" aria-live="polite">`, the next sibling of the tree view. It is the only `role="status"` outside `.tree-view`.
-- **Strip:** the outer group keeps the name "Replay controls" and has exactly two direct `role="group"` children with different names. The navigation group's buttons read Back, Play or Pause, Step, Replay. `.replay-controls` stacks by default, and from `@media (min-width: 768px)` it uses `justify-content: space-between` or `flex-direction: row`.
+- **Strip:** the outer group keeps the name "Replay controls" and has exactly two direct `role="group"` children with different names. The navigation group's buttons read Back, Play or Pause, Step, Replay. `.replay-controls` wraps (`flex-wrap: wrap`) with the navigation group first. (Review C1, 14 Nov 2026: the 768 px side-by-side rule was dropped, because the module page is at most 66ch wide.)
 - **Content keys:** `replayCopy.controls.replay === 'Replay'`, plus `controls.navGroup` and `controls.progressGroup` (distinct strings). The help line contains the play, pause, step and speed labels.
 - **Switcher:** a group whose name starts with "Show", with three checkboxes named Diagram, Text and Pseudocode in that order. The locked box's `<label>` contains the word "main". The label class sets `min-height: var(--target-min)`. The Mode group's name starts with "Mode", with radios named exactly "Watch" and "Do it yourself".
 - **Whole-tree text:** a heading named exactly "The whole tree", inside a `section` or `div` that holds the `describeTree` text. It is not in a `details` element and not live. Its level is one below the heading before it in the page (h3 under a module step's h2, h2 under the Sandbox's h1, h2 when there is none), worked out after render. No fixed level is valid on both pages: h3 breaks axe heading-order on the Sandbox, and h2 adds a second h2 to module steps. (Build, 14 Nov 2026.)
@@ -104,6 +104,11 @@ The red tests pin these names. The implementer and content-author build to them,
 - **Stylesheet:** checkbox and radio states are written with `:has(input:checked)` and `:has(input:disabled)` (or `input:checked` and `input:disabled`). There are no `transition` or `animation` declarations in `replay.css`.
 - **Hint:** the hint button's text contains the number and the word "left" (for example "Hint, 2 left").
 - **Insert listing line 3:** built with `conventionsWording().num` on the out-of-range values (+2 and −2 today).
+
+## Review fixes (14 Nov 2026)
+
+- **C4, focus in the strip:** buttons keep native `disabled`. `StepControls` remembers the last focused button (focus in the strip, cleared when focus leaves it). After each render, if that button is now disabled and focus has not gone elsewhere (the active element is that button or the body), focus moves to the next enabled strip button in DOM order, else the previous. Chosen over `aria-disabled`, which would change the meaning of disabled for every replay button and a dozen existing `toBeDisabled()` checks.
+- **C5, arrows and the tree box:** `ReplayPlayer`'s key handler skips ← and → when the event target is inside `.tree-scroll`. Space and the brackets still work there.
 
 ## Risks / Trade-offs
 

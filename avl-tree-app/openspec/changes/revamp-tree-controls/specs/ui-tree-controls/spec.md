@@ -28,11 +28,15 @@ The replay SHALL show a caption directly below the tree. It SHALL hold the sente
 - **replay navigation**: Back, Play or Pause, Step, Replay;
 - **progress and speed**: "Step p / n", the progress bar and Speed.
 
-The two groups SHALL sit side by side from 768 px and stack, navigation first, at 390 px. Replay SHALL return to position 0 and start playing. It SHALL be disabled at position 0 when not playing and while the replay is held. Learning aids (Show the rule, Hint) SHALL stay in the module control strip and SHALL NOT appear in the replay strip. (D23, FR-VIS-03, FR-VIS-10, screen 1f note 2)
+The strip SHALL wrap to the width it is given, with the navigation group first and no horizontal scroll at 390, 768 or 1366 px (on module pages the replay is at most `--reading-column` wide, so the groups wrap at every width; review C1, assumed). Replay SHALL return to position 0 and start playing. It SHALL be disabled at position 0 when not playing and while the replay is held. Learning aids (Show the rule, Hint) SHALL stay in the module control strip and SHALL NOT appear in the replay strip. (D23, FR-VIS-03, FR-VIS-10, screen 1f note 2)
 
 #### Scenario: Two groups in order (D23)
 - **WHEN** the controls are rendered
 - **THEN** there are two groups with accessible names, the first holding Back, Play, Step and Replay in that order, the second holding the counter, the progress bar and the speed buttons
+
+#### Scenario: Wraps, navigation first (D23, review C1)
+- **WHEN** the replay stylesheet is read
+- **THEN** `.replay-controls` wraps (`flex-wrap: wrap`), and in DOM order the navigation group comes before the progress and speed group
 
 #### Scenario: Replay restarts (FR-VIS-03)
 - **GIVEN** a 9-step trace at position 5, paused, at 1×, with fake timers
@@ -47,6 +51,29 @@ The two groups SHALL sit side by side from 768 px and stack, navigation first, a
 #### Scenario: No learning aids in the replay strip (D23)
 - **WHEN** the replay is rendered inside a module step
 - **THEN** no "Show the rule" or "Hint" button is inside the replay's controls group
+
+### Requirement: Focus is never lost in the strip
+When a control in the replay strip has focus and becomes disabled (Back at position 0, Step at position n or at the end of playback, Replay at position 0 while paused, Play, Step or Replay when the replay is held), focus SHALL move to the next enabled button in the strip, in DOM order, or to the previous enabled one when none follows. Buttons keep the native `disabled` attribute. (WCAG 2.4.3, NFR-02, FR-VIS-03, review C4)
+
+#### Scenario: Back at the start (review C4)
+- **GIVEN** the replay is at position 1 and Back has focus
+- **WHEN** the student presses Back
+- **THEN** the position is 0, Back is disabled, and focus is on Play
+
+#### Scenario: Step at the end (review C4)
+- **GIVEN** the replay is at position n − 1 and Step has focus
+- **WHEN** the student presses Step
+- **THEN** the position is n, Step is disabled, and focus is on Replay
+
+#### Scenario: Playback reaches the end (review C4)
+- **GIVEN** Step has focus and the replay is playing at 1×, with fake timers
+- **WHEN** playback reaches position n
+- **THEN** Step is disabled and focus is on Replay
+
+#### Scenario: Focus elsewhere is left alone (review C4)
+- **GIVEN** focus is on a button outside the replay
+- **WHEN** a replay control becomes disabled
+- **THEN** focus stays on that outside button
 
 ### Requirement: Step timing
 One step SHALL last `replayCopy.baseMs` (1200 ms) at 1×, twice that at 0.5× and half at 2×. "[" and "]" SHALL move one speed slower or faster and SHALL stop at the ends. (D29, FR-VIS-03)
@@ -186,7 +213,7 @@ The caption, `StepControls`, `PseudocodePanel` and `RepresentationSwitcher` SHAL
 #### Scenario: QB4 three widths
 - **GIVEN** the C6 Worked example insert replay with every representation shown
 - **WHEN** it is rendered at 390, 768 and 1366 px wide (Playwright, `npm run test:visual`)
-- **THEN** `document.documentElement.scrollWidth` equals the viewport width at each width, and the strip groups stack at 390 and sit side by side at 768 and 1366
+- **THEN** `document.documentElement.scrollWidth` is at most the viewport width at each width, and the navigation group's top edge is at or above the progress and speed group's top edge (navigation first; the groups may share a row or wrap, review C1)
 
 #### Scenario: QB5 axe
 - **WHEN** the replay is rendered held, at position 0, mid-replay at an imbalance step, and at the end, each with the switcher, and the switcher alone with and without a mode

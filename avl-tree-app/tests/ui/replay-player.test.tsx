@@ -456,3 +456,78 @@ describe('FR-VIS-07 D105 text representation: the whole tree', () => {
     expect(within(treeRegion().closest('.tree-view') as HTMLElement).getByRole('button', { name: /describe tree/i })).toBeTruthy()
   })
 })
+
+// ---- review fixes C4 and C5 (decided 14 Nov 2026) ----
+
+describe('WCAG 2.4.3 review C4: focus is never lost in the strip', () => {
+  it('Back at the start: focus moves to Play', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(1)
+    const back = btn('Back')
+    back.focus()
+    fireEvent.click(back)
+    expect(counter()).toBe('Step 0 / 9')
+    expect(back).toBeDisabled()
+    expect(document.activeElement).toBe(btn('Play'))
+  })
+
+  it('Step at the end: focus moves to Replay', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(8)
+    const step = btn('Step')
+    step.focus()
+    fireEvent.click(step)
+    expect(counter()).toBe('Step 9 / 9')
+    expect(step).toBeDisabled()
+    expect(document.activeElement).toBe(btn('Replay'))
+  })
+
+  it('playback reaching the end: focus moves from Step to Replay', () => {
+    vi.useFakeTimers()
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    stepTimes(7)
+    const step = btn('Step')
+    step.focus()
+    fireEvent.keyDown(step, { key: ' ' })
+    advance(1200 * 2)
+    expect(counter()).toBe('Step 9 / 9')
+    expect(step).toBeDisabled()
+    expect(document.activeElement).toBe(btn('Replay'))
+  })
+
+  it('focus outside the replay is left alone', () => {
+    render(
+      <>
+        <button type="button">Outside</button>
+        <ReplayPlayer operation={INSERT} label="Tree" />
+      </>,
+    )
+    stepTimes(1)
+    const outside = btn('Outside')
+    outside.focus()
+    fireEvent.click(btn('Back'))
+    expect(btn('Back')).toBeDisabled()
+    expect(document.activeElement).toBe(outside)
+  })
+})
+
+describe('FR-VIS-03 review C5: arrows scroll the tree box instead of stepping', () => {
+  it('inside the tree scroll box, arrows do not step and are not prevented; Space still plays', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    const box = treeRegion()
+    expect(box).toHaveClass('tree-scroll')
+    box.focus()
+    expect(fireEvent.keyDown(box, { key: 'ArrowRight' }), 'ArrowRight not prevented').toBe(true)
+    expect(fireEvent.keyDown(box, { key: 'ArrowLeft' }), 'ArrowLeft not prevented').toBe(true)
+    expect(counter()).toBe('Step 0 / 9')
+    fireEvent.keyDown(box, { key: ' ' })
+    expect(btn('Pause')).toBeTruthy()
+  })
+
+  it('on the controls, arrows still step', () => {
+    render(<ReplayPlayer operation={INSERT} label="Tree" />)
+    const play = btn('Play')
+    expect(fireEvent.keyDown(play, { key: 'ArrowRight' })).toBe(false)
+    expect(counter()).toBe('Step 1 / 9')
+  })
+})

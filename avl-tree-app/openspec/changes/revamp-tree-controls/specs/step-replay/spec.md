@@ -7,6 +7,26 @@ Every control SHALL be a native button with a text label (a glyph alone is not a
 - **WHEN** the controls are rendered
 - **THEN** each button has a text accessible name (Back, Play or Pause, Step, Replay, 0.5×, 1×, 2×) and is at least 44 px high and wide, the selected speed has `aria-pressed="true"`, and the player has no axe violations
 
+### Requirement: Controls work by keyboard
+While focus is inside the player, Space SHALL toggle Play and Pause, "[" SHALL choose the next slower speed and "]" the next faster one. Left Arrow SHALL step back and Right Arrow SHALL step forward, except while focus is inside the tree's scroll box (`.tree-scroll`), where the arrows SHALL keep their default behaviour (scrolling a wide tree, D17) and SHALL NOT step. These keys SHALL do nothing when focus is outside the player or when Ctrl, Alt or Meta is held. (FR-VIS-03, NFR-02, WCAG 2.1.4, review C5)
+
+#### Scenario: Keyboard only
+- **GIVEN** focus is on a control inside the player at position 0
+- **WHEN** the student presses Right Arrow twice, Left Arrow once and "]"
+- **THEN** the position is 1 and 2× is selected
+- **AND WHEN** Space is pressed **THEN** playback starts, and Space again pauses it, with one toggle per key press
+
+#### Scenario: Keys are scoped
+- **GIVEN** focus is outside the player
+- **WHEN** Right Arrow or Space is pressed
+- **THEN** the position and playback do not change
+
+#### Scenario: Arrows scroll the tree box (review C5)
+- **GIVEN** focus is on the tree's scroll box at position 0
+- **WHEN** the student presses Right Arrow and Left Arrow
+- **THEN** the position stays 0 and neither key event is default-prevented
+- **AND WHEN** Space is pressed there **THEN** playback starts
+
 ### Requirement: A sentence for each step
 The player SHALL show one sentence for the current position in the caption under the tree. The caption is the player's only polite live region that holds text, and it SHALL update on every position change. Position 0 SHALL say which operation and key are about to run. Each other position SHALL describe step p from its kind and keys. Imbalance and rotation sentences SHALL name the case, using the conventions wording. (FR-VIS-07, D19, D23, wireframe 1f note 4)
 

@@ -102,9 +102,10 @@ describe('QB6 keyboard only: logical tab order', () => {
 
   it('every replay action has a key or a tab stop: Space, arrows and brackets inside the player', () => {
     render(<ReplayPlayer operation={INSERT} label="Tree" />)
-    const tree = screen.getByRole('region', { name: 'Tree' })
-    tree.focus()
-    fireEvent.keyDown(tree, { key: 'ArrowRight' })
+    // Arrows step from the controls; inside the tree's scroll box they scroll instead (review C5).
+    const play = screen.getByRole('button', { name: 'Play' })
+    play.focus()
+    fireEvent.keyDown(play, { key: 'ArrowRight' })
     expect(screen.getByText('Step 1 / 9')).toBeTruthy()
   })
 })

@@ -155,12 +155,16 @@ describe('D23 replay control strip: two named groups', () => {
     expect(within(strip).queryByRole('button', { name: /hint|show the rule|skip/i })).toBeNull()
   })
 
-  it('groups sit side by side from 768 px and stack below it (stylesheet)', () => {
+  // Review C1 (accepted 14 Nov 2026): the module page is at most 66ch wide, so the groups wrap at every
+  // width. The strip wraps, navigation first, with no horizontal scroll (the visual test checks the scroll).
+  it('the strip wraps with the navigation group first (stylesheet and DOM)', () => {
     const css = stripComments(readFileSync('src/ui/replay/replay.css', 'utf8'))
     const base = /\.replay-controls\s*\{[^}]*\}/.exec(css)?.[0] ?? ''
-    expect(base, 'phone first: stacked').toMatch(/flex-direction:\s*column|flex-wrap:\s*wrap/)
-    const wide = /@media\s*\(min-width:\s*768px\)\s*\{([\s\S]*?)\n\}/.exec(css)?.[1] ?? ''
-    expect(wide, 'from 768 px: one row, ends apart').toMatch(/\.replay-controls[^{]*\{[^}]*(justify-content:\s*space-between|flex-direction:\s*row)/)
+    expect(base).toMatch(/flex-wrap:\s*wrap/)
+    render(<StepControls {...props({ position: 3 })} />)
+    const [nav, progress] = sides()
+    expect(nav.compareDocumentPosition(progress) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(within(nav).getByRole('button', { name: 'Back' })).toBeTruthy()
   })
 })
 
