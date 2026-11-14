@@ -14,7 +14,7 @@ import { targetsOf } from '../../src/ui/lesson/questions/builder'
 import { TreeBuilder } from '../../src/ui/lesson/questions/Controls'
 
 // Spec: revamp-tree-editor / tree-editor (D3, D132 to D135; FR-VIS-06, FR-VIS-07, FR-VIS-09, FR-VIS-10,
-// NFR-02, ID 8.3, ID 9.6, LO4).
+// NFR-02, ID 8.3, ID 9.6, LO4). Updated by revamp-tree-controls (D136 to D139): order, aria-disabled, help.
 
 const content = loadContent().content!
 const lessonTasks = ['c2', 'c5', 'c6', 'c7'].flatMap((l) => lessonById(l)!.screens.flatMap((s) => ('task' in s && s.task ? [s.task as Question] : [])))
@@ -111,7 +111,12 @@ describe('tree-editor: select the next key, then place it (D132, D3)', () => {
     forQuestion('chk6-04')
     fireEvent.click(btn('Place 27'))
     fireEvent.click(btn('Empty branch, right of 25'))
-    expect(screen.getByRole('button', { name: /^Place/ })).toBeDisabled()
+    const place = screen.getByRole('button', { name: /^Place/ })
+    expect(place).toHaveAttribute('aria-disabled', 'true')
+    const before = shapeString(lastTree)
+    fireEvent.click(place)
+    expect(slots()).toHaveLength(0)
+    expect(shapeString(lastTree)).toBe(before)
     expect(screen.getByText('Every key is placed.')).toBeInTheDocument()
   })
 })
@@ -256,8 +261,15 @@ describe('tree-editor: undo, reset and delete (ID 8.3, D41)', () => {
 
   it('Undo and Reset are disabled with nothing to undo', () => {
     forQuestion('c2-s01-task')
-    expect(btn('Undo')).toBeDisabled()
-    expect(btn('Reset')).toBeDisabled()
+    expect(btn('Undo')).toHaveAttribute('aria-disabled', 'true')
+    expect(btn('Reset')).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('bar order: Place key, Delete 10, Undo, Reset (chk7-03, D136)', () => {
+    forQuestion('chk7-03')
+    const bar = within(screen.getByRole('toolbar'))
+    const order = ['Place key', 'Delete 10', 'Undo', 'Reset'].map((n) => bar.getByRole('button', { name: n }))
+    expect(bar.getAllByRole('button')).toEqual(order)
   })
 
   it('reset (c2-s01-task)', () => {
@@ -357,10 +369,10 @@ describe('tree-editor: the in-order strip shows before and after (ID 9.6, LO4)',
 })
 
 describe('tree-editor: the editor works on a phone (D135, D3)', () => {
-  it('DOM order: toolbar, tree region, menu, strip, log', () => {
+  it('DOM order: tree region, menu, control bar, strip, log, keyboard help (D136)', () => {
     const { container } = forQuestion('chk5-03')
     fireEvent.click(node(container, 40))
-    const parts = ['[role="toolbar"]', '.tree-scroll', '.editor-menu', '.practice-strip', '.editor-log'].map((s) => container.querySelector(s)!)
+    const parts = ['.tree-scroll', '.editor-menu', '[role="toolbar"]', '.practice-strip', '.editor-log', '.keyboard-help'].map((s) => container.querySelector(s)!)
     for (const p of parts) expect(p).not.toBeNull()
     for (let i = 1; i < parts.length; i++) expect(parts[i - 1].compareDocumentPosition(parts[i]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
@@ -381,11 +393,12 @@ describe('tree-editor: the editor works on a phone (D135, D3)', () => {
     expect(spy).toHaveBeenCalled()
   })
 
-  it('44 px targets for toolbar, menu and slots', () => {
-    const text = css()
+  it('44 px targets for control bar and menu buttons (base Button), and slots', () => {
     expect(existsSync('src/ui/editor/editor.css')).toBe(true)
-    expect(text).toMatch(/\.editor-toolbar[^{]*button[^{]*\{[^}]*min-height:\s*var\(--target-min\)/)
-    expect(text).toMatch(/\.editor-menu[^{]*button[^{]*\{[^}]*min-height:\s*var\(--target-min\)/)
+    expect(readFileSync('src/ui/base/base.css', 'utf8')).toMatch(/\.btn\s*\{[^}]*min-height:\s*var\(--target-min\)/)
+    const r = editor({ start: avl([20, 10, 30]), pending: [25] })
+    fireEvent.click(node(r.container, 20))
+    for (const b of [...within(screen.getByRole('toolbar')).getAllByRole('button'), ...r.container.querySelectorAll('.editor-menu button')]) expect(b).toHaveClass('btn')
   })
 })
 
@@ -397,6 +410,8 @@ describe('tree-editor: the editor is accessible (NFR-02, ID 11)', () => {
     expect(await axe(a.container), 'held').toHaveNoViolations()
     fireEvent.click(node(a.container, 30))
     expect(await axe(a.container), 'menu').toHaveNoViolations()
+    fireEvent.click(btn('Show keyboard shortcuts'))
+    expect(await axe(a.container), 'help open').toHaveNoViolations()
     a.unmount()
     const b = forQuestion('chk6-04', true)
     expect(await axe(b.container), 'locked').toHaveNoViolations()
@@ -404,10 +419,9 @@ describe('tree-editor: the editor is accessible (NFR-02, ID 11)', () => {
 
   it('locked after checking: nothing takes an edit', () => {
     const { start, container } = forQuestion('chk7-03', true)
-    expect(screen.getByRole('button', { name: /^Place/ })).toBeDisabled()
-    expect(btn('Undo')).toBeDisabled()
-    expect(btn('Reset')).toBeDisabled()
-    expect(btn('Delete 10')).toBeDisabled()
+    for (const b of [screen.getByRole('button', { name: /^Place/ }), btn('Undo'), btn('Reset'), btn('Delete 10')]) expect(b).toHaveAttribute('aria-disabled', 'true')
+    fireEvent.click(btn('Delete 10'))
+    expect(node(container, 10)).not.toBeNull()
     fireEvent.click(node(container, 20))
     expect(screen.queryByRole('button', { name: /^Rotate/ })).toBeNull()
     node(container, 20).focus()

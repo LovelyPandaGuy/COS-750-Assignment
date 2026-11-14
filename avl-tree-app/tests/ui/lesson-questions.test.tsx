@@ -137,6 +137,10 @@ describe('lesson-questions: the tree builder (ID 8.3, D3)', () => {
     const slot = btn('Empty branch, right of 25')
     slot.focus()
     fireEvent.keyDown(slot, { key: 'Enter' })
+    // Within the control bar, arrows move between buttons (revamp-tree-controls, D137).
+    btn(/^Place/).focus()
+    fireEvent.keyDown(btn(/^Place/), { key: 'ArrowRight' })
+    expect(document.activeElement).toBe(btn('Undo'))
     for (const [key, dir] of [[30, /rotate right/i], [20, /rotate left/i]] as const) {
       const item = node(builder, key)
       item.focus()

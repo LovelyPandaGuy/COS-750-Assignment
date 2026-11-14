@@ -15,6 +15,7 @@ import type { ActivityList } from '../components/ActivityList'
 import type { ConfirmDialog } from '../components/ConfirmDialog'
 import type { ProgressMap } from '../components/ProgressMap'
 import type { ResumeCard } from '../components/ResumeCard'
+import type { KeyboardHelp } from './controls/KeyboardHelp'
 import type { EditLog } from './editor/EditLog'
 import type { TreeEditorToolbar } from './editor/TreeEditorToolbar'
 import type { InOrderStrip } from './practice/InOrderStrip'
@@ -162,11 +163,8 @@ export interface RepresentationSwitcherProps {
 export interface TaskPromptProps {
   text: string
 }
-/** 1h, 1m: the keys for the tree. */
-export interface KeyboardHelpProps {
-  heading: string
-  keys: readonly { keys: string; action: string }[]
-}
+/** 1h, 1m: the keys for the tree (built: src/ui/controls/, revamp-tree-controls). */
+export type KeyboardHelpProps = ComponentProps<typeof KeyboardHelp>
 /** 1i to 1l: position and attempt markers, with no cross glyph (D27). */
 export interface CheckHeaderProps {
   module: ModuleId
@@ -215,13 +213,13 @@ export interface ExportActionsProps {
 export const BUILT = [
   'ResumeCard', 'ConfirmDialog', 'ProgressMap', 'ActivityList', 'TreeView', 'StepControls', 'PseudocodePanel',
   'StepExplanation', 'RotationMenu', 'InOrderStrip', 'InsertControl', 'RebalanceSwitch', 'TreeStats', 'EventLog',
-  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel', 'TreeEditorToolbar', 'EditLog',
+  'QuestionItem', 'ConfidenceRating', 'FullAnswer', 'LectureQuestionDraft', 'FeedbackPanel', 'TreeEditorToolbar', 'EditLog', 'KeyboardHelp',
 ] as const
 
 export const STUBBED = [
   'StartPanel', 'PrivacyNotice', 'ResetProgressLink', 'DiagnosticStepper',
   'DiagnosticResult', 'RouteRecommendation', 'UnitCard', 'PathModeToggle', 'SandboxCard', 'LectureQuestionsCard',
-  'RepresentationSwitcher', 'TaskPrompt', 'KeyboardHelp', 'CheckHeader', 'GuidedStepThrough',
+  'RepresentationSwitcher', 'TaskPrompt', 'CheckHeader', 'GuidedStepThrough',
   'LiveBalanceReadout', 'OutcomeStatusTable',
   'ConfidenceFlags', 'LectureQuestionsList', 'ExportActions', 'SkillStatusList', 'PredictPrompt', 'PredictionReveal',
   'ScaffoldLadder',

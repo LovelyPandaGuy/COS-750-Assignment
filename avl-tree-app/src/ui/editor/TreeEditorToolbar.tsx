@@ -1,9 +1,14 @@
-// Wireframe 1m TreeEditorToolbar (tree-editor; revamp-tree-editor design 3, D132). Place holds the next key;
-// none of the buttons is primary, so "Check answer" stays the one primary action (D41).
+// Wireframe 1m TreeEditorToolbar (tree-editor "Undo, reset and delete"; D132, D136). Rendered as the shared
+// control bar (tree-controls): Place, Delete, Undo, Reset, in that order, below the tree. None is primary, so
+// "Check answer" stays the one primary action (D41).
+import { controlsCopy } from '../../content/controls'
 import { lessonCopy } from '../../content/lesson'
 import type { Key } from '../../engine/tree'
+import { ControlBar } from '../controls/ControlBar'
+import { ControlButton } from '../controls/ControlButton'
 
 const copy = lessonCopy.questions.builder
+const icons = controlsCopy.icons
 
 export interface TreeEditorToolbarOwnProps {
   /** The next key to place, or null when every key is placed. */
@@ -24,27 +29,17 @@ export interface TreeEditorToolbarOwnProps {
 
 export function TreeEditorToolbar({ nextKey, onInsert, held, canUndo, onUndo, onReset, deleteKey, canDelete, onDelete, formatKey, disabled }: TreeEditorToolbarOwnProps) {
   return (
-    <div role="toolbar" aria-label={copy.toolbarLabel} className="editor-toolbar">
-      <button
-        type="button"
-        className="module-button module-button-secondary"
-        aria-pressed={nextKey === null ? undefined : held}
+    <ControlBar label={copy.toolbarLabel}>
+      <ControlButton
+        icon={icons.place}
+        label={nextKey === null ? copy.placeNone : copy.place(formatKey(nextKey))}
+        pressed={nextKey === null ? undefined : held}
         disabled={disabled || nextKey === null}
         onClick={onInsert}
-      >
-        {nextKey === null ? copy.placeNone : copy.place(formatKey(nextKey))}
-      </button>
-      {deleteKey !== null && (
-        <button type="button" className="module-button module-button-secondary" disabled={disabled || !canDelete} onClick={onDelete}>
-          {copy.remove(formatKey(deleteKey))}
-        </button>
-      )}
-      <button type="button" className="module-button module-button-quiet" aria-keyshortcuts="Control+Z Meta+Z" disabled={disabled || !canUndo} onClick={onUndo}>
-        {copy.undo}
-      </button>
-      <button type="button" className="module-button module-button-quiet" disabled={disabled || !canUndo} onClick={onReset}>
-        {copy.reset}
-      </button>
-    </div>
+      />
+      {deleteKey !== null && <ControlButton icon={icons.remove} label={copy.remove(formatKey(deleteKey))} disabled={disabled || !canDelete} onClick={onDelete} />}
+      <ControlButton variant="quiet" icon={icons.undo} label={copy.undo} shortcut="undo" disabled={disabled || !canUndo} onClick={onUndo} />
+      <ControlButton variant="quiet" icon={icons.reset} label={copy.reset} disabled={disabled || !canUndo} onClick={onReset} />
+    </ControlBar>
   )
 }

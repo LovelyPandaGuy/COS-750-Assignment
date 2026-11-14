@@ -13,7 +13,6 @@ import { SandboxCard } from './SandboxCard'
 import { LectureQuestionsCard } from './LectureQuestionsCard'
 import { RepresentationSwitcher } from './RepresentationSwitcher'
 import { TaskPrompt } from './TaskPrompt'
-import { KeyboardHelp } from './KeyboardHelp'
 import { CheckHeader } from './CheckHeader'
 import { GuidedStepThrough } from './GuidedStepThrough'
 import { LiveBalanceReadout } from './LiveBalanceReadout'
@@ -39,7 +38,6 @@ export const STUBS: Record<StubbedName, ComponentType<never>> = {
   LectureQuestionsCard,
   RepresentationSwitcher,
   TaskPrompt,
-  KeyboardHelp,
   CheckHeader,
   GuidedStepThrough,
   LiveBalanceReadout,
@@ -66,7 +64,6 @@ export {
   LectureQuestionsCard,
   RepresentationSwitcher,
   TaskPrompt,
-  KeyboardHelp,
   CheckHeader,
   GuidedStepThrough,
   LiveBalanceReadout,

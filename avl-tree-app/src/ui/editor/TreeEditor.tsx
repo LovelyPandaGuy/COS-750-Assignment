@@ -1,11 +1,14 @@
-// The tree editor (tree-editor; revamp-tree-editor design 3, 5, 7; D132 to D135). One component for every
-// build-tree and perform-rotation question. Fixed DOM order at every width: toolbar, tree region, rotation
-// menu, in-order strip, edit log, status. The reducer in builder.ts is the only state.
+// The tree editor (tree-editor; revamp-tree-editor design 3, 5, 7; D132 to D135; revamp-tree-controls D136 to
+// D139). One component for every build-tree and perform-rotation question. Fixed DOM order at every width:
+// tree region, rotation menu, control bar, in-order strip, edit log, keyboard help, status. The reducer in builder.ts is the only state.
 import './editor.css'
 import { useEffect, useMemo, useReducer, useRef, type CSSProperties, type KeyboardEvent } from 'react'
+import { controlsCopy } from '../../content/controls'
 import { lessonCopy } from '../../content/lesson'
 import type { Key, Tree } from '../../engine/tree'
 import type { BuilderStep } from '../../live/mark'
+import { KeyboardHelp } from '../controls/KeyboardHelp'
+import { matches, shortcutsFor } from '../controls/shortcuts'
 import { builderReducer, initBuilder, targetsOf, type Target } from '../lesson/questions/builder'
 import { InOrderStrip } from '../practice/InOrderStrip'
 import { RotationMenu } from '../practice/RotationMenu'
@@ -20,6 +23,7 @@ const copy = lessonCopy.questions.builder
 const SCROLL: ScrollIntoViewOptions = { block: 'nearest', inline: 'center' }
 /** Room for the slot row under the deepest level (and its "empty" word). */
 const SLOT_ROW = LEVEL_HEIGHT - 20
+const HELP_KEYS = shortcutsFor('editor').map((s) => ({ keys: s.caps, action: s.action }))
 
 export interface TreeEditorProps {
   start: Tree
@@ -78,16 +82,15 @@ export function TreeEditor({ start, pending, deletable, formatKey: k, label, dis
     if (disabled) return
     const t = e.target as HTMLElement
     if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA') return
-    const key = e.key.toLowerCase()
-    if ((e.ctrlKey || e.metaKey) && key === 'z') {
+    if (matches('undo', e)) {
       e.preventDefault()
       dispatch({ type: 'undo' })
-    } else if (e.key === 'Escape') {
+    } else if (matches('cancel', e)) {
       if (s.held) dispatch({ type: 'letGo' })
       else if (s.selected !== null) dispatch({ type: 'select', key: null })
-    } else if (!e.ctrlKey && !e.metaKey && !e.altKey && s.selected !== null && (key === 'r' || key === 'l')) {
+    } else if (s.selected !== null && (matches('rotateRight', e) || matches('rotateLeft', e))) {
       e.preventDefault()
-      rotate(key === 'r' ? 'right' : 'left')
+      rotate(matches('rotateRight', e) ? 'right' : 'left')
     }
   }
 
@@ -108,20 +111,6 @@ export function TreeEditor({ start, pending, deletable, formatKey: k, label, dis
 
   return (
     <div className="q-builder tree-editor" role="group" aria-label={copy.label} ref={root} onKeyDown={onKeyDown}>
-      <TreeEditorToolbar
-        nextKey={next}
-        held={s.held}
-        onInsert={() => dispatch({ type: s.held ? 'letGo' : 'hold' })}
-        canUndo={s.history.length > 0}
-        onUndo={() => dispatch({ type: 'undo' })}
-        onReset={() => dispatch({ type: 'reset' })}
-        deleteKey={s.deletable}
-        canDelete={s.deletable !== null && isLeaf(s.tree, s.deletable)}
-        onDelete={() => dispatch({ type: 'delete' })}
-        formatKey={k}
-        disabled={disabled}
-      />
-      {next === null && pending.length > 0 && <p className="q-status">{copy.allPlaced}</p>}
       <div className="editor-tree">
         {s.tree === null ? (
           s.held && next !== null ? (
@@ -150,9 +139,24 @@ export function TreeEditor({ start, pending, deletable, formatKey: k, label, dis
           </div>
         )}
       </div>
+      <TreeEditorToolbar
+        nextKey={next}
+        held={s.held}
+        onInsert={() => dispatch({ type: s.held ? 'letGo' : 'hold' })}
+        canUndo={s.history.length > 0}
+        onUndo={() => dispatch({ type: 'undo' })}
+        onReset={() => dispatch({ type: 'reset' })}
+        deleteKey={s.deletable}
+        canDelete={s.deletable !== null && isLeaf(s.tree, s.deletable)}
+        onDelete={() => dispatch({ type: 'delete' })}
+        formatKey={k}
+        disabled={disabled}
+      />
+      {next === null && pending.length > 0 && <p className="q-status">{copy.allPlaced}</p>}
       {s.selected === null && !s.held && !disabled && <p className="q-status">{copy.selectToRotate}</p>}
       <InOrderStrip tree={s.tree} formatKey={k} rotation={s.lastRotation} newKey={placedKey} />
       <EditLog heading={copy.logHeading} entries={entries} emptyText={copy.logEmpty} />
+      <KeyboardHelp heading={controlsCopy.help.heading} keys={HELP_KEYS} />
       <p className="q-status editor-status" role="status">
         {status}
       </p>
