@@ -4,7 +4,7 @@ import { treeViewCopy as copy } from '../../content/treeView'
 import type { FormatKey } from '../../engine/shape'
 
 /** Roles a step gives a node (ID 11.1): newly inserted, being rotated, or n, the first unbalanced node. */
-export type NodeRole = 'new' | 'rotating' | 'n'
+export type NodeRole = 'new' | 'rotating' | 'n' | 'placed'
 export type Roles = Readonly<Partial<Record<Key, NodeRole>>>
 
 /** What each node shows (a lesson screen's `show` list, ID 12.4). */

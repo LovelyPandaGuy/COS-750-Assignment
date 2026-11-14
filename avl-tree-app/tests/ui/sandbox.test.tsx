@@ -7,7 +7,7 @@ import { screenCopy } from '../../src/content/screens'
 import { LEARNER_KEY } from '../../src/state/storage'
 import { backendWith, renderRoutes } from './learner-fixtures'
 
-// Spec: add-sandbox / sandbox. Requirement IDs: FR-VIS-08, FR-VIS-03, FR-VIS-09, FR-MOT-04, LO1, NFR-02, D3, D11, D19.
+// Spec: add-sandbox / sandbox; updated by revamp-sandbox-layout (D137, D140, D141). Requirement IDs: FR-VIS-08, FR-VIS-03, FR-VIS-09, FR-MOT-04, LO1, NFR-02, D3, D11, D19.
 
 const open = () => renderRoutes(backendWith(), '/sandbox')
 const field = () => screen.getByRole('spinbutton', { name: copy.fieldLabel })
@@ -81,7 +81,7 @@ describe('D11 rebalancing switch', () => {
     open()
     turnOff()
     fireEvent.click(button(copy.sorted))
-    const stats = screen.getByRole('region', { name: copy.statsLabel })
+    const stats = screen.getByRole('region', { name: copy.sections.numbers })
     expect(stats).toHaveTextContent(copy.stats.nodes(7, 15))
     expect(stats).toHaveTextContent(copy.stats.height(6))
     expect(stats).toHaveTextContent(copy.stats.shortest(2))
@@ -92,15 +92,22 @@ describe('D11 rebalancing switch', () => {
 })
 
 describe('FR-VIS-08 fifteen-node cap', () => {
-  it('when full, Insert, the sorted shortcut and Random key are disabled, Delete is not', () => {
+  it('when full, Insert, the sorted shortcut and Random key are unavailable (aria-disabled), Delete is not', () => {
     open()
     for (let i = 0; i < 15; i++) fireEvent.click(button(copy.random))
     expect(nodeKeys()).toHaveLength(15)
-    expect(button(copy.insert)).toBeDisabled()
-    expect(button(copy.random)).toBeDisabled()
-    expect(button(copy.sorted)).toBeDisabled()
-    expect(button(copy.delete)).not.toBeDisabled()
+    for (const name of [copy.insert, copy.random, copy.sorted]) expect(button(name)).toHaveAttribute('aria-disabled', 'true')
+    expect(button(copy.delete)).not.toHaveAttribute('aria-disabled')
     expect(screen.getByText(copy.full)).toBeInTheDocument()
+  })
+
+  it('an unavailable Insert does nothing', () => {
+    open()
+    for (let i = 0; i < 15; i++) fireEvent.click(button(copy.random))
+    const free = [...Array(99).keys()].map((i) => i + 1).find((k) => !nodeKeys().includes(k))!
+    fireEvent.change(field(), { target: { value: String(free) } })
+    fireEvent.click(button(copy.insert))
+    expect(nodeKeys()).toHaveLength(15)
   })
 })
 
@@ -152,7 +159,7 @@ describe('NFR-02 nothing stored, accessible', () => {
 
   it('every control uses the 44 px classes', () => {
     open()
-    for (const b of within(screen.getByRole('main')).getAllByRole('button')) expect(b.className, b.textContent ?? '').toMatch(/module-button|sandbox-switch/)
+    for (const b of within(screen.getByRole('main')).getAllByRole('button')) expect(b.className, b.textContent ?? '').toMatch(/\bbtn\b|module-button|sandbox-switch/)
   })
 
   it('axe: empty, chain, full and with the replay open', async () => {
@@ -168,5 +175,7 @@ describe('NFR-02 nothing stored, accessible', () => {
     insertKeys(10, 20, 30)
     fireEvent.click(button(copy.replay))
     expect(await axe(container), 'replay').toHaveNoViolations()
+    fireEvent.click(button('Show keyboard shortcuts'))
+    expect(await axe(container), 'help open').toHaveNoViolations()
   }, 60_000)
 })

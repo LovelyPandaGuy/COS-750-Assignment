@@ -10,6 +10,9 @@
   border-radius: var(--radius-md);
 }
 .tree-scroll svg { display: block; }
+/* A control layer over the drawing (TreeView `layer`): same size, stacked on top, scrolls with it. */
+.tree-scroll:has(.tree-layer) { position: relative; }
+.tree-scroll .tree-layer { position: absolute; inset: 0 auto auto 0; }
 
 .tree-edge { stroke: var(--border-control); stroke-width: 2; fill: none; }
 
@@ -19,12 +22,14 @@
 [data-state='out-of-balance'] { --node-fill: var(--node-unbalanced); --node-text: var(--node-dark-text); --node-ring: var(--node-dark-text); }
 [data-state='rotating'] { --node-fill: var(--node-rotating); --node-text: var(--node-dark-text); --node-ring: var(--node-dark-text); }
 [data-state='new'] { --node-fill: var(--node-new); --node-text: var(--node-dark-text); --node-ring: var(--node-new); }
+[data-state='placed'] { --node-fill: var(--node-new); --node-text: var(--node-dark-text); --node-ring: var(--node-dark-text); }
 
 .tree-hit { fill: transparent; }
 .tree-node-fill { fill: var(--node-fill); }
 .tree-ring { fill: none; stroke: var(--node-ring); stroke-width: 2; }
 [data-ring='dashed'] .tree-ring { stroke-dasharray: 5 4; stroke-width: 4; }
 [data-ring='thick'] .tree-ring { stroke-width: 5; }
+[data-ring='dashed-thick'] .tree-ring { stroke-dasharray: 5 4; stroke-width: 5; }
 
 .tree-key { font: var(--type-body); font-weight: 700; fill: var(--node-text); text-anchor: middle; dominant-baseline: central; }
 .tree-metrics,
@@ -47,7 +52,8 @@
 /* Role tags: filled pills in the role colour (design system 01 D); dark theme uses dark text (04B).
    Roles after the live content (D97): "NEW" and "n", the first unbalanced node (the old z). */
 [data-role] { --role-color: var(--tree-neutral); }
-[data-role='new'] { --role-color: var(--tree-new); }
+[data-role='new'],
+[data-role='placed'] { --role-color: var(--tree-new); }
 [data-role='n'] { --role-color: var(--tree-z); }
 .tree-tag-pill { fill: var(--role-color); }
 .tree-tag { font: var(--type-label); text-anchor: middle; dominant-baseline: central; fill: var(--bg-surface); }

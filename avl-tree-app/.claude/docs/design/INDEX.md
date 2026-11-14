@@ -45,6 +45,8 @@ Frame IDs are the wireframe IDs. Each frame has a spec in `screens/<id>.md` (las
 
 Design-system components beyond the wireframes: Button (primary, secondary, quiet), OutcomeChip, MasteryBadge, ScaffoldPanel, FeedbackPanel (correct, not quite yet, retry cap), ReadinessSummary. Every component is specified with default, hover, focus, selected, disabled and "not quite yet" states.
 
+Built since the import: `TreeEditorToolbar` and `EditLog` (revamp-tree-editor, D132 to D135), `KeyboardHelp` and the shared control bar for tree screens (revamp-tree-controls, D136 to D139). In the app the editor's control bar sits below the tree (D136), unlike frame 1m. The sandbox follows 1n's two columns from 768 px, with its phone order (tree, then controls) built (revamp-sandbox-layout, D140, D141).
+
 ## What must change before the first UI proposal
 
 These are conflicts between the design and the decisions in `.claude/docs/decisions.md`. Fix them in the design, then re-run `/design-import`. Until then the decision log wins: the `spec-writer` builds to the decision and lists the frame difference under "Assumed, not blocking" (D18), not as `[OPEN]`.
@@ -59,7 +61,7 @@ Import 14 Nov 2026: the source files are unchanged since they were added (same b
    - GuidedStepThrough (1k): "Height of 10 (a leaf)? 1" becomes 0.
 2. **Module structure (D1).** The wireframes use units U0 to U5 ("U4 Four cases", "U2 Rotations"). The decision is C1 to C9. Map each U to its C module and rename. This needs the ID content, so I have not guessed the mapping.
 3. **Search and deletion (D4).** Both are in scope and neither appears. Search appears only as a diagnostic question (1c). Add search and deletion to the Explore, Check and Sandbox screens, and add a deletion step to the flow (1a). Frame 1p open question 3 is now answered.
-4. **Phones (D3).** Every frame is 1366×768; 1p mentions only a tablet layout. Tree editing must work by touch on phones. Add phone frames (390 wide) for at least 1f, 1h, 1m and 1n, and a tap-to-select then tap-to-place path alongside dragging.
+4. **Phones (D3).** Every frame is 1366×768; 1p mentions only a tablet layout. Tree editing must work by touch on phones. Add phone frames (390 wide) for at least 1f, 1h, 1m and 1n, and a tap-to-select then tap-to-place path alongside dragging. *Built in code (revamp-tree-editor, D132 to D135): tap-to-select then tap-to-place, the rotation menu below the tree on phones, and the one-column editor. Still to draw: the phone frames themselves, and dragging (not built).*
 5. **Short checks in C4, C5 and C8 (D15).** The wireframes assume a check per unit; confirm each of those modules has its 2 to 3 items.
 6. **Open questions in 1p.** Questions 1, 3 and 4 are settled (D2, D4, D9). Update or remove them so nobody reopens them.
 7. **Start copy (1b, D24).** "A 20–30 minute warm-up", "6 short units" and "Start with a 3-minute warm-up check" become about an hour, nine short modules you can pause, and the C1 readiness check. The copy comes from content.

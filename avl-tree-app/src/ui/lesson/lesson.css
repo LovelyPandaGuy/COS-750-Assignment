@@ -99,8 +99,7 @@
 .q-card,
 .q-check,
 .q-picker,
-.q-builder,
-.q-targets { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.q-builder { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
 .q-stem { font: var(--type-body-lg); font-weight: 700; }
 .q-choices,
 .q-values { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
@@ -126,7 +125,6 @@
 .q-prompt { font: var(--type-body); font-weight: 700; }
 .q-icon { font-weight: 700; }
 .q-feedback:empty { display: none; }
-.q-target { font-weight: 400; }
 .module-button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* C1 and C9 (live-c1-and-c9). */

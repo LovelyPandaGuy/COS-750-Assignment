@@ -1,0 +1,70 @@
+/* Tree controls (revamp-tree-controls design 1, 2; D136, D137, D139). Tokens only. The buttons are the base
+   Button (src/ui/base/base.css): 44 px, variants and the shared focus ring come from there. */
+.control-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.control-icon {
+  font-weight: 700;
+}
+.control-button kbd {
+  font: var(--type-label);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+/* A toggle that is on: the secondary pressed tint, and a dashed border so it is not colour alone. */
+.btn.control-button[aria-pressed='true'],
+.btn.control-button[aria-pressed='true']:hover {
+  --btn-bg: var(--action-primary-tint);
+  --btn-border: var(--action-primary);
+  border-style: dashed;
+}
+
+/* aria-disabled (focusable in the toolbar) looks like the base :disabled, with no hover or pressed change. */
+.btn.control-button[aria-disabled='true'],
+.btn.control-button[aria-disabled='true']:hover,
+.btn.control-button[aria-disabled='true']:active {
+  --btn-bg: var(--disabled-bg);
+  --btn-fg: var(--disabled-text);
+  --btn-border: var(--border-subtle);
+  --btn-line: none;
+  cursor: not-allowed;
+}
+.btn-quiet.control-button[aria-disabled='true'],
+.btn-quiet.control-button[aria-disabled='true']:hover,
+.btn-quiet.control-button[aria-disabled='true']:active {
+  --btn-bg: none;
+  --btn-border: transparent;
+}
+
+/* Keyboard help (design 4). */
+.keyboard-help-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+.keyboard-help-list dt,
+.keyboard-help-list dd {
+  margin: 0;
+  font: var(--type-body);
+}
+.keyboard-help-list kbd {
+  font: var(--type-label);
+  padding: 0 var(--space-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+.keyboard-help-heading {
+  font: var(--type-body);
+  font-weight: 700;
+  margin: 0;
+}
+.keyboard-help-row {
+  display: contents;
+}

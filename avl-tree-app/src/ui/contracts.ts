@@ -143,11 +143,8 @@ export interface RepresentationSwitcherProps {
 export interface TaskPromptProps {
   text: string
 }
-/** 1h, 1m: the keys for the tree. */
-export interface KeyboardHelpProps {
-  heading: string
-  keys: readonly { keys: string; action: string }[]
-}
+/** 1h, 1m: the keys for the tree (built: src/ui/controls/, revamp-tree-controls). */
+export type KeyboardHelpProps = ComponentProps<typeof KeyboardHelp>
 /** 1i to 1l: position and attempt markers, with no cross glyph (D27). */
 export interface CheckHeaderProps {
   module: ModuleId
@@ -163,21 +160,10 @@ export interface GuidedStepThroughProps {
   step: number
   onStep: (step: number) => void
 }
-/** 1m: insert, rotations, undo and reset for the tree being edited. */
-export interface TreeEditorToolbarProps {
-  nextKey: number | null
-  onInsert: () => void
-  canUndo: boolean
-  onUndo: () => void
-  onReset: () => void
-  disabled: boolean
-}
-/** 1m: the student's edits, in order. */
-export interface EditLogProps {
-  heading: string
-  entries: readonly string[]
-  emptyText: string
-}
+/** 1m: place, undo, reset and delete for the tree being edited (built: src/ui/editor/, revamp-tree-editor). */
+export type TreeEditorToolbarProps = ComponentProps<typeof TreeEditorToolbar>
+/** 1m: the student's edits, in order (built: src/ui/editor/, revamp-tree-editor). */
+export type EditLogProps = ComponentProps<typeof EditLog>
 /** 1m: balance factors of the tree as the student edits it, from the engine. */
 export interface LiveBalanceReadoutProps {
   tree: Tree

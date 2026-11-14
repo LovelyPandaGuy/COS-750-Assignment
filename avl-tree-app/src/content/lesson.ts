@@ -88,16 +88,30 @@ export const lessonCopy = {
     nextQuestion: 'Next question',
     builder: {
       label: 'Build the tree',
-      next: (key: string) => `Next key to place: ${key}`,
       allPlaced: 'Every key is placed.',
-      targetsLabel: (key: string) => `Where does ${key} go?`,
-      root: (key: string) => `Put ${key} at the root`,
-      target: (key: string, side: 'left' | 'right', parent: string) => `Put ${key} ${side} of ${parent}`,
+      /** Toolbar (wireframe 1m TreeEditorToolbar; D132). Flagged for the user to read. */
+      toolbarLabel: 'Edit the tree',
+      place: (key: string) => `Place ${key}`,
+      placeNone: 'Place key',
+      held: (key: string) => `Holding ${key}. Choose an empty branch for it.`,
+      letGo: (key: string) => `Let go of ${key}.`,
       remove: (key: string) => `Delete ${key}`,
       undo: 'Undo',
       reset: 'Reset',
       selectToRotate: 'Select a node to rotate it.',
       cannotRotate: (key: string, side: string) => `${key} has no ${side} child to rotate up.`,
+      /** Slots: every empty branch while a key is held (D132). */
+      slotsLabel: (key: string) => `Empty branches for ${key}`,
+      slot: (side: 'left' | 'right', parent: string) => `Empty branch, ${side} of ${parent}`,
+      slotRoot: 'Empty tree, root',
+      slotWord: 'empty',
+      /** Edit log (wireframe 1m note 2; D134). */
+      logHeading: 'Your edits',
+      logEmpty: 'No edits yet',
+      placedRoot: (key: string) => `Placed ${key} at the root`,
+      placedChild: (key: string, side: 'left' | 'right', parent: string) => `Placed ${key} as the ${side} child of ${parent}`,
+      rotated: (dir: 'left' | 'right', about: string) => `Rotated ${dir} at ${about}`,
+      deleted: (key: string) => `Deleted ${key}`,
     },
     guided: {
       legend: 'Your turn: which node is n, and which case is this?',
@@ -144,14 +158,17 @@ export const lessonCopy = {
   /** The rotation menu and the in-order strip (wording from D50, unchanged). */
   practice: {
     menuName: (key: string) => `Rotate at node ${key}`,
-    rotateRight: (key: string) => `Rotate right at ${key} (R)`,
-    rotateLeft: (key: string) => `Rotate left at ${key} (L)`,
-    cancel: 'Cancel (Esc)',
-    iconRight: '↻',
-    iconLeft: '↺',
+    rotateRight: (key: string) => `Rotate right at ${key}`,
+    rotateLeft: (key: string) => `Rotate left at ${key}`,
+    cancel: 'Cancel',
     stripLabel: 'In-order sequence',
     stripTitle: 'In-order:',
     stripNote: 'stays identical after any rotation',
+    /** Before and after a rotation (ID 9.6; flagged for the user to read). */
+    stripBefore: 'In-order before',
+    stripAfter: 'In-order after',
+    stripSame: 'Same order: a rotation keeps the keys in order',
+    stripNew: 'new',
   },
   problems: {
     heading: 'Content problem',

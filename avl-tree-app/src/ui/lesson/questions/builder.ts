@@ -1,7 +1,9 @@
-// The tree builder's state (lesson-questions "The tree builder"; design 4, D110). Pure: the UI only
-// dispatches. Every empty branch is a target, so a wrong placement is drawn and then marked.
+// The tree editor's state (tree-editor; revamp-tree-editor design 1, D132). Pure: the UI only dispatches.
+// A key is held, then placed on an empty branch. Every empty branch is a target, so a wrong placement is
+// drawn and then marked.
 import type { BuilderStep } from '../../../live/mark'
 import { rotateAt } from '../../../engine/rotations'
+import { inOrderKeys } from '../../../engine/shape'
 import { makeNode, replaceAt, subtreeAt, type Key, type Tree } from '../../../engine/tree'
 
 export interface Target {
@@ -20,12 +22,18 @@ export interface BuilderState extends Snapshot {
   start: Snapshot
   history: Snapshot[]
   selected: Key | null
+  /** The next key is held: its slots are drawn and a slot places it (D132). */
+  held: boolean
+  /** The in-order sequence before and after the last edit, when that edit was a rotation (ID 9.6). */
+  lastRotation: { before: Key[]; after: Key[] } | null
   /** The last refusal, for the message line (a rotation with no child to lift). */
   refused: { key: Key; side: 'left' | 'right' } | null
 }
 
 export type BuilderAction =
   | { type: 'place'; target: Target }
+  | { type: 'hold' }
+  | { type: 'letGo' }
   | { type: 'select'; key: Key | null }
   | { type: 'rotate'; dir: 'left' | 'right' }
   | { type: 'delete' }
@@ -34,7 +42,7 @@ export type BuilderAction =
 
 export function initBuilder(tree: Tree, pending: readonly Key[], deletable: Key | null): BuilderState {
   const start: Snapshot = { tree, pending: [...pending], deletable, log: [] }
-  return { ...start, start, history: [], selected: null, refused: null }
+  return { ...start, start, history: [], selected: null, held: false, lastRotation: null, refused: null }
 }
 
 /** Every empty branch of the tree, in-order; the empty tree has one target, the root. */
@@ -75,7 +83,7 @@ export function builderReducer(s: BuilderState, a: BuilderAction): BuilderState 
   switch (a.type) {
     case 'place': {
       const key = s.pending[0]
-      if (key === undefined) return s
+      if (key === undefined || !s.held) return s
       return {
         ...s,
         history: [...s.history, snapshot(s)],
@@ -83,30 +91,44 @@ export function builderReducer(s: BuilderState, a: BuilderAction): BuilderState 
         pending: s.pending.slice(1),
         log: [...s.log, { type: 'place', key, parent: a.target.parent, side: a.target.side }],
         selected: null,
+        held: false,
+        lastRotation: null,
         refused: null,
       }
     }
+    case 'hold':
+      return s.pending.length === 0 ? s : { ...s, held: true, selected: null, refused: null }
+    case 'letGo':
+      return { ...s, held: false }
     case 'select':
-      return { ...s, selected: a.key, refused: null }
+      return { ...s, selected: a.key, held: a.key === null ? s.held : false, refused: null }
     case 'rotate': {
       if (s.selected === null) return s
       const r = rotateAt(s.tree, s.selected, a.dir)
       if (!r.ok) return { ...s, refused: { key: s.selected, side: a.dir === 'left' ? 'right' : 'left' } }
-      return { ...s, history: [...s.history, snapshot(s)], tree: r.tree, log: [...s.log, { type: 'rotate', about: s.selected, dir: a.dir }], selected: null, refused: null }
+      return {
+        ...s,
+        history: [...s.history, snapshot(s)],
+        tree: r.tree,
+        log: [...s.log, { type: 'rotate', about: s.selected, dir: a.dir }],
+        selected: null,
+        lastRotation: { before: inOrderKeys(s.tree), after: inOrderKeys(r.tree) },
+        refused: null,
+      }
     }
     case 'delete': {
       const key = s.deletable
       if (key === null) return s
       const node = subtreeAt(s.tree, key)
       if (node === null || node.left !== null || node.right !== null) return s
-      return { ...s, history: [...s.history, snapshot(s)], tree: replaceAt(s.tree, key, () => null), deletable: null, log: [...s.log, { type: 'delete', key }], selected: null }
+      return { ...s, history: [...s.history, snapshot(s)], tree: replaceAt(s.tree, key, () => null), deletable: null, log: [...s.log, { type: 'delete', key }], selected: null, held: false, lastRotation: null }
     }
     case 'undo': {
       const prev = s.history.at(-1)
       if (prev === undefined) return s
-      return { ...s, ...prev, history: s.history.slice(0, -1), selected: null, refused: null }
+      return { ...s, ...prev, history: s.history.slice(0, -1), selected: null, held: false, lastRotation: null, refused: null }
     }
     case 'reset':
-      return { ...s, ...s.start, history: [], selected: null, refused: null }
+      return { ...s, ...s.start, history: [], selected: null, held: false, lastRotation: null, refused: null }
   }
 }

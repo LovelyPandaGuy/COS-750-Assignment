@@ -1,18 +1,15 @@
 // One control per question type (lesson-questions "One component per question type"; ID 9.5).
 // Controls are controlled: the question card holds the draft and builds the response.
-import { useId, useReducer, useEffect } from 'react'
+import { useId } from 'react'
 import { CONVENTIONS } from '../../../engine/conventions'
 import type { FormatKey } from '../../../engine/shape'
 import type { Key, Tree } from '../../../engine/tree'
-import type { BuilderStep } from '../../../live/mark'
 import type { Option, ShowItem } from '../../../live/types'
 import { lessonCopy } from '../../../content/lesson'
 import { PseudocodePanel } from '../../replay/PseudocodePanel'
 import { pseudocode } from '../../../content/pseudocode'
-import { RotationMenu } from '../../practice/RotationMenu'
-import { InOrderStrip } from '../../practice/InOrderStrip'
+import { TreeEditor, type TreeEditorProps } from '../../editor/TreeEditor'
 import { TreeView } from '../../tree/TreeView'
-import { builderReducer, initBuilder, targetsOf } from './builder'
 
 const copy = lessonCopy.questions
 const labels = CONVENTIONS.labels as unknown as { found: string; notFound: string; none: string; confidence: { sure: string; unsure: string } }
@@ -198,73 +195,7 @@ export function TracePicker({
   )
 }
 
-/** Place keys by branch, rotate, delete, undo and reset (perform-rotation, build-tree; design 4). */
-export function TreeBuilder({
-  start,
-  pending,
-  deletable,
-  formatKey,
-  label,
-  disabled,
-  onChange,
-}: {
-  start: Tree
-  pending: readonly Key[]
-  deletable: Key | null
-  formatKey: FormatKey
-  label: string
-  disabled: boolean
-  onChange: (tree: Tree, log: BuilderStep[], complete: boolean) => void
-}) {
-  const [s, dispatch] = useReducer(builderReducer, undefined, () => initBuilder(start, pending, deletable))
-  const b = copy.builder
-  const next = s.pending[0]
-  const lastPlaced = [...s.log].reverse().find((x) => x.type === 'place')
-  useEffect(() => onChange(s.tree, s.log, s.pending.length === 0), [s.tree, s.log, s.pending, onChange])
-  const k = formatKey
-  return (
-    <div className="q-builder" role="group" aria-label={b.label}>
-      <TreeView
-        tree={s.tree}
-        formatKey={k}
-        label={label}
-        interactive
-        selectedKey={s.selected}
-        roles={lastPlaced?.type === 'place' ? { [lastPlaced.key]: 'new' } : undefined}
-        onSelect={(key) => !disabled && dispatch({ type: 'select', key })}
-      />
-      {next !== undefined ? (
-        <div role="group" aria-label={b.targetsLabel(k(next))} className="q-targets">
-          <p className="q-status">{b.next(k(next))}</p>
-          <div className="q-row">
-            {targetsOf(s.tree).map((t, i) => (
-              <button key={i} type="button" className="module-button module-button-secondary q-target" disabled={disabled} onClick={() => dispatch({ type: 'place', target: t })}>
-                {t.parent === null ? b.root(k(next)) : b.target(k(next), t.side!, k(t.parent))}
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : (
-        pending.length > 0 && <p className="q-status">{b.allPlaced}</p>
-      )}
-      <p className="q-status" aria-live="polite">
-        {s.refused !== null ? b.cannotRotate(k(s.refused.key), s.refused.side) : s.selected === null ? b.selectToRotate : ''}
-      </p>
-      {s.selected !== null && !disabled && <RotationMenu node={s.selected} onRotate={(dir) => dispatch({ type: 'rotate', dir })} onCancel={() => dispatch({ type: 'select', key: null })} />}
-      <div className="q-row">
-        {s.deletable !== null && (
-          <button type="button" className="module-button module-button-secondary" disabled={disabled} onClick={() => dispatch({ type: 'delete' })}>
-            {b.remove(k(s.deletable))}
-          </button>
-        )}
-        <button type="button" className="module-button module-button-quiet" disabled={disabled || s.history.length === 0} onClick={() => dispatch({ type: 'undo' })}>
-          {b.undo}
-        </button>
-        <button type="button" className="module-button module-button-quiet" disabled={disabled || s.history.length === 0} onClick={() => dispatch({ type: 'reset' })}>
-          {b.reset}
-        </button>
-      </div>
-      <InOrderStrip tree={s.tree} formatKey={k} />
-    </div>
-  )
+/** Build-tree and perform-rotation questions are answered in the tree editor (revamp-tree-editor, D132). */
+export function TreeBuilder(props: TreeEditorProps) {
+  return <TreeEditor {...props} />
 }

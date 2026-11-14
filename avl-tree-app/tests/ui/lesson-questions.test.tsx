@@ -96,12 +96,26 @@ describe('lesson-questions: values are typed as the ID writes them', () => {
 })
 
 describe('lesson-questions: the tree builder (ID 8.3, D3)', () => {
-  it('place a key by its branch', () => {
+  it('place a key by its branch (revamp-tree-editor, D132)', () => {
     openAt('c2', 'c2-s01')
-    expect(screen.getByText('Next key to place: 10')).toBeInTheDocument()
-    fireEvent.click(btn('Put 10 at the root'))
-    expect(btn('Put 20 left of 10')).toBeInTheDocument()
-    expect(btn('Put 20 right of 10')).toBeInTheDocument()
+    fireEvent.click(btn('Place 10'))
+    expect(screen.getAllByRole('button', { name: /^Empty (branch|tree)/ })).toHaveLength(1)
+    fireEvent.click(btn('Empty tree, root'))
+    fireEvent.click(btn('Place 20'))
+    expect(btn('Empty branch, left of 10')).toBeInTheDocument()
+    expect(btn('Empty branch, right of 10')).toBeInTheDocument()
+  })
+
+  it('no target button list (revamp-tree-editor)', () => {
+    openAt('c2', 'c2-s01')
+    expect(screen.queryAllByRole('button', { name: /^Put / })).toHaveLength(0)
+  })
+
+  it('one primary action in the question: Check answer (D41)', () => {
+    const r = openAt('c6', 'c6-s10', [right('chk6-01'), right('chk6-03'), right('chk6-02')])
+    const primary = r.container.querySelector('.q-card')!.querySelectorAll('.module-button-primary')
+    expect(primary).toHaveLength(1)
+    expect(primary[0]).toHaveTextContent(q.checkAnswer)
   })
 
   it('rotate and undo', () => {
@@ -109,7 +123,7 @@ describe('lesson-questions: the tree builder (ID 8.3, D3)', () => {
     const describe = () => r.container.querySelector('.q-builder .tree-description')!.textContent
     const before = describe()
     fireEvent.click(node(r.container.querySelector('.q-builder')!, 40))
-    fireEvent.click(btn(/rotate right/i))
+    fireEvent.click(btn('Rotate right at 40'))
     expect(describe()).not.toBe(before)
     fireEvent.click(btn('Undo'))
     expect(describe()).toBe(before)
@@ -118,8 +132,15 @@ describe('lesson-questions: the tree builder (ID 8.3, D3)', () => {
   it('keyboard: place, select by Enter, rotate, check (chk6-04)', () => {
     const r = openAt('c6', 'c6-s10', [right('chk6-01'), right('chk6-03'), right('chk6-02')])
     const builder = r.container.querySelector('.q-builder')!
-    btn('Put 27 right of 25').focus()
-    fireEvent.click(btn('Put 27 right of 25'))
+    btn('Place 27').focus()
+    fireEvent.click(btn('Place 27'))
+    const slot = btn('Empty branch, right of 25')
+    slot.focus()
+    fireEvent.keyDown(slot, { key: 'Enter' })
+    // Within the control bar, arrows move between buttons (revamp-tree-controls, D137).
+    btn(/^Place/).focus()
+    fireEvent.keyDown(btn(/^Place/), { key: 'ArrowRight' })
+    expect(document.activeElement).toBe(btn('Undo'))
     for (const [key, dir] of [[30, /rotate right/i], [20, /rotate left/i]] as const) {
       const item = node(builder, key)
       item.focus()
@@ -332,7 +353,8 @@ describe('check-feedback (ID 10.1)', () => {
 
   it('tree divergence: the missed rotation is explained', () => {
     openAt('c6', 'c6-s10', [...earlierC6, right('chk6-02')])
-    fireEvent.click(btn('Put 27 right of 25'))
+    fireEvent.click(btn('Place 27'))
+    fireEvent.click(btn('Empty branch, right of 25'))
     sure()
     check()
     expect(feedback()).toHaveTextContent(/Not quite\..*rotat/i)

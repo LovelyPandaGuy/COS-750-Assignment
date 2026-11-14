@@ -12,7 +12,7 @@ export type { NodeRole }
 export type { ShowItem }
 
 /** The ID 11.1 node states; neutral when the balance factor is not shown. */
-export type NodeState = 'balanced' | 'out-of-balance' | 'rotating' | 'new' | 'neutral'
+export type NodeState = 'balanced' | 'out-of-balance' | 'rotating' | 'new' | 'placed' | 'neutral'
 
 /** What an overlay receives: the positions as drawn in this frame, and the empty child slots. */
 export interface DrawnLayout {
@@ -51,14 +51,23 @@ export interface TreeViewProps {
   announce?: string
   /** Extension point (editing, menus): drawn inside the SVG above the nodes, from the drawn layout. */
   overlay?: (layout: DrawnLayout) => ReactNode
+  /** Extra room below the deepest level, for a layer drawn there (the tree editor's empty-branch slots). */
+  extraHeight?: number
+  /**
+   * Controls drawn over the tree in their own SVG layer, the same size as the drawing: buttons cannot sit
+   * inside role="tree" (axe aria-required-children). Used by the tree editor's slots (revamp-tree-editor).
+   */
+  layer?: { label: string; render: (layout: DrawnLayout) => ReactNode }
 }
 
 const R = NODE_DIAMETER / 2
 /** Ring style per state: the non-colour backup of ID 11.1 (unbalanced: thick dashed; being rotated: bold). */
-const RING: Record<NodeState, 'solid' | 'dashed' | 'thick'> = {
+const RING: Record<NodeState, 'solid' | 'dashed' | 'thick' | 'dashed-thick'> = {
   neutral: 'solid',
   balanced: 'solid',
   new: 'solid',
+  /** Placed by the student in the tree editor: dashed and thick (wireframe 1m). */
+  placed: 'dashed-thick',
   'out-of-balance': 'dashed',
   rotating: 'thick',
 }
@@ -93,7 +102,10 @@ export function TreeView({
   transitionMs = TREE_TRANSITION_MS,
   announce,
   overlay,
+  extraHeight,
+  layer,
 }: TreeViewProps) {
+  const below = extraHeight ?? 0
   const descId = useId()
   const [open, setOpen] = useState(false)
   const [focusKey, setFocusKey] = useState<Key | null>(null)
@@ -182,8 +194,8 @@ export function TreeView({
           aria-label={label}
           aria-describedby={descId}
           width={layout.width}
-          height={layout.height}
-          viewBox={`0 0 ${layout.width} ${layout.height}`}
+          height={layout.height + below}
+          viewBox={`0 0 ${layout.width} ${layout.height + below}`}
         >
           <g aria-hidden="true">
             {layout.nodes.map((n) => {
@@ -194,7 +206,7 @@ export function TreeView({
           {layout.nodes.map((n) => {
             const part = partOf.get(n.key)!
             const role = part.role
-            const state: NodeState = part.hidden ? 'neutral' : role === 'new' ? 'new' : role === 'rotating' ? 'rotating' : part.unbalanced ? 'out-of-balance' : 'balanced'
+            const state: NodeState = part.hidden ? 'neutral' : role === 'new' ? 'new' : role === 'placed' ? 'placed' : role === 'rotating' ? 'rotating' : part.unbalanced ? 'out-of-balance' : 'balanced'
             const tag = role === null ? undefined : copy.roleTag[role]
             const selected = (interactive && (n.key === selectedKey || (selectedKeys?.includes(n.key) ?? false))) || n.key === highlightKey
             return (
@@ -257,6 +269,18 @@ export function TreeView({
           })}
           {overlay?.({ nodes: layout.nodes, emptySlots: emptySlots(layout), width: layout.width, height: layout.height })}
         </svg>
+        {layer !== undefined && (
+          <svg
+            className="tree-layer"
+            role="group"
+            aria-label={layer.label}
+            width={layout.width}
+            height={layout.height + below}
+            viewBox={`0 0 ${layout.width} ${layout.height + below}`}
+          >
+            {layer.render({ nodes: layout.nodes, emptySlots: emptySlots(layout), width: layout.width, height: layout.height })}
+          </svg>
+        )}
       </div>
       <button type="button" className="tree-describe-button" aria-expanded={open} aria-controls={descId} onClick={() => setOpen((o) => !o)}>
         {copy.describeButton}

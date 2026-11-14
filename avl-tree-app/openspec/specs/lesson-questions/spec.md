@@ -39,11 +39,11 @@ A number field SHALL accept whole numbers with an optional sign, written with a 
 - **THEN** a prompt asks for a whole number and no attempt is stored
 
 ### Requirement: The tree builder
-A `build-tree` or `perform-rotation` question SHALL start from its tree and offer, for each key still to insert, the empty branches where it could go as targets; a selected node can be rotated left or right with the rotation menu, and a delete operation offers Delete for its key. Undo, Reset and the in-order sequence SHALL always be shown, and every action SHALL work by touch, pointer and keyboard. The answer is the tree on screen. (ID 8.3, D3)
+A `build-tree` or `perform-rotation` question SHALL start from its tree and be answered in the tree editor (`tree-editor`): the keys still to insert are placed one at a time by selecting the next key and then an empty branch on the tree; a selected node can be rotated left or right with the rotation menu, and a delete operation offers Delete for its key. Undo, Reset, the edit log and the in-order sequence SHALL always be shown, and every action SHALL work by touch, pointer and keyboard. The answer is the tree on screen. (ID 8.3, D3, D132)
 
 #### Scenario: Place a key by its branch
 - **WHEN** `c2-s01-task` is shown
-- **THEN** 10 is offered as the first key with one target (the empty tree), and after placing it, 20 is offered with two targets (left and right of 10)
+- **THEN** "Place 10" is offered; once it is held there is one slot (the empty tree), and after placing 10, "Place 20" is offered and holding it shows two slots (left and right of 10)
 
 #### Scenario: Rotate and undo
 - **GIVEN** `chk5-03` after 35 is placed
@@ -52,7 +52,11 @@ A `build-tree` or `perform-rotation` question SHALL start from its tree and offe
 
 #### Scenario: Keyboard
 - **WHEN** `chk6-04` is answered with the keyboard only
-- **THEN** every target, the rotation menu, Undo, Reset and Check answer can be reached and used
+- **THEN** Place, every slot, the rotation menu, Undo, Reset and Check answer can be reached and used
+
+#### Scenario: No target button list
+- **WHEN** a build-tree question is shown with a key still to place
+- **THEN** there are no "Put <key> left of <node>" buttons under the tree
 
 ### Requirement: The engine marks every answer
 Every answer SHALL be marked against the engine's result for the question's tree and operation, never against a value typed in the content: the correct option, the engine's heights and balance factors, its node set, its search path with found or not found, or its final tree compared by keys and shape. A compound `enter-values` answer is right only when every part is right. (ID 12.2, D95)

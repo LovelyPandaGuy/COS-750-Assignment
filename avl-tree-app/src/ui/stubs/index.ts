@@ -7,11 +7,8 @@ import { RouteRecommendation } from './RouteRecommendation'
 import { PathModeToggle } from './PathModeToggle'
 import { RepresentationSwitcher } from './RepresentationSwitcher'
 import { TaskPrompt } from './TaskPrompt'
-import { KeyboardHelp } from './KeyboardHelp'
 import { CheckHeader } from './CheckHeader'
 import { GuidedStepThrough } from './GuidedStepThrough'
-import { TreeEditorToolbar } from './TreeEditorToolbar'
-import { EditLog } from './EditLog'
 import { LiveBalanceReadout } from './LiveBalanceReadout'
 import { SkillStatusList } from './SkillStatusList'
 import { PredictPrompt } from './PredictPrompt'
@@ -25,11 +22,8 @@ export const STUBS: Record<StubbedName, ComponentType<never>> = {
   PathModeToggle,
   RepresentationSwitcher,
   TaskPrompt,
-  KeyboardHelp,
   CheckHeader,
   GuidedStepThrough,
-  TreeEditorToolbar,
-  EditLog,
   LiveBalanceReadout,
   SkillStatusList,
   PredictPrompt,
@@ -44,11 +38,8 @@ export {
   PathModeToggle,
   RepresentationSwitcher,
   TaskPrompt,
-  KeyboardHelp,
   CheckHeader,
   GuidedStepThrough,
-  TreeEditorToolbar,
-  EditLog,
   LiveBalanceReadout,
   SkillStatusList,
   PredictPrompt,
