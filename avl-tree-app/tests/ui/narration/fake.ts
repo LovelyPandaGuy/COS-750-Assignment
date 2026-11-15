@@ -13,9 +13,18 @@ export interface FakeEngine extends SpeechEngine {
   finish(): void
   /** Changes the voice list and fires voiceschanged. */
   setVoices(v: Voice[]): void
+  /** Changes the voice list without firing voiceschanged, as some browsers do (fix-narration-late-voices). */
+  setVoicesSilently(v: Voice[]): void
+  /** How many times the voice list has been read. */
+  reads: number
 }
 
-export function fakeEngine(initial: Voice[] = [LOCAL_EN]): FakeEngine {
+export interface FakeEngineOptions {
+  /** The first read returns no voices, as Chrome's first getVoices() does while it loads them. */
+  emptyFirstRead?: boolean
+}
+
+export function fakeEngine(initial: Voice[] = [LOCAL_EN], opts: FakeEngineOptions = {}): FakeEngine {
   let list = initial
   let done: (() => void) | null = null
   const listeners = new Set<() => void>()
@@ -23,7 +32,8 @@ export function fakeEngine(initial: Voice[] = [LOCAL_EN]): FakeEngine {
     spoken: [],
     voicesUsed: [],
     calls: { pause: 0, resume: 0, cancel: 0 },
-    voices: () => list,
+    reads: 0,
+    voices: () => (e.reads++ === 0 && opts.emptyFirstRead ? [] : list),
     onVoicesChanged(cb) {
       listeners.add(cb)
       return () => listeners.delete(cb)
@@ -47,6 +57,9 @@ export function fakeEngine(initial: Voice[] = [LOCAL_EN]): FakeEngine {
     setVoices(v) {
       list = v
       listeners.forEach((l) => l())
+    },
+    setVoicesSilently(v) {
+      list = v
     },
   }
   return e

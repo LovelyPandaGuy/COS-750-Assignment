@@ -2,7 +2,7 @@
 // it is doing, and the actions. Components outside the provider get null and show nothing.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { collectNarration } from './collect'
-import { pickVoice, splitParts, type SpeechEngine, type Voice } from './engine'
+import { VOICE_RECHECK, pickVoice, splitParts, type SpeechEngine, type Voice } from './engine'
 
 export type NarrationState = 'idle' | 'speaking' | 'paused'
 
@@ -30,8 +30,34 @@ export function NarrationProvider({ engine, on, initialState = 'idle', children 
   // Each read has a number, so a late "done" from cancelled speech changes nothing.
   const generation = useRef(0)
 
-  // The engine is fixed for the app's life; voices that load late are picked up here.
-  useEffect(() => engine?.onVoicesChanged(() => setVoice(pickVoice(engine.voices()))), [engine])
+  // The engine is fixed for the app's life; voices that load late are picked up here
+  // (fix-narration-late-voices). Chrome's first read is empty and voiceschanged fires once, so the list
+  // is read again as soon as we listen, then re-checked for a short window while no voice is found (D174).
+  useEffect(() => {
+    if (!engine) return
+    let timer: ReturnType<typeof setInterval> | null = null
+    const stopTimer = () => {
+      if (timer !== null) clearInterval(timer)
+      timer = null
+    }
+    const refresh = () => {
+      const next = pickVoice(engine.voices())
+      if (next !== null) stopTimer()
+      setVoice((prev) => (prev !== null && next !== null && prev.name === next.name && prev.lang === next.lang ? prev : next))
+      return next
+    }
+    const unsubscribe = engine.onVoicesChanged(refresh)
+    if (refresh() === null) {
+      const started = Date.now()
+      timer = setInterval(() => {
+        if (refresh() === null && Date.now() - started >= VOICE_RECHECK.windowMs) stopTimer()
+      }, VOICE_RECHECK.intervalMs)
+    }
+    return () => {
+      stopTimer()
+      unsubscribe()
+    }
+  }, [engine])
 
   const enabled = on && voice !== null
 
