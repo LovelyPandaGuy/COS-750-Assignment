@@ -34,7 +34,7 @@
     "rdy-08": "combined",
     "rdy-09": "combined"
   },
-  "readyRule": "An objective is Ready when its question is answered correctly, either the first time or in its return form. The combined build question (rdy-08) also counts towards LO5, and the combined search (rdy-09) also counts towards LO3. If either combined question is missed, that objective shows Revise. LO7 is optional and never blocks the overall result.",
+  "readyRule": "An objective is Ready when its question is answered correctly, first time or in its return form. The combined build question (rdy-08) also counts towards LO5 and the combined search (rdy-09) towards LO3: if either is missed, that objective shows Revise. LO7 is optional and never blocks the overall result.",
   "questions": [
     {
       "id": "rdy-01",
@@ -50,22 +50,22 @@
       "level": "understand",
       "concept": "lopsided-bst",
       "stem": "Keys arrive in sorted order. How do a plain BST and an AVL tree compare for search?",
-      "hint": "This question checks whether you can link the insertion order to the height of the tree and the cost of a search. A search needs at most one comparison for each level.",
+      "hint": "This checks that you can link insertion order to tree height and search cost: a search needs at most one comparison per level.",
       "options": [
         {
           "id": "a",
-          "text": "The plain BST becomes a chain with O(n) search. The AVL tree is rebalanced after each insertion, so its height and its search cost stay O(log n).",
-          "explanation": "Sorted input is the worst case for a plain BST, and the AVL rule is designed to prevent it."
+          "text": "Plain BST: a chain with O(n) search. AVL tree: rebalanced after each insertion, so its height and its search stay O(log n)",
+          "explanation": "Right."
         },
         {
           "id": "b",
-          "text": "Both give O(log n) search, because both are binary search trees.",
+          "text": "Both give O(log n) search, because both are binary search trees",
           "misconceptionId": "misc-bst-always-balanced",
-          "explanation": "A plain BST has no balance guarantee, and sorted input makes it a chain."
+          "explanation": "A plain BST has no balance guarantee: sorted input makes it a chain."
         },
         {
           "id": "c",
-          "text": "Both become chains, because sorted input always produces a chain.",
+          "text": "Both become chains, because sorted input always produces a chain",
           "misconceptionId": "misc-avl-can-chain",
           "explanation": "The AVL tree rotates as keys arrive, so it never becomes a chain."
         }
@@ -86,24 +86,24 @@
       "level": "understand",
       "concept": "lopsided-bst",
       "stem": "A plain BST with 1,000 keys may need 1,000 comparisons for one search. An AVL tree with the same keys needs at most 14. Why?",
-      "hint": "This question checks whether you can explain what an AVL tree guarantees. Rebalancing keeps the height short, so the search path stays short too.",
+      "hint": "This checks that you can explain what an AVL tree guarantees: rebalancing keeps the height, and so the search path, short.",
       "options": [
         {
           "id": "a",
-          "text": "The insertion order can make a plain BST a chain of 1,000 levels. The AVL rule keeps the height at most 13, so a search needs at most 14 comparisons.",
-          "explanation": "The AVL rule limits the height, and the height limits the number of comparisons."
+          "text": "Insertion order can make a plain BST a chain of 1,000 levels; the AVL rule keeps the height at most 13, so a search needs at most 14 comparisons",
+          "explanation": "Right."
         },
         {
           "id": "b",
-          "text": "The AVL tree uses balance factors during the search to skip levels.",
+          "text": "The AVL tree uses balance factors during the search to skip levels",
           "misconceptionId": "misc-search-uses-bf",
-          "explanation": "A search compares keys only."
+          "explanation": "Search compares keys only."
         },
         {
           "id": "c",
-          "text": "The plain BST visits every node during a search.",
+          "text": "The plain BST visits every node during a search",
           "misconceptionId": "misc-search-is-traversal",
-          "explanation": "A search follows one path in both trees. The path in the plain BST can just be much longer."
+          "explanation": "Search follows one path in both trees; the plain BST’s path can just be much longer."
         }
       ],
       "correctOptionId": "a",
@@ -122,8 +122,8 @@
       "subSkill": "compute-height-bf",
       "level": "apply",
       "concept": "balance-factor",
-      "stem": "Enter the balance factors of 20 and 30, and then decide whether this is an AVL tree.",
-      "hint": "This question checks heights and balance factors. Height counts the edges down to a leaf, and the balance factor is h(right) − h(left), where an empty branch counts as −1.",
+      "stem": "Enter the balance factors of 20 and 30, then decide whether this is an AVL tree.",
+      "hint": "This checks heights and balance factors: height counts edges down to a leaf, and bf = h(right) − h(left), with an empty branch counted as −1.",
       "tree": {
         "insert": [
           60,
@@ -157,24 +157,24 @@
           "target": 0,
           "value": 2,
           "misconceptionId": "misc-bf-sign",
-          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 20 has an empty right branch (height −1) and a left branch of height 1, so its balance factor is −1 − 1 = −2. A taller left branch gives a negative number."
+          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 20: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2. A taller left branch gives a negative number."
         },
         {
           "target": 0,
           "value": -1,
           "misconceptionId": "misc-empty-height",
-          "feedback": "An empty branch has height −1, not 0. Node 20 has an empty right branch (height −1) and a left branch of height 1, so its balance factor is −1 − 1 = −2."
+          "feedback": "An empty branch has height −1, not 0. Node 20: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2."
         },
         {
           "target": 1,
           "value": 2,
           "misconceptionId": "misc-bf-sign",
-          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 30 has a right branch of height 0 and a left branch of height 2, so its balance factor is 0 − 2 = −2. A taller left branch gives a negative number."
+          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 30: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. A taller left branch gives a negative number."
         }
       ],
       "feedback": {
-        "correct": "Node 20 has an empty right branch (height −1) and a left branch of height 1, so its balance factor is −1 − 1 = −2. Node 30 has a right branch of height 0 and a left branch of height 2, so its balance factor is 0 − 2 = −2. This is not an AVL tree, because nodes 20, 30 and 60 break the AVL rule.",
-        "incorrect": "Node 20 has an empty right branch (height −1) and a left branch of height 1, so its balance factor is −1 − 1 = −2. Node 30 has a right branch of height 0 and a left branch of height 2, so its balance factor is 0 − 2 = −2. This is not an AVL tree, because nodes 20, 30 and 60 break the AVL rule."
+        "correct": "Node 20: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2. Node 30: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. This is not an AVL tree: 20, 30 and 60 break the rule.",
+        "incorrect": "Node 20: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2. Node 30: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. This is not an AVL tree: 20, 30 and 60 break the rule."
       },
       "askIsAvl": true,
       "expectedIsAvl": false
@@ -192,8 +192,8 @@
       "subSkill": "compute-height-bf",
       "level": "apply",
       "concept": "balance-factor",
-      "stem": "Enter the balance factors of 50 and 60, and then decide whether this is an AVL tree.",
-      "hint": "This question checks heights and balance factors. Height counts the edges down to a leaf, and the balance factor is h(right) − h(left), where an empty branch counts as −1.",
+      "stem": "Enter the balance factors of 50 and 60, then decide whether this is an AVL tree.",
+      "hint": "This checks heights and balance factors: height counts edges down to a leaf, and bf = h(right) − h(left), with an empty branch counted as −1.",
       "tree": {
         "insert": [
           40,
@@ -226,24 +226,24 @@
           "target": 0,
           "value": -2,
           "misconceptionId": "misc-bf-sign",
-          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 50 has a right branch of height 1 and an empty left branch (height −1), so its balance factor is 1 − (−1) = +2. A taller right branch gives a positive number."
+          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 50: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2. A taller right branch gives a positive number."
         },
         {
           "target": 0,
           "value": 1,
           "misconceptionId": "misc-empty-height",
-          "feedback": "An empty branch has height −1, not 0. Node 50 has a right branch of height 1 and an empty left branch (height −1), so its balance factor is 1 − (−1) = +2."
+          "feedback": "An empty branch has height −1, not 0. Node 50: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2."
         },
         {
           "target": 1,
           "value": 2,
           "misconceptionId": "misc-bf-sign",
-          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 60 has a right branch of height 0 and a left branch of height 2, so its balance factor is 0 − 2 = −2. A taller left branch gives a negative number."
+          "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 60: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. A taller left branch gives a negative number."
         }
       ],
       "feedback": {
-        "correct": "Node 50 has a right branch of height 1 and an empty left branch (height −1), so its balance factor is 1 − (−1) = +2. Node 60 has a right branch of height 0 and a left branch of height 2, so its balance factor is 0 − 2 = −2. This is not an AVL tree, because nodes 40, 50 and 60 break the AVL rule.",
-        "incorrect": "Node 50 has a right branch of height 1 and an empty left branch (height −1), so its balance factor is 1 − (−1) = +2. Node 60 has a right branch of height 0 and a left branch of height 2, so its balance factor is 0 − 2 = −2. This is not an AVL tree, because nodes 40, 50 and 60 break the AVL rule."
+        "correct": "Node 50: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2. Node 60: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. This is not an AVL tree: 40, 50 and 60 break the rule.",
+        "incorrect": "Node 50: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2. Node 60: its right branch has height 0 and its left branch has height 2, so bf = 0 − 2 = −2. This is not an AVL tree: 40, 50 and 60 break the rule."
       },
       "askIsAvl": true,
       "expectedIsAvl": false,
@@ -262,8 +262,8 @@
       "subSkill": "trace-search",
       "level": "apply",
       "concept": "search",
-      "stem": "Search for 10. Click the nodes in the order in which they are visited, and then choose Found or Not found.",
-      "hint": "This question checks whether you can follow a search path. Compare the key with the node, and then go left or right.",
+      "stem": "Search for 10. Click the nodes in the order they are visited, then choose Found or Not found.",
+      "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
       "tree": {
         "insert": [
           3,
@@ -300,17 +300,17 @@
         {
           "pattern": "goes-wrong-direction",
           "misconceptionId": "misc-bst-order-reversed",
-          "feedback": "Check each comparison again. A smaller key goes left, and a larger key goes right."
+          "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
         },
         {
           "pattern": "visits-extra-nodes",
           "misconceptionId": "misc-search-is-traversal",
-          "feedback": "A search follows one path from the root, and it never visits both branches of a node."
+          "feedback": "Search follows one path from the root. It never visits both branches of a node."
         }
       ],
       "feedback": {
-        "correct": "10 is larger than 7, so the search goes right. 10 is smaller than 13, so it goes left. 10 is smaller than 11, so it goes left. 10 is larger than 9, so it goes right. 10 equals 10, so the key is found after 5 comparisons.",
-        "incorrect": "10 is larger than 7, so the search goes right. 10 is smaller than 13, so it goes left. 10 is smaller than 11, so it goes left. 10 is larger than 9, so it goes right. 10 equals 10, so the key is found after 5 comparisons."
+        "correct": "10 > 7: go right; 10 < 13: go left; 10 < 11: go left; 10 > 9: go right; 10 = 10: found. That is 5 comparisons.",
+        "incorrect": "10 > 7: go right; 10 < 13: go left; 10 < 11: go left; 10 > 9: go right; 10 = 10: found. That is 5 comparisons."
       }
     },
     {
@@ -326,8 +326,8 @@
       "subSkill": "trace-search",
       "level": "apply",
       "concept": "search",
-      "stem": "Search for 65. Click the nodes in the order in which they are visited, and then choose Found or Not found.",
-      "hint": "This question checks whether you can follow a search path. Compare the key with the node, and then go left or right.",
+      "stem": "Search for 65. Click the nodes in the order they are visited, then choose Found or Not found.",
+      "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
       "tree": {
         "insert": [
           50,
@@ -355,17 +355,17 @@
         {
           "pattern": "goes-wrong-direction",
           "misconceptionId": "misc-bst-order-reversed",
-          "feedback": "Check each comparison again. A smaller key goes left, and a larger key goes right."
+          "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
         },
         {
           "pattern": "visits-extra-nodes",
           "misconceptionId": "misc-search-is-traversal",
-          "feedback": "A search follows one path from the root, and it never visits both branches of a node."
+          "feedback": "Search follows one path from the root. It never visits both branches of a node."
         }
       ],
       "feedback": {
-        "correct": "65 is larger than 50, so the search goes right. 65 is smaller than 70, so it goes left. 65 is larger than 60, so it goes right. That branch is empty, so 65 is not in the tree. The search made 3 comparisons.",
-        "incorrect": "65 is larger than 50, so the search goes right. 65 is smaller than 70, so it goes left. 65 is larger than 60, so it goes right. That branch is empty, so 65 is not in the tree. The search made 3 comparisons."
+        "correct": "65 > 50: go right; 65 < 70: go left; 65 > 60: go right. That branch is empty, so 65 is not in the tree. That is 3 comparisons.",
+        "incorrect": "65 > 50: go right; 65 < 70: go left; 65 > 60: go right. That branch is empty, so 65 is not in the tree. That is 3 comparisons."
       },
       "returnOf": "rdy-03"
     },
@@ -383,8 +383,8 @@
       "subSkill": "perform-rotation",
       "level": "apply",
       "concept": "rotation",
-      "stem": "25 has just been inserted. Find n, name the case and perform the rotation or rotations.",
-      "hint": "This question checks whether you can carry out the rotation or rotations. The child moves up around its parent, and the child's inner subtree changes sides.",
+      "stem": "25 was just inserted. Find n, name the case and perform the rotation(s).",
+      "hint": "This checks that you can carry out the rotation(s): the child moves up around its parent, and its inner subtree changes sides.",
       "tree": {
         "insert": [
           50,
@@ -465,22 +465,22 @@
             ]
           ],
           "misconceptionId": "misc-single-for-inside",
-          "feedback": "One rotation about 50 does not fix an inside case, so the tree is still unbalanced. First do a left rotation about the child, 20, and then rotate about 50."
+          "feedback": "One rotation about 50 does not fix an inside case: the tree is still unbalanced. Rotate about the child first (left rotation about 20), then about 50."
         },
         {
           "pattern": "double-wrong-order",
           "misconceptionId": "misc-double-order",
-          "feedback": "For an inside case, rotate about n's child first, which turns it into an outside case. Then rotate about n."
+          "feedback": "For an inside case, rotate about n’s child first (this turns it into an outside case), then about n."
         },
         {
           "pattern": "rotated-wrong-direction",
           "misconceptionId": "misc-rotation-direction",
-          "feedback": "Rotate towards the shorter branch. If n's left branch is too tall, the final rotation about n is a right rotation. If n's right branch is too tall, it is a left rotation."
+          "feedback": "Rotate towards the shorter branch: if n’s left branch is too tall, the final rotation about n is a right rotation; if its right branch is too tall, a left rotation."
         }
       ],
       "feedback": {
-        "correct": "Node 50 is n, with a balance factor of −2. This is Case 2 (LR). The fix is a left rotation about 20, followed by a right rotation about 50. The result is 30(20(10, 25), 50(·, 60)).",
-        "incorrect": "Node 50 is n, with a balance factor of −2. This is Case 2 (LR). The fix is a left rotation about 20, followed by a right rotation about 50. The result is 30(20(10, 25), 50(·, 60))."
+        "correct": "Node 50 is n (bf −2): Case 2 (LR). Left rotation about 20, then right rotation about 50. Result: 30(20(10, 25), 50(·, 60)).",
+        "incorrect": "Node 50 is n (bf −2): Case 2 (LR). Left rotation about 20, then right rotation about 50. Result: 30(20(10, 25), 50(·, 60))."
       }
     },
     {
@@ -497,8 +497,8 @@
       "subSkill": "perform-rotation",
       "level": "apply",
       "concept": "rotation",
-      "stem": "45 has just been inserted. Find n, name the case and perform the rotation or rotations.",
-      "hint": "This question checks whether you can carry out the rotation or rotations. The child moves up around its parent, and the child's inner subtree changes sides.",
+      "stem": "45 was just inserted. Find n, name the case and perform the rotation(s).",
+      "hint": "This checks that you can carry out the rotation(s): the child moves up around its parent, and its inner subtree changes sides.",
       "tree": {
         "insert": [
           30,
@@ -579,22 +579,22 @@
             ]
           ],
           "misconceptionId": "misc-single-for-inside",
-          "feedback": "One rotation about 30 does not fix an inside case, so the tree is still unbalanced. First do a right rotation about the child, 50, and then rotate about 30."
+          "feedback": "One rotation about 30 does not fix an inside case: the tree is still unbalanced. Rotate about the child first (right rotation about 50), then about 30."
         },
         {
           "pattern": "double-wrong-order",
           "misconceptionId": "misc-double-order",
-          "feedback": "For an inside case, rotate about n's child first, which turns it into an outside case. Then rotate about n."
+          "feedback": "For an inside case, rotate about n’s child first (this turns it into an outside case), then about n."
         },
         {
           "pattern": "rotated-wrong-direction",
           "misconceptionId": "misc-rotation-direction",
-          "feedback": "Rotate towards the shorter branch. If n's left branch is too tall, the final rotation about n is a right rotation. If n's right branch is too tall, it is a left rotation."
+          "feedback": "Rotate towards the shorter branch: if n’s left branch is too tall, the final rotation about n is a right rotation; if its right branch is too tall, a left rotation."
         }
       ],
       "feedback": {
-        "correct": "Node 30 is n, with a balance factor of +2. This is Case 3 (RL). The fix is a right rotation about 50, followed by a left rotation about 30. The result is 40(30(10, ·), 50(45, 60)).",
-        "incorrect": "Node 30 is n, with a balance factor of +2. This is Case 3 (RL). The fix is a right rotation about 50, followed by a left rotation about 30. The result is 40(30(10, ·), 50(45, 60))."
+        "correct": "Node 30 is n (bf +2): Case 3 (RL). Right rotation about 50, then left rotation about 30. Result: 40(30(10, ·), 50(45, 60)).",
+        "incorrect": "Node 30 is n (bf +2): Case 3 (RL). Right rotation about 50, then left rotation about 30. Result: 40(30(10, ·), 50(45, 60))."
       },
       "returnOf": "rdy-04"
     },
@@ -613,8 +613,8 @@
       "subSkill": "rebalance-insert",
       "level": "apply",
       "concept": "insertion",
-      "stem": "Insert 37 into this AVL tree and rebalance it. Build the final tree.",
-      "hint": "This question checks the whole insertion. Insert the key as in a BST, update the balance factors on the way up, and then fix the first unbalanced node with the rotation or rotations for its case.",
+      "stem": "Insert 37 into this AVL tree and rebalance. Build the final tree.",
+      "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
       "tree": {
         "insert": [
           20,
@@ -721,22 +721,22 @@
             ]
           ],
           "misconceptionId": "misc-single-for-inside",
-          "feedback": "One rotation about 40 does not fix an inside case, so the tree is still unbalanced. First do a left rotation about the child, 35, and then rotate about 40."
+          "feedback": "One rotation about 40 does not fix an inside case: the tree is still unbalanced. Rotate about the child first (left rotation about 35), then about 40."
         },
         {
           "pattern": "double-wrong-order",
           "misconceptionId": "misc-double-order",
-          "feedback": "For an inside case, rotate about n's child first, which turns it into an outside case. Then rotate about n."
+          "feedback": "For an inside case, rotate about n’s child first (this turns it into an outside case), then about n."
         },
         {
           "pattern": "rotated-wrong-direction",
           "misconceptionId": "misc-rotation-direction",
-          "feedback": "Rotate towards the shorter branch. If n's left branch is too tall, the final rotation about n is a right rotation. If n's right branch is too tall, it is a left rotation."
+          "feedback": "Rotate towards the shorter branch: if n’s left branch is too tall, the final rotation about n is a right rotation; if its right branch is too tall, a left rotation."
         },
         {
           "pattern": "rotated-at-root",
           "misconceptionId": "misc-rebalance-wrong-node",
-          "feedback": "Fix the first unbalanced node on the way up from the new key. That node is 40, not the root."
+          "feedback": "Fix the first unbalanced node on the way up from the new key (40), not the root."
         },
         {
           "pattern": "rotated-again-above-n",
@@ -745,8 +745,8 @@
         }
       ],
       "feedback": {
-        "correct": "Node 40 is n, with a balance factor of −2. This is Case 2 (LR). The fix is a left rotation about 35, followed by a right rotation about 40. The result is 20(10(5, 15), 30(25, 37(35, 40))).",
-        "incorrect": "Node 40 is n, with a balance factor of −2. This is Case 2 (LR). The fix is a left rotation about 35, followed by a right rotation about 40. The result is 20(10(5, 15), 30(25, 37(35, 40)))."
+        "correct": "Node 40 is n (bf −2): Case 2 (LR). Left rotation about 35, then right rotation about 40. Result: 20(10(5, 15), 30(25, 37(35, 40))).",
+        "incorrect": "Node 40 is n (bf −2): Case 2 (LR). Left rotation about 35, then right rotation about 40. Result: 20(10(5, 15), 30(25, 37(35, 40)))."
       }
     },
     {
@@ -764,8 +764,8 @@
       "subSkill": "rebalance-insert",
       "level": "apply",
       "concept": "insertion",
-      "stem": "Insert 1 into this AVL tree and rebalance it. Build the final tree.",
-      "hint": "This question checks the whole insertion. Insert the key as in a BST, update the balance factors on the way up, and then fix the first unbalanced node with the rotation or rotations for its case.",
+      "stem": "Insert 1 into this AVL tree and rebalance. Build the final tree.",
+      "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
       "tree": {
         "insert": [
           50,
@@ -832,12 +832,12 @@
         {
           "pattern": "rotated-wrong-direction",
           "misconceptionId": "misc-rotation-direction",
-          "feedback": "Rotate towards the shorter branch. If n's left branch is too tall, the final rotation about n is a right rotation. If n's right branch is too tall, it is a left rotation."
+          "feedback": "Rotate towards the shorter branch: if n’s left branch is too tall, the final rotation about n is a right rotation; if its right branch is too tall, a left rotation."
         },
         {
           "pattern": "rotated-at-root",
           "misconceptionId": "misc-rebalance-wrong-node",
-          "feedback": "Fix the first unbalanced node on the way up from the new key. That node is 10, not the root."
+          "feedback": "Fix the first unbalanced node on the way up from the new key (10), not the root."
         },
         {
           "pattern": "rotated-again-above-n",
@@ -846,8 +846,8 @@
         }
       ],
       "feedback": {
-        "correct": "Node 10 is n, with a balance factor of −2. This is Case 1 (LL). The fix is a right rotation about 10. The result is 50(25(5(1, 10), 30), 75(60, 80)).",
-        "incorrect": "Node 10 is n, with a balance factor of −2. This is Case 1 (LL). The fix is a right rotation about 10. The result is 50(25(5(1, 10), 30), 75(60, 80))."
+        "correct": "Node 10 is n (bf −2): Case 1 (LL). Right rotation about 10. Result: 50(25(5(1, 10), 30), 75(60, 80)).",
+        "incorrect": "Node 10 is n (bf −2): Case 1 (LL). Right rotation about 10. Result: 50(25(5(1, 10), 30), 75(60, 80))."
       },
       "returnOf": "rdy-05"
     },
@@ -864,25 +864,25 @@
       "subSkill": "select-application",
       "level": "evaluate",
       "concept": "applications",
-      "stem": "An online exam system stores 30,000 student numbers. Numbers are added at registration in increasing order and looked up thousands of times during an exam. Which structure should the system use, and why?",
-      "hint": "This question checks whether you can recognise a good fit for an AVL tree. An AVL tree suits data that is searched often and must stay in sorted order.",
+      "stem": "An online exam system stores 30,000 student numbers. Numbers are added at registration in increasing order and looked up thousands of times during an exam. Which structure, and why?",
+      "hint": "This checks that you can recognise a good fit for an AVL tree: data searched often that must stay in sorted order.",
       "options": [
         {
           "id": "a",
-          "text": "A plain BST. It is simpler, and BST search is always O(log n).",
+          "text": "A plain BST: it is simpler, and BST search is always O(log n)",
           "misconceptionId": "misc-bst-always-balanced",
           "explanation": "Increasing numbers make a plain BST a chain, with O(n) search."
         },
         {
           "id": "b",
-          "text": "An unsorted list. Adding a number is O(1), which matters most here.",
+          "text": "An unsorted list: adding a number is O(1), which matters most here",
           "misconceptionId": "misc-ignores-search-cost",
-          "explanation": "Lookups happen thousands of times, and each one would be O(n) in an unsorted list."
+          "explanation": "Lookups happen thousands of times; each would be O(n) in an unsorted list."
         },
         {
           "id": "c",
-          "text": "An AVL tree. Frequent lookups need guaranteed O(log n) search, and increasing numbers would make a plain BST a chain.",
-          "explanation": "Lookups dominate, and the order of arrival is the worst case for a plain BST."
+          "text": "An AVL tree: frequent lookups need guaranteed O(log n) search, and increasing numbers would make a plain BST a chain",
+          "explanation": "Right."
         }
       ],
       "correctOptionId": "c"
@@ -900,25 +900,25 @@
       "subSkill": "justify-application",
       "level": "evaluate",
       "concept": "applications",
-      "stem": "What is the strongest reason to use an AVL tree for a spell checker's word list?",
-      "hint": "This question checks whether you can justify the choice from the properties of an AVL tree. It guarantees O(log n) search, at the cost of extra work on updates.",
+      "stem": "What is the strongest reason to use an AVL tree for a spell checker’s word list?",
+      "hint": "This checks that you can justify the choice from the AVL tree’s properties: guaranteed O(log n) search, at the cost of extra work on updates.",
       "options": [
         {
           "id": "a",
-          "text": "AVL trees use less memory than other trees.",
+          "text": "AVL trees use less memory than other trees",
           "misconceptionId": "misc-avl-no-cost",
-          "explanation": "They store a height in every node, so they use slightly more memory."
+          "explanation": "They store a height in every node, so they use slightly more."
         },
         {
           "id": "b",
-          "text": "AVL search uses balance factors to find words faster.",
+          "text": "AVL search uses balance factors to find words faster",
           "misconceptionId": "misc-search-uses-bf",
-          "explanation": "A search compares keys only."
+          "explanation": "Search compares keys only."
         },
         {
           "id": "c",
-          "text": "Words are looked up constantly and may be loaded in alphabetical order, and the AVL tree keeps every lookup O(log n).",
-          "explanation": "Frequent lookups and possibly sorted input are the two reasons that matter here."
+          "text": "Words are looked up constantly and may be loaded in alphabetical order; the AVL tree keeps every lookup O(log n)",
+          "explanation": "Right."
         }
       ],
       "correctOptionId": "c",
@@ -938,8 +938,8 @@
       "subSkill": "rebalance-delete",
       "level": "apply",
       "concept": "deletion",
-      "stem": "Delete the leaf 10 and rebalance the tree. Build the final tree.",
-      "hint": "This question checks rebalancing after a deletion. At the unbalanced node, a single rotation towards the shorter branch restores the balance.",
+      "stem": "Delete the leaf 10 and rebalance. Build the final tree.",
+      "hint": "This checks rebalancing after a deletion: at the unbalanced node, a single rotation towards the shorter branch restores balance.",
       "tree": {
         "insert": [
           30,
@@ -991,8 +991,8 @@
       },
       "wrongAnswers": [],
       "feedback": {
-        "correct": "Node 30 is unbalanced, with a balance factor of +2. The fix is a left rotation about 30. The result is 40(30(20, 35), 50(·, 60)).",
-        "incorrect": "Node 30 is unbalanced, with a balance factor of +2. The fix is a left rotation about 30. The result is 40(30(20, 35), 50(·, 60))."
+        "correct": "Node 30 is unbalanced (bf +2). Left rotation about 30. Result: 40(30(20, 35), 50(·, 60)).",
+        "incorrect": "Node 30 is unbalanced (bf +2). Left rotation about 30. Result: 40(30(20, 35), 50(·, 60))."
       }
     },
     {
@@ -1009,8 +1009,8 @@
       "subSkill": "rebalance-delete",
       "level": "apply",
       "concept": "deletion",
-      "stem": "Delete the leaf 80 and rebalance the tree. Build the final tree.",
-      "hint": "This question checks rebalancing after a deletion. At the unbalanced node, a single rotation towards the shorter branch restores the balance.",
+      "stem": "Delete the leaf 80 and rebalance. Build the final tree.",
+      "hint": "This checks rebalancing after a deletion: at the unbalanced node, a single rotation towards the shorter branch restores balance.",
       "tree": {
         "insert": [
           60,
@@ -1062,8 +1062,8 @@
       },
       "wrongAnswers": [],
       "feedback": {
-        "correct": "Node 60 is unbalanced, with a balance factor of −2. The fix is a right rotation about 60. The result is 40(30(20, ·), 60(50, 70)).",
-        "incorrect": "Node 60 is unbalanced, with a balance factor of −2. The fix is a right rotation about 60. The result is 40(30(20, ·), 60(50, 70))."
+        "correct": "Node 60 is unbalanced (bf −2). Right rotation about 60. Result: 40(30(20, ·), 60(50, 70)).",
+        "incorrect": "Node 60 is unbalanced (bf −2). Right rotation about 60. Result: 40(30(20, ·), 60(50, 70))."
       },
       "returnOf": "rdy-07"
     },
@@ -1081,8 +1081,8 @@
       "subSkill": "rebalance-insert",
       "level": "apply",
       "concept": "insertion",
-      "stem": "This is the first combined question. Insert 15, 20, 24, 10, 13, 7, 30, 36 and 25 into an empty AVL tree, and rebalance as you go. Build the final tree.",
-      "hint": "This question checks the whole insertion. Insert the key as in a BST, update the balance factors on the way up, and then fix the first unbalanced node with the rotation or rotations for its case.",
+      "stem": "Combined 1: insert 15, 20, 24, 10, 13, 7, 30, 36, 25 into an empty AVL tree, rebalancing as you go. Build the final tree.",
+      "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
       "tree": {
         "insert": []
       },
@@ -1172,8 +1172,8 @@
       },
       "wrongAnswers": [],
       "feedback": {
-        "correct": "The sequence uses all four cases. Inserting 24 gives Case 4 at 15, 13 gives Case 2 at 15, 7 gives Case 1 at 20, 36 gives Case 4 at 24, and 25 gives Case 3 at 20. The final tree is 13(10(7, ·), 24(20(15, ·), 30(25, 36))).",
-        "incorrect": "The sequence uses all four cases. Inserting 24 gives Case 4 at 15, 13 gives Case 2 at 15, 7 gives Case 1 at 20, 36 gives Case 4 at 24, and 25 gives Case 3 at 20. The final tree is 13(10(7, ·), 24(20(15, ·), 30(25, 36)))."
+        "correct": "The sequence uses all four cases: 24 (Case 4 at 15), 13 (Case 2 at 15), 7 (Case 1 at 20), 36 (Case 4 at 24), 25 (Case 3 at 20). Final tree: 13(10(7, ·), 24(20(15, ·), 30(25, 36))).",
+        "incorrect": "The sequence uses all four cases: 24 (Case 4 at 15), 13 (Case 2 at 15), 7 (Case 1 at 20), 36 (Case 4 at 24), 25 (Case 3 at 20). Final tree: 13(10(7, ·), 24(20(15, ·), 30(25, 36)))."
       },
       "combined": true,
       "relatedOutcomes": [
@@ -1195,8 +1195,8 @@
       "subSkill": "trace-search",
       "level": "apply",
       "concept": "search",
-      "stem": "This is the second combined question. Search the tree that you have just built for 25.",
-      "hint": "This question checks whether you can follow a search path. Compare the key with the node, and then go left or right.",
+      "stem": "Combined 2: search the tree you just built for 25.",
+      "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
       "tree": {
         "insert": [
           15,
@@ -1225,17 +1225,17 @@
         {
           "pattern": "goes-wrong-direction",
           "misconceptionId": "misc-bst-order-reversed",
-          "feedback": "Check each comparison again. A smaller key goes left, and a larger key goes right."
+          "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
         },
         {
           "pattern": "visits-extra-nodes",
           "misconceptionId": "misc-search-is-traversal",
-          "feedback": "A search follows one path from the root, and it never visits both branches of a node."
+          "feedback": "Search follows one path from the root. It never visits both branches of a node."
         }
       ],
       "feedback": {
-        "correct": "25 is larger than 13, so the search goes right. 25 is larger than 24, so it goes right. 25 is smaller than 30, so it goes left. 25 equals 25, so the key is found after 4 comparisons.",
-        "incorrect": "25 is larger than 13, so the search goes right. 25 is larger than 24, so it goes right. 25 is smaller than 30, so it goes left. 25 equals 25, so the key is found after 4 comparisons."
+        "correct": "25 > 13: go right; 25 > 24: go right; 25 < 30: go left; 25 = 25: found. That is 4 comparisons.",
+        "incorrect": "25 > 13: go right; 25 > 24: go right; 25 < 30: go left; 25 = 25: found. That is 4 comparisons."
       },
       "combined": true,
       "buildsOn": "rdy-08"
@@ -1254,8 +1254,8 @@
       "subSkill": "rebalance-insert",
       "level": "apply",
       "concept": "insertion",
-      "stem": "This is the first combined question in a new form. Insert 50, 40, 30, 45, 47, 60, 70 and 65 into an empty AVL tree, and rebalance as you go. Build the final tree.",
-      "hint": "This question checks the whole insertion. Insert the key as in a BST, update the balance factors on the way up, and then fix the first unbalanced node with the rotation or rotations for its case.",
+      "stem": "Combined 1 (new form): insert 50, 40, 30, 45, 47, 60, 70, 65 into an empty AVL tree. Build the final tree.",
+      "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
       "tree": {
         "insert": []
       },
@@ -1332,8 +1332,8 @@
       },
       "wrongAnswers": [],
       "feedback": {
-        "correct": "Inserting 30 gives Case 1 at 50, 47 gives Case 2 at 50, 60 gives Case 4 at 40, and 70 gives Case 4 at 50. Inserting 65 needs no rotation. The final tree is 47(40(30, 45), 60(50, 70(65, ·))).",
-        "incorrect": "Inserting 30 gives Case 1 at 50, 47 gives Case 2 at 50, 60 gives Case 4 at 40, and 70 gives Case 4 at 50. Inserting 65 needs no rotation. The final tree is 47(40(30, 45), 60(50, 70(65, ·)))."
+        "correct": "30: Case 1 at 50. 47: Case 2 at 50. 60: Case 4 at 40. 70: Case 4 at 50. 65 needs no rotation. Final tree: 47(40(30, 45), 60(50, 70(65, ·))).",
+        "incorrect": "30: Case 1 at 50. 47: Case 2 at 50. 60: Case 4 at 40. 70: Case 4 at 50. 65 needs no rotation. Final tree: 47(40(30, 45), 60(50, 70(65, ·)))."
       },
       "returnOf": "rdy-08",
       "combined": true
@@ -1351,8 +1351,8 @@
       "subSkill": "trace-search",
       "level": "apply",
       "concept": "search",
-      "stem": "This is the second combined question in a new form. Search the tree that you have just built for 55.",
-      "hint": "This question checks whether you can follow a search path. Compare the key with the node, and then go left or right.",
+      "stem": "Combined 2 (new form): search the tree you just built for 55.",
+      "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
       "tree": {
         "insert": [
           50,
@@ -1379,17 +1379,17 @@
         {
           "pattern": "goes-wrong-direction",
           "misconceptionId": "misc-bst-order-reversed",
-          "feedback": "Check each comparison again. A smaller key goes left, and a larger key goes right."
+          "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
         },
         {
           "pattern": "visits-extra-nodes",
           "misconceptionId": "misc-search-is-traversal",
-          "feedback": "A search follows one path from the root, and it never visits both branches of a node."
+          "feedback": "Search follows one path from the root. It never visits both branches of a node."
         }
       ],
       "feedback": {
-        "correct": "55 is larger than 47, so the search goes right. 55 is smaller than 60, so it goes left. 55 is larger than 50, so it goes right. That branch is empty, so 55 is not in the tree. The search made 3 comparisons.",
-        "incorrect": "55 is larger than 47, so the search goes right. 55 is smaller than 60, so it goes left. 55 is larger than 50, so it goes right. That branch is empty, so 55 is not in the tree. The search made 3 comparisons."
+        "correct": "55 > 47: go right; 55 < 60: go left; 55 > 50: go right. That branch is empty, so 55 is not in the tree. That is 3 comparisons.",
+        "incorrect": "55 > 47: go right; 55 < 60: go left; 55 > 50: go right. That branch is empty, so 55 is not in the tree. That is 3 comparisons."
       },
       "returnOf": "rdy-09",
       "combined": true,

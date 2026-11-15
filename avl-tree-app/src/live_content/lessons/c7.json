@@ -34,7 +34,7 @@
         "Both"
       ],
       "answer": "Deleting 10",
-      "reveal": "Deleting 10 leaves node 20 with an empty left branch and a right branch of height 1, so its balance factor becomes 1 − (−1) = +2."
+      "reveal": "Deleting 10 leaves node 20 with an empty left branch and a right branch of height 1: bf = 1 − (−1) = +2."
     },
     {
       "id": "c7-s02",
@@ -43,7 +43,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Goal",
-      "text": "By the end of this lesson, you will be able to delete a leaf from an AVL tree and restore the AVL property. This app covers leaf deletion only. Deleting a node with children (delete by copying) will be covered in the lecture."
+      "text": "Delete a leaf from an AVL tree and restore the AVL property (LO7). This app covers leaf deletion only. Deleting a node with children (delete by copying) is covered in the lecture."
     },
     {
       "id": "c7-s03",
@@ -65,24 +65,24 @@
         "level": "apply",
         "concept": "deletion",
         "stem": "How do you delete a leaf from a BST?",
-        "hint": "This question checks leaf deletion. When a leaf is removed, no other node moves until the balance factors have been checked.",
+        "hint": "This checks leaf deletion: a leaf is simply removed; no other node moves until balance is checked.",
         "options": [
           {
             "id": "a",
-            "text": "Replace it with its parent.",
+            "text": "Replace it with its parent",
             "misconceptionId": "misc-delete-shifts-nodes",
             "explanation": "The parent stays where it is. Only the leaf is removed."
           },
           {
             "id": "b",
-            "text": "Move its sibling into its place.",
+            "text": "Move its sibling into its place",
             "misconceptionId": "misc-delete-shifts-nodes",
             "explanation": "The sibling stays where it is. Only the leaf is removed."
           },
           {
             "id": "c",
-            "text": "Remove it, so that its parent's branch becomes empty.",
-            "explanation": "Nothing else moves."
+            "text": "Remove it: its parent’s branch becomes empty",
+            "explanation": "Right. Nothing else moves."
           }
         ],
         "correctOptionId": "c"
@@ -95,7 +95,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Deleting 50: no rotation needed",
-      "text": "Remove the leaf, and then update the balance factors from its parent up to the root.",
+      "text": "Remove the leaf, then update balance factors from its parent up to the root.",
       "tree": {
         "insert": [
           20,
@@ -110,10 +110,10 @@
         "key": 50
       },
       "steps": [
-        "50 is a leaf, so it is removed.",
-        "Node 40 now has a balance factor of −1 − 0 = −1.",
-        "Node 20 now has a balance factor of 1 − 0 = +1.",
-        "Every node now has a balance factor of −1, 0 or +1."
+        "50 is a leaf: remove it.",
+        "Node 40: bf = −1 − 0 = −1.",
+        "Node 20: bf = 1 − 0 = +1.",
+        "Every node has a balance factor of −1, 0 or +1."
       ],
       "result": "20(10, 40(30, ·))",
       "show": [
@@ -127,7 +127,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Deleting 10: one rotation",
-      "text": "This is the same tree, but now 10 is deleted.",
+      "text": "Same tree, now deleting 10.",
       "tree": {
         "insert": [
           20,
@@ -141,13 +141,13 @@
         "name": "delete",
         "key": 10
       },
-      "caption": "Node 20 has a balance factor of +2, and its right child, 40, has a balance factor of 0. A single left rotation about 20 fixes it.",
+      "caption": "Node 20 has bf +2 and its right child 40 has bf 0: a single left rotation about 20.",
       "steps": [
-        "10 is a leaf, so it is removed.",
-        "Node 20 now has a balance factor of 1 − (−1) = +2.",
-        "Node 20 has a balance factor of +2, so it is unbalanced.",
-        "Rotate 40 around 20. This is a left rotation about 20.",
-        "Every node now has a balance factor of −1, 0 or +1."
+        "10 is a leaf: remove it.",
+        "Node 20: bf = 1 − (−1) = +2.",
+        "Node 20 has balance factor +2: it is unbalanced.",
+        "Rotate 40 around 20: left rotation about 20.",
+        "Every node has a balance factor of −1, 0 or +1."
       ],
       "result": "40(20(·, 30), 50)",
       "show": [
@@ -163,12 +163,12 @@
       "title": "Leaf deletion",
       "points": [
         "1. Remove the leaf.",
-        "2. Update the balance factors from its parent up to the root.",
-        "3. If a node has a balance factor of +2 and its right child has 0 or +1, do a single left rotation about that node.",
-        "4. If a node has a balance factor of −2 and its left child has 0 or −1, do a single right rotation about that node.",
-        "If the child leans the other way, a double rotation is needed. The examples in this app avoid that case, and the lecture covers it."
+        "2. Update balance factors from its parent up to the root.",
+        "3. If a node has bf +2 and its right child has bf 0 or +1: single left rotation about that node.",
+        "4. If a node has bf −2 and its left child has bf 0 or −1: single right rotation about that node.",
+        "If the child leans the other way, a double rotation is needed. The examples in this app avoid that case; the lecture covers it."
       ],
-      "showRule": "Remove the leaf, update the balance factors up to the root, and rotate towards the shorter branch."
+      "showRule": "Remove the leaf, update bf up to the root, rotate towards the shorter branch."
     },
     {
       "id": "c7-s07",
@@ -191,13 +191,13 @@
         "name": "delete",
         "key": 40
       },
-      "caption": "Node 30 has a balance factor of −2, and its left child, 20, has a balance factor of 0. A single right rotation about 30 fixes it.",
+      "caption": "Node 30 has bf −2 and its left child 20 has bf 0: a single right rotation about 30.",
       "steps": [
-        "40 is a leaf, so it is removed.",
-        "Node 30 now has a balance factor of −1 − 1 = −2.",
-        "Node 30 has a balance factor of −2, so it is unbalanced.",
-        "Rotate 20 around 30. This is a right rotation about 30.",
-        "Every node now has a balance factor of −1, 0 or +1."
+        "40 is a leaf: remove it.",
+        "Node 30: bf = −1 − 1 = −2.",
+        "Node 30 has balance factor −2: it is unbalanced.",
+        "Rotate 20 around 30: right rotation about 30.",
+        "Every node has a balance factor of −1, 0 or +1."
       ],
       "result": "20(10, 30(25, ·))",
       "show": [
@@ -226,8 +226,8 @@
         "subSkill": "rebalance-delete",
         "level": "apply",
         "concept": "deletion",
-        "stem": "Delete 30 and rebalance the tree. Build the final tree.",
-        "hint": "This question checks rebalancing after a deletion. At the unbalanced node, a single rotation towards the shorter branch restores the balance.",
+        "stem": "Delete 30 and rebalance. Build the final tree.",
+        "hint": "This checks rebalancing after a deletion: at the unbalanced node, a single rotation towards the shorter branch restores balance.",
         "tree": {
           "insert": [
             50,
@@ -264,8 +264,8 @@
         },
         "wrongAnswers": [],
         "feedback": {
-          "correct": "After 30 is removed, node 50 has a balance factor of +2, and its right child, 70, has +1. A single left rotation about 50 gives 70(50, 80).",
-          "incorrect": "After 30 is removed, node 50 has a balance factor of +2, and its right child, 70, has +1. A single left rotation about 50 gives 70(50, 80)."
+          "correct": "After removing 30, node 50 has bf +2 and its right child 70 has bf +1: a single left rotation about 50 gives 70(50, 80).",
+          "incorrect": "After removing 30, node 50 has bf +2 and its right child 70 has bf +1: a single left rotation about 50 gives 70(50, 80)."
         }
       }
     },
@@ -292,7 +292,7 @@
         "level": "apply",
         "concept": "deletion",
         "stem": "80 has just been deleted. Enter the new balance factors of 70 and 50.",
-        "hint": "This question checks whether you can update balance factors after a deletion. Start at the parent of the removed leaf and work up to the root.",
+        "hint": "This checks that you can update balance factors after a deletion: start at the removed leaf’s parent and work up to the root.",
         "tree": {
           "insert": [
             50,
@@ -328,18 +328,18 @@
             "target": 1,
             "value": 1,
             "misconceptionId": "misc-bf-sign",
-            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 50 has a right branch of height 0 and a left branch of height 1, so its balance factor is 0 − 1 = −1. A taller left branch gives a negative number."
+            "feedback": "The sign is reversed. The balance factor is the height of the right branch minus the height of the left branch. Node 50: its right branch has height 0 and its left branch has height 1, so bf = 0 − 1 = −1. A taller left branch gives a negative number."
           },
           {
             "target": 1,
             "value": 0,
             "misconceptionId": "misc-delete-update-parent-only",
-            "feedback": "That is the balance factor that node 50 had before the deletion. After a leaf is removed, update every node on the path up to the root."
+            "feedback": "That is node 50’s balance factor before the deletion. After removing a leaf, update every node on the path up to the root."
           }
         ],
         "feedback": {
-          "correct": "Node 70 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0. Node 50 has a right branch of height 0 and a left branch of height 1, so its balance factor is 0 − 1 = −1.",
-          "incorrect": "Node 70 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0. Node 50 has a right branch of height 0 and a left branch of height 1, so its balance factor is 0 − 1 = −1."
+          "correct": "Node 70: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 50: its right branch has height 0 and its left branch has height 1, so bf = 0 − 1 = −1.",
+          "incorrect": "Node 70: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0. Node 50: its right branch has height 0 and its left branch has height 1, so bf = 0 − 1 = −1."
         }
       }
     },
@@ -352,7 +352,7 @@
       "title": "Lesson check",
       "checkId": "chk7",
       "optional": true,
-      "text": "This check has one question for each assessment criterion of the lesson's objective. You can re-attempt each question once, and the Hint button is always available."
+      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
     },
     {
       "id": "c7-s11",
@@ -362,9 +362,9 @@
       "representation": "written-rule",
       "title": "Summary",
       "points": [
-        "A leaf is simply removed, and nothing else moves.",
-        "Update the balance factors from the parent up to the root.",
-        "At a node with a balance factor of +2 or −2, rotate towards the shorter branch."
+        "A leaf is simply removed; nothing else moves.",
+        "Update balance factors from the parent up to the root.",
+        "At a node with bf ±2, rotate towards the shorter branch."
       ],
       "format": "short-box"
     }

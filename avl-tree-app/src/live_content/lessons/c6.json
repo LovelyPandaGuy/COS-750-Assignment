@@ -26,12 +26,12 @@
         "rebalance": false
       },
       "options": [
-        "Nothing happens, because the tree is still balanced",
-        "Node 3 gets a balance factor of −2",
-        "Node 1 gets a balance factor of −2"
+        "Nothing: the tree is fine",
+        "Node 3 gets balance factor −2",
+        "Node 1 gets balance factor −2"
       ],
-      "answer": "Node 3 gets a balance factor of −2",
-      "reveal": "Node 3 now has an empty right branch (height −1) and a left branch of height 1, so its balance factor is −1 − 1 = −2. This is Case 1, and a right rotation about 3 fixes it."
+      "answer": "Node 3 gets balance factor −2",
+      "reveal": "Node 3’s left branch now has height 1 and its right branch is empty (−1): bf = −1 − 1 = −2. This is Case 1, fixed by a right rotation about 3."
     },
     {
       "id": "c6-s02",
@@ -40,7 +40,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Goal",
-      "text": "By the end of this lesson, you will be able to insert keys into an AVL tree and keep the AVL property after every insertion."
+      "text": "Insert keys into an AVL tree and keep the AVL property after every insertion (LO5)."
     },
     {
       "id": "c6-s03",
@@ -62,7 +62,7 @@
         "level": "apply",
         "concept": "insertion",
         "stem": "Where does a new key go in a BST?",
-        "hint": "This question checks whether you can place a new key. Search for it as in a BST, and it goes into the empty branch where the search ends.",
+        "hint": "This checks that you can place a new key: search for it as in a BST, and it goes in the empty branch where the search ends.",
         "options": [
           {
             "id": "a",
@@ -72,14 +72,14 @@
           },
           {
             "id": "b",
-            "text": "In the empty branch where a search for it ends, so it becomes a new leaf",
-            "explanation": "AVL insertion starts in exactly this way."
+            "text": "In the empty branch where a search for it ends: it becomes a new leaf",
+            "explanation": "Right. AVL insertion starts exactly like this."
           },
           {
             "id": "c",
-            "text": "Next to the key that is closest in value, even if that node already has two children",
+            "text": "Next to the key closest in value, even if that node already has two children",
             "misconceptionId": "misc-new-key-not-leaf",
-            "explanation": "The search continues until it reaches an empty branch, and the new key goes there."
+            "explanation": "The search continues until it reaches an empty branch. The new key goes there."
           }
         ],
         "correctOptionId": "b"
@@ -95,11 +95,11 @@
       "points": [
         "1. Insert the key as in a BST.",
         "2. Backtrack towards the root, updating the balance factors.",
-        "3. Stop at the first node n whose balance factor is below −1 or above +1.",
-        "4. Decide the case. If the balance factor of n is negative, the left branch is too tall. It is Case 2 (LR) if the new key is larger than n.left, and otherwise it is Case 1 (LL). If the balance factor is positive, it is Case 3 (RL) if the new key is smaller than n.right, and otherwise it is Case 4 (RR).",
-        "5. Rotate, and then stop. No ancestor of n needs its balance factor changed."
+        "3. Stop at the first node n with a balance factor below −1 or above +1.",
+        "4. Decide the case. bf negative (left branch too tall): if the new key is larger than n.left, it is Case 2 (LR), otherwise Case 1 (LL). bf positive: if the new key is smaller than n.right, it is Case 3 (RL), otherwise Case 4 (RR).",
+        "5. Rotate, and stop. No ancestor of n needs its balance factor changed."
       ],
-      "showRule": "Insert the key, backtrack, and stop at the first unbalanced node n. Then find the case and fix it once, with a single or a double rotation."
+      "showRule": "Insert, backtrack, stop at the first unbalanced node n, find the case, rotate once (single or double)."
     },
     {
       "id": "c6-s05",
@@ -108,7 +108,7 @@
       "merrillPhase": "demonstration",
       "representation": "worked-example",
       "title": "Example 1 (fully worked)",
-      "text": "This is part 1 of the textbook's running example. Insert 3, 2 and 1, and then 4 to 7, into an empty AVL tree. You can check each step in the textbook.",
+      "text": "The textbook’s running example, part 1: insert 3, 2, 1, then 4 to 7 into an empty AVL tree. You can check each step in the textbook.",
       "tree": {
         "insert": []
       },
@@ -126,50 +126,50 @@
       },
       "steps": [
         "The tree is empty, so 3 becomes the root.",
-        "2 is smaller than 3, so 2 goes left.",
-        "2 goes into the empty left branch of 3.",
-        "Node 3 now has a balance factor of −1 − 0 = −1.",
-        "1 is smaller than 3, so 1 goes left.",
-        "1 is smaller than 2, so 1 goes left.",
-        "1 goes into the empty left branch of 2.",
-        "Node 2 now has a balance factor of −1 − 0 = −1.",
-        "Node 3 now has a balance factor of −1 − 1 = −2.",
-        "Node 3 has a balance factor of −2, so it is the first unbalanced node, n. This is Case 1 (LL).",
-        "Rotate 2 around 3. This is a right rotation about 3.",
-        "Every node now has a balance factor of −1, 0 or +1.",
-        "4 is larger than 2, so 4 goes right.",
-        "4 is larger than 3, so 4 goes right.",
-        "4 goes into the empty right branch of 3.",
-        "Node 3 now has a balance factor of 0 − (−1) = +1.",
-        "Node 2 now has a balance factor of 1 − 0 = +1.",
-        "5 is larger than 2, so 5 goes right.",
-        "5 is larger than 3, so 5 goes right.",
-        "5 is larger than 4, so 5 goes right.",
-        "5 goes into the empty right branch of 4.",
-        "Node 4 now has a balance factor of 0 − (−1) = +1.",
-        "Node 3 now has a balance factor of 1 − (−1) = +2.",
-        "Node 3 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).",
-        "Rotate 4 around 3. This is a left rotation about 3.",
-        "Every node now has a balance factor of −1, 0 or +1.",
-        "6 is larger than 2, so 6 goes right.",
-        "6 is larger than 4, so 6 goes right.",
-        "6 is larger than 5, so 6 goes right.",
-        "6 goes into the empty right branch of 5.",
-        "Node 5 now has a balance factor of 0 − (−1) = +1.",
-        "Node 4 now has a balance factor of 1 − 0 = +1.",
-        "Node 2 now has a balance factor of 2 − 0 = +2.",
-        "Node 2 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).",
-        "Rotate 4 around 2. This is a left rotation about 2.",
-        "Every node now has a balance factor of −1, 0 or +1.",
-        "7 is larger than 4, so 7 goes right.",
-        "7 is larger than 5, so 7 goes right.",
-        "7 is larger than 6, so 7 goes right.",
-        "7 goes into the empty right branch of 6.",
-        "Node 6 now has a balance factor of 0 − (−1) = +1.",
-        "Node 5 now has a balance factor of 1 − (−1) = +2.",
-        "Node 5 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).",
-        "Rotate 6 around 5. This is a left rotation about 5.",
-        "Every node now has a balance factor of −1, 0 or +1."
+        "2 < 3: go left.",
+        "2 goes in the empty left branch of 3.",
+        "Node 3: bf = −1 − 0 = −1.",
+        "1 < 3: go left.",
+        "1 < 2: go left.",
+        "1 goes in the empty left branch of 2.",
+        "Node 2: bf = −1 − 0 = −1.",
+        "Node 3: bf = −1 − 1 = −2.",
+        "Node 3 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).",
+        "Rotate 2 around 3: right rotation about 3.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "4 > 2: go right.",
+        "4 > 3: go right.",
+        "4 goes in the empty right branch of 3.",
+        "Node 3: bf = 0 − (−1) = +1.",
+        "Node 2: bf = 1 − 0 = +1.",
+        "5 > 2: go right.",
+        "5 > 3: go right.",
+        "5 > 4: go right.",
+        "5 goes in the empty right branch of 4.",
+        "Node 4: bf = 0 − (−1) = +1.",
+        "Node 3: bf = 1 − (−1) = +2.",
+        "Node 3 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
+        "Rotate 4 around 3: left rotation about 3.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "6 > 2: go right.",
+        "6 > 4: go right.",
+        "6 > 5: go right.",
+        "6 goes in the empty right branch of 5.",
+        "Node 5: bf = 0 − (−1) = +1.",
+        "Node 4: bf = 1 − 0 = +1.",
+        "Node 2: bf = 2 − 0 = +2.",
+        "Node 2 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
+        "Rotate 4 around 2: left rotation about 2.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "7 > 4: go right.",
+        "7 > 5: go right.",
+        "7 > 6: go right.",
+        "7 goes in the empty right branch of 6.",
+        "Node 6: bf = 0 − (−1) = +1.",
+        "Node 5: bf = 1 − (−1) = +2.",
+        "Node 5 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
+        "Rotate 6 around 5: left rotation about 5.",
+        "Every node has a balance factor of −1, 0 or +1."
       ],
       "result": "4(2(1, 3), 6(5, 7))",
       "pauseAt": "imbalance",
@@ -184,7 +184,7 @@
       "merrillPhase": "demonstration",
       "representation": "worked-example",
       "title": "Example 2 (guided)",
-      "text": "In part 2, insert 16, 15 and 14. At each imbalance, the app pauses and asks you to click n and name the case before it continues.",
+      "text": "Part 2: insert 16, 15 and 14. At each imbalance, the app pauses and asks you to click n and name the case before it continues.",
       "tree": {
         "insert": [
           3,
@@ -205,36 +205,36 @@
         ]
       },
       "steps": [
-        "16 is larger than 4, so 16 goes right.",
-        "16 is larger than 6, so 16 goes right.",
-        "16 is larger than 7, so 16 goes right.",
-        "16 goes into the empty right branch of 7.",
-        "Node 7 now has a balance factor of 0 − (−1) = +1.",
-        "Node 6 now has a balance factor of 1 − 0 = +1.",
-        "Node 4 now has a balance factor of 2 − 1 = +1.",
-        "15 is larger than 4, so 15 goes right.",
-        "15 is larger than 6, so 15 goes right.",
-        "15 is larger than 7, so 15 goes right.",
-        "15 is smaller than 16, so 15 goes left.",
-        "15 goes into the empty left branch of 16.",
-        "Node 16 now has a balance factor of −1 − 0 = −1.",
-        "Node 7 now has a balance factor of 1 − (−1) = +2.",
-        "Node 7 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 3 (RL).",
-        "Rotate 15 around 16. This is a right rotation about 16.",
-        "Rotate 15 around 7. This is a left rotation about 7.",
-        "Every node now has a balance factor of −1, 0 or +1.",
-        "14 is larger than 4, so 14 goes right.",
-        "14 is larger than 6, so 14 goes right.",
-        "14 is smaller than 15, so 14 goes left.",
-        "14 is larger than 7, so 14 goes right.",
-        "14 goes into the empty right branch of 7.",
-        "Node 7 now has a balance factor of 0 − (−1) = +1.",
-        "Node 15 now has a balance factor of 0 − 1 = −1.",
-        "Node 6 now has a balance factor of 2 − 0 = +2.",
-        "Node 6 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 3 (RL).",
-        "Rotate 7 around 15. This is a right rotation about 15.",
-        "Rotate 7 around 6. This is a left rotation about 6.",
-        "Every node now has a balance factor of −1, 0 or +1."
+        "16 > 4: go right.",
+        "16 > 6: go right.",
+        "16 > 7: go right.",
+        "16 goes in the empty right branch of 7.",
+        "Node 7: bf = 0 − (−1) = +1.",
+        "Node 6: bf = 1 − 0 = +1.",
+        "Node 4: bf = 2 − 1 = +1.",
+        "15 > 4: go right.",
+        "15 > 6: go right.",
+        "15 > 7: go right.",
+        "15 < 16: go left.",
+        "15 goes in the empty left branch of 16.",
+        "Node 16: bf = −1 − 0 = −1.",
+        "Node 7: bf = 1 − (−1) = +2.",
+        "Node 7 has balance factor +2: it is the first unbalanced node, n. Case 3 (RL).",
+        "Rotate 15 around 16: right rotation about 16.",
+        "Rotate 15 around 7: left rotation about 7.",
+        "Every node has a balance factor of −1, 0 or +1.",
+        "14 > 4: go right.",
+        "14 > 6: go right.",
+        "14 < 15: go left.",
+        "14 > 7: go right.",
+        "14 goes in the empty right branch of 7.",
+        "Node 7: bf = 0 − (−1) = +1.",
+        "Node 15: bf = 0 − 1 = −1.",
+        "Node 6: bf = 2 − 0 = +2.",
+        "Node 6 has balance factor +2: it is the first unbalanced node, n. Case 3 (RL).",
+        "Rotate 7 around 15: right rotation about 15.",
+        "Rotate 7 around 6: left rotation about 6.",
+        "Every node has a balance factor of −1, 0 or +1."
       ],
       "result": "4(2(1, 3), 7(6(5, ·), 15(14, 16)))",
       "pauseAt": "imbalance",
@@ -256,7 +256,7 @@
       "merrillPhase": "application",
       "representation": "interactive-task",
       "title": "Example 3 (on your own)",
-      "text": "In part 3, insert 13, 12, 11 and 10, one at a time. After each one, build the rebalanced tree.",
+      "text": "Part 3: insert 13, 12, 11 and 10, one at a time. After each one, build the rebalanced tree.",
       "task": {
         "id": "c6-s07-task",
         "set": "practice",
@@ -270,7 +270,7 @@
         "level": "apply",
         "concept": "insertion",
         "stem": "Insert 13, 12, 11 and 10, one at a time, and rebalance after each insertion.",
-        "hint": "This question checks the whole insertion. Insert the key as in a BST, update the balance factors on the way up, and then fix the first unbalanced node with the rotation or rotations for its case.",
+        "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
         "tree": {
           "insert": [
             3,
@@ -374,8 +374,8 @@
         },
         "wrongAnswers": [],
         "feedback": {
-          "correct": "Inserting 13 gives Case 4 at 4, 12 gives Case 1 at 14, 11 gives Case 1 at 15, and 10 gives Case 1 at 12. Each fix is a single rotation.",
-          "incorrect": "Inserting 13 gives Case 4 at 4, 12 gives Case 1 at 14, 11 gives Case 1 at 15, and 10 gives Case 1 at 12. Each fix is a single rotation."
+          "correct": "13: Case 4 at 4. 12: Case 1 at 14. 11: Case 1 at 15. 10: Case 1 at 12. Each fix is a single rotation.",
+          "incorrect": "13: Case 4 at 4. 12: Case 1 at 14. 11: Case 1 at 15. 10: Case 1 at 12. Each fix is a single rotation."
         }
       }
     },
@@ -389,7 +389,7 @@
       "merrillPhase": "application",
       "representation": "interactive-task",
       "title": "Example 3, continued",
-      "text": "Insert 8, and then 9.",
+      "text": "Insert 8, then 9.",
       "task": {
         "id": "c6-s08-task",
         "set": "practice",
@@ -402,8 +402,8 @@
         "subSkill": "rebalance-insert",
         "level": "apply",
         "concept": "insertion",
-        "stem": "Insert 8 and then 9, and rebalance after each insertion.",
-        "hint": "This question checks the whole insertion. Insert the key as in a BST, update the balance factors on the way up, and then fix the first unbalanced node with the rotation or rotations for its case.",
+        "stem": "Insert 8, then 9, and rebalance.",
+        "hint": "This checks the whole insertion: insert as in a BST, update balance factors on the way up, then fix the first unbalanced node with the rotation(s) for its case.",
         "tree": {
           "insert": [
             3,
@@ -509,8 +509,8 @@
         },
         "wrongAnswers": [],
         "feedback": {
-          "correct": "8 needs no rotation. 9 makes node 10 unbalanced, with a balance factor of −2. 9 is between 8 and 10, so it went into the right subtree of the left child of 10, which is Case 2. The fix is a left rotation about 8, followed by a right rotation about 10.",
-          "incorrect": "8 needs no rotation. 9 makes node 10 unbalanced, with a balance factor of −2. 9 is between 8 and 10, so it went into the right subtree of the left child of 10, which is Case 2. The fix is a left rotation about 8, followed by a right rotation about 10."
+          "correct": "8 needs no rotation. 9 makes node 10 unbalanced (bf −2). 9 is between 8 and 10, so it went into the right subtree of 10’s left child: Case 2. Left rotation about 8, then right rotation about 10.",
+          "incorrect": "8 needs no rotation. 9 makes node 10 unbalanced (bf −2). 9 is between 8 and 10, so it went into the right subtree of 10’s left child: Case 2. Left rotation about 8, then right rotation about 10."
         }
       }
     },
@@ -539,7 +539,7 @@
       "show": [
         "height"
       ],
-      "caption": "Before 1 was inserted, the subtree rooted at 3 had height 1. After the insertion and the right rotation, the subtree, which is now rooted at 2, has height 1 again. Because the fixed subtree is as tall as before, nothing above it changes."
+      "caption": "Before 1 was inserted, the subtree rooted at 3 had height 1. After the insertion and the right rotation, the subtree (now rooted at 2) has height 1 again. Because the fixed subtree is as tall as before, nothing above it changes."
     },
     {
       "id": "c6-s10",
@@ -550,7 +550,7 @@
       "title": "Lesson check",
       "checkId": "chk6",
       "optional": false,
-      "text": "This check has one question for each assessment criterion of the lesson's objective. You can re-attempt each question once, and the Hint button is always available."
+      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
     },
     {
       "id": "c6-s11",
@@ -560,9 +560,9 @@
       "representation": "written-rule",
       "title": "Summary",
       "points": [
-        "Insert the key as in a BST, and then walk back up, updating the balance factors.",
-        "Fix only the first unbalanced node n, using the rotation or rotations for its case.",
-        "One fix is enough, because the subtree gets back its old height."
+        "Insert as in a BST, then walk back up updating balance factors.",
+        "Fix only the first unbalanced node n, using the rotation(s) for its case.",
+        "One fix is enough: the subtree gets back its old height."
       ],
       "format": "short-box"
     }
