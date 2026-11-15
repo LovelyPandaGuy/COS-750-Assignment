@@ -61,10 +61,11 @@ export function learnerReducer(state: SessionState, action: SessionAction): Sess
     case 'module-completed': {
       const { learner } = state
       if (learner.completedModules.includes(action.module)) return state
-      // The current module moves on only when it was the one just completed.
-      const after = MODULE_IDS[MODULE_IDS.indexOf(action.module) + 1]
-      const currentModule = learner.currentModule === action.module && after !== undefined ? after : learner.currentModule
-      return { ...state, learner: { ...learner, completedModules: [...learner.completedModules, action.module], currentModule } }
+      // The current module is the first lesson, C1 to C9, not yet completed; unchanged when all nine are done
+      // (fix-sidebar-current-lesson, D164; C7 counts like any lesson here and still never blocks C8 or Ready).
+      const completedModules = [...learner.completedModules, action.module]
+      const currentModule = MODULE_IDS.find((id) => !completedModules.includes(id)) ?? learner.currentModule
+      return { ...state, learner: { ...learner, completedModules, currentModule } }
     }
   }
 }

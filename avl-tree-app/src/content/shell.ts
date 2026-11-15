@@ -1,7 +1,7 @@
 // Shell wording. Flagged for the user to read: none of this comes from the ID content.
 // The Settings button (was "Aa"; revamp-navigation, D157): the name starts with the visible word (WCAG 2.5.3).
 export const shellCopy = {
-  appTitle: 'AVL Trees · pre-lecture primer',
+  appTitle: 'AVL Trees · at a glance',
   skipLinkLabel: 'Skip to main content',
   aaButtonText: 'Settings',
   aaButtonName: 'Settings: display and read-aloud',
@@ -9,12 +9,13 @@ export const shellCopy = {
   darkTheme: 'Dark theme',
   switchOn: 'On',
   switchOff: 'Off',
-  /** The Lessons sidebar on every screen (revamp-navigation, D155; ID 8.2 lesson list). Flagged for the user to read. */
+  /** The Lessons sidebar on every screen (revamp-navigation, D155; ID 8.2 lesson list). Flagged for the user to read.
+   *  "Up next" for the learner's current lesson (was "You are here"; fix-sidebar-current-lesson, D164, assumed). */
   sidebar: {
     label: 'Lessons',
     menuButton: 'Lessons',
     menuPanel: 'Lessons, all lessons',
-    words: { done: 'Done', current: 'You are here', open: 'Not started', locked: 'Not yet open' },
+    words: { done: 'Done', current: 'Up next', open: 'Not started', locked: 'Not yet open' },
     symbols: { done: '✓', current: '▶', open: '○', locked: '·' },
     optional: 'Optional',
   },

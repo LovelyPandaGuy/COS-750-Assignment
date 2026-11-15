@@ -33,10 +33,23 @@
   padding: var(--space-2);
   font: var(--type-label);
 }
-/* The lesson being viewed: bold, underlined title as well as its state border (not colour alone). */
+/* The lesson being viewed is the one strongly highlighted: thick primary border and tint, and a bold,
+   underlined title so it is not colour alone (fix-sidebar-current-lesson, D155, D164). */
+.lesson-sidebar .progress-item[aria-current='page'] {
+  border-style: solid;
+  border-width: 4px;
+  border-color: var(--action-primary);
+  background: var(--action-primary-tint);
+}
 .lesson-sidebar .progress-item[aria-current='page'] .progress-title {
   font-weight: 700;
   text-decoration: underline;
+}
+/* The learner's next lesson ("Up next"), when another lesson is viewed: keeps its symbol and word, but a
+   thin border and no fill, so only the viewed lesson stands out. */
+.lesson-sidebar .progress-item[data-state='current']:not([aria-current='page']) {
+  border-width: 2px;
+  background: var(--bg-page);
 }
 
 @media (min-width: 768px) {
@@ -57,6 +70,10 @@
     max-height: 100vh;
     overflow-y: auto;
     padding-block: var(--space-4);
+    /* A scroll box clips its children's outlines: room for the focus ring (width plus gap) on both sides,
+       taken back out of the sidebar's padding so the list does not move. */
+    padding-inline: calc(var(--focus-ring-width) + var(--focus-ring-gap));
+    margin-inline: calc(-1 * (var(--focus-ring-width) + var(--focus-ring-gap)));
   }
   .lesson-sidebar {
     padding-block-start: 0;

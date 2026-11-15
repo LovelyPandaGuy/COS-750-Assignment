@@ -8,15 +8,15 @@
 
 ## 2. Build (implementer)
 
-- [ ] 2.1 `src/state/learnerReducer.ts` `module-completed`: current module = first lesson in `MODULE_IDS` not completed, else unchanged. Verify: 1.2 passes.
-- [ ] 2.2 `src/content/shell.ts`: `sidebar.words.current` = "Up next" (that line only; leave the uncommitted `appTitle` edit alone). Verify: "States in words" passes.
-- [ ] 2.3 `src/ui/navigation/sidebar.css`: strong highlight on `[aria-current='page']`, 2px border and no tint on `[data-state='current']:not([aria-current='page'])`, tokens only. Verify: 1.1 passes; `npm run lint` (token rule) passes.
-- [ ] 2.4 `.claude/docs/decisions.md`: add assumed row D164 ("Up next" wording; current module = first not-completed lesson, C7 included). Verify: row present, D155 notes the wording change.
-- [ ] 2.5 Verify: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`, `openspec validate --all` all pass.
+- [x] 2.1 `src/state/learnerReducer.ts` `module-completed`: current module = first lesson in `MODULE_IDS` not completed, else unchanged. Verify: 1.2 passes.
+- [x] 2.2 `src/content/shell.ts`: `sidebar.words.current` = "Up next" (that line only; leave the uncommitted `appTitle` edit alone). Verify: "States in words" passes.
+- [x] 2.3 `src/ui/navigation/sidebar.css`: strong highlight on `[aria-current='page']`, 2px border and no tint on `[data-state='current']:not([aria-current='page'])`, tokens only. Verify: 1.1 passes; `npm run lint` (token rule) passes.
+- [x] 2.4 `.claude/docs/decisions.md`: add assumed row D164 ("Up next" wording; current module = first not-completed lesson, C7 included). Verify: row present, D155 notes the wording change.
+- [x] 2.5 Verify: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`, `openspec validate --all` all pass.
 
 ## 3. Polish and review
 
-- [ ] 3.1 ui-polisher: refine the two sidebar states inside the design system until `.claude/docs/design/quality-bar.md` passes (greyscale, colour-vision, three widths, the phone Lessons panel). Verify: quality bar checklist.
+- [x] 3.1 ui-polisher: refine the two sidebar states inside the design system until `.claude/docs/design/quality-bar.md` passes (greyscale, colour-vision, three widths, the phone Lessons panel). Verify: quality bar checklist.
 - [ ] 3.2 reviewer and a11y-checker on the diff. Verify: pass, or findings resolved.
 
 ## Workflow follow-up
