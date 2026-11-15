@@ -136,18 +136,3 @@ merged or archived changes. The rules are in `.claude/CLAUDE.md`.
 
 Generative AI was used for code, content and interface work. The tools and
 prompts are acknowledged in the project documents.
-
-## Known limitations
-
-- **Progress is stored in the browser only.** It does not move between
-  devices or browsers, and there are no accounts and no backend.
-- **Narration (text-to-speech) is not built yet.** The setting is visible,
-  but it is disabled.
-- **Deletion is limited.** Only leaf deletion is covered, in the optional
-  lesson C7.
-- **The visual regression tests work only on macOS.** The reference
-  screenshots were made on macOS, so `npm run test:visual` reports
-  differences on other systems.
-- **Some design questions are still open.** Where the design files and the
-  instructional design gave no answer, the team chose a default and recorded
-  it in `.claude/docs/decisions.md`.
