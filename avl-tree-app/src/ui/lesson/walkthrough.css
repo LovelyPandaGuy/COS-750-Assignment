@@ -1,0 +1,52 @@
+/* The "How the app works" mini-screen (add-lesson-walkthroughs, D170). Tokens only. The lit part has a thick
+   accent ring and a "▶ here" tag, so it is never colour alone; it moves only when the system allows motion. */
+.walkthrough { display: flex; flex-direction: column; gap: var(--space-3); max-width: 100%; }
+.walkthrough-screen {
+  display: grid;
+  grid-template-columns: minmax(4rem, 1fr) minmax(0, 4fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--bg-page);
+  border: 1px solid var(--border-control);
+  border-radius: var(--radius-md);
+  font: var(--type-label);
+  color: var(--text-secondary);
+}
+.walkthrough-main { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
+.walkthrough-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.walkthrough-part {
+  position: relative;
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+.walkthrough-side { display: flex; flex-direction: column; gap: var(--space-1); }
+.walkthrough-bar { display: block; height: var(--space-2); background: var(--border-subtle); border-radius: var(--radius-sm); }
+.walkthrough-title-bar { font-weight: 700; color: var(--text-primary); }
+.walkthrough-tree-part { display: flex; justify-content: center; padding-block: var(--space-2); }
+.walkthrough-tree { display: grid; grid-template-columns: repeat(2, var(--space-4)); gap: var(--space-2) var(--space-5); }
+.walkthrough-tree span { width: var(--space-4); height: var(--space-4); border-radius: var(--radius-pill); background: var(--node-balanced); }
+.walkthrough-tree span:first-child { grid-column: 1 / span 2; justify-self: center; }
+.walkthrough-badge { font-weight: 700; }
+
+/* The lit part: a thick accent ring (a border, so the one focus ring stays the only outline) and the
+   "▶ here" tag (D165, D170). */
+.walkthrough-part[data-lit] {
+  border-style: solid;
+  border-width: 3px;
+  border-color: var(--accent-highlight);
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.walkthrough-here {
+  margin-inline-start: var(--space-1);
+  color: var(--accent-highlight);
+  font-weight: 700;
+}
+.walkthrough-caption { margin: 0; font: var(--type-body); min-height: calc(2 * var(--space-5)); }
+.walkthrough-list { margin: 0; padding-inline-start: var(--space-5); font: var(--type-body); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .walkthrough-part { transition: border-color 150ms ease, background-color 150ms ease; }
+}

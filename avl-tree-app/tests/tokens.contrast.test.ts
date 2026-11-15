@@ -116,3 +116,68 @@ describe('NFR-02 D18 dark tokens are complete', () => {
     expect(ratio(own[fg], own[bg])).toBeGreaterThanOrEqual(need);
   });
 });
+
+// ---- refresh-visual-style / app-shell "A brighter palette beside the tree colours" (D165, ID 11.1, NFR-02) ----
+const darkMedia = () => vars(block(/:root:not\(\[data-theme='light'\]\)\s*\{/m))
+
+describe('D165 a brighter palette beside the tree colours', () => {
+  it('the values', () => {
+    expect(light['action-primary']).toBe('#5B3FD6')
+    expect(light['accent-highlight']).toBe('#B02E78')
+    expect(light['bg-page']).toBe('#F8F7FD')
+    expect(dark['action-primary']).toBe('#B7A6FF')
+    expect(dark['accent-highlight']).toBe('#F28BC4')
+  })
+
+  it('the ID 11.1 tree colours are unchanged in light and dark', () => {
+    const nodes = { 'node-balanced': '#0072B2', 'node-unbalanced': '#E69F00', 'node-rotating': '#F0E442', 'node-new': '#56B4E9' }
+    for (const [k, v] of Object.entries(nodes)) {
+      expect(light[k], k).toBe(v)
+      expect(dark[k], k).toBe(v)
+      expect(darkMedia()[k], k).toBe(v)
+    }
+  })
+
+  it('both dark blocks carry the new tokens with the same values', () => {
+    for (const k of ['action-primary', 'action-primary-hover', 'action-primary-tint', 'accent-highlight', 'accent-highlight-tint', 'bg-page']) {
+      expect(darkMedia()[k], k).toBe(dark[k])
+    }
+  })
+
+  const newLight: Pair[] = [
+    ['action-primary', 'bg-surface', 4.5], ['action-primary', 'action-primary-tint', 4.5], ['bg-surface', 'action-primary-pressed', 4.5],
+    ['accent-highlight', 'bg-surface', 4.5], ['accent-highlight', 'bg-page', 4.5], ['text-primary', 'accent-highlight-tint', 4.5],
+    ['focus-ring-color', 'bg-surface', 3],
+  ]
+  const newDark: Pair[] = [
+    ['action-primary', 'bg-surface', 4.5], ['action-primary', 'action-primary-tint', 4.5], ['bg-page', 'action-primary-hover', 4.5],
+    ['accent-highlight', 'bg-surface', 4.5], ['accent-highlight', 'bg-page', 4.5], ['text-primary', 'accent-highlight-tint', 4.5],
+    ['focus-ring-color', 'bg-page', 3],
+  ]
+  it.each(newLight)('light: %s on %s needs %d:1', (fg, bg, need) => {
+    expect(light[fg], fg).toBeDefined()
+    expect(light[bg], bg).toBeDefined()
+    expect(ratio(light[fg], light[bg])).toBeGreaterThanOrEqual(need)
+  })
+  it.each(newDark)('dark: %s on %s needs %d:1', (fg, bg, need) => {
+    expect(dark[fg], fg).toBeDefined()
+    expect(dark[bg], bg).toBeDefined()
+    expect(ratio(dark[fg], dark[bg])).toBeGreaterThanOrEqual(need)
+  })
+
+  it('the highlight accent is never the only signal: each rule using it also sets a non-colour cue', async () => {
+    const { readdirSync, statSync } = await import('node:fs')
+    const { join } = await import('node:path')
+    const files = (dir: string): string[] => readdirSync(dir).flatMap((n) => { const p = join(dir, n); return statSync(p).isDirectory() ? files(p) : n.endsWith('.css') && !n.endsWith('tokens.css') ? [p] : [] })
+    let uses = 0
+    for (const f of files('src')) {
+      const text = readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+      for (const m of text.matchAll(/([^{}]+)\{([^}]*--accent-highlight[^}]*)\}/g)) {
+        uses++
+        expect(m[2], `${f}: ${m[1].trim()}`).toMatch(/border(-[a-z-]+)?-(style|width)|border(-[a-z-]+)?:\s*\d|font-weight|text-decoration|outline-style|content:/)
+      }
+    }
+    // The sandbox section rules and the lesson's title panel; the sidebar edge is gone (D172).
+    expect(uses).toBeGreaterThanOrEqual(2)
+  })
+})

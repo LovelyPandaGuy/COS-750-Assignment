@@ -49,6 +49,8 @@ Built since the import: `TreeEditorToolbar` and `EditLog` (revamp-tree-editor, D
 
 Navigation (revamp-navigation, D155 to D158): every screen has a "Lessons" sidebar (C1 to C9, sticky from 768 px, a Lessons button below), not drawn in the frames; the TopBar's Aa button is "Settings" and the "Saved on this device" pill (1e, 1m, 1n) is gone; the per-screen lesson outline is removed. Frame 1e (Unit hub) is not built as a page (remove-path-page, D159): its components are in the progress gallery.
 
+Palette (refresh-visual-style, D165): the action colour is now a vivid violet with a magenta highlight accent, beside the unchanged ID 11.1 tree colours; the design system's navy (#3340A0) is superseded. Every tree box has an "ℹ Describe" header strip (D166). The visual baselines (macOS, D122) need regenerating on the team's macOS machine.
+
 ## What must change before the first UI proposal
 
 These are conflicts between the design and the decisions in `.claude/docs/decisions.md`. Fix them in the design, then re-run `/design-import`. Until then the decision log wins: the `spec-writer` builds to the decision and lists the frame difference under "Assumed, not blocking" (D18), not as `[OPEN]`.

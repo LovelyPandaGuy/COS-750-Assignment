@@ -10,7 +10,10 @@ export const treeViewCopy = {
   roleWord: { new: 'newly inserted', rotating: 'being rotated', n: 'n, the first unbalanced node', placed: 'placed by you' },
   unbalancedMarker: '!',
   emptyTree: 'The tree is empty.',
+  /** The button's accessible name; it shows the short label with an aria-hidden icon (D166). */
   describeButton: 'Describe tree',
+  describeShort: 'Describe',
+  describeIcon: 'ℹ', // the app font draws ℹ (U+2139); ⓘ showed as an empty box (15 Nov)
   sideWord: { left: 'Left', right: 'Right' },
   selected: (key: string) => `Node ${key} selected`,
   /** The "h2 · bf +1" annotation drawn beside each node; either part can be left out (the screen's show list). */

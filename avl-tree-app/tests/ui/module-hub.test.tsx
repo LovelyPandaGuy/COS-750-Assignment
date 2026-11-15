@@ -49,18 +49,17 @@ describe('FR-LRN-05 module screen', () => {
   it('a lesson module plays the lesson, with no activity list', () => {
     renderRoutes(backendWith(), '/module/C5')
     expect(within(main()).getAllByRole('link').filter((a) => /\/module\/C5\//.test(href(a)))).toHaveLength(0)
-    expect(within(main()).getByText('Lesson 5 of 9')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Rotations')
   })
 
   it('C1 and C9 are lessons too, with no activity list (live-c1-and-c9)', () => {
     const a = renderRoutes(backendWith(), '/module/C1')
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Welcome')
-    expect(screen.getByText('Lesson 1 of 9')).toBeInTheDocument()
+    expect(screen.queryByText('Lesson 1 of 9')).toBeNull() // no position line (D167)
     expect(within(main()).queryAllByRole('link').filter((l) => /\/module\/C1\/(check|refresher)$/.test(href(l)))).toHaveLength(0)
     a.unmount()
     renderRoutes(backendWith(), '/module/C9')
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Am I ready for the lecture?')
-    expect(screen.getByText('Lesson 9 of 9')).toBeInTheDocument()
   })
 
   it('Back to your lesson opens the current lesson (D159)', () => {

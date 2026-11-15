@@ -10,20 +10,24 @@
   color-scheme: light dark;
 
   /* ---- Colour: neutrals and action ---- */
-  --bg-page: #FAFAF7;
+  --bg-page: #F8F7FD;           /* D165: a light violet-white (refresh-visual-style) */
   --bg-surface: #FFFFFF;
   --text-primary: #1B1F2A;
   --text-secondary: #4A5163;
   --border-subtle: #D5D9E2;      /* decorative only (1.4:1): card edges, dividers */
   --border-control: #767D8F;     /* anything a student must find to operate (3:1) */
-  --action-primary: #3340A0;
-  --action-primary-hover: #2A3588;
-  --action-primary-pressed: #222C73;
-  --action-primary-tint: #ECEEF9;
+  /* D165 (refresh-visual-style): a vivid violet, a hue no tree state uses (ID 11.1). */
+  --action-primary: #5B3FD6;
+  --action-primary-hover: #4A2FC2;
+  --action-primary-pressed: #3B229F;
+  --action-primary-tint: #EEEAFE;
+  /* D165: warm magenta for emphasis only, always with a non-colour cue; never right or wrong. */
+  --accent-highlight: #B02E78;
+  --accent-highlight-tint: #FBEAF3;
   --code-highlight: #E4E7F7;
   --disabled-text: #5E6577;
   --disabled-bg: #F3F4F6;
-  --focus-ring-color: #3340A0;
+  --focus-ring-color: #5B3FD6;
   --focus-ring-width: 2px;
   --focus-ring-gap: 2px;
 
@@ -109,11 +113,13 @@
     --text-secondary: #A9B0C0;
     --border-subtle: #3A4152;
     --border-control: #7F879A;
-    --action-primary: #9AA5FF;
-    --action-primary-hover: #B3BBFF;
-    --action-primary-tint: #262C48;
+    --action-primary: #B7A6FF;
+    --action-primary-hover: #C8BBFF;
+    --action-primary-tint: #2D2652;
+    --accent-highlight: #F28BC4;
+    --accent-highlight-tint: #3A2233;
     --code-highlight: #272D45;
-    --focus-ring-color: #9AA5FF;
+    --focus-ring-color: #B7A6FF;
     --bloom-remember: #4FC3B5;   --bloom-remember-tint: #16312F;
     --bloom-understand: #8AB0FF; --bloom-understand-tint: #1C2845;
     --bloom-apply: #BFA2FF;      --bloom-apply-tint: #2A2340;
@@ -146,11 +152,13 @@
   --text-secondary: #A9B0C0;
   --border-subtle: #3A4152;
   --border-control: #7F879A;
-  --action-primary: #9AA5FF;
-  --action-primary-hover: #B3BBFF;
-  --action-primary-tint: #262C48;
+  --action-primary: #B7A6FF;
+  --action-primary-hover: #C8BBFF;
+  --action-primary-tint: #2D2652;
+  --accent-highlight: #F28BC4;
+  --accent-highlight-tint: #3A2233;
   --code-highlight: #272D45;
-  --focus-ring-color: #9AA5FF;
+  --focus-ring-color: #B7A6FF;
   --bloom-remember: #4FC3B5;   --bloom-remember-tint: #16312F;
   --bloom-understand: #8AB0FF; --bloom-understand-tint: #1C2845;
   --bloom-apply: #BFA2FF;      --bloom-apply-tint: #2A2340;
@@ -185,7 +193,7 @@
   --tree-neutral: #A9B0C0;             /* = text-secondary (light tree-neutral equals it too) */
   --disabled-text: #A9B0C0;            /* = text-secondary */
   --disabled-bg: #12151C;              /* = bg-page */
-  --action-primary-pressed: #B3BBFF;   /* = action-primary-hover */
+  --action-primary-pressed: #C8BBFF;   /* = action-primary-hover (D165) */
 }
 
 /* One focus style everywhere: 2px ring with a 2px gap, survives every background. */

@@ -1,12 +1,25 @@
 /* Tree view. Tokens only. The focus ring comes from tokens.css. */
 /* max-width: in a column that aligns items to the start, a wide tree must not widen the page (NFR-04). */
-.tree-view { display: flex; flex-direction: column; gap: var(--space-2); max-width: 100%; }
+/* The tree box (D166): one bordered box holding the header strip, the drawing and the description. */
+.tree-view {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+}
+.tree-view-header {
+  display: flex;
+  justify-content: flex-end;
+  padding-inline: var(--space-1);
+  border-block-end: 1px solid var(--border-subtle);
+}
 
 .tree-scroll {
   overflow-x: auto;
   max-width: 100%;
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
 }
 .tree-scroll svg { display: block; }
@@ -73,21 +86,22 @@
 [role='treeitem']:hover .tree-node-fill { fill: var(--action-primary-tint); }
 [role='treeitem']:hover .tree-ring { stroke: var(--action-primary); }
 
+/* Small and quiet, with a full 44 px target (D3, D166). */
 .tree-describe-button {
-  align-self: flex-start;
   min-height: var(--target-min);
   min-width: var(--target-min);
-  padding-inline: var(--space-3);
-  background: var(--bg-surface);
+  padding-inline: var(--space-2);
+  background: transparent;
   color: var(--action-primary);
-  border: 1px solid var(--border-control);
-  border-radius: var(--radius-md);
-  font: var(--type-body);
+  border: 0;
+  border-radius: var(--radius-sm);
+  font: var(--type-label);
   font-weight: 700;
   cursor: pointer;
 }
-.tree-describe-button:hover { text-decoration: underline; background: var(--action-primary-tint); }
-.tree-description { margin: 0; color: var(--text-primary); }
+.tree-describe-button:hover { text-decoration: underline; }
+.tree-describe-button[aria-expanded='true'] { text-decoration: underline; }
+.tree-description { margin: 0; padding: var(--space-2) var(--space-3); border-block-start: 1px solid var(--border-subtle); color: var(--text-primary); }
 
 .tree-live {
   position: absolute;

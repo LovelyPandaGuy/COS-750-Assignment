@@ -17,22 +17,15 @@ The lessons C2 to C8 SHALL each be played by one lesson player that shows the le
 - **THEN** each is shown by the same lesson player, with the same frame regions
 
 ### Requirement: The lesson frame
-Every lesson screen SHALL show, from top to bottom: a top region with the lesson title as the level-1 heading, "Lesson n of 9" (from `conventions.labels.progress`), "Screen n of m" and the screen's phase; the screen title as a level-2 heading; the screen's main representation; its caption directly under it; its supporting text; and the control strip. The regions SHALL keep the same order and position on every screen of every lesson. (ID 8.2, ID 8.3, D23)
+Every lesson screen SHALL show, from top to bottom: a top region with the lesson title as the level-1 heading and no position line (no "Lesson n of 9", "Screen n of m" or phase word; user decision overriding ID 8.2, D167); the screen title as a level-2 heading; the screen's main representation; its caption directly under it; its supporting text; and the control strip. The regions SHALL keep the same order and position on every screen of every lesson. (ID 8.2, ID 8.3, D23, D167)
 
 #### Scenario: Top region
 - **WHEN** the fourth screen of C3 is shown
-- **THEN** the level-1 heading is "The AVL property", the top region reads "Lesson 3 of 9" and "Screen 4 of 13", and the level-2 heading is "Height"
+- **THEN** the level-1 heading is "The AVL property", the top region holds no "Lesson 3 of 9", "Screen 4 of 13" or phase word, and the level-2 heading is "Height"
 
 #### Scenario: Same regions everywhere
 - **WHEN** every screen of C2 to C8 is rendered
 - **THEN** each has, in document order, the top region, the screen heading, the main region, the caption region (empty when the screen has no caption) and the control strip
-
-### Requirement: The screen's phase is shown in words
-The top region SHALL name the current screen's phase from its `merrillPhase`, using one word per phase (Problem, Recall, Learn, Practise, Check and summary), so the student knows where they are in the lesson. The phase SHALL be text, never colour alone. (ID 3.2, ID 8.3 "where am I")
-
-#### Scenario: Phases
-- **WHEN** the C3 screens `c3-s01`, `c3-s03`, `c3-s04`, `c3-s09` and `c3-s13` are shown
-- **THEN** their phases read Problem, Recall, Learn, Practise and Check and summary
 
 ### Requirement: Controls in one place
 The control strip SHALL sit in the same place on every screen, with Back, Next and (on animation screens) Replay step on one side and Show the rule and Hint on the other. Show the rule SHALL appear only on screens with a `showRule`; Hint only on screens with a `hint`. Back SHALL be disabled on the first screen. Next on the last screen SHALL return to the path. Every control SHALL be at least 44 by 44 px and work by keyboard. (ID 8.2, ID 8.3, NFR-02)

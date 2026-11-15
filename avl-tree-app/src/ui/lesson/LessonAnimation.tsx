@@ -46,6 +46,9 @@ export function LessonAnimation({ tree, operation, label, show, startCaption, ps
   const shown = flash ? Math.max(0, p === 0 ? 0 : (p === 1 ? 0 : played.captions[p - 2].last + 1)) : steps
   const current = shown === 0 ? null : played.trace[shown - 1]
   const compared = played.trace.slice(0, shown).filter((s) => s.kind === 'compare').length
+  // Where a search is (D171): the node compared at the current step, or the node found; nothing at the start.
+  const at = operation.name === 'search' ? [...played.trace.slice(0, shown)].reverse().find((s) => s.kind === 'compare' || s.kind === 'found') : undefined
+  const highlightKey = at === undefined ? null : at.nodes[0]
   // A guided pause: the next caption is an imbalance the student has not named yet.
   const [answered, setAnswered] = useState<ReadonlySet<number>>(() => new Set())
   const nextImbalance = p < total ? played.captions[p].steps.map((i) => played.trace[i]).find((st) => st.kind === 'imbalance') : undefined
@@ -69,7 +72,7 @@ export function LessonAnimation({ tree, operation, label, show, startCaption, ps
 
   return (
     <div className="lesson-animation">
-      <DrawnTree tree={treeAt(played.start, played.trace, shown)} formatKey={played.formatKey} show={show} label={label} roles={rolesAt(played.trace, shown)} />
+      <DrawnTree tree={treeAt(played.start, played.trace, shown)} formatKey={played.formatKey} show={show} label={label} roles={rolesAt(played.trace, shown)} highlightKey={highlightKey} />
       <div role="group" aria-label={copy.controlsLabel} className="lesson-animation-controls">
         <button type="button" className="module-button module-button-secondary" onClick={() => setP((x) => Math.max(0, x - 1))} disabled={p === 0}>
           {copy.previous}

@@ -5,6 +5,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import { shellCopy } from '../../src/content/shell'
 import { startCopy } from '../../src/content/start'
 import { backendWith, progressState, renderRoutes, throwingBackend } from './learner-fixtures'
+import { lessonById } from '../../src/live/load'
 
 // Spec: add-routing-and-screen-skeleton / app-routing. Requirement IDs: FR-LRN-03, FR-LRN-04, FR-VIS-08, NFR-02, NFR-05, NFR-06.
 
@@ -86,7 +87,7 @@ describe('FR-LRN-04 unknown paths go somewhere safe', () => {
     ]) {
       const { unmount } = renderRoutes(backendWith(), path)
       expect(h1s()[0], path).toHaveTextContent(title)
-      expect(screen.getByText(/^Screen 1 of/)).toBeInTheDocument()
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(lessonById(path.split('/')[2].toLowerCase())!.screens[0].title) // the first screen
       unmount()
     }
   })
@@ -145,7 +146,7 @@ describe('FR-LRN-03 breadcrumb per screen', () => {
     renderRoutes(backendWith(), '/module/C6/check')
     expect(crumb()).toContain('C6 Insertion with rebalancing')
     expect(h1s()[0]).toHaveTextContent('Insertion with rebalancing')
-    expect(screen.getByText('Screen 1 of 11')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(lessonById('c6')!.screens[0].title)
   })
 
   it('the C1 lesson', () => {

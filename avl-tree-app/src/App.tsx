@@ -11,6 +11,7 @@ import { bootLearner, type Booted } from './state/boot'
 import { createSettingsStorage } from './state/storage'
 import { ThemeProvider, useTheme } from './ui/ThemeContext'
 import { LessonSidebar } from './ui/navigation/LessonSidebar'
+import { Celebration } from './ui/lesson/Confetti'
 import { NarrationProvider } from './ui/narration/NarrationContext'
 import { browserEngine, type SpeechEngine } from './ui/narration/engine'
 import { DEFAULT_THEME } from './ui/theme'
@@ -87,6 +88,9 @@ function ActivityRoute() {
 
 export function AppRoutes() {
   return (
+    <>
+    {/* Confetti when a lesson is completed, on every route (revamp-lesson-frame, D169). */}
+    <Celebration />
     <Routes>
       <Route path={patterns.start} element={<Screen><Start /></Screen>} />
       <Route path={patterns.legacyPath} element={<CurrentLesson />} />
@@ -97,6 +101,7 @@ export function AppRoutes() {
       <Route path={patterns.readiness} element={<Screen breadcrumb={breadcrumb(screenCopy.crumbs.readiness)} actions={['sandbox']}><Readiness /></Screen>} />
       <Route path="*" element={<Navigate to={paths.start()} replace />} />
     </Routes>
+    </>
   )
 }
 

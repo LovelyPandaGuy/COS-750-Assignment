@@ -57,7 +57,7 @@ afterEach(() => setRouteEventSink(() => undefined))
 
 describe('lesson-c1: C1 plays its lesson file (ID 7.2)', () => {
   it('screens in order', () => {
-    expect(headings('c1', learner(DIA.map((id) => att(id, true))))).toEqual(['Welcome', 'Your route', 'How the app works', 'The conventions card', 'Settings', 'Quick readiness check', 'Your result'])
+    expect(headings('c1', learner(DIA.map((id) => att(id, true))))).toEqual(['Welcome', 'Learning objectives', 'How the app works', 'The conventions card', 'Settings', 'Quick readiness check', 'Your result'])
   })
 
   it('conventions card: heights and balance factors, five points', () => {

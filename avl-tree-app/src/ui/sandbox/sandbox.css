@@ -93,7 +93,10 @@
   flex-direction: column;
   gap: var(--space-2);
   padding-block-start: var(--space-3);
-  border-block-start: 1px solid var(--border-subtle);
+  /* D165: a thicker magenta rule over each named section, with its heading (not colour alone). */
+  border-block-start-style: solid;
+  border-block-start-width: 3px;
+  border-block-start-color: var(--accent-highlight);
 }
 .sandbox-section h2 {
   font: var(--type-h2);

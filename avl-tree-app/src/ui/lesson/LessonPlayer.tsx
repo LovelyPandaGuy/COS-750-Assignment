@@ -7,7 +7,6 @@ import { narrationCopy } from '../../content/narration'
 import { NarrationControls } from '../narration/NarrationControls'
 import { useNarration } from '../narration/NarrationContext'
 import { lessonCopy } from '../../content/lesson'
-import { lessonPosition } from '../../live/load'
 import type { Lesson, Question } from '../../live/types'
 import type { ModuleId } from '../../state/learnerState'
 import { paths, afterLesson, parseModuleId } from '../../routes'
@@ -54,7 +53,6 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
 
   const screens = sequence?.screens ?? lesson.screens
   const screen = screens[index]
-  const { index: place, total } = lessonPosition(lesson.id)
 
   // One move function for Next, Back, Skip ahead and the review link: the same reset and focus on the
   // screen heading every way (FR-LRN-04, NFR-02). The lesson outline is retired (revamp-navigation, D155).
@@ -127,17 +125,14 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
   return (
     <div className="lesson">
         <div className="lesson-top">
+          {/* The title only: no "Lesson n of 9 · Screen n of m · phase" line (user, 15 Nov, D167). */}
           <h1 tabIndex={-1}>{sequence?.title ?? lesson.title}</h1>
-          <p className="lesson-position" aria-label={lessonCopy.positionLabel}>
-            <span>{lessonCopy.progress(place, total)}</span>
-            <span>{lessonCopy.screenOf(index + 1, screens.length)}</span>
-            <span className="lesson-phase">{lessonCopy.phase[screen.merrillPhase]}</span>
-          </p>
         </div>
         {note}
         <section ref={sectionRef} className="lesson-screen" aria-labelledby={`${screen.id}-h`} key={screen.id}>
           <h2 id={`${screen.id}-h`} ref={heading} tabIndex={-1} data-narrate>
-            {screen.title}
+            {/* One heading on objectives screens, in place of the content's "Goal" (D168). */}
+            {screen.type === 'objectives' ? lessonCopy.objectivesHeading : screen.title}
           </h2>
           <NarrationControls getRoot={() => sectionRef.current} labels={narrationCopy} />
           <div className="lesson-main">{regions.main}</div>

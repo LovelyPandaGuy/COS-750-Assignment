@@ -23,6 +23,9 @@ import { QuestionCard } from './questions/QuestionCard'
 import { LessonTree } from './LessonTree'
 import { treeLabel } from './labels'
 import { CaseChart, Points, Text, WhatChanged, WorkedExample } from './parts'
+import { LessonTitlePanel } from './LessonTitlePanel'
+import { AppWalkthrough } from './AppWalkthrough'
+import { walkthroughs } from '../../content/walkthrough'
 
 export interface Regions {
   main: ReactNode
@@ -50,12 +53,14 @@ export interface BlockContext {
   goNext: () => void
 }
 
-/** Text and objectives only: the lessons are listed by the sidebar, not here (revamp-navigation, D158). */
+/**
+ * Text and objectives only: the lessons are listed by the sidebar (D158), and the screen's one heading,
+ * "Learning objectives", is the player's level-2 heading (D168).
+ */
 function objectives(s: ObjectivesScreen): Regions {
   return {
     main: (
       <div className="lesson-objectives">
-        <h3>{lessonCopy.objectivesHeading}</h3>
         <Text text={s.text} />
         <Points points={s.objectives} />
       </div>
@@ -163,6 +168,7 @@ function summary(s: SummaryScreen, ctx: BlockContext): Regions {
         {s.transfer !== undefined && (
           <QuestionCard q={s.transfer} mode="practice" attemptsAllowed={Infinity} hintsUsed={ctx.hintsUsedFor(s.transfer.id)} onReview={ctx.onReview} label={treeLabel(s.title)} />
         )}
+        {ctx.lesson.checkId !== undefined && <LessonTitlePanel checkId={ctx.lesson.checkId} />}
         <section className="lesson-recap" aria-labelledby={`${s.id}-recap`}>
           <h3 id={`${s.id}-recap`}>{lessonCopy.recapHeading}</h3>
           <Points points={objectivesOf(ctx.lesson)} />
@@ -253,6 +259,8 @@ export function regionsFor(s: Screen, ctx: BlockContext): Regions {
       }
     case 'intro':
     case 'info':
+      // "How the app works" plays as an animated mini-screen when a walkthrough exists for it (D170).
+      if (walkthroughs[s.id] !== undefined) return { main: <div className="lesson-rule"><Text text={s.text} /><AppWalkthrough screenId={s.id} points={(s.points as string[] | undefined) ?? []} /></div>, caption: null }
       return { main: <div className="lesson-rule"><Text text={s.text} /><Points points={s.points as string[] | undefined} /></div>, caption: null }
     case 'conventions':
       return {
@@ -289,4 +297,3 @@ export function regionsFor(s: Screen, ctx: BlockContext): Regions {
       return pending(s)
   }
 }
-

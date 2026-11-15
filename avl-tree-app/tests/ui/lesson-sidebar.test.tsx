@@ -149,6 +149,17 @@ describe('lesson-sidebar: accessible (NFR-02, ID 11.2)', () => {
     expect(await axe(container), 'open').toHaveNoViolations()
   }, 60_000)
 
+  it('the viewed lesson has no magenta edge, and keeps its thick border and bold underlined title (D172, D164)', () => {
+    const rule = (sel: string) => {
+      const esc = sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      return [...css().matchAll(new RegExp(`${esc}\\s*\\{([^}]*)\\}`, 'g'))].map((m) => m[1]).join(';')
+    }
+    const page = rule(".lesson-sidebar .progress-item[aria-current='page']")
+    expect(page).not.toMatch(/accent-highlight|border-inline-start/)
+    expect(page).toMatch(/border-width:\s*4px/)
+    expect(rule(".lesson-sidebar .progress-item[aria-current='page'] .progress-title")).toMatch(/font-weight:\s*700[\s\S]*text-decoration:\s*underline/)
+  })
+
   it('44 px lesson links', () => {
     expect(css()).toMatch(/\.lesson-sidebar[^{]*\.progress-item[^{]*\{[^}]*min-height:\s*var\(--target-min\)/)
   })
@@ -158,7 +169,7 @@ describe('C1 route screen and no lesson outline (D158, lesson-outline retired)',
   const toRoute = () => {
     renderRoutes(backendWith(), '/module/C1')
     fireEvent.click(screen.getByRole('button', { name: lessonCopy.controls.next }))
-    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Your route')
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Learning objectives') // D168
   }
 
   it('"Your route" shows the objectives only, not the nine lesson lines', () => {

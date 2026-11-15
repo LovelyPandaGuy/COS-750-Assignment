@@ -9,15 +9,6 @@
 }
 .lesson-top { display: flex; flex-direction: column; gap: var(--space-2); }
 .lesson-top h1 { font: var(--type-h1); margin: 0; }
-.lesson-position {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-4);
-  margin: 0;
-  font: var(--type-label);
-  color: var(--text-secondary);
-}
-.lesson-phase { font-weight: 700; color: var(--text-primary); }
 
 .lesson-screen { display: flex; flex-direction: column; gap: var(--space-4); }
 .lesson-screen h2 { font: var(--type-h2); margin: 0; }
@@ -170,3 +161,20 @@
   .certificate { position: absolute; inset: 0 auto auto 0; width: 100%; border-color: currentColor; }
 }
 
+
+/* The lesson's title on its summary (lesson-celebration, D169). */
+.lesson-title-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--action-primary);
+  /* D165: a magenta edge, with the bold title and heading (not colour alone). */
+  border-inline-start-width: 8px;
+  border-inline-start-color: var(--accent-highlight);
+  border-radius: var(--radius-md);
+  background: var(--action-primary-tint);
+}
+.lesson-title-panel h3 { font: var(--type-body); font-weight: 700; margin: 0; }
+.lesson-title-panel p { margin: 0; font: var(--type-body); }
+.lesson-title-panel .lesson-title-name { font: var(--type-body-lg); font-weight: 700; }

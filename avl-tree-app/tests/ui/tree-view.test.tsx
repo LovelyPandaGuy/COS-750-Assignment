@@ -207,6 +207,23 @@ describe('FR-VIS-07 text description', () => {
     expect(readFileSync('src/ui/tree/tree-view.css', 'utf8')).toMatch(/\.tree-describe-button[^{]*\{[^}]*min-height:\s*var\(--target-min\)/);
   });
 
+  it('D166: a small "ℹ Describe" at the right of a header strip, above the drawing, named "Describe tree"', () => {
+    const { container } = render(<TreeView tree={seven} label="Example tree" />);
+    const btn = screen.getByRole('button', { name: 'Describe tree' });
+    const header = container.querySelector('.tree-view-header')!;
+    expect(header).not.toBeNull();
+    expect(header.contains(btn)).toBe(true);
+    expect(btn.textContent).toBe('ℹ Describe');
+    expect(btn.querySelector('[aria-hidden="true"]')?.textContent).toBe('ℹ');
+    const scroll = container.querySelector('.tree-scroll')!;
+    expect(header.compareDocumentPosition(scroll) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // The description opens inside the tree box, under the strip.
+    const box = container.querySelector('.tree-view')!;
+    expect(box.contains(container.querySelector('.tree-description'))).toBe(true);
+    const css = readFileSync('src/ui/tree/tree-view.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+    expect(css).toMatch(/\.tree-view-header\s*\{[^}]*justify-content:\s*flex-end/);
+  });
+
   it('takes its wording from src/content/treeView.ts', () => {
     const src = readFileSync('src/ui/tree/describe.ts', 'utf8') + readFileSync('src/ui/tree/TreeView.tsx', 'utf8');
     const literals = src.match(/'[^'\n]*'|"[^"\n]*"|`[^`]*`/g) ?? [];

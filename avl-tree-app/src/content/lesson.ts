@@ -1,26 +1,16 @@
 // Lesson player and lesson block wording (add-live-lesson-content). FLAGGED FOR THE USER TO READ:
 // these are UI labels only; no teaching text is written here. Teaching text comes from the lesson
-// files, and labels the ID gives come from conventions.json (the progress line, the in-order caption).
+// files, and labels the ID gives come from conventions.json (the in-order caption).
 // "Skip ahead", "Show the rule", "Hint", "Replay step" and "What changed?" are the ID's own words (ID 8.1, 8.2).
 import { CONVENTIONS } from '../engine/conventions'
-import type { MerrillPhase } from '../live/types'
 
 const fill = (template: string, values: Record<string, string | number>) => template.replace(/\{(\w+)\}/g, (w, k: string) => (k in values ? String(values[k]) : w))
 
 export const lessonCopy = {
-  /** "Lesson 3 of 9" (conventions.labels.progress, ID 8.2). */
-  progress: (current: number, total: number) => fill(CONVENTIONS.labels.progress, { current, total }),
-  screenOf: (n: number, m: number) => `Screen ${n} of ${m}`,
-  positionLabel: 'Where you are',
-  /** One word per Merrill phase (ID 3.2). */
-  phase: {
-    problem: 'Problem',
-    activation: 'Recall',
-    demonstration: 'Learn',
-    application: 'Practise',
-    integration: 'Check and summary',
-  } satisfies Record<MerrillPhase, string>,
+  /** The single heading of every objectives screen, in place of its content title (revamp-lesson-frame, D168). */
   objectivesHeading: 'Learning objectives',
+  /** The lesson's title on its summary (rewards.json titles; D169). Flagged for the user to read. */
+  titleHeading: 'Your title for this lesson',
   recapHeading: 'Objectives recap',
   pending: 'This activity is added in the next update of the app.',
   controls: {

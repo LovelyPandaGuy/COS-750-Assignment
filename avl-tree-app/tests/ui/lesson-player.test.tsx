@@ -56,19 +56,32 @@ describe('lesson-player: a lesson plays its screens in order (ID 3.2)', () => {
 })
 
 describe('lesson-player: the frame (ID 8.2, 8.3)', () => {
-  it('top region', () => {
-    at('c3', 'c3-s04')
+  it('top region: the title only, no position line (revamp-lesson-frame, D167)', () => {
+    const r = at('c3', 'c3-s04')
     expect(h1()).toHaveTextContent('The AVL property')
-    expect(screen.getByText('Lesson 3 of 9')).toBeInTheDocument()
-    expect(screen.getByText('Screen 4 of 13')).toBeInTheDocument()
+    expect(screen.queryByText('Lesson 3 of 9')).toBeNull()
+    expect(screen.queryByText(/^Screen \d+ of \d+$/)).toBeNull()
+    expect(r.container.querySelector('.lesson-position, .lesson-phase')).toBeNull()
     expect(h2()).toHaveTextContent('Height')
   })
 
-  it('phases in words', () => {
-    const phases: Record<string, string> = { 'c3-s01': 'Problem', 'c3-s03': 'Recall', 'c3-s04': 'Learn', 'c3-s09': 'Practise', 'c3-s13': 'Check and summary' }
-    for (const [id, word] of Object.entries(phases)) {
+  it('no phase word on any screen (D167, user decision overriding ID 8.2)', () => {
+    for (const id of ['c3-s01', 'c3-s03', 'c3-s04', 'c3-s09', 'c3-s13']) {
       const r = at('c3', id)
-      expect(r.container.querySelector('.lesson-phase')).toHaveTextContent(word)
+      const top = r.container.querySelector('.lesson-top') as HTMLElement
+      expect(top.textContent, id).toBe('The AVL property')
+      r.unmount()
+    }
+  })
+
+  it('objectives screens have one heading, "Learning objectives", and no "Goal" (D168)', () => {
+    for (const l of ['c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8']) {
+      const id = lessonById(l)!.screens.find((x) => x.type === 'objectives')!.id
+      const r = at(l, id)
+      const section = r.container.querySelector('.lesson-screen') as HTMLElement
+      const headings = within(section).getAllByRole('heading')
+      expect(headings.map((x) => x.textContent), l).toEqual(['Learning objectives'])
+      expect(section.textContent, l).not.toMatch(/\bGoal\b/)
       r.unmount()
     }
   })
@@ -200,7 +213,7 @@ describe('lesson-blocks: one component per content screen type (ID 8.1)', () => 
 
   it('objectives block', () => {
     at('c3', 'c3-s02')
-    expect(screen.getByRole('heading', { level: 3, name: lessonCopy.objectivesHeading })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 2, name: lessonCopy.objectivesHeading })).toBeInTheDocument() // the screen heading (D168)
     expect(screen.getByText('Calculate heights and balance factors, and decide whether a tree is an AVL tree (LO2).')).toBeInTheDocument()
   })
 
@@ -347,7 +360,7 @@ describe('bst-refresher: from the lesson file, on the lesson player', () => {
   it('heading, position and topics in order', () => {
     renderRoutes(backendWith(), '/module/C1/refresher')
     expect(h1()).toHaveTextContent('BST refresher')
-    expect(screen.getByText('Lesson 1 of 9')).toBeInTheDocument()
+    expect(screen.queryByText('Lesson 1 of 9')).toBeNull()
     const titles: string[] = []
     for (let i = 0; i < 6; i++) {
       titles.push(h2().textContent!)

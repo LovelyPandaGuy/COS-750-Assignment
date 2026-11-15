@@ -1,0 +1,13 @@
+/* Confetti when a lesson is completed (lesson-celebration; D169, D173, ID 10.4). Decorative: the canvas
+   wrapper is aria-hidden, fixed over the page and takes no pointer input. The library draws the pieces;
+   no piece is rendered at all with the Confetti setting off or under reduced motion. */
+.confetti {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+.confetti-canvas {
+  width: 100%;
+  height: 100%;
+}

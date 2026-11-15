@@ -112,7 +112,9 @@ describe('D146 every block type is marked', () => {
     it(`${type} (${at.screenId}) reads more than its heading`, () => {
       const e = fakeEngine()
       const r = renderNarrated({ ...at, engine: e, attempts: [...allChecks(), ...diagnosticAndReadiness()] })
-      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent((lessonById(at.lesson)!.screens.find((s) => s.id === at.screenId) as { title: string }).title)
+      const sc = lessonById(at.lesson)!.screens.find((s) => s.id === at.screenId) as { title: string; type: string }
+      // Objectives screens show one heading, "Learning objectives" (revamp-lesson-frame, D168).
+      expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(sc.type === 'objectives' ? 'Learning objectives' : sc.title)
       read()
       expect(e.spoken[0].length, e.spoken[0].join(' | ')).toBeGreaterThan(1)
       r.unmount()

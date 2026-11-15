@@ -6,11 +6,11 @@ Plays C1 "Getting started and readiness check" from `lessons/c1.json` and `quest
 ## Requirements
 
 ### Requirement: C1 plays its lesson file
-`/module/C1` SHALL play the screens of `lessons/c1.json` on the lesson player, in order: the welcome, the route with the learning objectives, how the app works, the conventions card (its tree and points), the settings, the readiness questions and the result. The lessons themselves are listed by the sidebar, not on the route screen. (ID 7.2 C1, D158)
+`/module/C1` SHALL play the screens of `lessons/c1.json` on the lesson player, in order: the welcome, the route with the learning objectives, how the app works, the conventions card (its tree and points), the settings, the readiness questions and the result. The lessons themselves are listed by the sidebar, not on the route screen. (ID 7.2 C1, D158, D168)
 
 #### Scenario: Screens in order
 - **WHEN** C1 is played from the start
-- **THEN** its screen headings are "Welcome", "Your route", "How the app works", "The conventions card", "Settings", "Quick readiness check" and "Your result"
+- **THEN** its screen headings are "Welcome", "Learning objectives", "How the app works", "The conventions card", "Settings", "Quick readiness check" and "Your result"
 
 #### Scenario: Conventions card
 - **WHEN** "The conventions card" is shown

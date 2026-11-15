@@ -59,7 +59,8 @@
   .editor-menu {
     position: absolute;
     left: calc(var(--menu-x) + var(--space-6));
-    top: calc(var(--menu-y) - var(--space-4));
+    /* + the tree box's header strip above the drawing (D166). */
+    top: calc(var(--menu-y) + var(--target-min) - var(--space-4));
     margin-top: 0;
     z-index: 1;
   }

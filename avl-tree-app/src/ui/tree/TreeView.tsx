@@ -188,6 +188,12 @@ export function TreeView({
   return (
     // add-narration: the tree's own text description is read aloud, even while its paragraph is closed.
     <div className="tree-view" data-narrate data-narrate-text={describeTree(tree, roles, hide, formatKey)}>
+      {/* A thin header strip above the drawing: "ℹ Describe" at the right, never over a node (D166). */}
+      <div className="tree-view-header">
+        <button type="button" className="tree-describe-button" aria-label={copy.describeButton} aria-expanded={open} aria-controls={descId} onClick={() => setOpen((o) => !o)}>
+          <span aria-hidden="true">{copy.describeIcon}</span> {copy.describeShort}
+        </button>
+      </div>
       <div className="tree-scroll" role="region" aria-label={label} tabIndex={0}>
         <svg
           role={interactive ? 'tree' : 'img'}
@@ -282,9 +288,6 @@ export function TreeView({
           </svg>
         )}
       </div>
-      <button type="button" className="tree-describe-button" aria-expanded={open} aria-controls={descId} onClick={() => setOpen((o) => !o)}>
-        {copy.describeButton}
-      </button>
       <p id={descId} className="tree-description" hidden={!open}>
         {describeTree(tree, roles, hide, formatKey)}
       </p>
