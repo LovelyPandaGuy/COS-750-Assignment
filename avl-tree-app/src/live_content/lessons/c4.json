@@ -13,7 +13,7 @@
       "merrillPhase": "problem",
       "representation": "static-diagram",
       "title": "How many steps?",
-      "text": "This AVL tree holds 16 keys. What is the maximum number of comparisons a search could require?",
+      "text": "This AVL tree holds 16 keys. What is the most comparisons a search can need?",
       "tree": {
         "insert": [
           3,
@@ -41,7 +41,7 @@
       ],
       "answer": "5",
       "answerFrom": "engine",
-      "reveal": "A search needs at most 5 comparisons. The tree has height 4, so it has 5 levels, and a search makes at most one comparison on each level, even though the tree holds 16 keys."
+      "reveal": "5. The tree has height 4, so a search makes at most 5 comparisons, one per level, even though it holds 16 keys."
     },
     {
       "id": "c4-s02",
@@ -50,7 +50,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Goal",
-      "text": "By the end of this lesson, you will be able to trace a search in an AVL tree and explain why it needs only O(log n) comparisons."
+      "text": "Trace a search in an AVL tree, and explain why it needs only O(log n) comparisons (LO3)."
     },
     {
       "id": "c4-s03",
@@ -71,25 +71,25 @@
         "subSkill": "trace-search",
         "level": "apply",
         "concept": "search",
-        "stem": "In the BST lectures, how did a search decide where to go next?",
-        "hint": "This question checks whether you can follow a search path. Compare the key with the node, and then go left or right.",
+        "stem": "In the BST lectures, how did search decide where to go next?",
+        "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
         "options": [
           {
             "id": "a",
-            "text": "It visited the left subtree, then the node, then the right subtree.",
+            "text": "Visit the left subtree, then the node, then the right subtree",
             "misconceptionId": "misc-search-is-traversal",
-            "explanation": "That is an in-order traversal, which visits every node. A search follows one path."
+            "explanation": "That is an in-order traversal, which visits every node. Search follows one path."
           },
           {
             "id": "b",
-            "text": "It went to the child with the smaller balance factor.",
+            "text": "Go to the child with the smaller balance factor",
             "misconceptionId": "misc-search-uses-bf",
-            "explanation": "A search never looks at balance factors. It compares keys only."
+            "explanation": "Search never looks at balance factors. It compares keys only."
           },
           {
             "id": "c",
-            "text": "It compared the key with the node. It stopped if they were equal, went left if the key was smaller and went right if it was larger.",
-            "explanation": "AVL search is exactly this BST search."
+            "text": "Compare the key with the node: equal, stop; smaller, go left; larger, go right",
+            "explanation": "Right. AVL search is exactly this BST search."
           }
         ],
         "correctOptionId": "c"
@@ -116,11 +116,11 @@
         "name": "search",
         "key": 30
       },
-      "caption": "Compare the key with the node. If the key is smaller, go left. If it is larger, go right.",
+      "caption": "Compare the key with the node. Smaller: go left. Larger: go right.",
       "steps": [
-        "30 is larger than 20, so the search goes right.",
-        "30 is smaller than 40, so the search goes left.",
-        "30 equals 30, so the key is found."
+        "30 > 20: go right.",
+        "30 < 40: go left.",
+        "30 = 30: found."
       ],
       "result": "20(10, 40(30, 50))",
       "pseudocode": "search-loop"
@@ -132,7 +132,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "When the key is not there",
-      "text": "Now watch the search for 35.",
+      "text": "Now the search for 35.",
       "tree": {
         "insert": [
           10,
@@ -146,11 +146,11 @@
         "name": "search",
         "key": 35
       },
-      "caption": "When the next branch is empty, the key is not in the tree, so the search returns null.",
+      "caption": "When the next branch is empty, the key is not in the tree: return null.",
       "steps": [
-        "35 is larger than 20, so the search goes right.",
-        "35 is smaller than 40, so the search goes left.",
-        "35 is larger than 30, so the search goes right.",
+        "35 > 20: go right.",
+        "35 < 40: go left.",
+        "35 > 30: go right.",
         "The right branch of 30 is empty, so 35 is not in the tree."
       ],
       "result": "20(10, 40(30, 50))",
@@ -167,7 +167,7 @@
         "search-loop",
         "search-recursive"
       ],
-      "text": "The loop version is the natural fit. A search follows a single path from the root, so there is nothing to come back to. The recursive version does the same work. Each call handles one node and calls itself on one branch only, as its last action. This is called tail recursion."
+      "text": "The loop version is the natural fit: search follows a single path from the root, so there is nothing to come back to. The recursive version does the same work: each call handles one node and calls itself on one branch only, as its last action (tail recursion)."
     },
     {
       "id": "c4-s07",
@@ -177,12 +177,12 @@
       "representation": "written-rule",
       "title": "Why search is O(log n)",
       "points": [
-        "A search makes at most one comparison per level, so it needs at most height + 1 comparisons.",
+        "There is at most one comparison per level, so a search needs at most height + 1 comparisons.",
         "Each comparison rules out one branch and everything in it. This is decrease and conquer, the same idea as binary search on a sorted array.",
         "The AVL rule keeps the height at most roughly 1.44 log(n + 2) − 1.328.",
         "With 1,000,000 keys, the height is at most 27, so a search needs at most 28 comparisons. A plain BST with the same keys could need 1,000,000."
       ],
-      "showRule": "A search needs at most height + 1 comparisons, and the height of an AVL tree is O(log n)."
+      "showRule": "Comparisons ≤ height + 1, and an AVL tree’s height is O(log n)."
     },
     {
       "id": "c4-s08",
@@ -214,7 +214,7 @@
       "show": [
         "balanceFactor"
       ],
-      "caption": "A search reads only the keys. The balance factors are shown here, but the pseudocode never uses them. Balance matters because it limits how long the path can be."
+      "caption": "Search reads only the keys. The balance factors are shown here, but the pseudocode never uses them. Balance matters because it limits how long the path can be."
     },
     {
       "id": "c4-s09",
@@ -226,7 +226,7 @@
       "merrillPhase": "application",
       "representation": "interactive-task",
       "title": "Be the algorithm",
-      "text": "Click the next node that the search visits. The matching line of the pseudocode lights up, and the step counter counts the comparisons.",
+      "text": "Click the next node to visit. The pseudocode line lights up and the step counter counts comparisons.",
       "pseudocode": "search-loop",
       "stepCounter": true,
       "show": [
@@ -244,8 +244,8 @@
         "subSkill": "trace-search",
         "level": "apply",
         "concept": "search",
-        "stem": "Search for 9. Click the nodes in the order in which they are visited.",
-        "hint": "This question checks whether you can follow a search path. Compare the key with the node, and then go left or right.",
+        "stem": "Search for 9. Click the nodes in the order they are visited.",
+        "hint": "This checks that you can follow a search path: compare the key with the node, then go left or right.",
         "tree": {
           "insert": [
             3,
@@ -281,17 +281,17 @@
           {
             "pattern": "goes-wrong-direction",
             "misconceptionId": "misc-bst-order-reversed",
-            "feedback": "Check each comparison again. A smaller key goes left, and a larger key goes right."
+            "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
           },
           {
             "pattern": "visits-extra-nodes",
             "misconceptionId": "misc-search-is-traversal",
-            "feedback": "A search follows one path from the root, and it never visits both branches of a node."
+            "feedback": "Search follows one path from the root. It never visits both branches of a node."
           }
         ],
         "feedback": {
-          "correct": "9 is larger than 7, so the search goes right. 9 is smaller than 13, so it goes left. 9 is smaller than 11, so it goes left. 9 equals 9, so the key is found after 4 comparisons.",
-          "incorrect": "9 is larger than 7, so the search goes right. 9 is smaller than 13, so it goes left. 9 is smaller than 11, so it goes left. 9 equals 9, so the key is found after 4 comparisons."
+          "correct": "9 > 7: go right; 9 < 13: go left; 9 < 11: go left; 9 = 9: found. That is 4 comparisons.",
+          "incorrect": "9 > 7: go right; 9 < 13: go left; 9 < 11: go left; 9 = 9: found. That is 4 comparisons."
         }
       }
     },
@@ -310,7 +310,7 @@
       "show": [
         "balanceFactor"
       ],
-      "text": "The step counter never goes above 5, which is the height of this tree plus one.",
+      "text": "The step counter never goes above 5, the height of this tree plus one.",
       "task": {
         "id": "c4-s10-task",
         "set": "practice",
@@ -323,8 +323,8 @@
         "subSkill": "search-not-found",
         "level": "apply",
         "concept": "search",
-        "stem": "Search for 17. Click the nodes in the order in which they are visited, and then choose Not found.",
-        "hint": "This question checks whether you can tell when a search fails. The search stops when the next branch is empty.",
+        "stem": "Search for 17. Click the nodes in the order they are visited, then choose Not found.",
+        "hint": "This checks that you can tell when a search fails: it stops when the next branch is empty.",
         "tree": {
           "insert": [
             3,
@@ -360,17 +360,17 @@
           {
             "pattern": "goes-wrong-direction",
             "misconceptionId": "misc-bst-order-reversed",
-            "feedback": "Check each comparison again. A smaller key goes left, and a larger key goes right."
+            "feedback": "Check each comparison: a smaller key goes left and a larger key goes right."
           },
           {
             "pattern": "visits-extra-nodes",
             "misconceptionId": "misc-search-is-traversal",
-            "feedback": "A search follows one path from the root, and it never visits both branches of a node."
+            "feedback": "Search follows one path from the root. It never visits both branches of a node."
           }
         ],
         "feedback": {
-          "correct": "17 is larger than 7, so the search goes right. 17 is larger than 13, so it goes right. 17 is larger than 15, so it goes right. 17 is larger than 16, so it goes right. That branch is empty, so 17 is not in the tree. The search made 4 comparisons.",
-          "incorrect": "17 is larger than 7, so the search goes right. 17 is larger than 13, so it goes right. 17 is larger than 15, so it goes right. 17 is larger than 16, so it goes right. That branch is empty, so 17 is not in the tree. The search made 4 comparisons."
+          "correct": "17 > 7: go right; 17 > 13: go right; 17 > 15: go right; 17 > 16: go right. That branch is empty, so 17 is not in the tree. That is 4 comparisons.",
+          "incorrect": "17 > 7: go right; 17 > 13: go right; 17 > 15: go right; 17 > 16: go right. That branch is empty, so 17 is not in the tree. That is 4 comparisons."
         }
       }
     },
@@ -383,7 +383,7 @@
       "title": "Lesson check",
       "checkId": "chk4",
       "optional": false,
-      "text": "This check has one question for each assessment criterion of the lesson's objective. You can re-attempt each question once, and the Hint button is always available."
+      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
     },
     {
       "id": "c4-s12",
@@ -393,9 +393,9 @@
       "representation": "written-rule",
       "title": "Summary",
       "points": [
-        "AVL search is the same as BST search. Compare the key with the node, and then go left or right.",
-        "The search stops at the key if it is found, or at an empty branch if it is not.",
-        "A search needs at most height + 1 comparisons, and the AVL rule keeps the height O(log n)."
+        "AVL search is BST search: compare, then go left or right.",
+        "It stops at the key (found) or at an empty branch (not found).",
+        "At most height + 1 comparisons, and the AVL rule keeps the height O(log n)."
       ],
       "format": "short-box"
     }
