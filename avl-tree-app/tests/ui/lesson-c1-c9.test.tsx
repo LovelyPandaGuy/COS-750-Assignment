@@ -17,6 +17,9 @@ import { backendWith, progressState, renderRoutes } from './learner-fixtures'
 // Spec: live-c1-and-c9 / lesson-c1, lesson-c9, display-settings, route-choice. ID 7.2, 9.1, 9.2, 9.3, 10.4.
 
 const content = loadContent().content!
+// Expected wording is read from the live content (D92), so a wording change in the JSON does not break these tests.
+const c1Route = (lessonById('c1')!.screens.find((s) => s.id === 'c1-s07') as unknown as { route: { passMessage: string; failMessage: string } }).route
+const bonusNote = (content.rewards as { certificateText: { bonusNote: string } }).certificateText.bonusNote
 const c = lessonCopy.controls
 let clock = 0
 const att = (questionId: string, correct: boolean, extra: Partial<Attempt> = {}): Attempt => ({
@@ -100,7 +103,7 @@ describe('lesson-c1: per-skill result and route (ID 7.2, 9.3)', () => {
     const r = openAt('/module/C1', 'c1', 'c1-s07', learner(DIA.map((id) => att(id, id !== 'dia-03'))))
     const items = within(r.container.querySelector('.lesson-skills')!).getAllByRole('listitem')
     expect(items.map((li) => li.textContent!.includes('Secure'))).toEqual([true, true, false, true, true])
-    expect(screen.getByText('Your BST basics are secure. On to C2.')).toBeInTheDocument()
+    expect(screen.getByText(c1Route.passMessage)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Suggested/ })).toHaveTextContent('C2')
     expect(r.stored().completedModules).toContain('C1')
     expect(events.filter((e) => e.type === 'route_recommended')).toHaveLength(1)
@@ -110,7 +113,7 @@ describe('lesson-c1: per-skill result and route (ID 7.2, 9.3)', () => {
     const r = openAt('/module/C1', 'c1', 'c1-s07', learner(DIA.map((id, i) => att(id, i < 3))))
     expect(screen.getByRole('link', { name: /Suggested/ })).toHaveTextContent(/refresher/i)
     expect(screen.getByRole('link', { name: /Go to C2/ })).toBeInTheDocument()
-    expect(screen.getByText(/A short BST refresher first/)).toBeInTheDocument()
+    expect(screen.getByText(c1Route.failMessage)).toBeInTheDocument()
     expect(r.stored().completedModules).not.toContain('C1')
   })
 })
@@ -207,7 +210,7 @@ describe('lesson-c9 (ID 7.2 C9)', () => {
     fireEvent.click(screen.getByRole('button', { name: lessonCopy.c9.generate }))
     const cert = screen.getByRole('region', { name: lessonCopy.c9.certificateLabel })
     expect(cert).toHaveTextContent(/Ada completed (8|9) of 9 lessons of the COS212 AVL tree app and earned the title Structural Savant\./)
-    expect(cert).toHaveTextContent('Proposal: completed lessons could earn a bonus')
+    expect(cert).toHaveTextContent(bonusNote)
     expect(r.backend.getItem(LEARNER_KEY)!).not.toContain('Ada')
     expect(screen.getByRole('button', { name: lessonCopy.c9.print })).toBeInTheDocument()
   })

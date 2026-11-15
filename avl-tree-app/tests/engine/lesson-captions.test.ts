@@ -152,11 +152,11 @@ describe('avl-engine: plain leaf deletion trace (D161)', () => {
 
   it('no false closing line after a plain deletion', () => {
     const r = leafDeleteTrace(five(), 10, { rebalance: false })
-    expect(captionsFor('delete', r.trace, 10).map((c) => c.text)).toEqual(['10 is a leaf: remove it.', 'Node 20: bf = 1 − (−1) = +2.'])
+    expect(captionsFor('delete', r.trace, 10).map((c) => c.text)).toEqual(['10 is a leaf, so it is removed.', 'Node 20 now has a balance factor of 1 − (−1) = +2.'])
   })
 
   it('a rebalancing deletion still closes with the balanced line', () => {
     const r = leafDeleteTrace(five(), 10)
-    expect(captionsFor('delete', r.trace, 10).map((c) => c.text).at(-1)).toBe('Every node has a balance factor of −1, 0 or +1.')
+    expect(captionsFor('delete', r.trace, 10).map((c) => c.text).at(-1)).toBe('Every node now has a balance factor of −1, 0 or +1.')
   })
 })

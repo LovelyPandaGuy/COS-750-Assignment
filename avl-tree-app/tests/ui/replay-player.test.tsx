@@ -139,22 +139,22 @@ describe('FR-VIS-07 a sentence for each step', () => {
     expect(seen[0]).toMatch(/10/)
     // Sentences are the conventions captions: a comparison and the move it causes share one (step-replay).
     expect(seen.slice(1)).toEqual([
-      '10 < 30: go left.',
-      '10 < 30: go left.',
-      '10 < 20: go left.',
-      '10 < 20: go left.',
-      '10 goes in the empty left branch of 20.',
-      'Node 20: bf = −1 − 0 = −1.',
-      'Node 30: bf = −1 − 1 = −2.',
-      'Node 30 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).',
-      'Rotate 20 around 30: right rotation about 30.',
+      '10 is smaller than 30, so the search goes left.',
+      '10 is smaller than 30, so the search goes left.',
+      '10 is smaller than 20, so the search goes left.',
+      '10 is smaller than 20, so the search goes left.',
+      '10 goes into the empty left branch of 20.',
+      'Node 20 now has a balance factor of −1 − 0 = −1.',
+      'Node 30 now has a balance factor of −1 − 1 = −2.',
+      'Node 30 has a balance factor of −2, so it is the first unbalanced node, n. This is Case 1 (LL).',
+      'Rotate 20 around 30. This is a right rotation about 30.',
     ])
   })
 
   it('the imbalance sentence is the conventions caption (ID 7.3)', () => {
     render(<ReplayPlayer operation={INSERT} label="Tree" />)
     stepTimes(8)
-    expect(live().textContent).toBe('Node 30 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).')
+    expect(live().textContent).toBe('Node 30 has a balance factor of −2, so it is the first unbalanced node, n. This is Case 1 (LL).')
   })
 
   it('every sentence is non-empty and names the snapshot balance factor', () => {
@@ -205,7 +205,7 @@ describe('FR-VIS-11 search replays with a step count', () => {
     expect(counter()).toBe('Step 0 / 4')
     stepTimes(4)
     expect(screen.getByText(/nodes visited: 2/i)).toBeTruthy()
-    expect(live().textContent).toBe('30 = 30: found.')
+    expect(live().textContent).toBe('30 equals 30, so the key is found.')
   })
 
   it('not found: 5 steps, count 2, sentence says not in the tree', () => {

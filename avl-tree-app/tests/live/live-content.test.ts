@@ -189,9 +189,9 @@ describe('ID 12.2 typed answers agree with the engine', () => {
   it('animation steps agree, and a changed caption is reported', () => {
     const f = copy()
     const s = screen(f, 'c4', 'c4-s04')
-    expect(s.steps).toEqual(['30 > 20: go right.', '30 < 40: go left.', '30 = 30: found.'])
+    expect(s.steps).toEqual(['30 is larger than 20, so the search goes right.', '30 is smaller than 40, so the search goes left.', '30 equals 30, so the key is found.'])
     expect(s.result).toBe('20(10, 40(30, 50))')
-    ;(s.steps as string[])[1] = '30 > 40: go right.'
+    ;(s.steps as string[])[1] = '30 is larger than 40, so the search goes right.'
     expect(some(problems(f), { id: 'c4-s04', field: 'steps' })).toBe(true)
   })
 })
