@@ -47,11 +47,12 @@ describe('lesson-sidebar: the sidebar lists the nine lessons (ID 8.2, D155)', ()
 })
 
 describe('lesson-sidebar: progress and the page (ID 8.3, 11.1)', () => {
-  it('Done, You are here, Not started, in words', () => {
+  it('Done, Up next, Not started, in words; never "You are here" (fix-sidebar-current-lesson, D164)', () => {
     renderRoutes(at('C3', ['C1', 'C2']), '/module/C4')
     const words = links().map((a) => a.querySelector('.progress-state')!.textContent)
     expect(words).toEqual([s.words.done, s.words.done, s.words.current, ...Array(6).fill(s.words.open)])
-    expect([s.words.done, s.words.current, s.words.open]).toEqual(['Done', 'You are here', 'Not started'])
+    expect([s.words.done, s.words.current, s.words.open]).toEqual(['Done', 'Up next', 'Not started'])
+    expect(sidebar().textContent).not.toContain('You are here')
     for (const a of links()) expect(a.querySelector('.progress-symbol')!.textContent!.trim()).not.toBe('')
   })
 
@@ -61,6 +62,42 @@ describe('lesson-sidebar: progress and the page (ID 8.3, 11.1)', () => {
     unmount()
     renderRoutes(at('C3', ['C1', 'C2']), '/sandbox')
     expect(links().filter((a) => a.getAttribute('aria-current') === 'page')).toHaveLength(0)
+  })
+})
+
+describe('lesson-sidebar: the viewed lesson is the one highlighted (fix-sidebar-current-lesson, D155, D164, ID 11.1)', () => {
+  const byId = (id: string) => links().find((a) => a.getAttribute('data-lesson') === id)!
+
+  it('viewing C3 with the current lesson C1: C3 is the page, C1 is the step and reads Up next', () => {
+    renderRoutes(at('C1', []), '/module/C3')
+    expect(byId('C3')).toHaveAttribute('aria-current', 'page')
+    expect(byId('C1')).toHaveAttribute('aria-current', 'step')
+    expect(byId('C1').querySelector('.progress-state')!.textContent).toBe('Up next')
+    expect(links().filter((a) => a.getAttribute('aria-current') === 'page')).toHaveLength(1)
+  })
+
+  it('the strong highlight follows the page: primary border, primary tint, bold underlined title', () => {
+    const rule = /\.lesson-sidebar\s+\.progress-item\[aria-current='page'\]\s*\{([^}]*)\}/.exec(css())
+    expect(rule).not.toBeNull()
+    expect(rule![1]).toMatch(/border[^;]*var\(--action-primary\)/)
+    expect(rule![1]).toMatch(/background(-color)?:\s*var\(--action-primary-tint\)/)
+    expect(css()).toMatch(/\.lesson-sidebar\s+\.progress-item\[aria-current='page'\]\s+\.progress-title\s*\{[^}]*font-weight:\s*700[^}]*text-decoration:\s*underline/)
+  })
+
+  it('the current lesson is not filled when another lesson is viewed', () => {
+    const rule = /\.lesson-sidebar\s+\.progress-item\[data-state='current'\]:not\(\[aria-current='page'\]\)\s*\{([^}]*)\}/.exec(css())
+    expect(rule).not.toBeNull()
+    expect(rule![1]).toMatch(/border-width:\s*2px/)
+    expect(rule![1]).toMatch(/background(-color)?:/)
+    expect(rule![1]).not.toMatch(/--action-primary-tint/)
+  })
+
+  it('the highlight moves when another lesson is opened from the sidebar', () => {
+    renderRoutes(at('C1', []), '/module/C1')
+    expect(byId('C1')).toHaveAttribute('aria-current', 'page')
+    fireEvent.click(byId('C4'))
+    expect(byId('C4')).toHaveAttribute('aria-current', 'page')
+    expect(byId('C1')).not.toHaveAttribute('aria-current', 'page')
   })
 })
 
