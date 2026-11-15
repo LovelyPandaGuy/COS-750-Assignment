@@ -179,8 +179,6 @@
     "search.compareGreater": "{key} is larger than {node}, so the search goes right.",
     "search.found": "{key} equals {node}, so the key is found.",
     "search.notFound": "The {side} branch of {node} is empty, so {key} is not in the tree.",
-    "insert.compareLess": "{key} is smaller than {node}, so {key} goes left.",
-    "insert.compareGreater": "{key} is larger than {node}, so {key} goes right.",
     "insert.root": "The tree is empty, so {key} becomes the root.",
     "insert.place": "{key} goes into the empty {side} branch of {parent}.",
     "update": "Node {node} now has a balance factor of {hr} − {hl} = {bf}.",

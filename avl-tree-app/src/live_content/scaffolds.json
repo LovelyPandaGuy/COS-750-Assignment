@@ -17,16 +17,16 @@
           "name": "search",
           "key": 50
         },
-        "intro": "Here is the BST built from 10, 20, 30, 40, 50. Watch the search for 50 and count the comparisons.",
+        "intro": "Here is the BST built from 10, 20, 30, 40 and 50. Watch the search for 50 and count the comparisons.",
         "steps": [
-          "50 > 10: go right.",
-          "50 > 20: go right.",
-          "50 > 30: go right.",
-          "50 > 40: go right.",
-          "50 = 50: found."
+          "50 is larger than 10, so the search goes right.",
+          "50 is larger than 20, so the search goes right.",
+          "50 is larger than 30, so the search goes right.",
+          "50 is larger than 40, so the search goes right.",
+          "50 equals 50, so the key is found."
         ],
         "result": "10(·, 20(·, 30(·, 40(·, 50))))",
-        "outro": "Height 4 and 5 comparisons: sorted input gives the worst case, O(n)."
+        "outro": "The tree has height 4, so the search needs 5 comparisons. Sorted input gives the worst case, which is O(n)."
       },
       "stepThrough": {
         "insert": [
@@ -41,10 +41,10 @@
           "name": "search",
           "key": 1
         },
-        "intro": "Now 5, 4, 3, 2, 1. The app asks one question at each step.",
+        "intro": "Now try 5, 4, 3, 2 and 1. The app asks one question at each step.",
         "prompts": [
           "Before each key goes in, click where it will go.",
-          "What shape is the tree?",
+          "What shape does the tree have?",
           "How many comparisons does it take to find 1?"
         ]
       }
@@ -65,38 +65,38 @@
             50
           ]
         },
-        "intro": "The same sorted keys, but in an AVL tree. Watch where it rebalances.",
+        "intro": "These are the same sorted keys, but this time they go into an AVL tree. Watch where it rebalances.",
         "pauseAt": "imbalance",
         "steps": [
           "The tree is empty, so 10 becomes the root.",
-          "20 > 10: go right.",
-          "20 goes in the empty right branch of 10.",
-          "Node 10: bf = 0 − (−1) = +1.",
-          "30 > 10: go right.",
-          "30 > 20: go right.",
-          "30 goes in the empty right branch of 20.",
-          "Node 20: bf = 0 − (−1) = +1.",
-          "Node 10: bf = 1 − (−1) = +2.",
-          "Node 10 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
-          "Rotate 20 around 10: left rotation about 10.",
-          "Every node has a balance factor of −1, 0 or +1.",
-          "40 > 20: go right.",
-          "40 > 30: go right.",
-          "40 goes in the empty right branch of 30.",
-          "Node 30: bf = 0 − (−1) = +1.",
-          "Node 20: bf = 1 − 0 = +1.",
-          "50 > 20: go right.",
-          "50 > 30: go right.",
-          "50 > 40: go right.",
-          "50 goes in the empty right branch of 40.",
-          "Node 40: bf = 0 − (−1) = +1.",
-          "Node 30: bf = 1 − (−1) = +2.",
-          "Node 30 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
-          "Rotate 40 around 30: left rotation about 30.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "20 is larger than 10, so the search goes right.",
+          "20 goes into the empty right branch of 10.",
+          "Node 10 now has a balance factor of 0 − (−1) = +1.",
+          "30 is larger than 10, so the search goes right.",
+          "30 is larger than 20, so the search goes right.",
+          "30 goes into the empty right branch of 20.",
+          "Node 20 now has a balance factor of 0 − (−1) = +1.",
+          "Node 10 now has a balance factor of 1 − (−1) = +2.",
+          "Node 10 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).",
+          "Rotate 20 around 10. This is a left rotation about 10.",
+          "Every node now has a balance factor of −1, 0 or +1.",
+          "40 is larger than 20, so the search goes right.",
+          "40 is larger than 30, so the search goes right.",
+          "40 goes into the empty right branch of 30.",
+          "Node 30 now has a balance factor of 0 − (−1) = +1.",
+          "Node 20 now has a balance factor of 1 − 0 = +1.",
+          "50 is larger than 20, so the search goes right.",
+          "50 is larger than 30, so the search goes right.",
+          "50 is larger than 40, so the search goes right.",
+          "50 goes into the empty right branch of 40.",
+          "Node 40 now has a balance factor of 0 − (−1) = +1.",
+          "Node 30 now has a balance factor of 1 − (−1) = +2.",
+          "Node 30 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).",
+          "Rotate 40 around 30. This is a left rotation about 30.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "20(10, 40(30, 50))",
-        "outro": "20(10, 40(30, 50)): 3 levels instead of 5, so finding 50 takes 3 comparisons instead of 5."
+        "outro": "The result is 20(10, 40(30, 50)), which has 3 levels instead of 5, so finding 50 takes 3 comparisons instead of 5."
       },
       "stepThrough": {
         "insert": [],
@@ -112,10 +112,10 @@
             7
           ]
         },
-        "intro": "Insert 1 to 7 into an AVL tree. At each imbalance the app pauses.",
+        "intro": "Insert 1 to 7 into an AVL tree. The app pauses at each imbalance.",
         "prompts": [
           "Which node is out of balance?",
-          "What is the height of the final tree, and of a plain BST with the same input?"
+          "What is the height of the final tree, and what would the height of a plain BST with the same input be?"
         ]
       }
     },
@@ -133,17 +133,17 @@
           50,
           5
         ],
-        "intro": "Work from the leaves up: a node’s height depends on its children.",
+        "intro": "Work from the leaves up, because the height of a node depends on its children.",
         "steps": [
-          "Node 5: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 10: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1.",
-          "Node 25: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 20: its right branch has height 0 and its left branch has height 1, so bf = 0 − 1 = −1.",
-          "Node 50: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 40: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1.",
-          "Node 30: its right branch has height 1 and its left branch has height 2, so bf = 1 − 2 = −1."
+          "Node 5 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 10 has an empty right branch (height −1) and a left branch of height 0, so its balance factor is −1 − 0 = −1.",
+          "Node 25 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 20 has a right branch of height 0 and a left branch of height 1, so its balance factor is 0 − 1 = −1.",
+          "Node 50 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 40 has a right branch of height 0 and an empty left branch (height −1), so its balance factor is 0 − (−1) = +1.",
+          "Node 30 has a right branch of height 1 and a left branch of height 2, so its balance factor is 1 − 2 = −1."
         ],
-        "outro": "Every balance factor is −1, 0 or +1: this is an AVL tree."
+        "outro": "Every balance factor is −1, 0 or +1, so this is an AVL tree."
       },
       "stepThrough": {
         "insert": [
@@ -155,10 +155,10 @@
           80,
           35
         ],
-        "intro": "Work from the leaves up. The app asks for each node in turn.",
+        "intro": "Work from the leaves up. The app asks about each node in turn.",
         "prompts": [
           "Enter the heights of the two branches.",
-          "Enter bf = h(right) − h(left)."
+          "Enter the balance factor, which is h(right) − h(left)."
         ]
       }
     },
@@ -179,15 +179,15 @@
         "rebalance": false,
         "intro": "Check every node, not only the root.",
         "steps": [
-          "Node 10: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 20: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1.",
-          "Node 30: its right branch is empty (height −1) and its left branch has height 1, so bf = −1 − 1 = −2.",
-          "Node 90: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 80: its right branch has height 0 and its left branch is empty (height −1), so bf = 0 − (−1) = +1.",
-          "Node 70: its right branch has height 1 and its left branch is empty (height −1), so bf = 1 − (−1) = +2.",
-          "Node 50: its right branch has height 2 and its left branch has height 2, so bf = 2 − 2 = 0."
+          "Node 10 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 20 has an empty right branch (height −1) and a left branch of height 0, so its balance factor is −1 − 0 = −1.",
+          "Node 30 has an empty right branch (height −1) and a left branch of height 1, so its balance factor is −1 − 1 = −2.",
+          "Node 90 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 80 has a right branch of height 0 and an empty left branch (height −1), so its balance factor is 0 − (−1) = +1.",
+          "Node 70 has a right branch of height 1 and an empty left branch (height −1), so its balance factor is 1 − (−1) = +2.",
+          "Node 50 has a right branch of height 2 and a left branch of height 2, so its balance factor is 2 − 2 = 0."
         ],
-        "outro": "The root has bf 0, but 30 and 70 have −2 and +2: this is not an AVL tree."
+        "outro": "The root has a balance factor of 0, but nodes 30 and 70 have −2 and +2, so this is not an AVL tree."
       },
       "stepThrough": {
         "insert": [
@@ -200,10 +200,10 @@
           80
         ],
         "rebalance": false,
-        "intro": "Check each node from the leaves up.",
+        "intro": "Check each node, starting from the leaves.",
         "prompts": [
-          "Enter this node’s balance factor.",
-          "Is it −1, 0 or +1? If not, mark it."
+          "Enter the balance factor of this node.",
+          "Is it −1, 0 or +1? If it is not, mark the node."
         ]
       }
     },
@@ -236,13 +236,13 @@
         },
         "intro": "Watch the search for 9.",
         "steps": [
-          "9 > 7: go right.",
-          "9 < 13: go left.",
-          "9 < 11: go left.",
-          "9 = 9: found."
+          "9 is larger than 7, so the search goes right.",
+          "9 is smaller than 13, so the search goes left.",
+          "9 is smaller than 11, so the search goes left.",
+          "9 equals 9, so the key is found."
         ],
         "result": "7(4(2(1, 3), 6(5, ·)), 13(11(9(8, 10), 12), 15(14, 16)))",
-        "outro": "4 comparisons, one per level."
+        "outro": "The search makes 4 comparisons, one on each level that it visits."
       },
       "stepThrough": {
         "insert": [
@@ -262,7 +262,7 @@
         },
         "intro": "Search for 35.",
         "prompts": [
-          "Compare 35 with this node. Left or right?"
+          "Compare 35 with this node. Should the search go left or right?"
         ]
       }
     },
@@ -284,12 +284,12 @@
         },
         "intro": "Watch the search for 30.",
         "steps": [
-          "30 > 20: go right.",
-          "30 < 40: go left.",
-          "30 = 30: found."
+          "30 is larger than 20, so the search goes right.",
+          "30 is smaller than 40, so the search goes left.",
+          "30 equals 30, so the key is found."
         ],
         "result": "20(10, 40(30, 50))",
-        "outro": "The search stops as soon as the key equals the node."
+        "outro": "The search stops as soon as the key equals the key in the node."
       },
       "stepThrough": {
         "insert": [
@@ -316,7 +316,7 @@
         },
         "intro": "Search for 5.",
         "prompts": [
-          "Compare 5 with this node. Left, right or found?"
+          "Compare 5 with this node. Should the search go left or right, or has it found the key?"
         ]
       }
     },
@@ -338,13 +338,13 @@
         },
         "intro": "Watch the search for 35.",
         "steps": [
-          "35 > 20: go right.",
-          "35 < 40: go left.",
-          "35 > 30: go right.",
+          "35 is larger than 20, so the search goes right.",
+          "35 is smaller than 40, so the search goes left.",
+          "35 is larger than 30, so the search goes right.",
           "The right branch of 30 is empty, so 35 is not in the tree."
         ],
         "result": "20(10, 40(30, 50))",
-        "outro": "The search stops at an empty branch: 35 is not in the tree."
+        "outro": "The search stops at an empty branch, so 35 is not in the tree."
       },
       "stepThrough": {
         "insert": [
@@ -371,8 +371,8 @@
         },
         "intro": "Search for 17.",
         "prompts": [
-          "Compare 17 with this node. Left or right?",
-          "The next branch is empty. Found or not found?"
+          "Compare 17 with this node. Should the search go left or right?",
+          "The next branch is empty. Is the key found or not found?"
         ]
       }
     },
@@ -381,13 +381,13 @@
       "criterion": "LO3.4",
       "concept": "search-cost",
       "workedExample": {
-        "intro": "A model explanation, one step at a time.",
+        "intro": "Here is a model explanation, one step at a time.",
         "steps": [
           "A search makes one comparison per level, so it needs at most height + 1 comparisons.",
-          "Each comparison rules out one branch and everything in it: decrease and conquer.",
+          "Each comparison rules out one branch and everything in it. This is called decrease and conquer.",
           "The AVL rule keeps the height at most roughly 1.44 log(n + 2) − 1.328.",
-          "So with 1,000,000 keys a search needs at most 28 comparisons, compared with up to 1,000,000 in a chain.",
-          "Conclusion: search is O(log n) because the AVL rule keeps the path short, not because search uses balance factors."
+          "So with 1,000,000 keys, a search needs at most 28 comparisons, compared with up to 1,000,000 in a chain.",
+          "In conclusion, search is O(log n) because the AVL rule keeps the path short, not because the search uses balance factors."
         ]
       },
       "stepThrough": {
@@ -439,19 +439,19 @@
         "intro": "3 is inserted. Watch the balance factors update on the way back up.",
         "pauseAt": "imbalance",
         "steps": [
-          "3 < 40: go left.",
-          "3 < 20: go left.",
-          "3 < 10: go left.",
-          "3 < 5: go left.",
-          "3 goes in the empty left branch of 5.",
-          "Node 5: bf = −1 − 0 = −1.",
-          "Node 10: bf = −1 − 1 = −2.",
-          "Node 10 has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).",
-          "Rotate 5 around 10: right rotation about 10.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "3 is smaller than 40, so the search goes left.",
+          "3 is smaller than 20, so the search goes left.",
+          "3 is smaller than 10, so the search goes left.",
+          "3 is smaller than 5, so the search goes left.",
+          "3 goes into the empty left branch of 5.",
+          "Node 5 now has a balance factor of −1 − 0 = −1.",
+          "Node 10 now has a balance factor of −1 − 1 = −2.",
+          "Node 10 has a balance factor of −2, so it is the first unbalanced node, n. This is Case 1 (LL).",
+          "Rotate 5 around 10. This is a right rotation about 10.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "40(20(5(3, 10), 30), 60(50, 70))",
-        "outro": "Node 10 is the first node outside −1 to +1, so it is n."
+        "outro": "Node 10 is the first node whose balance factor is outside the range −1 to +1, so it is n."
       },
       "stepThrough": {
         "insert": [
@@ -471,8 +471,8 @@
         },
         "intro": "5 is inserted. Walk up from it.",
         "prompts": [
-          "Enter this node’s new balance factor.",
-          "Is this node unbalanced? If so, it is n."
+          "Enter the new balance factor of this node.",
+          "Is this node unbalanced? If it is, it is n."
         ]
       }
     },
@@ -486,22 +486,22 @@
           10,
           20
         ],
-        "intro": "Insert 30, 10, 20 and watch the app decide the case.",
-        "outro": "20 went into the right subtree of 30’s left child (10): Case 2, an inside case, so a double rotation.",
+        "intro": "Insert 30, 10 and 20, and watch the app decide the case.",
+        "outro": "20 went into the right subtree of 10, the left child of 30. This is Case 2, an inside case, so it needs a double rotation.",
         "steps": [
           "The tree is empty, so 30 becomes the root.",
-          "10 < 30: go left.",
-          "10 goes in the empty left branch of 30.",
-          "Node 30: bf = −1 − 0 = −1.",
-          "20 < 30: go left.",
-          "20 > 10: go right.",
-          "20 goes in the empty right branch of 10.",
-          "Node 10: bf = 0 − (−1) = +1.",
-          "Node 30: bf = −1 − 1 = −2.",
-          "Node 30 has balance factor −2: it is the first unbalanced node, n. Case 2 (LR).",
-          "Rotate 20 around 10: left rotation about 10.",
-          "Rotate 20 around 30: right rotation about 30.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "10 is smaller than 30, so the search goes left.",
+          "10 goes into the empty left branch of 30.",
+          "Node 30 now has a balance factor of −1 − 0 = −1.",
+          "20 is smaller than 30, so the search goes left.",
+          "20 is larger than 10, so the search goes right.",
+          "20 goes into the empty right branch of 10.",
+          "Node 10 now has a balance factor of 0 − (−1) = +1.",
+          "Node 30 now has a balance factor of −1 − 1 = −2.",
+          "Node 30 has a balance factor of −2, so it is the first unbalanced node, n. This is Case 2 (LR).",
+          "Rotate 20 around 10. This is a left rotation about 10.",
+          "Rotate 20 around 30. This is a right rotation about 30.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ]
       },
       "stepThrough": {
@@ -513,12 +513,12 @@
           30,
           25
         ],
-        "intro": "Insert 50, 20, 60, 10, 30, 25. At the imbalance the app asks you to decide.",
+        "intro": "Insert 50, 20, 60, 10, 30 and 25. At the imbalance, the app asks you to decide.",
         "prompts": [
           "Click n.",
           "Which child of n did 25 go under?",
-          "Which subtree of that child?",
-          "So which case is it, and which rotation(s)?"
+          "Which subtree of that child did it go into?",
+          "Which case is it, then, and which rotation or rotations fix it?"
         ]
       }
     },
@@ -549,13 +549,13 @@
             }
           ]
         },
-        "intro": "The slides’ Case 2 example: rotate D around C, then D around G.",
+        "intro": "This is the Case 2 example from the slides. Rotate D around C, and then rotate D around G.",
         "steps": [
-          "Rotate D around C: left rotation about C.",
-          "Rotate D around G: right rotation about G."
+          "Rotate D around C. This is a left rotation about C.",
+          "Rotate D around G. This is a right rotation about G."
         ],
         "result": "D(C(B, ·), G(E, H))",
-        "outro": "Two rotations: the first turns Case 2 into Case 1, the second fixes it."
+        "outro": "There are two rotations. The first turns Case 2 into Case 1, and the second fixes the tree."
       },
       "stepThrough": {
         "insert": [
@@ -570,11 +570,11 @@
           "key": 27,
           "rebalance": false
         },
-        "intro": "27 was just inserted. Perform the fix one rotation at a time.",
+        "intro": "27 has just been inserted. Perform the fix one rotation at a time.",
         "prompts": [
           "Select the node to rotate about.",
           "Choose left or right.",
-          "Check the balance factors, then do the next rotation if needed."
+          "Check the balance factors, and then do the next rotation if one is needed."
         ]
       }
     },
@@ -593,15 +593,15 @@
         ],
         "intro": "Check a result in two steps.",
         "steps": [
-          "In-order: 10, 20, 25, 27, 30, 40. The keys are sorted, so the BST order is kept.",
-          "Node 10: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 20: its right branch is empty (height −1) and its left branch has height 0, so bf = −1 − 0 = −1.",
-          "Node 27: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 40: its right branch is empty (height −1) and its left branch is empty (height −1), so bf = −1 − (−1) = 0.",
-          "Node 30: its right branch has height 0 and its left branch has height 0, so bf = 0 − 0 = 0.",
-          "Node 25: its right branch has height 1 and its left branch has height 1, so bf = 1 − 1 = 0."
+          "The in-order sequence is 10, 20, 25, 27, 30, 40. The keys are sorted, so the BST order is kept.",
+          "Node 10 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 20 has an empty right branch (height −1) and a left branch of height 0, so its balance factor is −1 − 0 = −1.",
+          "Node 27 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 40 is a leaf. Both of its branches are empty, with height −1, so its balance factor is −1 − (−1) = 0.",
+          "Node 30 has a right branch of height 0 and a left branch of height 0, so its balance factor is 0 − 0 = 0.",
+          "Node 25 has a right branch of height 1 and a left branch of height 1, so its balance factor is 1 − 1 = 0."
         ],
-        "outro": "Both checks pass: this is a valid AVL tree."
+        "outro": "Both checks pass, so this is a valid AVL tree."
       },
       "stepThrough": {
         "insert": [
@@ -613,7 +613,7 @@
           22
         ],
         "rebalance": false,
-        "intro": "A student’s result. Check it yourself.",
+        "intro": "Here is a result that a student produced. Check it yourself.",
         "prompts": [
           "List the keys in order. Are they sorted?",
           "Enter each balance factor. Are they all −1, 0 or +1?"
@@ -641,14 +641,14 @@
         },
         "intro": "Watch where 22 goes.",
         "steps": [
-          "22 < 30: go left.",
-          "22 > 20: go right.",
-          "22 < 25: go left.",
-          "22 goes in the empty left branch of 25.",
-          "Node 25: bf = −1 − 0 = −1.",
-          "Node 20: bf = 1 − 0 = +1.",
-          "Node 30: bf = 1 − 2 = −1.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "22 is smaller than 30, so the search goes left.",
+          "22 is larger than 20, so the search goes right.",
+          "22 is smaller than 25, so the search goes left.",
+          "22 goes into the empty left branch of 25.",
+          "Node 25 now has a balance factor of −1 − 0 = −1.",
+          "Node 20 now has a balance factor of 1 − 0 = +1.",
+          "Node 30 now has a balance factor of 1 − 2 = −1.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "30(20(10, 25(22, ·)), 40(35, 50))",
         "outro": "The new key always becomes a leaf where the search ends."
@@ -670,8 +670,8 @@
         },
         "intro": "Place 27.",
         "prompts": [
-          "Compare 27 with this node. Left or right?",
-          "The branch is empty. Place the key."
+          "Compare 27 with this node. Should it go left or right?",
+          "The branch is empty. Place the key here."
         ]
       }
     },
@@ -694,17 +694,17 @@
         },
         "intro": "55 is inserted. Watch the balance factors update from the new key up to the root.",
         "steps": [
-          "55 > 50: go right.",
-          "55 < 70: go left.",
-          "55 < 60: go left.",
-          "55 goes in the empty left branch of 60.",
-          "Node 60: bf = −1 − 0 = −1.",
-          "Node 70: bf = 0 − 1 = −1.",
-          "Node 50: bf = 2 − 0 = +2.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "55 is larger than 50, so the search goes right.",
+          "55 is smaller than 70, so the search goes left.",
+          "55 is smaller than 60, so the search goes left.",
+          "55 goes into the empty left branch of 60.",
+          "Node 60 now has a balance factor of −1 − 0 = −1.",
+          "Node 70 now has a balance factor of 0 − 1 = −1.",
+          "Node 50 now has a balance factor of 2 − 0 = +2.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "50(30, 70(60(55, ·), 80))",
-        "outro": "Only nodes on the path from 55 to the root changed."
+        "outro": "Only the nodes on the path from 55 to the root changed."
       },
       "stepThrough": {
         "insert": [
@@ -719,9 +719,9 @@
           "key": 5,
           "rebalance": false
         },
-        "intro": "5 is inserted. Update the path.",
+        "intro": "5 is inserted. Update the balance factors along the path.",
         "prompts": [
-          "Enter this node’s new balance factor."
+          "Enter the new balance factor of this node."
         ]
       }
     },
@@ -744,23 +744,23 @@
           "name": "insert",
           "key": 15
         },
-        "intro": "The textbook’s example: insert 15.",
+        "intro": "This is the textbook's example. Insert 15.",
         "pauseAt": "imbalance",
         "steps": [
-          "15 > 4: go right.",
-          "15 > 6: go right.",
-          "15 > 7: go right.",
-          "15 < 16: go left.",
-          "15 goes in the empty left branch of 16.",
-          "Node 16: bf = −1 − 0 = −1.",
-          "Node 7: bf = 1 − (−1) = +2.",
-          "Node 7 has balance factor +2: it is the first unbalanced node, n. Case 3 (RL).",
-          "Rotate 15 around 16: right rotation about 16.",
-          "Rotate 15 around 7: left rotation about 7.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "15 is larger than 4, so the search goes right.",
+          "15 is larger than 6, so the search goes right.",
+          "15 is larger than 7, so the search goes right.",
+          "15 is smaller than 16, so the search goes left.",
+          "15 goes into the empty left branch of 16.",
+          "Node 16 now has a balance factor of −1 − 0 = −1.",
+          "Node 7 now has a balance factor of 1 − (−1) = +2.",
+          "Node 7 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 3 (RL).",
+          "Rotate 15 around 16. This is a right rotation about 16.",
+          "Rotate 15 around 7. This is a left rotation about 7.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "4(2(1, 3), 6(5, 15(7, 16)))",
-        "outro": "n is 7, and 15 went into the left subtree of 7’s right child: Case 3."
+        "outro": "Node n is 7, and 15 went into the left subtree of the right child of 7, so this is Case 3."
       },
       "stepThrough": {
         "insert": [
@@ -779,7 +779,7 @@
           "key": 14,
           "rebalance": false
         },
-        "intro": "Insert 14 (also from the textbook).",
+        "intro": "Insert 14, which is also from the textbook.",
         "prompts": [
           "Walk up and click n.",
           "Name the case."
@@ -807,24 +807,24 @@
           "name": "insert",
           "key": 13
         },
-        "intro": "The textbook’s example: insert 13.",
+        "intro": "This is the textbook's example. Insert 13.",
         "pauseAt": "imbalance",
         "steps": [
-          "13 > 4: go right.",
-          "13 > 7: go right.",
-          "13 < 15: go left.",
-          "13 < 14: go left.",
-          "13 goes in the empty left branch of 14.",
-          "Node 14: bf = −1 − 0 = −1.",
-          "Node 15: bf = 0 − 1 = −1.",
-          "Node 7: bf = 2 − 1 = +1.",
-          "Node 4: bf = 3 − 1 = +2.",
-          "Node 4 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).",
-          "Rotate 7 around 4: left rotation about 4.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "13 is larger than 4, so the search goes right.",
+          "13 is larger than 7, so the search goes right.",
+          "13 is smaller than 15, so the search goes left.",
+          "13 is smaller than 14, so the search goes left.",
+          "13 goes into the empty left branch of 14.",
+          "Node 14 now has a balance factor of −1 − 0 = −1.",
+          "Node 15 now has a balance factor of 0 − 1 = −1.",
+          "Node 7 now has a balance factor of 2 − 1 = +1.",
+          "Node 4 now has a balance factor of 3 − 1 = +2.",
+          "Node 4 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).",
+          "Rotate 7 around 4. This is a left rotation about 4.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "7(4(2(1, 3), 6(5, ·)), 15(14(13, ·), 16))",
-        "outro": "The imbalance is at the root this time, and one single rotation fixes it."
+        "outro": "This time the imbalance is at the root, and one single rotation fixes it."
       },
       "stepThrough": {
         "insert": [
@@ -848,12 +848,12 @@
           "name": "insert",
           "key": 9
         },
-        "intro": "Insert 9 and rebalance, one step at a time.",
+        "intro": "Insert 9 and rebalance the tree, one step at a time.",
         "prompts": [
           "Place the key.",
-          "Update balance factors on the way up.",
+          "Update the balance factors on the way up.",
           "Click n and name the case.",
-          "Perform the rotation(s)."
+          "Perform the rotation or rotations."
         ]
       }
     },
@@ -875,13 +875,13 @@
         },
         "intro": "Delete the leaf 50.",
         "steps": [
-          "50 is a leaf: remove it.",
-          "Node 40: bf = −1 − 0 = −1.",
-          "Node 20: bf = 1 − 0 = +1.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "50 is a leaf, so it is removed.",
+          "Node 40 now has a balance factor of −1 − 0 = −1.",
+          "Node 20 now has a balance factor of 1 − 0 = +1.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "20(10, 40(30, ·))",
-        "outro": "Only the leaf is removed; no other node moves."
+        "outro": "Only the leaf is removed, and no other node moves."
       },
       "stepThrough": {
         "insert": [
@@ -923,12 +923,12 @@
         },
         "intro": "Delete 10 and watch the balance factors update.",
         "steps": [
-          "10 is a leaf: remove it.",
-          "Node 20: bf = 1 − (−1) = +2.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "10 is a leaf, so it is removed.",
+          "Node 20 now has a balance factor of 1 − (−1) = +2.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "20(·, 40(30, 50))",
-        "outro": "Node 20 now has bf +2: it is unbalanced."
+        "outro": "Node 20 now has a balance factor of +2, so it is unbalanced."
       },
       "stepThrough": {
         "insert": [
@@ -969,16 +969,16 @@
           "name": "delete",
           "key": 10
         },
-        "intro": "Delete 10 and rebalance.",
+        "intro": "Delete 10 and rebalance the tree.",
         "steps": [
-          "10 is a leaf: remove it.",
-          "Node 20: bf = 1 − (−1) = +2.",
-          "Node 20 has balance factor +2: it is unbalanced.",
-          "Rotate 40 around 20: left rotation about 20.",
-          "Every node has a balance factor of −1, 0 or +1."
+          "10 is a leaf, so it is removed.",
+          "Node 20 now has a balance factor of 1 − (−1) = +2.",
+          "Node 20 has a balance factor of +2, so it is unbalanced.",
+          "Rotate 40 around 20. This is a left rotation about 20.",
+          "Every node now has a balance factor of −1, 0 or +1."
         ],
         "result": "40(20(·, 30), 50)",
-        "outro": "One single left rotation about 20 restores balance."
+        "outro": "One single left rotation about 20 restores the balance."
       },
       "stepThrough": {
         "insert": [
@@ -992,7 +992,7 @@
           "name": "delete",
           "key": 40
         },
-        "intro": "Delete 40 and rebalance.",
+        "intro": "Delete 40 and rebalance the tree.",
         "prompts": [
           "Update the balance factors.",
           "Click the unbalanced node.",
@@ -1005,13 +1005,13 @@
       "criterion": "LO6.1",
       "concept": "applications",
       "workedExample": {
-        "intro": "A worked decision: a contacts list.",
+        "intro": "Here is a worked decision for a contacts list.",
         "steps": [
-          "Is it searched often by key? Yes: names are looked up all day.",
-          "Must it stay in order? Yes: it is shown alphabetically.",
-          "Can keys arrive sorted? Yes: imports are often alphabetical.",
-          "How often is it updated? Rarely, compared with searches.",
-          "Decision: an AVL tree."
+          "Is it searched often by key? Yes, because names are looked up all day.",
+          "Must it stay in order? Yes, because it is shown alphabetically.",
+          "Can keys arrive sorted? Yes, because imports are often alphabetical.",
+          "How often is it updated? Rarely, compared with how often it is searched.",
+          "The decision is to use an AVL tree."
         ]
       },
       "stepThrough": {
@@ -1029,16 +1029,16 @@
       "criterion": "LO6.2",
       "concept": "applications",
       "workedExample": {
-        "intro": "A model justification: student numbers issued in increasing order and looked up often.",
+        "intro": "Here is a model justification for student numbers that are issued in increasing order and looked up often.",
         "steps": [
           "A plain BST would receive the numbers in sorted order and become a chain, with O(n) search.",
           "An AVL tree rebalances after every insertion, so its height stays O(log n).",
-          "Every lookup is therefore O(log n): at most 28 comparisons even for 1,000,000 students.",
+          "Every lookup is therefore O(log n), which means at most 28 comparisons, even for 1,000,000 students.",
           "The cost is a stored height in each node and some rotation work on each insertion, which is small next to the number of lookups."
         ]
       },
       "stepThrough": {
-        "intro": "Justify an AVL tree for a spell checker loaded from a sorted word list.",
+        "intro": "Justify an AVL tree for a spell checker that is loaded from a sorted word list.",
         "prompts": [
           "What would the sorted file do to a plain BST?",
           "What does the AVL rule guarantee?",

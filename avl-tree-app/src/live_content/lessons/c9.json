@@ -22,7 +22,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Am I ready for the lecture?",
-      "text": "Nine questions: one for each objective, then two combined questions in which you build an AVL tree and search it. If you miss a question, it comes back once in a new form. This is still private practice."
+      "text": "This lesson has nine questions. The first seven cover one objective each, and the last two are combined questions in which you build an AVL tree and then search it. If you miss a question, it comes back once in a new form. This is still private practice, and nothing is marked."
     },
     {
       "id": "c9-s02",
@@ -40,7 +40,7 @@
       "merrillPhase": "integration",
       "representation": "text",
       "title": "Your readiness report",
-      "text": "For each objective you see Ready or Revise, with a link to the matching examples. Answers you got wrong while marked Sure are flagged, because those ideas are worth another look. Your overall title is shown at the top.",
+      "text": "For each objective, the report shows Ready or Revise, with a link to the matching examples. Any answer that you got wrong after tapping Sure is flagged, because that idea is worth another look. Your overall title is shown at the top of the report.",
       "report": {
         "perObjective": [
           "LO1",
@@ -59,9 +59,9 @@
         "flagConfidentWrong": true,
         "lectureQuestionsFrom": "misconceptions",
         "listenFor": [
-          "Deleting a node with two children (delete by copying), and the extra rebalancing it can need.",
-          "The deletion cases that need a double rotation.",
-          "How the four insertion cases are coded, and why only one fix is needed."
+          "Listen for how a node with two children is deleted by copying, and for the extra rebalancing that it can need.",
+          "Listen for the deletion cases that need a double rotation.",
+          "Listen for how the four insertion cases are coded, and for why only one fix is needed."
         ]
       }
     },
@@ -72,7 +72,7 @@
       "merrillPhase": "integration",
       "representation": "text",
       "title": "Your question for the lecture",
-      "text": "Write down one question you would like to ask in the lecture. It is added to your list, together with any questions the app suggested.",
+      "text": "Write down one question that you would like to ask in the lecture. It is added to your list, together with any questions that the app suggested.",
       "stored": "local"
     },
     {
@@ -82,7 +82,7 @@
       "merrillPhase": "integration",
       "representation": "text",
       "title": "Certificate of completion",
-      "text": "Type your name to generate a certificate that shows your name, the lessons you completed, your title and today’s date. The name is used only for the certificate and is not stored by the app.",
+      "text": "Type your name to generate a certificate that shows your name, the lessons you completed, your title and today's date. The name is used only for the certificate, and the app does not store it.",
       "certificateFields": [
         "studentName",
         "lessonsCompleted",

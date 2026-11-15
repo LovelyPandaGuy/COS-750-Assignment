@@ -126,7 +126,7 @@
       "merrillPhase": "activation",
       "representation": "interactive-task",
       "title": "Quick readiness check",
-      "text": "The next five questions cover ideas from the BST lectures. They show which ideas you remember well and which need a short refresher. This is private practice, not a test.",
+      "text": "The next five questions cover knowledge from normal BSTs. They show which ideas you remember well and which need a short refresher.",
       "questionSet": "diagnostic"
     },
     {
@@ -227,8 +227,8 @@
           "rebalance": false
         },
         "steps": [
-          "4 is smaller than 5, so 4 goes left.",
-          "4 is larger than 3, so 4 goes right.",
+          "4 is smaller than 5, so the search goes left.",
+          "4 is larger than 3, so the search goes right.",
           "4 goes into the empty right branch of 3.",
           "Node 3 now has a balance factor of 0 − 0 = 0.",
           "Node 5 now has a balance factor of 1 − 1 = 0.",
