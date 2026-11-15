@@ -1,6 +1,7 @@
-# AVL Primer
+# AVL for D.U.M.M.I.E.S
+## Developing Understanding through Mastery, Mistakes, Interaction, Exploration and Success
 
-AVL Primer is a web app that second-year COS212 students use on their own **before the AVL tree lecture**. It teaches AVL trees and the search algorithm from scratch. Checks are built into the lessons, and the support that a student receives depends on how they do on those checks. The app was built as a prototype for COS 750.
+AVL for D.U.M.M.I.E.S is a web app that second-year COS212 students use on their own **before the AVL tree lecture**. It teaches AVL trees and the search algorithm from scratch. Checks are built into the lessons, and the support that a student receives depends on how they do on those checks. The app was built as a prototype for COS 750.
 
 The app is static. It uses React, TypeScript and Vite, and it has **no backend**. It makes no network calls after the page loads, and a learner's progress stays in their own browser.
 
