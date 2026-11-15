@@ -22,6 +22,12 @@ export interface SpeechEngine {
 /** Parts longer than this are split at sentence ends (some browsers stop long utterances). */
 export const MAX_UTTERANCE_CHARS = 200
 
+/**
+ * D174 (assumed): while no on-device voice is found, read the voice list again this often, for this
+ * long. Chrome fires voiceschanged once per page and some browsers not at all (fix-narration-late-voices).
+ */
+export const VOICE_RECHECK = { intervalMs: 250, windowMs: 3000 } as const
+
 /** NFR-05, D147: on-device voices only, English first; null when there is none. */
 export function pickVoice(voices: readonly Voice[]): Voice | null {
   const local = voices.filter((v) => v.localService)
