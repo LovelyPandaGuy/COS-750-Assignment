@@ -134,23 +134,24 @@ describe('NFR-06 message when stored data was replaced', () => {
 })
 
 describe('NFR-06 message when progress is not saved', () => {
-  it('storage blocked: message, not-saved pill, no throw', () => {
+  it('storage blocked: message, no pill, no throw (D157)', () => {
     expect(() => renderRoutes(throwingBackend())).not.toThrow()
     expect(screen.getByRole('status')).toHaveTextContent(startCopy.notSaved)
-    expect(screen.getByRole('banner')).toHaveTextContent(startCopy.notSavedPill)
+    expect(screen.getByRole('banner').querySelector('.topbar-status')).toBeNull()
+    expect(screen.getByRole('banner')).not.toHaveTextContent(/not being saved|saved on this device/i)
   })
 
-  it('storage working: saved pill on Start and on a module screen, no message', () => {
+  it('storage working: no pill on Start or a module screen, no message (D157)', () => {
     renderRoutes(backendWith()).unmount()
     // Start screen
     renderRoutes(backendWith())
-    expect(screen.getByRole('banner')).toHaveTextContent(startCopy.savedPill)
+    expect(screen.getByRole('banner')).not.toHaveTextContent(/saved on this device/i)
     expect(screen.queryByText(startCopy.notSaved)).toBeNull()
     fireEvent.click(startButton()!)
-    expect(screen.getByRole('banner')).toHaveTextContent(startCopy.savedPill)
+    expect(screen.getByRole('banner')).not.toHaveTextContent(/saved on this device/i)
   })
 
-  it('storage fills during the session: pill and message switch', () => {
+  it('storage fills during the session: the message shows', () => {
     let api: ReturnType<typeof useLearner> | null = null
     function Grab() {
       api = useLearner()
@@ -158,10 +159,9 @@ describe('NFR-06 message when progress is not saved', () => {
     }
     const c = controllableBackend(backendWith(progressState()))
     renderRoutes(c.backend, '/', <Grab />)
-    expect(screen.getByRole('banner')).toHaveTextContent(startCopy.savedPill)
+    expect(screen.queryByText(startCopy.notSaved)).toBeNull()
     c.control.failWrites = true
     act(() => api!.reset())
-    expect(screen.getByRole('banner')).toHaveTextContent(startCopy.notSavedPill)
     expect(screen.getByRole('status')).toHaveTextContent(startCopy.notSaved)
   })
 })
@@ -243,14 +243,12 @@ describe('NFR-02 focus moves to the module heading', () => {
   })
 })
 
-describe('NFR-06 the saved pill is announced when it changes', () => {
-  it('the pill is a polite live region on Start and on a module screen', () => {
+describe('NFR-06 no status pill (revamp-navigation, D157)', () => {
+  it('no pill on Start or on a module screen', () => {
     const { unmount } = renderRoutes(backendWith())
-    const pill = () => screen.getByRole('banner').querySelector('.topbar-status')
-    expect(pill()).toHaveAttribute('aria-live', 'polite')
+    expect(screen.getByRole('banner').querySelector('.topbar-status')).toBeNull()
     unmount()
     renderRoutes(backendWith(), '/module/C3')
-    expect(pill()).toHaveAttribute('aria-live', 'polite')
-    expect(pill()).toHaveTextContent(startCopy.savedPill)
+    expect(screen.getByRole('banner').querySelector('.topbar-status')).toBeNull()
   })
 })

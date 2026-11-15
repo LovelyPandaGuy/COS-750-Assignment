@@ -13,6 +13,8 @@ interface LessonBase {
   optional?: boolean
   /** Shown as a separate MasteryBadge under a done lesson; done itself stays neutral ink. */
   mastery?: MasteryState
+  /** The lesson whose screen is being viewed: marked aria-current="page" (lesson sidebar, D155). */
+  page?: boolean
 }
 
 /** A lesson that can be entered has a link; a locked one has a reason in text instead (ID 8.2). */

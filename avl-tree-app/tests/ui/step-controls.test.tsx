@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs'
 import { describe, it, expect, vi } from 'vitest'
 import { axe } from 'vitest-axe'
 import { StepControls, type StepControlsProps } from '../../src/ui/replay/StepControls'
+import { replayCopy } from '../../src/content/replay'
 
 // Spec: add-replay-and-pseudocode / step-replay. Requirement IDs: FR-VIS-03, FR-VIS-10, NFR-02.
 
@@ -34,7 +35,9 @@ describe('FR-VIS-03 controls work by touch and pointer', () => {
   it('glyphs are hidden from the accessible name', () => {
     render(<StepControls {...props()} />)
     for (const b of screen.getAllByRole('button')) {
-      for (const g of b.querySelectorAll('[aria-hidden="true"]')) expect(g.textContent).toMatch(/[⏮⏭▶⏸]/)
+      // The icons come from the content file (now ← → ▶ ❚❚, which the app font draws; 15 Nov).
+      const c = replayCopy.controls
+      for (const g of b.querySelectorAll('[aria-hidden="true"]')) expect([c.iconBack, c.iconPlay, c.iconPause, c.iconStep]).toContain(g.textContent)
     }
   })
 

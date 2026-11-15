@@ -1,0 +1,66 @@
+/* The Lessons sidebar (revamp-navigation design 1 to 3; D155). Tokens only. Phone first: the Lessons button
+   above main; from 768 px a sticky column left of main, in the same place on every screen. */
+.app-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+/* main fills its column (still capped by its max-width and centred by its auto margins). Without this, a
+   flex or grid item with auto margins shrinks to fit its content, and a size container inside it (the
+   sandbox, D156) collapses to zero width, so its words wrap one per line (user, 15 Nov). */
+.app-body > .app-main {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.lesson-sidebar {
+  padding-inline: var(--space-4);
+  padding-block-start: var(--space-4);
+}
+.lesson-sidebar-column {
+  display: none;
+}
+.lesson-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lesson-sidebar .progress-item {
+  min-height: var(--target-min);
+  padding: var(--space-2);
+  font: var(--type-label);
+}
+/* The lesson being viewed: bold, underlined title as well as its state border (not colour alone). */
+.lesson-sidebar .progress-item[aria-current='page'] .progress-title {
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .app-body {
+    display: grid;
+    /* Wide enough that titles are not squashed: 16rem on a tablet, growing to 20rem (user, 15 Nov). */
+    grid-template-columns: clamp(16rem, 22vw, 20rem) minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-6);
+  }
+  .lesson-sidebar-menu {
+    display: none;
+  }
+  .lesson-sidebar-column {
+    display: block;
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    overflow-y: auto;
+    padding-block: var(--space-4);
+  }
+  .lesson-sidebar {
+    padding-block-start: 0;
+    border-inline-end: 1px solid var(--border-subtle);
+    align-self: stretch;
+  }
+}

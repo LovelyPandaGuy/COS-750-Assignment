@@ -6,7 +6,7 @@ Plays C1 "Getting started and readiness check" from `lessons/c1.json` and `quest
 ## Requirements
 
 ### Requirement: C1 plays its lesson file
-`/module/C1` SHALL play the screens of `lessons/c1.json` on the lesson player, in order: the welcome, the route of the nine lessons with the objectives, how the app works, the conventions card (its tree and points), the settings, the readiness questions and the result. (ID 7.2 C1)
+`/module/C1` SHALL play the screens of `lessons/c1.json` on the lesson player, in order: the welcome, the route with the learning objectives, how the app works, the conventions card (its tree and points), the settings, the readiness questions and the result. The lessons themselves are listed by the sidebar, not on the route screen. (ID 7.2 C1, D158)
 
 #### Scenario: Screens in order
 - **WHEN** C1 is played from the start
@@ -15,6 +15,10 @@ Plays C1 "Getting started and readiness check" from `lessons/c1.json` and `quest
 #### Scenario: Conventions card
 - **WHEN** "The conventions card" is shown
 - **THEN** its tree from 20, 10, 40, 30, 50 shows heights and balance factors and its five points are listed
+
+#### Scenario: No lesson outline
+- **WHEN** any C1 screen is shown
+- **THEN** there is no outline of C1's screens, only the "Lessons" sidebar
 
 ### Requirement: Five readiness questions, one per screen
 The question-set screen SHALL ask the five questions in `diagnostic.json` `questionIds` order, one at a time, with the lesson's question controls and a confidence rating. Each answer SHALL be stored; no verdict SHALL be shown until the result. Back SHALL keep answers. A reload SHALL resume at the first unanswered question. (ID 7.2, ID 9.1, FR-DIA-01)

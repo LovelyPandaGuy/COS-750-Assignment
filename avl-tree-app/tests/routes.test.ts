@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
-import { ACTIVITIES_BY_MODULE, paths, parseActivity, parseModuleId } from '../src/routes'
+import { ACTIVITIES_BY_MODULE, paths, parseActivity, parseModuleId, afterLesson } from '../src/routes'
 import { mapStatuses } from '../src/progress'
 import { MODULE_IDS } from '../src/state/learnerState'
 
@@ -17,7 +17,7 @@ function sourceFiles(dir: string): string[] {
 describe('FR-LRN-04 paths come from one module', () => {
   it('builds every path', () => {
     expect(paths.start()).toBe('/')
-    expect(paths.hub()).toBe('/path')
+    expect(paths.legacyPath()).toBe('/path')
     expect(paths.module('C4')).toBe('/module/C4')
     expect(paths.activity('C4', 'explore')).toBe('/module/C4/explore')
     expect(paths.warmUpResult()).toBe('/module/C1/check/result')
@@ -75,5 +75,13 @@ describe('FR-LRN-03 progress map statuses', () => {
     const last = mapStatuses('C9', ['C1'])
     expect(MODULE_IDS.filter((id) => last[id] === 'next')).toEqual([])
     expect(mapStatuses('C2', ['C2']).C2).toBe('current')
+  })
+})
+
+describe('remove-path-page: after each lesson (D159)', () => {
+  it('C1 to C8 go to the next lesson, C9 to the readiness report', () => {
+    const ids = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'] as const
+    ids.forEach((id, i) => expect(afterLesson(id), id).toBe(`/module/C${i + 2}`))
+    expect(afterLesson('C9')).toBe('/readiness')
   })
 })

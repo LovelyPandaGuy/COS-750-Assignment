@@ -28,7 +28,8 @@ export const ACTIVITIES_BY_MODULE: Record<ModuleId, readonly Activity[]> = {
 /** Route patterns for `<Route path>`. */
 export const patterns = {
   start: '/',
-  hub: '/path',
+  /** The former path page: redirects to the current lesson (remove-path-page, D159). */
+  legacyPath: '/path',
   module: '/module/:moduleId',
   activity: '/module/:moduleId/:activity',
   warmUpResult: '/module/C1/check/result',
@@ -39,12 +40,18 @@ export const patterns = {
 /** Concrete paths to link or navigate to. */
 export const paths = {
   start: () => '/',
-  hub: () => '/path',
+  legacyPath: () => '/path',
   module: (id: ModuleId) => `/module/${id}`,
   activity: (id: ModuleId, activity: Activity) => `/module/${id}/${activity}`,
   warmUpResult: () => '/module/C1/check/result',
   sandbox: () => '/sandbox',
   readiness: () => '/readiness',
+}
+
+/** Where Next on a lesson's last screen goes: the next lesson, and after C9 the readiness report (D159). */
+export function afterLesson(id: ModuleId): string {
+  const i = MODULE_IDS.indexOf(id)
+  return i < MODULE_IDS.length - 1 ? paths.module(MODULE_IDS[i + 1]) : paths.readiness()
 }
 
 export function parseModuleId(value: string | undefined): ModuleId | null {

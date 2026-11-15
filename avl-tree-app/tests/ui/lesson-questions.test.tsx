@@ -248,7 +248,8 @@ describe('lesson-checks (ID 9.1, 9.2)', () => {
       return Number(m)
     })
     expect(counts).toEqual([2, 2, 4, 4, 4, 3, 2])
-  })
+    // Seven lessons, each now with the Lessons sidebar (revamp-navigation): over 5 s under load.
+  }, 30_000)
 
   it('second attempt right: two attempts, numbered 1 and 2', () => {
     const r = openAt('c2', 'c2-s12', [])

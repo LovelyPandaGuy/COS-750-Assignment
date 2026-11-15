@@ -2,115 +2,38 @@ import { fireEvent, screen, within } from '@testing-library/react'
 import { readFileSync } from 'node:fs'
 import { describe, it, expect } from 'vitest'
 import { MODULE_IDS } from '../../src/state/learnerState'
-import { MODULE_TITLES, moduleLabel } from '../../src/content/modules'
+import { MODULE_TITLES } from '../../src/content/modules'
 import { screenCopy } from '../../src/content/screens'
 import { LEARNER_KEY } from '../../src/state/storage'
 import { backendWith, progressState, renderRoutes } from './learner-fixtures'
 
-// Spec: add-routing-and-screen-skeleton / module-hub and screen-skeletons. Requirement IDs: FR-LRN-03, FR-LRN-04, FR-LRN-05, FR-DIA-04, FR-DIA-05, FR-VIS-08, NFR-02.
+// Spec: add-routing-and-screen-skeleton / module-hub and screen-skeletons; remove-path-page (D159, D160). Requirement IDs: FR-LRN-03, FR-LRN-04, FR-LRN-05, FR-DIA-04, FR-DIA-05, FR-VIS-08, NFR-02.
 
 const h1 = () => screen.getByRole('heading', { level: 1 })
 const main = () => screen.getByRole('main')
-const map = () => screen.getByRole('navigation', { name: /progress map/i })
-const items = () => within(map()).getAllByRole('listitem')
 const href = (el: HTMLElement) => el.getAttribute('href') ?? ''
 const strip = (s: string) => s.replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '')
 
-describe('FR-LRN-03 progress map', () => {
-  it('return visit: nine modules in order with statuses from the state', () => {
+// remove-path-page (D159, D160): there is no path page; the Lessons sidebar shows the path (D155).
+describe('remove-path-page: the path page is gone (D159)', () => {
+  it('/path opens the current lesson', () => {
     renderRoutes(backendWith(progressState()), '/path')
-    const li = items().slice(0, 9)
-    expect(li).toHaveLength(9)
-    li.forEach((el, i) => expect(within(el).getByRole('link')).toHaveTextContent(moduleLabel(MODULE_IDS[i])))
-    const words = ['Done', 'Done', 'Done', 'You are here', 'Up next', 'Later', 'Later', 'Later', 'Later']
-    li.forEach((el, i) => expect(el.textContent, MODULE_IDS[i]).toContain(words[i]))
-    expect(li.map((el) => el.getAttribute('data-status'))).toEqual([
-      'done', 'done', 'done', 'current', 'next', 'later', 'later', 'later', 'later',
-    ])
-  })
-
-  it('fresh learner: C1 here, C2 next', () => {
-    renderRoutes(backendWith(), '/path')
-    const li = items()
-    expect(li[0].textContent).toContain('You are here')
-    expect(li[1].textContent).toContain('Up next')
-    expect(li[2].textContent).toContain('Later')
-  })
-
-  it('every item has a symbol and a word, and the stylesheet gives each status its own border', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    for (const el of items().slice(0, 9)) expect(el.textContent).toMatch(/[✓▶○]/)
-    const css = strip(readFileSync('src/ui/screens.css', 'utf8'))
-    const border = (status: string) => {
-      const m = new RegExp(`\\[data-status=['"]${status}['"]\\][^{]*\\{([^}]*)\\}`).exec(css)
-      expect(m, status).not.toBeNull()
-      return (m![1].match(/border[^:]*:[^;]+/g) ?? []).join(';')
-    }
-    expect(new Set([border('done'), border('current'), border('later')]).size).toBe(3)
-  })
-
-  it('marks the current item and is a labelled navigation landmark', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    expect(items()[3]).toHaveAttribute('aria-current', 'step')
-    expect(items().filter((el) => el.hasAttribute('aria-current'))).toHaveLength(1)
-  })
-
-  it('marks C7 optional and ends with a link to the readiness summary', () => {
-    renderRoutes(backendWith(), '/path')
-    expect(items()[6].textContent).toContain('Optional')
-    const last = within(items()[items().length - 1]).getByRole('link')
-    expect(href(last)).toMatch(/\/readiness$/)
-  })
-
-  it('locks nothing: every module link goes to its module screen', () => {
-    renderRoutes(backendWith(), '/path')
-    items().slice(0, 9).forEach((el, i) => {
-      expect(href(within(el).getByRole('link'))).toMatch(new RegExp(`/module/${MODULE_IDS[i]}$`))
-    })
-  })
-
-  it('shows only what the state says', () => {
-    renderRoutes(backendWith(progressState({ currentModule: 'C5', completedModules: ['C1', 'C3', 'C4'] })), '/path')
-    expect(items()[1].textContent).toContain('Later')
-    expect(items()[1].textContent).not.toContain('Done')
-  })
-})
-
-describe('FR-LRN-03 hub screen', () => {
-  it('has the heading, the current module card with its link, and the sandbox card', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    expect(h1()).toHaveTextContent('Your path')
-    const card = screen.getByRole('region', { name: 'C4 Search (the algorithm)' })
-    expect(href(within(card).getByRole('link', { name: /^continue/i }))).toMatch(/\/module\/C4$/)
-    expect(href(within(main()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
-  })
-
-  // Spec: add-sandbox / module-hub delta. FR-VIS-08, D11.
-  it('suggests the sandbox once C2 is completed, and links to it either way', () => {
-    const card = () => screen.getByRole('region', { name: screenCopy.hub.sandboxHeading })
-    const { unmount } = renderRoutes(backendWith(progressState()), '/path')
-    expect(card()).toHaveTextContent(screenCopy.hub.sandboxSuggested)
-    expect(href(within(card()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
-    unmount()
-    renderRoutes(backendWith(), '/path')
-    expect(card()).not.toHaveTextContent(screenCopy.hub.sandboxSuggested)
-    expect(href(within(card()).getByRole('link', { name: /open sandbox/i }))).toMatch(/\/sandbox$/)
-  })
-
-  it('Continue opens the current module', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
     expect(h1()).toHaveTextContent('Search (the algorithm)')
+    expect(screen.queryByText('Your path')).toBeNull()
   })
 
-  it('has exactly one primary action', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    expect(main().querySelectorAll('.button-primary')).toHaveLength(1)
+  it('no screen links to /path', () => {
+    for (const path of ['/', '/module/C4', '/module/C1/refresher', '/sandbox', '/readiness']) {
+      const { container, unmount } = renderRoutes(backendWith(progressState()), path)
+      const links = [...container.querySelectorAll('a[href]')].map((a) => a.getAttribute('href') ?? '')
+      expect(links.filter((h) => /\/path$/.test(h)), path).toEqual([])
+      expect(container.textContent, path).not.toMatch(/back to path/i)
+      unmount()
+    }
   })
 
-  it('shows no scores, points, streaks or comparison', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    expect(main().textContent).not.toMatch(/\b(score|points|streak|rank|grade|pass|fail)\b/i)
+  it('no sandbox card or suggestion is left (D160)', () => {
+    expect((screenCopy as Record<string, unknown>).hub).not.toHaveProperty('sandboxSuggested')
   })
 })
 
@@ -140,17 +63,18 @@ describe('FR-LRN-05 module screen', () => {
     expect(screen.getByText('Lesson 9 of 9')).toBeInTheDocument()
   })
 
-  it('Back to path opens the hub', () => {
-    renderRoutes(backendWith(), '/readiness')
-    fireEvent.click(within(main()).getByRole('link', { name: /back to path/i }))
-    expect(h1()).toHaveTextContent('Your path')
+  it('Back to your lesson opens the current lesson (D159)', () => {
+    renderRoutes(backendWith(progressState()), '/readiness')
+    const back = within(main()).getByRole('link', { name: '← Back to C4 Search (the algorithm)' })
+    expect(href(back)).toMatch(/\/module\/C4$/)
+    fireEvent.click(back)
+    expect(h1()).toHaveTextContent('Search (the algorithm)')
   })
 
   it('moving about does not change the stored learner state', () => {
     const backend = backendWith(progressState({ currentModule: 'C9' }))
     const before = backend.getItem(LEARNER_KEY)
-    renderRoutes(backend, '/path')
-    fireEvent.click(within(main()).getByRole('link', { name: /^continue/i }))
+    renderRoutes(backend, '/module/C9')
     fireEvent.click(screen.getByRole('button', { name: 'Next' }))
     fireEvent.click(screen.getByRole('button', { name: 'Back' }))
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
@@ -172,7 +96,7 @@ describe('FR-DIA-05 wording and targets', () => {
   })
 
   it('imports visible strings from content', () => {
-    for (const f of ['src/components/ProgressMap.tsx', 'src/components/ActivityList.tsx', 'src/pages/Hub.tsx', 'src/pages/Module.tsx']) {
+    for (const f of ['src/components/ProgressMap.tsx', 'src/components/ActivityList.tsx', 'src/components/BackToLesson.tsx', 'src/pages/Module.tsx']) {
       expect(readFileSync(f, 'utf8'), f).toMatch(/content\/(screens|modules)/)
     }
   })

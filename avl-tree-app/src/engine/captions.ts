@@ -136,11 +136,12 @@ export function captionsFor(op: CaptionOperation, trace: readonly TraceStep[], k
     }
   }
   closeInsert()
-  // An insert closes with "done" once more when its last step left every node in range and no
-  // rebalance just said so; a delete always closes with it (the ID's lesson captions).
+  // An insert or a delete closes with "done" once more when its last step left every node in range and
+  // no rebalance just said so (the ID's lesson captions). A plain delete that leaves a node out of range
+  // gets no closing line (align-sandbox-explanations, D161).
   const end = trace.length > 0 ? trace[trace.length - 1].after : null
   if (op === 'insert' && trace.length > 0 && out[out.length - 1]?.text !== T.done && analyseTree(end).isAvl) add(T.done, [])
-  if (op === 'delete') add(T.done, [])
+  if (op === 'delete' && out[out.length - 1]?.text !== T.done && analyseTree(end).isAvl) add(T.done, [])
   return out
 }
 

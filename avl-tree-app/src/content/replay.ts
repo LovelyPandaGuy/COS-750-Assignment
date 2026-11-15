@@ -14,10 +14,11 @@ export const replayCopy = {
     play: 'Play',
     pause: 'Pause',
     step: 'Step',
-    iconBack: '⏮',
+    /** Arrows and bars the app font draws; ⏮ ⏸ ⏭ showed as empty boxes (15 Nov). */
+    iconBack: '←',
     iconPlay: '▶',
-    iconPause: '⏸',
-    iconStep: '⏭',
+    iconPause: '❚❚',
+    iconStep: '→',
     speed: 'Speed',
     speedLabel: (s: number) => `${s}×`,
     progress: 'Replay progress',
@@ -41,6 +42,8 @@ export const replayCopy = {
   sentence: {
     startInsert: (k: number) => `Inserting ${k}. Press Play or Step to watch.`,
     startSearch: (k: number) => `Searching for ${k}. Press Play or Step to watch.`,
+    /** The sandbox's leaf deletion replay (D163). Flagged for the user to read. */
+    startDelete: (k: number) => `Deleting ${k}. Press Play or Step to watch.`,
     compareEqual: (k: number, at: number) => `Compare ${k} with ${at}: they are equal.`,
     compare: (k: number, at: number, dir: Dir) =>
       `Compare ${k} with ${at}: ${k} is ${dir === 'left' ? 'smaller' : 'larger'}, so go ${dir}.`,

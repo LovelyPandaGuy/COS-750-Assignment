@@ -41,15 +41,13 @@ export function scopeOf(entry: Entry): string {
 
 async function run(page: Page, a: Action): Promise<void> {
   if ('screen' in a) {
-    const outline = page.locator('.lesson-outline')
-    await outline.waitFor()
-    if ((await outline.locator('details').count()) > 0 && (await outline.locator('.lesson-outline-entry').count()) === 0) await outline.locator('summary').click()
-    await outline.locator('.lesson-outline-entry').nth(a.screen).click()
+    // The outline is retired (revamp-navigation): Next reaches the same screens it could open.
+    for (let i = 0; i < a.screen; i++) await page.getByRole('button', { name: LABELS.NEXT, exact: true }).first().click()
     return
   }
-  if ('outline' in a) {
-    const outline = page.locator('.lesson-outline')
-    if ((await outline.locator('details').count()) > 0 && (await outline.locator('.lesson-outline-entry').count()) === 0) await outline.locator('summary').click()
+  if ('sidebar' in a) {
+    const button = page.getByRole('button', { name: LABELS.LESSONS, exact: true })
+    if (await button.isVisible()) await button.click()
     return
   }
   if ('pick' in a) {

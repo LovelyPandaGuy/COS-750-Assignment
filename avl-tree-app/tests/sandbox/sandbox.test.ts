@@ -2,16 +2,17 @@ import fc from 'fast-check'
 import { readFileSync } from 'node:fs'
 import { describe, it, expect } from 'vitest'
 import { analyseTree } from '../../src/engine/analyse'
-import { avlDelete, avlInsert } from '../../src/engine/avl'
+import { avlInsert, avlInsertTrace } from '../../src/engine/avl'
+import { captionsFor } from '../../src/engine/captions'
+import { leafDeleteTrace, plainInsertTrace } from '../../src/engine/lessonTrace'
 import { insert } from '../../src/engine/bst'
 import { searchTrace } from '../../src/engine/search'
 import { height, type Key, type Tree } from '../../src/engine/tree'
 import { SANDBOX_KEY_MAX, SANDBOX_KEY_MIN, SANDBOX_MAX_NODES, SORTED_DEMO } from '../../src/sandbox/config'
 import { initialSandbox, sandboxReducer, sandboxStats, type SandboxAction, type SandboxState } from '../../src/sandbox/sandbox'
-import { caseLabel } from '../../src/engine/conventions'
 import { sandboxCopy } from '../../src/content/sandbox'
 
-// Spec: add-sandbox / sandbox. Requirement IDs: FR-VIS-08, FR-MOT-04, LO1, D3, D11, D19, D27.
+// Spec: add-sandbox / sandbox; align-sandbox-explanations (D161 to D163). Requirement IDs: FR-VIS-08, FR-MOT-04, LO1, LO7, D3, D11, D19, D27.
 
 const run = (actions: SandboxAction[], from: SandboxState = initialSandbox()) => actions.reduce(sandboxReducer, from)
 const ins = (...keys: number[]): SandboxAction[] => keys.map((key) => ({ type: 'insert', key }))
@@ -49,11 +50,27 @@ describe('FR-VIS-08 insert and delete', () => {
     expect(height(s.tree)).toBe(6)
   })
 
-  it('delete with rebalancing on uses the engine AVL delete', () => {
-    const s = run([...ins(10, 20, 30), { type: 'delete', key: 20 }])
-    expect(shape(s.tree)).toEqual(shape(avlDelete(avl([10, 20, 30]), 20).tree))
-    expect(keysOf(s.tree)).not.toContain(20)
-    expect(s.order).toEqual([10, 30])
+  it('delete a leaf with rebalancing on: the engine leaf deletion (C7, D162)', () => {
+    const s = run([...ins(20, 10, 40, 30, 50), { type: 'delete', key: 10 }])
+    expect(shape(s.tree)).toEqual(shape(leafDeleteTrace(avl([20, 10, 40, 30, 50]), 10).tree))
+    expect(keysOf(s.tree)).toEqual([20, 30, 40, 50])
+    expect(s.order).toEqual([20, 40, 30, 50])
+  })
+
+  it('delete a leaf with rebalancing off: no rotation', () => {
+    const s = run([off, ...ins(20, 10, 40, 30, 50), { type: 'delete', key: 10 }])
+    expect(shape(s.tree)).toEqual(shape(leafDeleteTrace(bst([20, 10, 40, 30, 50]), 10, { rebalance: false }).tree))
+  })
+
+  it('a node with children is not deleted, with a calm notice (D162)', () => {
+    const before = run(ins(10, 20, 30))
+    const s = sandboxReducer(before, { type: 'delete', key: 20 })
+    expect(s.tree).toBe(before.tree)
+    expect(s.notice).toEqual({ kind: 'notLeaf', key: 20 })
+    const text = sandboxCopy.notice({ kind: 'notLeaf', key: 20 })
+    expect(text).toContain('20 is not a leaf')
+    expect(text).toContain('C7')
+    expect(text).not.toMatch(/wrong|fail|error/i)
   })
 })
 
@@ -119,9 +136,9 @@ describe('D11 rebalancing switch rebuilds from the keys in insert order', () => 
   })
 
   it('a deleted key stays out of the rebuild', () => {
-    const s = run([...ins(5, 3, 8, 1), { type: 'delete', key: 3 }, off])
-    expect(s.order).toEqual([5, 8, 1])
-    expect(shape(s.tree)).toEqual(shape(bst([5, 8, 1])))
+    const s = run([...ins(5, 3, 8, 1), { type: 'delete', key: 1 }, off])
+    expect(s.order).toEqual([5, 3, 8])
+    expect(shape(s.tree)).toEqual(shape(bst([5, 3, 8])))
   })
 })
 
@@ -184,31 +201,70 @@ describe('LO1 FR-MOT-04 statistics from the engine', () => {
   })
 })
 
-describe('D19 event log from the engine', () => {
-  it('rebalancing off: 7 went to the right of 6, no rebalancing', () => {
+const steps = (e: SandboxState['log'][number]) => ('steps' in e ? e.steps : [])
+
+describe('D19 D161 event log: every step in the lessons\' captions', () => {
+  it('rebalancing off: 7 after 6, the plain insert captions', () => {
     const s = run([off, ...ins(6, 7)])
-    expect(s.log[0]).toEqual({ kind: 'insert', key: 7, parent: 6, side: 'right', rebalances: [], rebalancing: false })
-    expect(sandboxCopy.log(s.log[0])).toMatch(/7/)
-    expect(sandboxCopy.log(s.log[0])).toMatch(/right of 6/)
+    expect(s.log[0]).toMatchObject({ kind: 'insert', key: 7, rebalancing: false })
+    expect(steps(s.log[0])).toEqual(['7 > 6: go right.', '7 goes in the empty right branch of 6.', 'Node 6: bf = 0 − (−1) = +1.', 'Every node has a balance factor of −1, 0 or +1.'])
+    expect(sandboxCopy.heading(s.log[0])).toBe('Inserted 7')
+    expect(sandboxCopy.noRotation).toBe('Rebalancing is off, so no rotation is made.')
   })
 
   it('the first key is the root', () => {
-    expect(run(ins(40)).log[0]).toEqual({ kind: 'insert', key: 40, parent: null, side: null, rebalances: [], rebalancing: true })
+    expect(steps(run(ins(40)).log[0])[0]).toBe('The tree is empty, so 40 becomes the root.')
   })
 
-  it('rebalancing on: inserting 30 after 10, 20 names node 10 and the case from the conventions wording', () => {
-    const s = run(ins(10, 20, 30))
-    const r = avlInsert(avl([10, 20]), 30).rebalance!
-    expect(s.log[0]).toMatchObject({ kind: 'insert', key: 30, parent: 20, side: 'right', rebalances: [r] })
-    const text = sandboxCopy.log(s.log[0])
-    expect(text).toContain('10')
-    expect(text).toContain(caseLabel(r.case)) // conventions.json, ID 7.3
+  it('rebalancing on: inserting 30 after 10, 20 gives exactly the C6 captions', () => {
+    expect(steps(run(ins(10, 20, 30)).log[0])).toEqual([
+      '30 > 10: go right.',
+      '30 > 20: go right.',
+      '30 goes in the empty right branch of 20.',
+      'Node 20: bf = 0 − (−1) = +1.',
+      'Node 10: bf = 1 − (−1) = +2.',
+      'Node 10 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).',
+      'Rotate 20 around 10: left rotation about 10.',
+      'Every node has a balance factor of −1, 0 or +1.',
+    ])
   })
 
-  it('delete entries carry the engine rebalances', () => {
-    const before = run(ins(20, 10, 30, 40))
-    const s = sandboxReducer(before, { type: 'delete', key: 10 })
-    expect(s.log[0]).toEqual({ kind: 'delete', key: 10, rebalances: avlDelete(before.tree, 10).rebalances, rebalancing: true })
+  it('delete entry: the C7 captions', () => {
+    const s = run([...ins(20, 10, 40, 30, 50), { type: 'delete', key: 10 }])
+    expect(sandboxCopy.heading(s.log[0])).toBe('Deleted 10')
+    expect(steps(s.log[0])).toEqual([
+      '10 is a leaf: remove it.',
+      'Node 20: bf = 1 − (−1) = +2.',
+      'Node 20 has balance factor +2: it is unbalanced.',
+      'Rotate 40 around 20: left rotation about 20.',
+      'Every node has a balance factor of −1, 0 or +1.',
+    ])
+  })
+
+  it('an empty rebuild says the tree is empty', () => {
+    const text = sandboxCopy.heading(run([off]).log[0])
+    expect(text).toMatch(/the tree is empty/i)
+    expect(text).not.toMatch(/\b0 keys\b/)
+  })
+
+  it('every step is the engine caption for the same trace (property)', () => {
+    fc.assert(
+      fc.property(fc.boolean(), fc.array(fc.tuple(fc.boolean(), fc.integer({ min: 1, max: 40 })), { maxLength: 25 }), (rebalance, ops) => {
+        let s = run(rebalance ? [] : [off])
+        for (const [del, k] of ops) {
+          const before = s.tree
+          s = sandboxReducer(s, { type: del ? 'delete' : 'insert', key: k })
+          if (s.tree === before) continue
+          const t = del
+            ? leafDeleteTrace(before, k, { rebalance })
+            : rebalance
+              ? { trace: avlInsertTrace(before, k).trace }
+              : plainInsertTrace(before, k)
+          expect(steps(s.log[0])).toEqual(captionsFor(del ? 'delete' : 'insert', t.trace, k).map((c) => c.text))
+        }
+      }),
+      { numRuns: 60 },
+    )
   })
 
   it('no case names are typed in the sandbox wording', () => {
@@ -216,18 +272,28 @@ describe('D19 event log from the engine', () => {
   })
 })
 
-describe('FR-VIS-03 replay of the last insert', () => {
-  it('set after an insert with rebalancing on, with the tree before', () => {
+describe('D163 the last change, for the replay', () => {
+  it('an insert, on or off, with the tree before', () => {
     const before = run(ins(10, 20))
-    const s = sandboxReducer(before, { type: 'insert', key: 30 })
-    expect(s.lastInsert).toEqual({ before: before.tree, key: 30 })
+    expect(sandboxReducer(before, { type: 'insert', key: 30 }).lastChange).toEqual({ kind: 'insert', before: before.tree, key: 30, rebalance: true })
+    const offBefore = run([off, ...ins(6)])
+    expect(sandboxReducer(offBefore, { type: 'insert', key: 7 }).lastChange).toEqual({ kind: 'insert', before: offBefore.tree, key: 7, rebalance: false })
   })
 
-  it('cleared by a delete, a toggle, a clear and an insert with rebalancing off', () => {
+  it('a leaf delete', () => {
+    const before = run(ins(20, 10, 40, 30, 50))
+    expect(sandboxReducer(before, { type: 'delete', key: 10 }).lastChange).toEqual({ kind: 'delete', before: before.tree, key: 10, rebalance: true })
+  })
+
+  it('a random key counts as an insert', () => {
+    expect(run([{ type: 'random', value: 0.5 }]).lastChange?.kind).toBe('insert')
+  })
+
+  it('cleared by the sorted shortcut, a toggle and a clear; kept by a refused action', () => {
     const on = run(ins(10, 20))
-    expect(sandboxReducer(on, { type: 'delete', key: 10 }).lastInsert).toBeNull()
-    expect(sandboxReducer(on, off).lastInsert).toBeNull()
-    expect(sandboxReducer(on, { type: 'clear' }).lastInsert).toBeNull()
-    expect(run([off, ...ins(5)]).lastInsert).toBeNull()
+    expect(sandboxReducer(on, { type: 'sorted' }).lastChange).toBeNull()
+    expect(sandboxReducer(on, off).lastChange).toBeNull()
+    expect(sandboxReducer(on, { type: 'clear' }).lastChange).toBeNull()
+    expect(sandboxReducer(on, { type: 'insert', key: 10 }).lastChange).toEqual(on.lastChange)
   })
 })

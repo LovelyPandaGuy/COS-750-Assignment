@@ -5,62 +5,8 @@ Shows where the learner is on the nine-module path and lets them open any module
 
 ## Requirements
 
-### Requirement: Progress map
-The progress map SHALL list modules C1 to C9 in order, each as a link to its module screen showing the module ID and D1 title. Each SHALL have a status from the learner state: Done if it is in the completed modules, You are here if it is the current module, Up next for the first module after the current one, and Later for the rest. The status SHALL be a symbol, a word and a border style (solid for Done, thick for You are here, dashed for the rest), never colour alone. C7 SHALL carry the word "Optional". A last item SHALL link to the readiness summary. (FR-LRN-03, D1, D4, wireframe 1e note 1, design principle 2)
-
-#### Scenario: Return visit
-- **GIVEN** the learner is at `C4` with `C1` to `C3` completed
-- **WHEN** the hub is shown
-- **THEN** the map has nine module links in order C1 to C9, `C1` to `C3` read Done, `C4` reads You are here, `C5` reads Up next and `C6` to `C9` read Later
-
-#### Scenario: Fresh learner
-- **GIVEN** a fresh learner state
-- **WHEN** the hub is shown
-- **THEN** `C1` reads You are here, `C2` reads Up next and the rest Later
-
-#### Scenario: Not colour alone
-- **WHEN** the map is rendered
-- **THEN** every item has a status word and symbol in its text, and its `data-status` drives a different border style per status in the stylesheet
-
-#### Scenario: Current position
-- **WHEN** the map is rendered
-- **THEN** the current item has `aria-current="step"` and the list is a labelled navigation landmark
-
-#### Scenario: Optional module and summary link
-- **WHEN** the map is rendered
-- **THEN** the `C7` item contains "Optional" and the last item links to `/readiness`
-
-#### Scenario: Nothing is locked
-- **WHEN** the map is rendered for a fresh learner
-- **THEN** every module link is enabled and navigates to its module screen
-
-#### Scenario: Statuses come from state
-- **GIVEN** a learner whose completed modules do not include `C2` but who is at `C5`
-- **WHEN** the map is rendered
-- **THEN** `C2` reads Later and not Done, because the map shows only what the state says
-
-### Requirement: Hub screen
-The hub at `/path` SHALL have the heading "Your path", the progress map, a card for the current module with a link to open it, and a Sandbox card with an "Open sandbox" link. It SHALL have one primary action, "Continue", to the current module's screen. It SHALL show no points, streaks or comparison. (wireframe 1e, FR-MOT-04, FR-VIS-08)
-
-#### Scenario: Contents
-- **GIVEN** the learner is at `C4`
-- **WHEN** the hub is shown
-- **THEN** the heading is "Your path", the card names "C4 Search (the algorithm)" and links to `/module/C4`, and "Open sandbox" links to `/sandbox`
-
-#### Scenario: Continue
-- **WHEN** "Continue" is activated
-- **THEN** the module screen for the current module is shown
-
-#### Scenario: One primary action
-- **WHEN** the hub is shown
-- **THEN** exactly one element is styled as the primary button
-
-#### Scenario: No scores
-- **WHEN** the hub text is read
-- **THEN** it contains none of "score", "points", "streak", "rank", "grade", "pass" or "fail"
-
 ### Requirement: Module screen
-Each module ID `C1` to `C9` SHALL have a module screen at `/module/:moduleId` that is its lesson, played by the lesson player from its lesson file, with the lesson title as the level-1 heading. No module SHALL have an activity list. Module titles everywhere SHALL come from the lesson files. (ID 7.1, FR-LRN-05, FR-LRN-04)
+Each module ID `C1` to `C9` SHALL have a module screen at `/module/:moduleId` that is its lesson, played by the lesson player from its lesson file, with the lesson title as the level-1 heading. No module SHALL have an activity list. Next on a lesson's last screen SHALL open the next lesson, and after C9 the readiness report. Module titles everywhere SHALL come from the lesson files. (ID 7.1, ID 8.2, FR-LRN-05, FR-LRN-04, D159)
 
 #### Scenario: Known module
 - **WHEN** the module screen for each of `C1` to `C9` is opened directly
@@ -75,8 +21,8 @@ Each module ID `C1` to `C9` SHALL have a module screen at `/module/:moduleId` th
 - **THEN** C9's first screen is shown, with "Lesson 9 of 9", and no activity list
 
 #### Scenario: Back to path
-- **WHEN** Next is activated on the last screen of a lesson
-- **THEN** the hub is shown
+- **WHEN** Next is activated on the last screen of C3, then on the last screen of C9
+- **THEN** the C4 lesson is shown, then the readiness report (there is no path page, D159)
 
 #### Scenario: Moving does not change progress
 - **WHEN** the learner opens modules, moves through lesson screens and goes back without answering
@@ -86,7 +32,7 @@ Each module ID `C1` to `C9` SHALL have a module screen at `/module/:moduleId` th
 All text on these screens SHALL come from `src/content/screens.ts` and `src/content/modules.ts`. Links and buttons SHALL be at least 44 px high, and nothing SHALL be wider than a 360 px screen needs. The stylesheet SHALL use only token variables. (NFR-02, D3, FR-VIS-10)
 
 #### Scenario: Content source
-- **WHEN** the hub, map and module components are read
+- **WHEN** the module screen components are read
 - **THEN** their visible strings are imported from the content files
 
 #### Scenario: Styles
@@ -94,7 +40,7 @@ All text on these screens SHALL come from `src/content/screens.ts` and `src/cont
 - **THEN** it passes with the new stylesheet, and the stylesheet gives links and buttons `min-height: var(--target-min)`
 
 #### Scenario: Accessible
-- **WHEN** the hub and a module screen are rendered
+- **WHEN** a module screen is rendered
 - **THEN** axe reports no violations
 
 ### Requirement: Soft prerequisite note on the module screen
@@ -131,16 +77,3 @@ When the entry decision names a prerequisite, the module screen SHALL show a not
 #### Scenario: Accessible note
 - **WHEN** the C3 module screen with its note is rendered
 - **THEN** axe reports no violations and the note's link is at least 44 px high
-
-### Requirement: Sandbox suggested after C2
-When C2 is among the completed modules, the hub's Sandbox card SHALL add a line suggesting the sandbox now that C2 is finished. Otherwise it SHALL show no suggestion. The "Open sandbox" link SHALL be present either way. Wording SHALL come from the content files. (FR-VIS-08, D11)
-
-#### Scenario: After C2
-- **GIVEN** a learner whose completed modules include C2
-- **WHEN** the hub is shown
-- **THEN** the Sandbox card contains the suggestion line and the "Open sandbox" link
-
-#### Scenario: Before C2
-- **GIVEN** a fresh learner
-- **WHEN** the hub is shown
-- **THEN** the Sandbox card has no suggestion line and still links to `/sandbox`

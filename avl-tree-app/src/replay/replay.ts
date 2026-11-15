@@ -1,4 +1,5 @@
 import { avlInsertTrace } from '../engine/avl'
+import { leafDeleteTrace, plainInsertTrace } from '../engine/lessonTrace'
 import type { RebalanceCase } from '../engine/conventions'
 import { searchTrace, type SearchForm } from '../engine/search'
 import type { TraceStep } from '../engine/trace'
@@ -8,7 +9,14 @@ import type { NodeRole, Roles } from '../ui/tree/describe'
 // Replay of an engine trace (FR-VIS-03). Pure: no React. Every tree, role and
 // number here is read from the trace; the UI only words and draws it.
 
-export type Operation = { kind: 'insert'; tree: Tree; key: Key } | { kind: 'search'; tree: Tree; key: Key }
+/**
+ * An operation to replay. `rebalance: false` replays the plain insert or the plain leaf deletion (the
+ * sandbox with rebalancing off); a delete is a leaf deletion, as C7 teaches (align-sandbox-explanations, D163).
+ */
+export type Operation =
+  | { kind: 'insert'; tree: Tree; key: Key; rebalance?: boolean }
+  | { kind: 'delete'; tree: Tree; key: Key; rebalance?: boolean }
+  | { kind: 'search'; tree: Tree; key: Key }
 
 export interface OperationTrace {
   trace: TraceStep[]
@@ -18,7 +26,8 @@ export interface OperationTrace {
 
 /** The engine's trace for an operation; `form` only matters for a search. */
 export function traceFor(op: Operation, form: SearchForm): OperationTrace {
-  if (op.kind === 'insert') return { trace: avlInsertTrace(op.tree, op.key).trace }
+  if (op.kind === 'insert') return { trace: op.rebalance === false ? plainInsertTrace(op.tree, op.key).trace : avlInsertTrace(op.tree, op.key).trace }
+  if (op.kind === 'delete') return { trace: leafDeleteTrace(op.tree, op.key, { rebalance: op.rebalance !== false }).trace }
   const r = searchTrace(op.tree, op.key, form)
   return { trace: r.trace, steps: r.steps }
 }

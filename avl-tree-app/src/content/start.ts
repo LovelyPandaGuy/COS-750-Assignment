@@ -5,7 +5,6 @@
 // - intro, the first bullet and startButton are rewritten: the wireframe's "20–30 minute
 //   warm-up" and "6 short units" conflict with D3 (about one hour in nine chunks) and D1 (C1 to C9).
 // - startedFresh, notSaved and resetDone are new (NFR-06 asks for "a message"; no design exists).
-// - savedPill follows wireframe 1e; notSavedPill is new.
 export const startCopy = {
   heading: 'Get ready for your AVL trees lecture',
   intro:
@@ -32,6 +31,4 @@ export const startCopy = {
   notSaved: "This browser isn't saving your progress, so it will be gone when you close this tab.",
   resetDone: 'Your progress has been reset. You can start again whenever you like.',
 
-  savedPill: 'Saved on this device',
-  notSavedPill: 'Not being saved',
 } as const

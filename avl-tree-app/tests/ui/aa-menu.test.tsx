@@ -7,16 +7,20 @@ import { AaMenu } from '../../src/ui/AaMenu';
 import { ThemeProvider } from '../../src/ui/ThemeContext';
 import { createSettingsStorage } from '../../src/state/storage';
 
-// Spec: add-design-tokens-and-shell / app-shell, "Aa menu stub". Requirement IDs: NFR-02, NFR-05, FR-VIS-10.
+// Spec: add-design-tokens-and-shell / app-shell, "Aa menu stub", renamed "Settings menu" by revamp-navigation (D157).
+// Requirement IDs: NFR-02, NFR-05, FR-VIS-10, WCAG 2.5.3.
 // The panel's Dark theme switch (add-dark-mode-toggle) is tested in theme-switch.test.tsx.
-const btn = () => screen.getByRole('button', { name: 'Display and read-aloud settings' });
+const btn = () => screen.getByRole('button', { name: 'Settings: display and read-aloud' });
 
 afterEach(() => vi.restoreAllMocks());
 
 describe('NFR-02 Aa menu stub', () => {
   it('starts closed with a named, labelled button', () => {
     render(<App />);
-    expect(btn()).toHaveTextContent('Aa');
+    expect(btn()).toHaveTextContent(/^Settings$/);
+    expect(btn()).toHaveAccessibleName(/^Settings/);
+    expect(screen.queryByRole('button', { name: /^Aa$/ })).toBeNull();
+    expect(screen.queryByText(/^Aa$/)).toBeNull();
     expect(btn()).toHaveAttribute('aria-expanded', 'false');
     const id = btn().getAttribute('aria-controls')!;
     expect(id).toBeTruthy();

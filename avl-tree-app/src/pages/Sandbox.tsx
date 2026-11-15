@@ -1,5 +1,4 @@
 import { useReducer, useState } from 'react'
-import { Link } from 'react-router-dom'
 import '../ui/screens.css'
 import '../ui/lesson/module.css'
 import '../ui/sandbox/sandbox.css'
@@ -7,7 +6,6 @@ import { controlsCopy } from '../content/controls'
 import { sandboxCopy as copy } from '../content/sandbox'
 import { screenCopy } from '../content/screens'
 import { createRng } from '../engine/random'
-import { paths } from '../routes'
 import { initialSandbox, sandboxReducer, sandboxStats } from '../sandbox/sandbox'
 import { KeyboardHelp } from '../ui/controls/KeyboardHelp'
 import { shortcutsFor } from '../ui/controls/shortcuts'
@@ -18,6 +16,7 @@ import { SandboxSection } from '../ui/sandbox/SandboxSection'
 import { TreeStats } from '../ui/sandbox/TreeStats'
 import { ReplayPlayer } from '../ui/replay/ReplayPlayer'
 import { TreeView } from '../ui/tree/TreeView'
+import { BackToLesson } from '../components/BackToLesson'
 
 const HELP_KEYS = shortcutsFor('sandbox').map((s) => ({ keys: s.caps, action: s.action }))
 
@@ -62,9 +61,10 @@ export function Sandbox() {
           <SandboxSection heading={copy.sections.log}>
             <EventLog entries={state.log} />
           </SandboxSection>
-          {state.lastInsert === null ? (
-            state.rebalancing ? null : <p>{copy.replayUnavailable}</p>
+          {state.lastChange === null ? (
+            <p>{copy.replayUnavailable}</p>
           ) : (
+            // Replay the last single insert or leaf delete, on or off, from the tree before (D163).
             <div className="sandbox-replay">
               <button
                 type="button"
@@ -72,13 +72,13 @@ export function Sandbox() {
                 aria-expanded={replayOpen}
                 onClick={() => setReplayOpen((o) => !o)}
               >
-                {copy.replay}
+                {state.lastChange.kind === 'insert' ? copy.replay : copy.replayDelete}
               </button>
               {replayOpen && (
                 <ReplayPlayer
-                  key={`${state.lastInsert.key}-${state.log.length}`}
-                  operation={{ kind: 'insert', tree: state.lastInsert.before, key: state.lastInsert.key }}
-                  label={copy.replayLabel(state.lastInsert.key)}
+                  key={`${state.lastChange.kind}-${state.lastChange.key}-${state.log.length}`}
+                  operation={{ kind: state.lastChange.kind, tree: state.lastChange.before, key: state.lastChange.key, rebalance: state.lastChange.rebalance }}
+                  label={state.lastChange.kind === 'insert' ? copy.replayLabel(state.lastChange.key) : copy.replayLabelDelete(state.lastChange.key)}
                 />
               )}
             </div>
@@ -107,9 +107,7 @@ export function Sandbox() {
           <KeyboardHelp heading={controlsCopy.help.heading} keys={HELP_KEYS} />
         </div>
       </div>
-      <Link className="screen-link" to={paths.hub()}>
-        {screenCopy.links.backToPathSandbox}
-      </Link>
+      <BackToLesson />
     </div>
   )
 }

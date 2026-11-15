@@ -18,15 +18,15 @@ export type Capability = (typeof CAPABILITIES)[number]
 
 /** Scripted steps after the page loads (run by actions.ts). Labels come from content, never typed here. */
 export type Action =
-  /** Open the lesson outline if it is a closed disclosure, and choose the screen at this index. */
+  /** Go to the screen at this index with Next (the lesson outline is retired, revamp-navigation). */
   | { screen: number }
   /** Choose this option of this question; the coverage test checks the engine marks it as `expect`. */
   | { pick: string; question: string; expect: 'right' | 'not-yet' }
   | { confidence: 'sure' | 'unsure' }
   /** Press the button with this accessible name (exact). */
   | { button: string }
-  /** Open the lesson outline's disclosure if it is one (below the desktop width); nothing beside the frame. */
-  | { outline: 'open' }
+  /** Open the Lessons sidebar's button if it is shown (below 768 px); nothing beside the page (D155). */
+  | { sidebar: 'open' }
   /** Click the first element matching this CSS selector. */
   | { click: string }
   /** Sandbox: set rebalancing, then insert these keys one by one. */
@@ -57,7 +57,7 @@ const moduleOf = (lessonId: string) => `/module/${lessonId.toUpperCase()}`
 
 /**
  * The first screen of each screen type, in lesson order (C1 to C9, then the refresher). A gated type is shown
- * unanswered (seed started); every other type with everything answered, so the outline can open it.
+ * unanswered (seed started); every other type with everything answered, so Next can reach it.
  */
 function screenTypeEntries(): Entry[] {
   const seen = new Map<string, Entry>()
@@ -105,6 +105,8 @@ export const LABELS = {
   CHECK: 'Check answer', // lessonCopy.questions.checkAnswer
   RESET: 'Reset my progress', // startCopy.resetLink
   INSERT: 'Insert', // sandboxCopy.insert
+  NEXT: 'Next', // lessonCopy.controls.next
+  LESSONS: 'Lessons', // shellCopy.sidebar.menuButton
   TITLE_SUFFIX: 'AVL Primer', // screenCopy.titleSuffix
 } as const
 const { RETRY, HINT, NEXT_STEP, DESCRIBE, CHECK, RESET } = LABELS
@@ -120,10 +122,10 @@ export const ENTRIES: Entry[] = [
   { id: 'start-returning', route: '/', seed: 'returning', frame: '1b', states: { 'ui-progress': ['returning with saved progress'] } },
   { id: 'start-storage-unavailable', route: '/', seed: 'storageUnavailable', states: { 'ui-progress': ['storage unavailable (session-only)'] } },
   { id: 'start-reset-open', route: '/', seed: 'returning', steps: [{ button: RESET }], frame: '1b', states: { 'ui-progress': ['the reset confirmation open'] } },
-  { id: 'hub', route: '/path', seed: 'returning', frame: '1e', states: { 'ui-progress': ['each lesson state (done, current, open, locked)'] } },
-  { id: 'hub-everything', route: '/path', seed: 'everything', frame: '1e' },
+  // The path page is removed (remove-path-page, D159): /path redirects to the current lesson.
+  { id: 'legacy-path', route: '/path', seed: 'returning' },
   { id: 'module-c3-start', route: '/module/C3', seed: 'started' },
-  { id: 'module-c3-outline-open', route: '/module/C3', seed: 'started', steps: [{ screen: 3 }, { outline: 'open' }] },
+  { id: 'module-c3-sidebar-open', route: '/module/C3', seed: 'started', steps: [{ screen: 3 }, { sidebar: 'open' }] },
   { id: 'refresher', route: '/module/C1/refresher', seed: 'diagnosticMixed' },
   { id: 'warm-up-result', route: '/module/C1/check/result', seed: 'diagnosticMixed' },
   { id: 'sandbox', route: '/sandbox', seed: 'started', states: { 'tree-view': ['empty tree'] } },
@@ -206,7 +208,8 @@ export const ENTRIES: Entry[] = [
       'ui-feedback': ['each FeedbackPanel variant', 'FullAnswer', 'LectureQuestionDraft empty and saved', 'ScaffoldPanel at each rung', 'the Hint button with hints left and with none'],
     },
   },
-  { id: 'gallery-progress', route: 'gallery:data-progress-gallery', seed: 'started' },
+  // Frame 1e (Unit hub) lives only in the gallery now that the path page is removed (remove-path-page, D159).
+  { id: 'gallery-progress', route: 'gallery:data-progress-gallery', seed: 'started', frame: '1e', states: { 'ui-progress': ['each lesson state (done, current, open, locked)'] } },
   { id: 'gallery-progress-menu-open', route: 'gallery:data-progress-gallery', seed: 'started', steps: [{ click: '[data-gallery-menu] .lesson-menu-button' }], states: { 'ui-progress': ['the lesson menu open'] } },
   { id: 'gallery-readiness', route: 'gallery:data-readiness-gallery', seed: 'started', states: { 'ui-readiness': ['no flags', 'no questions'] } },
   { id: 'gallery-narration', route: 'gallery:data-narration-gallery', seed: 'started' },
@@ -244,7 +247,7 @@ export const OPEN_FRAME_STATES: Partial<Record<Frame, string>> = {
   '1a': 'The screen flow diagram, not a screen.',
   '1c': 'The sub-skill stepper and Skip are DiagnosticStepper (a stub); the live C1 question set has neither.',
   '1d': 'RouteRecommendation is a stub; the live C1 route screen is shown instead.',
-  '1e': 'PathModeToggle is a stub; "up next" and "later" are shown by the hub as open and locked.',
+  '1e': 'Not built as a page (D159); its components are in the progress gallery. PathModeToggle is a stub.',
   '1f': 'Speed, the three representations and read-aloud in the replay are not built (RepresentationSwitcher is a stub).',
   '1g': 'PredictPrompt and PredictionReveal are stubs; the live predict screen is covered as screen-predict.',
   '1h': 'Perform-the-rotation is a check answer type behind other checks; not scripted yet.',

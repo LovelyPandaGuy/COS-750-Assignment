@@ -30,8 +30,9 @@ export interface ReplayPlayerProps {
 /** Watch mode (FR-VIS-03, FR-VIS-04, FR-VIS-07, wireframe 1f): tree, step controls, pseudocode and the step sentence. */
 export function ReplayPlayer({ operation, label, held = false, showStep, onPosition }: ReplayPlayerProps) {
   const { kind, tree: start, key } = operation
+  const rebalance = operation.kind === 'search' ? undefined : operation.rebalance
   const [form, setForm] = useState<SearchForm>('loop')
-  const { trace } = useMemo(() => traceFor({ kind, tree: start, key } as Operation, form), [kind, start, key, form])
+  const { trace } = useMemo(() => traceFor({ kind, tree: start, key, rebalance } as Operation, form), [kind, start, key, rebalance, form])
   const captions = useMemo(() => captionsFor(kind, trace, key), [kind, trace, key])
   const [state, dispatch] = useReducer(replayReducer, trace.length, (n) => initReplay(n, held))
 
@@ -86,7 +87,7 @@ export function ReplayPlayer({ operation, label, held = false, showStep, onPosit
 
   const p = state.position
   const step = stepAt(trace, p)
-  const op = { kind, tree: start, key } as Operation
+  const op = { kind, tree: start, key, rebalance } as Operation
   const listing = form === 'loop' ? pseudocode.searchLoop : pseudocode.searchRecursive
   const name = form === 'loop' ? replayCopy.panel.searchLoop : replayCopy.panel.searchRecursive
   // Sentences come from the conventions captions (step-replay): a trace step shows its caption group's text.

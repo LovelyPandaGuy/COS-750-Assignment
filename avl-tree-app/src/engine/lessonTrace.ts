@@ -94,9 +94,10 @@ function pathTo(tree: Tree, key: Key): Key[] {
 /**
  * Leaf deletion (ID 7.2, ID 7.3 "Only leaf deletions are covered"): remove the leaf, update
  * balance factors from its parent up to the root, and at a node at +2 or −2 rebalance as
- * `conventions.deletionRotation` says; the walk then carries on to the root.
+ * `conventions.deletionRotation` says; the walk then carries on to the root. With `rebalance: false`
+ * (the sandbox with rebalancing off, D161) the walk only updates, with no imbalance or rotation step.
  */
-export function leafDeleteTrace(start: Tree, key: Key): LessonTrace {
+export function leafDeleteTrace(start: Tree, key: Key, { rebalance = true }: { rebalance?: boolean } = {}): LessonTrace {
   const leaf = subtreeAt(start, key)
   if (leaf === null) throw new TraceError(`${key} is not in the tree`)
   if (leaf.left !== null || leaf.right !== null) throw new TraceError(`only leaf deletion is covered, and ${key} is not a leaf`)
@@ -115,7 +116,7 @@ export function leafDeleteTrace(start: Tree, key: Key): LessonTrace {
     push('update-height', [at], replaceAt(tree, at, refreshHeight))
     const n = subtreeAt(tree, at) as TreeNode
     const bf = balanceFactorOf(n)
-    if (!isOutOfBalance(bf)) continue
+    if (!rebalance || !isOutOfBalance(bf)) continue
     const nLeft = leansLeft(bf)
     const child = (nLeft ? n.left : n.right) as TreeNode
     push('imbalance', [n.key, child.key], tree)

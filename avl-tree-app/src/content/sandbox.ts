@@ -5,7 +5,6 @@
 import type { Key } from '../engine/tree'
 import type { LogEntry, Notice } from '../sandbox/sandbox'
 import { SANDBOX_KEY_MAX, SANDBOX_KEY_MIN, SANDBOX_MAX_NODES, SORTED_DEMO } from '../sandbox/config'
-import { caseLabel, type RebalanceCase } from '../engine/conventions'
 
 const h = (n: number) => (n < 0 ? `−${-n}` : String(n))
 const range = `${SANDBOX_KEY_MIN} to ${SANDBOX_KEY_MAX}`
@@ -37,6 +36,9 @@ export const sandboxCopy = {
         return `${n.key} is already in the tree. Each key appears once.`
       case 'missing':
         return `${n.key} is not in the tree, so there is nothing to delete.`
+      case 'notLeaf':
+        // C7 teaches leaf deletion only (conventions.json "deletion": "leaf nodes only"; D162).
+        return `${n.key} is not a leaf. As in C7, only a leaf can be deleted here.`
       case 'full':
         return `The tree is full (${SANDBOX_MAX_NODES} keys). Delete a key or clear the tree to keep exploring.`
     }
@@ -62,29 +64,32 @@ export const sandboxCopy = {
 
   logLabel: 'What happened',
   logEmpty: 'Nothing yet.',
-  log: (e: LogEntry): string => {
-    // Case names come from conventions.json ("Case 1 (LL)"; ID 7.3).
-    const fixes = (rs: readonly { node: Key; case: RebalanceCase }[]) =>
-      rs.map((r) => `${r.node} was out of balance (${caseLabel(r.case)}), so the tree was rotated there.`).join(' ')
+  /**
+   * The heading of a "What happened" entry (align-sandbox-explanations, D161). An insert or delete is
+   * explained by its steps, which are the engine's lesson captions (conventions.json), not this file.
+   */
+  heading: (e: LogEntry): string => {
     switch (e.kind) {
-      case 'insert': {
-        const where = e.parent === null ? `Inserted ${e.key} as the root.` : `Inserted ${e.key} to the ${e.side} of ${e.parent}.`
-        if (!e.rebalancing) return `${where} No rebalancing (switched off).`
-        return e.rebalances.length === 0 ? `${where} Every node stayed in balance.` : `${where} ${fixes(e.rebalances)}`
-      }
-      case 'delete': {
-        const what = `Deleted ${e.key}.`
-        if (!e.rebalancing) return `${what} No rebalancing (switched off).`
-        return e.rebalances.length === 0 ? `${what} Every node stayed in balance.` : `${what} ${fixes(e.rebalances)}`
-      }
+      case 'insert':
+        return `Inserted ${e.key}`
+      case 'delete':
+        return `Deleted ${e.key}`
       case 'rebuild':
-        return `Rebalancing ${e.rebalancing ? 'on' : 'off'}: rebuilt the same ${plural(e.count, 'key', 'keys')}, in the order they were inserted, as ${e.rebalancing ? 'an AVL tree' : 'a plain BST'}.`
+        return e.count === 0
+          ? `Rebalancing ${e.rebalancing ? 'on' : 'off'}: the tree is empty.`
+          : `Rebalancing ${e.rebalancing ? 'on' : 'off'}: rebuilt the same ${plural(e.count, 'key', 'keys')}, in the order they were inserted, as ${e.rebalancing ? 'an AVL tree' : 'a plain BST'}.`
       case 'clear':
         return 'Cleared the tree.'
     }
   },
+  /** After the steps of an entry made with rebalancing off (D161). Flagged for the user to read. */
+  noRotation: 'Rebalancing is off, so no rotation is made.',
+
 
   replay: 'Replay last insert',
-  replayUnavailable: 'Replay is available for inserts with rebalancing on.',
+  /** The replay of the last single change (D163). Flagged for the user to read. */
+  replayDelete: 'Replay last delete',
+  replayUnavailable: 'Replay is available after you insert or delete one key.',
   replayLabel: (key: Key) => `Tree while inserting ${key}`,
+  replayLabelDelete: (key: Key) => `Tree while deleting ${key}`,
 } as const

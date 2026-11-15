@@ -1,8 +1,6 @@
-import { Link } from 'react-router-dom'
 import { lessonCopy } from '../../content/lesson'
-import { screenCopy } from '../../content/screens'
 import type { Problem } from '../../live/types'
-import { paths } from '../../routes'
+import { BackToLesson } from '../../components/BackToLesson'
 
 const copy = lessonCopy.problems
 
@@ -19,9 +17,7 @@ export function ContentProblem({ problems }: { problems: readonly Problem[] }) {
           </li>
         ))}
       </ul>
-      <Link className="screen-link" to={paths.hub()}>
-        {screenCopy.links.backToPath}
-      </Link>
+      <BackToLesson />
     </div>
   )
 }

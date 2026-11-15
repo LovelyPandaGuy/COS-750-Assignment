@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { lessonCopy } from '../../../src/content/lesson'
+import { shellCopy } from '../../../src/content/shell'
 import { sandboxCopy } from '../../../src/content/sandbox'
 import { screenCopy } from '../../../src/content/screens'
 import { startCopy } from '../../../src/content/start'
@@ -110,6 +111,8 @@ describe('the matrix steps stay true to the app (design: steps break loudly when
       CHECK: lessonCopy.questions.checkAnswer,
       RESET: startCopy.resetLink,
       INSERT: sandboxCopy.insert,
+      NEXT: lessonCopy.controls.next,
+      LESSONS: shellCopy.sidebar.menuButton,
       TITLE_SUFFIX: screenCopy.titleSuffix,
     })
   })

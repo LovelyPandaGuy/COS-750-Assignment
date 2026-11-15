@@ -47,6 +47,8 @@ Design-system components beyond the wireframes: Button (primary, secondary, quie
 
 Built since the import: `TreeEditorToolbar` and `EditLog` (revamp-tree-editor, D132 to D135), `KeyboardHelp` and the shared control bar for tree screens (revamp-tree-controls, D136 to D139). In the app the editor's control bar sits below the tree (D136), unlike frame 1m. The sandbox follows 1n's two columns from 768 px, with its phone order (tree, then controls) built (revamp-sandbox-layout, D140, D141).
 
+Navigation (revamp-navigation, D155 to D158): every screen has a "Lessons" sidebar (C1 to C9, sticky from 768 px, a Lessons button below), not drawn in the frames; the TopBar's Aa button is "Settings" and the "Saved on this device" pill (1e, 1m, 1n) is gone; the per-screen lesson outline is removed. Frame 1e (Unit hub) is not built as a page (remove-path-page, D159): its components are in the progress gallery.
+
 ## What must change before the first UI proposal
 
 These are conflicts between the design and the decisions in `.claude/docs/decisions.md`. Fix them in the design, then re-run `/design-import`. Until then the decision log wins: the `spec-writer` builds to the decision and lists the frame difference under "Assumed, not blocking" (D18), not as `[OPEN]`.

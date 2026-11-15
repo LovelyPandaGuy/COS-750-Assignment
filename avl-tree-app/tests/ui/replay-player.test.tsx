@@ -336,3 +336,44 @@ describe('FR-VIS-10 player layout and the Watch slot', () => {
     expect(await axe(b.container)).toHaveNoViolations()
   })
 })
+
+// Spec: align-sandbox-explanations / step-replay "Sandbox operations" (D163, ID 7.2 C6 and C7).
+describe('step-replay: sandbox operations (D163)', () => {
+  const toEnd = () => {
+    const step = () => screen.getByRole('button', { name: /^step/i })
+    while (!step().hasAttribute('disabled')) fireEvent.click(step())
+  }
+  const keysIn = (c: HTMLElement) => [...c.querySelectorAll('[data-key]')].map((g) => Number(g.getAttribute('data-key'))).sort((a, b) => a - b)
+
+  it('plain insert of 7 into 6: ends at 6(·, 7), no rotation', () => {
+    const op: Operation = { kind: 'insert', tree: leaf(6), key: 7, rebalance: false }
+    const { container } = render(<ReplayPlayer operation={op} label="Tree" />)
+    toEnd()
+    expect(keysIn(container)).toEqual([6, 7])
+    expect(traceFor(op, 'loop').trace.some((s) => s.kind === 'rotation')).toBe(false)
+  })
+
+  it('leaf deletion with rebalancing: ends at 40(20(·, 30), 50), one left rotation about 20, no pseudocode', () => {
+    const op: Operation = { kind: 'delete', tree: avl([20, 10, 40, 30, 50]), key: 10 }
+    const { container } = render(<ReplayPlayer operation={op} label="Tree" />)
+    expect(live()).toHaveTextContent('10')
+    toEnd()
+    expect(keysIn(container)).toEqual([20, 30, 40, 50])
+    const rotations = traceFor(op, 'loop').trace.filter((s) => s.kind === 'rotation')
+    expect(rotations.map((s) => s.nodes)).toEqual([[20, 40]])
+    expect(screen.queryByRole('region', { name: /^pseudocode/i })).toBeNull()
+  })
+
+  it('plain leaf deletion: no rotation', () => {
+    const op: Operation = { kind: 'delete', tree: avl([20, 10, 40, 30, 50]), key: 10, rebalance: false }
+    expect(traceFor(op, 'loop').trace.some((s) => s.kind === 'rotation')).toBe(false)
+  })
+})
+
+describe('step controls icons are drawn by the app font (screenshot, 15 Nov)', () => {
+  it('no media symbols from U+23E9 to U+23FA, which the font lacks (they showed as empty boxes)', async () => {
+    const { replayCopy } = await import('../../src/content/replay')
+    const c = replayCopy.controls as unknown as Record<string, unknown>
+    for (const k of ['iconBack', 'iconPlay', 'iconPause', 'iconStep']) expect(String(c[k]), k).not.toMatch(/[\u23E9-\u23FA]/)
+  })
+})

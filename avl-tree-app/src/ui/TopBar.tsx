@@ -21,11 +21,10 @@ type ProgressSlot =
 export type TopBarProps = {
   title: string
   breadcrumb?: string
-  status?: string
   actions?: TopBarAction[]
 } & ProgressSlot
 
-export function TopBar({ title, breadcrumb, progress, progressLabel, status, actions }: TopBarProps) {
+export function TopBar({ title, breadcrumb, progress, progressLabel, actions }: TopBarProps) {
   return (
     <div className="topbar">
       <span className="topbar-title">{title}</span>
@@ -36,12 +35,6 @@ export function TopBar({ title, breadcrumb, progress, progressLabel, status, act
         </nav>
       )}
       <span className="topbar-spacer" />
-      {status && (
-        // Polite live region so a change, such as saving stopping mid-session, is announced (WCAG 4.1.3).
-        <span className="topbar-status" aria-live="polite" aria-atomic="true">
-          {status}
-        </span>
-      )}
       {actions && actions.length > 0 && (
         <div className="topbar-actions">
           {actions.map((a) =>

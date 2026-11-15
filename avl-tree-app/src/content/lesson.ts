@@ -20,17 +20,6 @@ export const lessonCopy = {
     application: 'Practise',
     integration: 'Check and summary',
   } satisfies Record<MerrillPhase, string>,
-  /**
-   * The lesson outline (add-lesson-outline, D154). FLAGGED FOR THE USER TO READ: "Lesson outline", "Done",
-   * "You are here" and "Not yet open" are UI labels proposed in the change, not ID wording.
-   */
-  outline: {
-    label: 'Lesson outline',
-    summary: (n: number) => `Lesson outline (${n} screens)`,
-    done: 'Done',
-    here: 'You are here',
-    closed: 'Not yet open',
-  },
   objectivesHeading: 'Learning objectives',
   recapHeading: 'Objectives recap',
   pending: 'This activity is added in the next update of the app.',

@@ -50,6 +50,7 @@ export interface BlockContext {
   goNext: () => void
 }
 
+/** Text and objectives only: the lessons are listed by the sidebar, not here (revamp-navigation, D158). */
 function objectives(s: ObjectivesScreen): Regions {
   return {
     main: (
@@ -57,7 +58,6 @@ function objectives(s: ObjectivesScreen): Regions {
         <h3>{lessonCopy.objectivesHeading}</h3>
         <Text text={s.text} />
         <Points points={s.objectives} />
-        <Points points={s.points} />
       </div>
     ),
     caption: null,

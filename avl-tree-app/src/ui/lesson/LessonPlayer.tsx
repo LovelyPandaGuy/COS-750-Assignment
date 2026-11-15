@@ -7,16 +7,13 @@ import { narrationCopy } from '../../content/narration'
 import { NarrationControls } from '../narration/NarrationControls'
 import { useNarration } from '../narration/NarrationContext'
 import { lessonCopy } from '../../content/lesson'
-import { loadContent, lessonPosition } from '../../live/load'
+import { lessonPosition } from '../../live/load'
 import type { Lesson, Question } from '../../live/types'
 import type { ModuleId } from '../../state/learnerState'
-import { paths } from '../../routes'
+import { paths, afterLesson, parseModuleId } from '../../routes'
 import { regionsFor } from './blocks'
 import type { CheckNav } from './questions/CheckRunner'
 import { LessonControls } from './LessonControls'
-import { LessonOutline } from './LessonOutline'
-import { firstBlockingIndex } from './outline'
-import { useLearner } from '../../state/LearnerContext'
 
 /**
  * Plays a lesson's screens one at a time, in the order of its lesson file, in one frame
@@ -33,6 +30,9 @@ export interface LessonPlayerProps {
   /** Where Next goes from the last screen; the path by default. */
   finishTo?: string
 }
+
+/** A lesson file's id ("c3") as its module ID ("C3"). */
+const moduleOf = (lessonId: string): ModuleId => parseModuleId(lessonId.toUpperCase()) ?? 'C1'
 
 export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: LessonPlayerProps) {
   const navigate = useNavigate()
@@ -55,13 +55,9 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
   const screens = sequence?.screens ?? lesson.screens
   const screen = screens[index]
   const { index: place, total } = lessonPosition(lesson.id)
-  const { learner } = useLearner()
-  const blocking = firstBlockingIndex(screens, learner.attempts, loadContent().content)
 
-  // Screens shown so far, for the outline's Done marks (add-lesson-outline, design 2).
-  const [seen, setSeen] = useState<ReadonlySet<number>>(() => new Set([0]))
-  // One move function for Next, Back, Skip ahead, the review link and the outline: the same reset and
-  // focus on the screen heading every way (add-lesson-outline, design 2; FR-LRN-04, NFR-02).
+  // One move function for Next, Back, Skip ahead and the review link: the same reset and focus on the
+  // screen heading every way (FR-LRN-04, NFR-02). The lesson outline is retired (revamp-navigation, D155).
   // Choosing the screen already shown only moves focus to its heading again.
   const [refocus, setRefocus] = useState(0)
   const goTo = (to: number) => {
@@ -69,7 +65,6 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
       setRefocus((n) => n + 1)
       return
     }
-    setSeen((s) => (s.has(to) ? s : new Set(s).add(to)))
     setIndex(to)
     setRuleOpen(false)
     setHintOpen(false)
@@ -122,7 +117,7 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
     hintsUsedFor,
     onReview,
     onCheckNav,
-    goNext: () => (index === screens.length - 1 ? navigate(finishTo ?? paths.hub()) : goTo(index + 1)),
+    goNext: () => (index === screens.length - 1 ? navigate(finishTo ?? afterLesson(moduleOf(lesson.id))) : goTo(index + 1)),
   })
   const last = index === screens.length - 1
   // Skip ahead on explanation screens only, to the next screen that is not one (ID 8.2, D20).
@@ -130,9 +125,7 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
   const canSkip = screen.merrillPhase === 'demonstration' && nextOther !== -1 && nextOther > index + 1
 
   return (
-    <div className="lesson-layout">
-      <LessonOutline screens={screens} current={index} seen={seen} blocking={blocking} onChoose={goTo} />
-      <div className="lesson">
+    <div className="lesson">
         <div className="lesson-top">
           <h1 tabIndex={-1}>{sequence?.title ?? lesson.title}</h1>
           <p className="lesson-position" aria-label={lessonCopy.positionLabel}>
@@ -173,7 +166,7 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
           onNext={() => {
             // On a check, Next moves through its questions first (lesson-checks "A check is never skipped").
             if (gated && checkNav !== null && checkNav.next()) return
-            if (last) navigate(finishTo ?? paths.hub())
+            if (last) navigate(finishTo ?? afterLesson(moduleOf(lesson.id)))
             else goTo(index + 1)
           }}
           onSkip={canSkip ? () => goTo(nextOther) : undefined}
@@ -181,7 +174,6 @@ export function LessonPlayer({ lesson, sequence, note, endPanel, finishTo }: Les
           rule={screen.showRule !== undefined ? { open: ruleOpen, controls: ruleId, onToggle: () => setRuleOpen((o) => !o) } : undefined}
           hint={hint !== undefined ? { open: hintOpen, controls: hintId, onToggle: toggleHint } : undefined}
         />
-      </div>
     </div>
   )
 }

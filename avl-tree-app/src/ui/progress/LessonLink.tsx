@@ -45,7 +45,7 @@ export function LessonLink({ lesson, labels, onNavigate }: { lesson: LessonItem;
       data-lesson={lesson.id}
       data-state={lesson.state}
       to={lesson.href}
-      aria-current={lesson.state === 'current' ? 'step' : undefined}
+      aria-current={lesson.page === true ? 'page' : lesson.state === 'current' ? 'step' : undefined}
       onClick={onNavigate}
     >
       {body}

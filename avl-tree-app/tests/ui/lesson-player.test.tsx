@@ -100,10 +100,21 @@ describe('lesson-player: controls in one place (ID 8.2)', () => {
     expect(b).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('the last screen returns to the path', () => {
+  it('the last screen opens the next lesson (remove-path-page, D159)', () => {
     at('c3', 'c3-s13')
     next()
-    expect(h1()).toHaveTextContent('Your path')
+    expect(h1()).toHaveTextContent('Search (the algorithm)')
+  })
+
+  it('after C9 the readiness report (D159)', () => {
+    // C9's readiness questions gate Next too, so this learner has answered every question.
+    const c = loadContent().content!
+    const all = [...c.checks.questions, ...c.readiness.questions].map((q) => ({ questionId: q.id, at: '2026-11-14T10:00:00.000Z', answer: null, correct: true, hintsUsed: 0, attempt: 1 }))
+    renderRoutes(backendWith(progressState({ attempts: all })), '/module/C9')
+    next(lessonById('c9')!.screens.findIndex((x) => x.id === 'c9-s05'))
+    expect(h2()).toHaveTextContent(lessonById('c9')!.screens.at(-1)!.title)
+    next()
+    expect(h1()).toHaveTextContent('Ready for the lecture?')
   })
 
   it('targets of 44 px come from the shared button class', () => {

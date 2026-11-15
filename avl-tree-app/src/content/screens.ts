@@ -9,8 +9,8 @@ import type { ModuleId } from '../state/learnerState'
 export const screenCopy = {
   titleSuffix: 'AVL Primer',
 
+  /** The progress map's wording (the gallery component; the path page is removed, remove-path-page D159). */
   hub: {
-    heading: 'Your path',
     mapLabel: 'Progress map',
     status: {
       done: { symbol: '✓', word: 'Done' },
@@ -20,12 +20,6 @@ export const screenCopy = {
     } satisfies Record<PathStatus, { symbol: string; word: string }>,
     optional: 'Optional',
     summaryLink: 'Readiness summary',
-    continue: (module: string) => `Continue: ${module}`,
-    sandboxHeading: 'Sandbox',
-    sandboxText: 'Try inserting your own keys.',
-    /** Shown once C2 is completed (FR-VIS-08, D11). */
-    sandboxSuggested: 'Suggested now that you have finished C2: see how insertion order shapes a tree.',
-    sandboxLink: 'Open sandbox',
   },
 
   activity: {
@@ -45,7 +39,6 @@ export const screenCopy = {
   },
 
   crumbs: {
-    hub: 'Your path',
     sandbox: 'Sandbox',
     readiness: 'Your readiness',
     warmUpResult: 'Result',
@@ -58,8 +51,8 @@ export const screenCopy = {
   },
 
   links: {
-    backToPath: 'Back to path',
-    backToPathSandbox: '← Back to path',
+    /** Back to the student's current lesson (remove-path-page, D159). Flagged for the user to read. */
+    backToLesson: (lesson: string) => `← Back to ${lesson}`,
     toRefresher: 'Go to the BST refresher',
     toWarmUp: 'Back to the warm-up check',
   },

@@ -1,14 +1,13 @@
-import { Link } from 'react-router-dom'
 import '../ui/screens.css'
 import { ActivityList } from '../components/ActivityList'
 import { PrerequisiteNote } from '../components/PrerequisiteNote'
 import { moduleLabel } from '../content/modules'
-import { screenCopy } from '../content/screens'
 import { lessonById, loadContent } from '../live/load'
-import { isLesson, paths } from '../routes'
+import { isLesson } from '../routes'
 import type { ModuleId } from '../state/learnerState'
 import { ContentProblem } from '../ui/lesson/ContentProblem'
 import { LessonPlayer } from '../ui/lesson/LessonPlayer'
+import { BackToLesson } from '../components/BackToLesson'
 
 /**
  * A module's screen. C2 to C8: the lesson, played from its lesson file (module-hub "Module screen").
@@ -26,9 +25,7 @@ export function Module({ id }: { id: ModuleId }) {
       <h1 tabIndex={-1}>{moduleLabel(id)}</h1>
       <PrerequisiteNote module={id} />
       <ActivityList module={id} />
-      <Link className="screen-link" to={paths.hub()}>
-        {screenCopy.links.backToPath}
-      </Link>
+      <BackToLesson />
     </div>
   )
 }

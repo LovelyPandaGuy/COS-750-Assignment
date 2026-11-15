@@ -39,10 +39,11 @@ describe('sandbox: two-column layout (D140, wireframe 1n)', () => {
     expect(controls.contains(screen.getByRole('toolbar'))).toBe(true)
   })
 
-  it('two columns from the tablet breakpoint, controls first column; one column below', () => {
+  it('two columns when the sandbox itself is wide enough (container query, D156); one column below', () => {
     expect(BREAKPOINTS.tablet).toBe(768)
     const text = css()
-    const wide = /@media\s*\(min-width:\s*768px\)\s*\{([\s\S]*?)\n\}/.exec(text)
+    expect(text).toMatch(/\.sandbox\s*\{[^}]*container-type:\s*inline-size/)
+    const wide = /@container\s*\(min-width:\s*45rem\)\s*\{([\s\S]*?)\n\}/.exec(text)
     expect(wide).not.toBeNull()
     expect(wide![1]).toMatch(/\.sandbox-layout\s*\{[^}]*display:\s*grid/)
     expect(wide![1]).toMatch(/\.sandbox-control-col\s*\{[^}]*grid-column:\s*1/)
@@ -83,7 +84,7 @@ describe('sandbox: named sections in the control column (D141, ID 8.1)', () => {
   })
 
   it('more room between the columns on a wide screen', () => {
-    const wide = /@media\s*\(min-width:\s*768px\)\s*\{([\s\S]*?)\n\}/.exec(css())!
+    const wide = /@container\s*\(min-width:\s*45rem\)\s*\{([\s\S]*?)\n\}/.exec(css())!
     expect(wide[1]).toMatch(/\.sandbox-layout\s*\{[^}]*gap:\s*var\(--space-8\)/)
   })
 
@@ -126,4 +127,29 @@ describe('sandbox: controls are the shared control bar (D137 to D139)', () => {
     fireEvent.click(button(controlsCopy.help.show))
     expect(await axe(container)).toHaveNoViolations()
   }, 60_000)
+})
+
+describe('sandbox: easier to read (user, 15 Nov; screenshots at 360, 768 and 1366 px)', () => {
+  it('the Insert icon is a plain plus the app font has (the full-width plus showed as an empty box)', () => {
+    expect(controlsCopy.icons.place).toBe('+')
+  })
+
+  it('What happened counts down, so the newest line has the highest number', () => {
+    open()
+    insertKeys(10, 20)
+    // The outer list of entries (each entry has its own list of steps, D161).
+    const list = screen.getByRole('log', { name: copy.logLabel }).querySelector(':scope > ol')!
+    expect(list).toHaveAttribute('reversed')
+  })
+
+  it('Numbers lists one fact per line', () => {
+    expect(css()).toMatch(/\.sandbox-stats ul\s*\{[^}]*flex-direction:\s*column/)
+  })
+
+  it('in one column the log box is shorter, so the controls come sooner; side by side it is taller', () => {
+    const base = /\.sandbox-log\s*\{([^}]*)\}/.exec(css())![1]
+    expect(base).toMatch(/max-height:\s*10rem/)
+    const wide = /@container\s*\(min-width:\s*45rem\)\s*\{([\s\S]*?)\n\}/.exec(css())![1]
+    expect(wide).toMatch(/\.sandbox-log\s*\{[^}]*max-height:\s*16rem/)
+  })
 })

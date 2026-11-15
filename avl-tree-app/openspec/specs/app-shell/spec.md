@@ -55,11 +55,11 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** the link text comes from `src/content/shell.ts`
 
 ### Requirement: AppShell landmarks and reading column
-`AppShell` SHALL render a `banner` landmark holding the TopBar, then a `main` landmark holding its children. Running text inside `main` SHALL be limited to `--reading-column` and SHALL use `--type-body`. (Design principle 3; NFR-02)
+`AppShell` SHALL render a `banner` landmark holding the TopBar, then the lessons sidebar (`lesson-sidebar`), then a `main` landmark holding its children. Running text inside `main` SHALL be limited to `--reading-column` and SHALL use `--type-body`. (Design principle 3; NFR-02; D155)
 
 #### Scenario: Landmarks
 - **WHEN** `AppShell` renders with a child paragraph
-- **THEN** there is exactly one `banner` and one `main`, the banner comes before `main` in document order, and the paragraph is inside `main`
+- **THEN** there is exactly one `banner` and one `main`, the banner comes before the "Lessons" navigation and that before `main` in document order, and the paragraph is inside `main`
 
 #### Scenario: No accessibility violations
 - **WHEN** the full `App` renders
@@ -70,15 +70,19 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **THEN** the TopBar wraps (it does not set a fixed width wider than the viewport) and `main` has a side gutter of at least `--space-4`
 
 ### Requirement: TopBar content comes from its props
-`TopBar` SHALL show the app title, an optional breadcrumb, an optional progress area, an optional status pill and an optional list of actions, then the Aa menu last. An action SHALL be a button that calls its handler, or, when it has an `href`, a link to that address. It SHALL render only the text it is given. The title SHALL NOT be a heading. [OPEN] The design does not show what the progress area holds ("revealed structure"). The slot takes whatever a screen passes, and this change passes nothing. (Wireframes 1b to 1o; NFR-02; D20, D23)
+`TopBar` SHALL show the app title, an optional breadcrumb, an optional progress area and an optional list of actions, then the Settings menu last. It SHALL show no status pill. An action SHALL be a button that calls its handler, or, when it has an `href`, a link to that address. It SHALL render only the text it is given. The title SHALL NOT be a heading. (Wireframes 1b to 1o; NFR-02; D20, D23, D157)
 
 #### Scenario: Slots render in order
-- **WHEN** `TopBar` renders with a title, a breadcrumb, a progress area, a pill and two actions
-- **THEN** the content appears in the order title, breadcrumb, progress area, pill, actions, and the Aa button is last
+- **WHEN** `TopBar` renders with a title, a breadcrumb, a progress area and two actions
+- **THEN** the content appears in the order title, breadcrumb, progress area, actions, and the Settings button is last
 
 #### Scenario: Optional parts are absent
 - **WHEN** `TopBar` renders with only a title
-- **THEN** no empty breadcrumb, progress area, pill or action container is in the document, and the Aa button is still present
+- **THEN** no empty breadcrumb, progress area or action container is in the document, and the Settings button is still present
+
+#### Scenario: No status pill
+- **WHEN** `App` renders with working storage, then with storage that throws
+- **THEN** neither "Saved on this device" nor "Not being saved" is in the TopBar
 
 #### Scenario: Progress area is a labelled region
 - **WHEN** `TopBar` renders with a progress area and a label for it
@@ -100,12 +104,12 @@ Every focusable element SHALL show the same focus indicator: a 2 px ring in `--f
 - **WHEN** an action with an `href` is rendered
 - **THEN** it is an `<a>` with that `href` and the action's label, not a button, and an action without an `href` is still a button that calls its handler on click
 
-### Requirement: Aa menu stub
-The TopBar SHALL contain an Aa button that opens and closes a small panel of display settings. The panel SHALL hold the "Dark theme" switch (capability `display-theme`) and the display settings (capability `display-settings`), including the narration switch. It SHALL NOT show a placeholder line saying read-aloud comes later, because narration is built (add-narration, D145). The button SHALL have a 44 px target, an accessible name that is more than "Aa", and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10, D26)
+### Requirement: Settings menu
+The TopBar SHALL contain a Settings button that opens and closes a small panel of display settings. The panel SHALL hold the "Dark theme" switch (capability `display-theme`) and the display settings (capability `display-settings`), including the narration switch. It SHALL NOT show a placeholder line saying read-aloud comes later. The button SHALL show the word "Settings", have an accessible name that starts with "Settings", a 44 px target, and `aria-expanded` and `aria-controls`. (Wireframes 1b to 1o; NFR-02, FR-VIS-10, WCAG 2.5.3, D26, D157)
 
 #### Scenario: Button name and state
 - **WHEN** `App` renders
-- **THEN** a button named "Display and read-aloud settings" exists, its visible text is "Aa", `aria-expanded` is `false`, and the panel is not in the accessibility tree
+- **THEN** a button whose visible text is "Settings" and whose accessible name starts with "Settings" exists, no button shows "Aa", `aria-expanded` is `false`, and the panel is not in the accessibility tree
 
 #### Scenario: Open by pointer or keyboard
 - **WHEN** the button is activated by click, then separately by Enter and by Space
@@ -114,7 +118,7 @@ The TopBar SHALL contain an Aa button that opens and closes a small panel of dis
 #### Scenario: Close with Escape
 - **GIVEN** the panel is open and focus is inside it or on the button
 - **WHEN** Escape is pressed
-- **THEN** the panel closes and focus is on the Aa button
+- **THEN** the panel closes and focus is on the Settings button
 
 #### Scenario: Close by activating again or clicking outside
 - **GIVEN** the panel is open
@@ -127,7 +131,7 @@ The TopBar SHALL contain an Aa button that opens and closes a small panel of dis
 
 #### Scenario: Stub copy is content
 - **WHEN** the component source is read
-- **THEN** the button name and the switch labels come from `src/content/`, not from the component
+- **THEN** the button text, its name and the switch labels come from `src/content/`, not from the component
 
 #### Scenario: Accessible when open
 - **WHEN** the panel is open

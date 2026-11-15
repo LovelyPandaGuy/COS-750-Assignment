@@ -21,7 +21,8 @@ export const controlsCopy = {
     stepSpeed: 'Slower or faster',
   },
   icons: {
-    place: '＋',
+    /** A plain plus: the full-width ＋ is missing from the app font and showed as an empty box. */
+    place: '+',
     remove: '−',
     undo: '↶',
     reset: '⟲',

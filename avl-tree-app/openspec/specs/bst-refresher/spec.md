@@ -21,7 +21,7 @@ The refresher at `/module/C1/refresher` SHALL play the screens of the `refresher
 - **THEN** a link to the re-check is offered; after any other route a link to C2 is
 
 ### Requirement: Reachable, skippable, calm
-The refresher SHALL be reachable from the result, the C1 module screen and the hub, whatever the learner state; its explanation screens SHALL offer "Skip ahead" as lesson screens do; and its UI wording SHALL use no mark, grade, pass, fail, test or score wording. (FR-DIA-04, D20, FR-DIA-05, ID 8.2)
+The refresher SHALL be reachable from the result and the C1 module screen, whatever the learner state; its explanation screens SHALL offer "Skip ahead" as lesson screens do; and its UI wording SHALL use no mark, grade, pass, fail, test or score wording. (FR-DIA-04, D20, FR-DIA-05, ID 8.2, D159)
 
 #### Scenario: Reachable
 - **WHEN** the C1 module screen is shown for any learner state

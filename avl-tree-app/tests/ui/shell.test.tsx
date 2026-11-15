@@ -67,22 +67,21 @@ describe('NFR-02 skip link', () => {
 });
 
 describe('NFR-02 TopBar content comes from its props', () => {
-  it('renders title, breadcrumb, pill, actions in order, Aa last', () => {
+  it('renders title, breadcrumb, actions in order, Settings last (no pill, D157)', () => {
     render(
       <TopBar
         title="AVL Trees"
         breadcrumb="Crumb"
-        status="Saved on this device"
         actions={[
           { label: 'Sandbox', onClick: () => {} },
           { label: 'Lecture questions', onClick: () => {} },
         ]}
       />,
     );
-    const order = ['AVL Trees', 'Crumb', 'Saved on this device', 'Sandbox', 'Lecture questions'].map((t) =>
+    const order = ['AVL Trees', 'Crumb', 'Sandbox', 'Lecture questions'].map((t) =>
       screen.getByText(t),
     );
-    const aa = screen.getByRole('button', { name: /display and read-aloud settings/i });
+    const aa = screen.getByRole('button', { name: /^settings/i });
     const all = [...order, aa];
     for (let i = 1; i < all.length; i++) {
       expect(all[i - 1].compareDocumentPosition(all[i]) & Node.DOCUMENT_POSITION_FOLLOWING, `item ${i}`).toBeTruthy();
@@ -92,7 +91,7 @@ describe('NFR-02 TopBar content comes from its props', () => {
   it('renders no empty optional containers when only a title is given', () => {
     const { container } = render(<TopBar title="AVL Trees" />);
     expect(container.querySelector('.topbar-breadcrumb, .topbar-status, .topbar-actions')).toBeNull();
-    expect(screen.getByRole('button', { name: /display and read-aloud settings/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^settings/i })).toBeInTheDocument();
   });
 
   it('calls an action handler on click', () => {
@@ -133,22 +132,21 @@ describe('NFR-02 TopBar link action', () => {
 // Spec: add-ui-foundation / app-shell, "TopBar content comes from its props" (progress area). NFR-02, D20, D23.
 describe('NFR-02 TopBar progress area', () => {
   const css = () => readFileSync('src/ui/shell.css', 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
-  it('sits after the breadcrumb and before the pill, inside a nav named by its label', () => {
+  it('sits after the breadcrumb and before the actions, inside a nav named by its label', () => {
     render(
       <TopBar
         title="AVL Trees"
         breadcrumb="Crumb"
         progress={<span>Progress content</span>}
         progressLabel="Your progress"
-        status="Saved on this device"
         actions={[{ label: 'Sandbox', onClick: () => {} }]}
       />,
     );
     const nav = screen.getByRole('navigation', { name: 'Your progress' });
     expect(nav).toContainElement(screen.getByText('Progress content'));
     expect(nav.textContent).toBe('Progress content');
-    const all = ['AVL Trees', 'Crumb', 'Progress content', 'Saved on this device', 'Sandbox'].map((t) => screen.getByText(t));
-    all.push(screen.getByRole('button', { name: /display and read-aloud settings/i }));
+    const all = ['AVL Trees', 'Crumb', 'Progress content', 'Sandbox'].map((t) => screen.getByText(t));
+    all.push(screen.getByRole('button', { name: /^settings/i }));
     for (let i = 1; i < all.length; i++) {
       expect(all[i - 1].compareDocumentPosition(all[i]) & Node.DOCUMENT_POSITION_FOLLOWING, `item ${i}`).toBeTruthy();
     }

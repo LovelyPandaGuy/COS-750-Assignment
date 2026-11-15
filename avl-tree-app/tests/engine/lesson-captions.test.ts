@@ -135,3 +135,28 @@ describe('avl-engine: lesson traces', () => {
     expect(() => leafDeleteTrace(t, 40)).toThrow(/only leaf deletion/)
   })
 })
+
+// Spec: align-sandbox-explanations / avl-engine "Plain leaf deletion trace", "Step captions" (D161, LO7).
+describe('avl-engine: plain leaf deletion trace (D161)', () => {
+  const five = () => [20, 10, 40, 30, 50].reduce<Tree>((t, k) => avlInsert(t, k).tree, null)
+
+  it('removes the leaf and updates up to the root, with no rotation even when unbalanced', () => {
+    const r = leafDeleteTrace(five(), 10, { rebalance: false })
+    expect(shapeString(r.tree)).toBe('20(·, 40(30, 50))')
+    expect(r.trace.some((st) => st.kind === 'rotation' || st.kind === 'imbalance')).toBe(false)
+  })
+
+  it('a node with children is outside the scope', () => {
+    expect(() => leafDeleteTrace(five(), 40, { rebalance: false })).toThrow(TraceError)
+  })
+
+  it('no false closing line after a plain deletion', () => {
+    const r = leafDeleteTrace(five(), 10, { rebalance: false })
+    expect(captionsFor('delete', r.trace, 10).map((c) => c.text)).toEqual(['10 is a leaf: remove it.', 'Node 20: bf = 1 − (−1) = +2.'])
+  })
+
+  it('a rebalancing deletion still closes with the balanced line', () => {
+    const r = leafDeleteTrace(five(), 10)
+    expect(captionsFor('delete', r.trace, 10).map((c) => c.text).at(-1)).toBe('Every node has a balance factor of −1, 0 or +1.')
+  })
+})

@@ -105,23 +105,23 @@ When the load status is "reset-corrupt", the Start screen SHALL show a short mes
 - **THEN** the started-fresh message is absent
 
 ### Requirement: Message when progress is not saved
-When persistence is off, the Start screen SHALL show a short message that progress will not be kept after the tab closes, in a polite live region. The TopBar SHALL show a status pill on every screen: a saved variant when persistence is on and a not-saved variant when it is off. (NFR-06; wireframe 1e "Saved on this device")
+When persistence is off, the Start screen SHALL show a short message that progress will not be kept after the tab closes, in a polite live region. No status pill SHALL be shown in the TopBar in either case. (NFR-06, D157)
 
 #### Scenario: Storage blocked
 - **WHEN** the app starts over a storage whose every call throws
-- **THEN** the Start screen shows the not-being-saved message, the TopBar pill shows the not-saved text, and no error is thrown
+- **THEN** the Start screen shows the not-being-saved message, no pill is shown, and no error is thrown
 
 #### Scenario: Storage working
 - **WHEN** the app starts over working storage
-- **THEN** the TopBar pill shows the saved text on the Start screen and on a module screen, and the not-being-saved message is absent
+- **THEN** no pill is shown on the Start screen or a module screen, and the not-being-saved message is absent
 
 #### Scenario: Storage fills during the session
 - **GIVEN** the app started with working storage
 - **WHEN** a save fails because storage is full and the Start screen is shown again
-- **THEN** the pill shows the not-saved text and the not-being-saved message is shown
+- **THEN** the not-being-saved message is shown
 
 ### Requirement: Copy comes from content
-Every piece of text on the Start screen, ResumeCard, confirmation dialog, status messages, pill and module placeholder SHALL come from `src/content/`. The module titles SHALL be the lesson titles from `src/live_content/lessons/` (D92 supersedes D1's titles). (CLAUDE.md content rules; ID 7.1)
+Every piece of text on the Start screen, ResumeCard, confirmation dialog, status messages and module placeholder SHALL come from `src/content/`. The module titles SHALL be the lesson titles from `src/live_content/lessons/` (D92 supersedes D1's titles). (CLAUDE.md content rules; ID 7.1)
 
 #### Scenario: No literal copy in components
 - **WHEN** the Start page, ResumeCard, ConfirmDialog, StorageNotice and module placeholder sources are read

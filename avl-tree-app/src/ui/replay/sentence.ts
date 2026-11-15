@@ -12,7 +12,7 @@ export function sentenceFor(op: Operation, e: Explanation): string {
   const bf = signed(e.balanceFactor ?? 0)
   switch (e.tag) {
     case 'start':
-      return op.kind === 'insert' ? s.startInsert(k) : s.startSearch(k)
+      return op.kind === 'insert' ? s.startInsert(k) : op.kind === 'delete' ? s.startDelete(k) : s.startSearch(k)
     case 'compare':
       return e.direction === undefined ? s.compareEqual(k, key) : s.compare(k, key, dir)
     case 'descend':

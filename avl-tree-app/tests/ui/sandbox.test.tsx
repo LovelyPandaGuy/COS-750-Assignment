@@ -27,12 +27,12 @@ function insertKeys(...keys: number[]) {
 const turnOff = () => fireEvent.click(sw())
 
 describe('FR-VIS-08 the sandbox screen', () => {
-  it('keeps the Sandbox heading and "← Back to path"', () => {
+  it('keeps the Sandbox heading and links back to the current lesson (remove-path-page, D159)', () => {
     open()
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(screenCopy.headings.sandbox)
-    const back = screen.getByRole('link', { name: /back to path/i })
-    expect(back).toHaveTextContent('←')
-    expect(back.getAttribute('href')).toMatch(/\/path$/)
+    const back = screen.getByRole('link', { name: /^← Back to C1\b/ })
+    expect(back.getAttribute('href')).toMatch(/\/module\/C1$/)
+    expect(screen.queryByRole('link', { name: /back to path/i })).toBeNull()
   })
 
   it('inserts with rebalancing on: 10, 20, 30 make root 20', () => {
@@ -118,12 +118,34 @@ describe('D19 event log', () => {
     insertKeys(6, 7)
     expect(log()).toHaveAttribute('aria-live', 'polite')
     const first = within(log()).getAllByRole('listitem')[0]
-    expect(first).toHaveTextContent(copy.log({ kind: 'insert', key: 7, parent: 6, side: 'right', rebalances: [], rebalancing: false }))
+    // align-sandbox-explanations (D161): a heading, then every step in the lessons' captions.
+    expect(first.querySelector('.sandbox-log-heading')).toHaveTextContent('Inserted 7')
+    expect([...first.querySelectorAll('li')].map((li) => li.textContent)).toEqual([
+      '7 > 6: go right.',
+      '7 goes in the empty right branch of 6.',
+      'Node 6: bf = 0 − (−1) = +1.',
+      'Every node has a balance factor of −1, 0 or +1.',
+      copy.noRotation,
+    ])
   })
 })
 
-describe('FR-VIS-03 replay the last insert', () => {
-  it('after an insert with rebalancing on, opens the insert replay', () => {
+describe('D163 replay the last change', () => {
+  const sentences = () => {
+    // Step through the replay and collect every caption it shows, in order, without repeats.
+    const out: string[] = []
+    const status = () => screen.getByRole('status', { name: /step explanation/i }).textContent ?? ''
+    const step = () => screen.getByRole('button', { name: /^step/i })
+    while (!step().hasAttribute('disabled')) {
+      fireEvent.click(step())
+      const t = status()
+      if (out.at(-1) !== t) out.push(t)
+    }
+    return out
+  }
+  const logSteps = () => [...within(log()).getAllByRole('listitem')[0].querySelectorAll('li')].map((li) => li.textContent ?? '')
+
+  it('after an insert with rebalancing on: the replay, whose captions follow the log entry', () => {
     open()
     insertKeys(10, 20, 30)
     const b = button(copy.replay)
@@ -132,14 +154,69 @@ describe('FR-VIS-03 replay the last insert', () => {
     expect(b).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('group', { name: replayCopy.controls.label })).toBeInTheDocument()
     expect(screen.queryByRole('region', { name: /^pseudocode/i })).toBeNull() // ID 7.4: no insert listing
+    const shown = sentences()
+    const steps = logSteps()
+    expect(shown.length).toBeGreaterThan(3)
+    let i = 0
+    for (const t of shown) {
+      i = steps.indexOf(t, i)
+      expect(i, t).toBeGreaterThanOrEqual(0)
+    }
   })
 
-  it('not offered with rebalancing off; the availability line shows instead', () => {
+  it('with rebalancing off too: the plain insert, no rotation', () => {
     open()
     turnOff()
-    insertKeys(5)
+    insertKeys(6, 7)
+    fireEvent.click(button(copy.replay))
+    const shown = sentences()
+    expect(shown.at(-1)).toBe('Node 6: bf = 0 − (−1) = +1.')
+    expect(shown.some((t) => /rotat/i.test(t))).toBe(false)
+  })
+
+  it('replay a delete: from the tree with 10, ending at 40(20(·, 30), 50), no pseudocode', () => {
+    const { container } = open()
+    insertKeys(20, 10, 40, 30, 50)
+    fireEvent.change(field(), { target: { value: '10' } })
+    fireEvent.click(button(copy.delete))
+    fireEvent.click(button(copy.replayDelete))
+    const replay = container.querySelector('.replay') as HTMLElement
+    expect(replay.querySelector('[data-key="10"]')).not.toBeNull()
+    const shown = sentences()
+    expect(shown[0]).toBe('10 is a leaf: remove it.')
+    expect(shown).toContain('Rotate 40 around 20: left rotation about 20.')
+    expect(replay.querySelector('[data-key="10"]')).toBeNull()
+    expect(screen.queryByRole('region', { name: /^pseudocode/i })).toBeNull()
+  })
+
+  it('not offered after the sorted shortcut, a rebuild or Clear; the availability line instead', () => {
+    for (const act of [() => fireEvent.click(button(copy.sorted)), () => turnOff(), () => fireEvent.click(button(copy.clear))]) {
+      const { unmount } = open()
+      insertKeys(10)
+      act()
+      expect(screen.queryByRole('button', { name: copy.replay })).toBeNull()
+      expect(screen.queryByRole('button', { name: copy.replayDelete })).toBeNull()
+      expect(screen.getByText(copy.replayUnavailable)).toBeInTheDocument()
+      unmount()
+    }
+  })
+
+  it('only the last change: an insert then a delete offers the delete', () => {
+    open()
+    insertKeys(10, 20, 30)
+    fireEvent.change(field(), { target: { value: '30' } })
+    fireEvent.click(button(copy.delete))
+    expect(button(copy.replayDelete)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: copy.replay })).toBeNull()
-    expect(screen.getByText(copy.replayUnavailable)).toBeInTheDocument()
+  })
+
+  it('a node with children: the calm not-a-leaf message, tree unchanged', () => {
+    open()
+    insertKeys(10, 20, 30)
+    fireEvent.change(field(), { target: { value: '20' } })
+    fireEvent.click(button(copy.delete))
+    expect(nodeKeys().sort((a, b) => a - b)).toEqual([10, 20, 30])
+    expect(notice()).toHaveTextContent(copy.notice({ kind: 'notLeaf', key: 20 }))
   })
 })
 
@@ -153,7 +230,7 @@ describe('NFR-02 nothing stored, accessible', () => {
     fireEvent.click(button(copy.delete))
     turnOff()
     fireEvent.click(button(copy.clear))
-    fireEvent.click(screen.getByRole('link', { name: /back to path/i }))
+    fireEvent.click(screen.getByRole('link', { name: /^← Back to C1\b/ }))
     expect(backend.getItem(LEARNER_KEY)).toBe(before)
   })
 

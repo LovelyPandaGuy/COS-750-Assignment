@@ -37,13 +37,6 @@
 @media (min-width: 768px) {
   .topbar-progress { flex-basis: auto; }
 }
-.topbar-status {
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  font: var(--type-label);
-  color: var(--text-secondary);
-}
 .topbar-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 
 .topbar-action,
@@ -147,5 +140,5 @@ a.topbar-action {
 /* Print: only the screen's content goes on paper, on every page (quality bar 7, ui-readiness "Print view"; F-009). */
 @media print {
   /* body raises specificity above each component's own display rule (module.css loads after this file). */
-  body :is(.skip-link, header, .lesson-outline, .control-strip) { display: none; }
+  body :is(.skip-link, header, .lesson-sidebar, .control-strip) { display: none; }
 }

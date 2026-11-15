@@ -1,18 +1,23 @@
 // Sandbox state (add-sandbox, design decision 1). Pure: no React, no storage. Every tree, rebalance
-// and statistic comes from the engine; the UI only words and draws them.
+// and statistic comes from the engine; the UI only words and draws them. Inserts and deletes run the
+// engine's traces, and their log entries carry the lessons' captions for those traces
+// (align-sandbox-explanations, D161 to D163).
 import { analyseTree } from '../engine/analyse'
-import { avlDelete, avlInsert, type Rebalance } from '../engine/avl'
-import { insert, remove } from '../engine/bst'
+import { avlInsert, avlInsertTrace } from '../engine/avl'
+import { insert } from '../engine/bst'
+import { captionsFor } from '../engine/captions'
+import { leafDeleteTrace, plainInsertTrace } from '../engine/lessonTrace'
 import { EMPTY_HEIGHT } from '../engine/conventions'
 import { searchTrace } from '../engine/search'
-import { height, type Key, type Tree } from '../engine/tree'
+import { height, subtreeAt, type Key, type Tree } from '../engine/tree'
 import { SANDBOX_KEY_MAX, SANDBOX_KEY_MIN, SANDBOX_MAX_NODES, SORTED_DEMO } from './config'
 
-export type Notice = { kind: 'range' } | { kind: 'duplicate'; key: Key } | { kind: 'missing'; key: Key } | { kind: 'full' }
+export type Notice = { kind: 'range' } | { kind: 'duplicate'; key: Key } | { kind: 'missing'; key: Key } | { kind: 'notLeaf'; key: Key } | { kind: 'full' }
 
 export type LogEntry =
-  | { kind: 'insert'; key: Key; parent: Key | null; side: 'left' | 'right' | null; rebalances: Rebalance[]; rebalancing: boolean }
-  | { kind: 'delete'; key: Key; rebalances: Rebalance[]; rebalancing: boolean }
+  /** `steps`: the engine's lesson captions for the operation's trace, in order (D161). */
+  | { kind: 'insert'; key: Key; rebalancing: boolean; steps: string[] }
+  | { kind: 'delete'; key: Key; rebalancing: boolean; steps: string[] }
   | { kind: 'rebuild'; rebalancing: boolean; count: number }
   | { kind: 'clear' }
 
@@ -23,9 +28,16 @@ export interface SandboxState {
   rebalancing: boolean
   /** Newest first. */
   log: LogEntry[]
-  /** The last insert, when it was made with rebalancing on, so it can be replayed. */
-  lastInsert: { before: Tree; key: Key } | null
+  /** The last single insert or leaf delete, on or off, so it can be replayed (D163). */
+  lastChange: LastChange | null
   notice: Notice | null
+}
+
+export interface LastChange {
+  kind: 'insert' | 'delete'
+  before: Tree
+  key: Key
+  rebalance: boolean
 }
 
 export type SandboxAction =
@@ -38,7 +50,7 @@ export type SandboxAction =
   | { type: 'random'; value: number }
 
 export function initialSandbox(): SandboxState {
-  return { order: [], tree: null, rebalancing: true, log: [], lastInsert: null, notice: null }
+  return { order: [], tree: null, rebalancing: true, log: [], lastChange: null, notice: null }
 }
 
 const has = (tree: Tree, key: Key): boolean => searchTrace(tree, key).found
@@ -49,45 +61,44 @@ function build(keys: readonly Key[], rebalancing: boolean): Tree {
   return keys.reduce<Tree>((t, k) => (rebalancing ? avlInsert(t, k).tree : insert(t, k).tree), null)
 }
 
-/** Where a BST insert puts `key` in `tree`: the last node compared and the side, or the root. */
-function placeOf(tree: Tree, key: Key): { parent: Key | null; side: 'left' | 'right' | null } {
-  const compared = searchTrace(tree, key).trace.filter((s) => s.kind === 'compare')
-  const parent = compared.length === 0 ? null : compared[compared.length - 1].nodes[0]
-  return { parent, side: parent === null ? null : key < parent ? 'left' : 'right' }
-}
+const stepsOf = (op: 'insert' | 'delete', trace: Parameters<typeof captionsFor>[1], key: Key): string[] =>
+  captionsFor(op, trace, key).map((c) => c.text)
 
 function doInsert(state: SandboxState, key: number): SandboxState {
   if (!inRange(key)) return { ...state, notice: { kind: 'range' } }
   if (has(state.tree, key)) return { ...state, notice: { kind: 'duplicate', key } }
   if (count(state.tree) >= SANDBOX_MAX_NODES) return { ...state, notice: { kind: 'full' } }
-  const { parent, side } = placeOf(state.tree, key)
-  const result = state.rebalancing ? avlInsert(state.tree, key) : { tree: insert(state.tree, key).tree, rebalance: null }
-  const rebalances = result.rebalance === null ? [] : [result.rebalance]
+  const rebalance = state.rebalancing
+  const result = rebalance ? avlInsertTrace(state.tree, key) : plainInsertTrace(state.tree, key)
   return {
     ...state,
     order: [...state.order, key],
     tree: result.tree,
-    log: [{ kind: 'insert', key, parent, side, rebalances, rebalancing: state.rebalancing }, ...state.log],
-    lastInsert: state.rebalancing ? { before: state.tree, key } : null,
+    log: [{ kind: 'insert', key, rebalancing: rebalance, steps: stepsOf('insert', result.trace, key) }, ...state.log],
+    lastChange: { kind: 'insert', before: state.tree, key, rebalance },
     notice: null,
   }
 }
 
+/** A leaf only, as C7 teaches (conventions "leaf nodes only", D162). */
 function doDelete(state: SandboxState, key: number): SandboxState {
   if (!inRange(key)) return { ...state, notice: { kind: 'range' } }
   if (!has(state.tree, key)) return { ...state, notice: { kind: 'missing', key } }
-  const result = state.rebalancing ? avlDelete(state.tree, key) : { tree: remove(state.tree, key).tree, rebalances: [] }
+  const node = subtreeAt(state.tree, key)
+  if (node !== null && (node.left !== null || node.right !== null)) return { ...state, notice: { kind: 'notLeaf', key } }
+  const rebalance = state.rebalancing
+  const result = leafDeleteTrace(state.tree, key, { rebalance })
   return {
     ...state,
     order: state.order.filter((k) => k !== key),
     tree: result.tree,
-    log: [{ kind: 'delete', key, rebalances: result.rebalances, rebalancing: state.rebalancing }, ...state.log],
-    lastInsert: null,
+    log: [{ kind: 'delete', key, rebalancing: rebalance, steps: stepsOf('delete', result.trace, key) }, ...state.log],
+    lastChange: { kind: 'delete', before: state.tree, key, rebalance },
     notice: null,
   }
 }
 
-const cleared = (state: SandboxState): SandboxState => ({ ...state, order: [], tree: null, lastInsert: null, notice: null })
+const cleared = (state: SandboxState): SandboxState => ({ ...state, order: [], tree: null, lastChange: null, notice: null })
 
 export function sandboxReducer(state: SandboxState, action: SandboxAction): SandboxState {
   switch (action.type) {
@@ -102,14 +113,15 @@ export function sandboxReducer(state: SandboxState, action: SandboxAction): Sand
         rebalancing,
         tree: build(state.order, rebalancing),
         log: [{ kind: 'rebuild', rebalancing, count: state.order.length }, ...state.log],
-        lastInsert: null,
+        lastChange: null,
         notice: null,
       }
     }
     case 'clear':
       return { ...cleared(state), log: [{ kind: 'clear' }, ...state.log] }
     case 'sorted':
-      return SORTED_DEMO.reduce(doInsert, { ...cleared(state), log: [{ kind: 'clear' }, ...state.log] })
+      // A sequence, not a single change: nothing to replay (D163).
+      return { ...SORTED_DEMO.reduce(doInsert, { ...cleared(state), log: [{ kind: 'clear' }, ...state.log] }), lastChange: null }
     case 'random': {
       if (count(state.tree) >= SANDBOX_MAX_NODES) return { ...state, notice: { kind: 'full' } }
       const free: Key[] = []

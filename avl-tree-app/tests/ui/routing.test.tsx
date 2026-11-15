@@ -2,6 +2,7 @@ import { act, fireEvent, screen, within } from '@testing-library/react'
 import { useNavigate } from 'react-router-dom'
 import { axe } from 'vitest-axe'
 import { describe, it, expect, vi, afterEach } from 'vitest'
+import { shellCopy } from '../../src/content/shell'
 import { startCopy } from '../../src/content/start'
 import { backendWith, progressState, renderRoutes, throwingBackend } from './learner-fixtures'
 
@@ -14,7 +15,6 @@ const actions = () => within(banner()).queryAllByRole('link').map((a) => a.textC
 
 const ALL_PATHS = [
   '/',
-  '/path',
   '/module/C1',
   '/module/C4',
   '/module/C9',
@@ -42,7 +42,7 @@ describe('FR-LRN-04 route table', () => {
       const go = useNavigate()
       return (
         <>
-          <button onClick={() => go('/path')}>to-path</button>
+          <button onClick={() => go('/sandbox')}>to-path</button>
           <button onClick={() => go('/module/C4')}>to-c4</button>
           <button onClick={() => go(-1)}>back</button>
           <button onClick={() => go(1)}>forward</button>
@@ -57,7 +57,7 @@ describe('FR-LRN-04 route table', () => {
     click('back')
     expect(h1s()[0]).toHaveTextContent(startCopy.heading)
     click('forward')
-    expect(h1s()[0]).toHaveTextContent('Your path')
+    expect(h1s()[0]).toHaveTextContent('Sandbox')
   })
 
   it('makes no network request', () => {
@@ -101,26 +101,24 @@ describe('FR-LRN-04 unknown paths go somewhere safe', () => {
         </>
       )
     }
-    renderRoutes(backendWith(), '/path', <Nav />)
+    renderRoutes(backendWith(), '/sandbox', <Nav />)
     act(() => fireEvent.click(screen.getByRole('button', { name: 'to-nowhere' })))
     expect(h1s()[0]).toHaveTextContent(startCopy.heading)
     act(() => fireEvent.click(screen.getByRole('button', { name: 'back' })))
-    expect(h1s()[0]).toHaveTextContent('Your path')
+    expect(h1s()[0]).toHaveTextContent('Sandbox')
   })
 })
 
-describe('NFR-06 every route is in the shell', () => {
-  it('has a banner, a main, one heading and the saved pill, or the not-saved pill', () => {
-    for (const [backend, pill] of [
-      [() => backendWith(), startCopy.savedPill],
-      [() => throwingBackend(), startCopy.notSavedPill],
-    ] as const) {
+describe('every route is in the shell (revamp-navigation, D155, D157)', () => {
+  it('has a banner, the Lessons sidebar, a main and one heading, and no pill', () => {
+    for (const backend of [() => backendWith(), () => throwingBackend()]) {
       for (const path of ALL_PATHS) {
         const { unmount } = renderRoutes(backend(), path)
         expect(screen.getAllByRole('banner'), path).toHaveLength(1)
+        expect(screen.getAllByRole('navigation', { name: shellCopy.sidebar.label }), path).toHaveLength(1)
         expect(screen.getAllByRole('main'), path).toHaveLength(1)
         expect(h1s(), path).toHaveLength(1)
-        expect(banner().querySelector('.topbar-status'), path).toHaveTextContent(pill)
+        expect(banner().querySelector('.topbar-status'), path).toBeNull()
         unmount()
       }
     }
@@ -132,7 +130,8 @@ describe('NFR-06 every route is in the shell', () => {
       expect(await axe(container), path).toHaveNoViolations()
       unmount()
     }
-  })
+    // Every route now carries the Lessons sidebar (revamp-navigation), so axe scans more: same 60 s as other axe tests.
+  }, 60_000)
 })
 
 describe('FR-LRN-03 breadcrumb per screen', () => {
@@ -156,7 +155,6 @@ describe('FR-LRN-03 breadcrumb per screen', () => {
 
   it('result, hub, module, sandbox and readiness', () => {
     const cases: [string, string][] = [
-      ['/path', 'Your path'],
       ['/module/C4', 'C4 Search'],
       ['/sandbox', 'Sandbox'],
       ['/readiness', 'Your readiness'],
@@ -177,7 +175,6 @@ describe('FR-LRN-03 breadcrumb per screen', () => {
 describe('FR-VIS-08 TopBar actions per screen', () => {
   const both = ['Sandbox', 'Lecture questions']
   const table: [string, string[]][] = [
-    ['/path', both],
     ['/module/C4', both],
     ['/module/C5', both],
     ['/module/C5/explore', both],
@@ -211,7 +208,7 @@ describe('FR-VIS-08 TopBar actions per screen', () => {
   })
 
   it('actions are links with an href', () => {
-    renderRoutes(backendWith(), '/path')
+    renderRoutes(backendWith(), '/module/C5')
     for (const a of within(banner()).getAllByRole('link')) {
       expect(a.tagName).toBe('A')
       expect(a.getAttribute('href')).toBeTruthy()
@@ -221,8 +218,8 @@ describe('FR-VIS-08 TopBar actions per screen', () => {
 
 describe('NFR-02 browser title per screen', () => {
   it('is the heading then "· AVL Primer"', () => {
-    const first = renderRoutes(backendWith(), '/path')
-    expect(document.title).toBe('Your path · AVL Primer')
+    const first = renderRoutes(backendWith(), '/sandbox')
+    expect(document.title).toBe('Sandbox · AVL Primer')
     first.unmount()
     renderRoutes(backendWith(), '/module/C4')
     expect(document.title).toBe('Search (the algorithm) · AVL Primer')
@@ -231,8 +228,9 @@ describe('NFR-02 browser title per screen', () => {
 
 describe('NFR-02 focus follows in-app navigation', () => {
   it('moves focus to the heading after following a link', () => {
-    renderRoutes(backendWith(progressState()), '/path')
-    fireEvent.click(screen.getByRole('link', { name: /^continue/i }))
+    renderRoutes(backendWith(progressState()), '/sandbox')
+    const sidebar = screen.getByRole('navigation', { name: shellCopy.sidebar.label })
+    fireEvent.click(within(sidebar).getByRole('link', { name: /^C4\b/ }))
     expect(h1s()[0]).toHaveTextContent('Search (the algorithm)')
     expect(h1s()[0]).toHaveFocus()
   })
@@ -248,5 +246,12 @@ describe('NFR-02 focus follows in-app navigation', () => {
     renderRoutes(backendWith())
     fireEvent.click(screen.getByRole('button', { name: startCopy.startButton }))
     expect(h1s()[0]).toHaveFocus()
+  })
+})
+
+describe('remove-path-page: /path redirects (D159)', () => {
+  it('to the current lesson', () => {
+    renderRoutes(backendWith(progressState({ currentModule: 'C3' })), '/path')
+    expect(h1s()[0]).toHaveTextContent('The AVL property')
   })
 })

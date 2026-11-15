@@ -5,17 +5,17 @@ import type { TopBarAction } from './ui/TopBar'
 import { shellCopy } from './content/shell'
 import { moduleLabel } from './content/modules'
 import { activityLabel, breadcrumb, screenCopy } from './content/screens'
-import { startCopy } from './content/start'
 import { LearnerProvider, useLearner } from './state/LearnerContext'
+import type { ModuleId } from './state/learnerState'
 import { bootLearner, type Booted } from './state/boot'
 import { createSettingsStorage } from './state/storage'
 import { ThemeProvider, useTheme } from './ui/ThemeContext'
+import { LessonSidebar } from './ui/navigation/LessonSidebar'
 import { NarrationProvider } from './ui/narration/NarrationContext'
 import { browserEngine, type SpeechEngine } from './ui/narration/engine'
 import { DEFAULT_THEME } from './ui/theme'
 import { ACTIVITIES_BY_MODULE, parseActivity, parseModuleId, paths, patterns } from './routes'
 import { useScreen } from './useScreen'
-import { Hub } from './pages/Hub'
 import { Module } from './pages/Module'
 import { Readiness } from './pages/Readiness'
 import { Sandbox } from './pages/Sandbox'
@@ -26,11 +26,12 @@ type ActionKey = 'sandbox' | 'lectureQuestions'
 const BOTH: ActionKey[] = ['sandbox', 'lectureQuestions']
 
 /**
- * Every route sits in the shell; the pill says whether progress is being saved (NFR-06).
+ * Every route sits in the shell with the Lessons sidebar (revamp-navigation, D155); there is no status
+ * pill (D157; the Start screen still says when progress is not saved, NFR-06).
  * Which actions a screen shows follows the wireframes (proposal, question 6).
  */
-function Screen({ breadcrumb: crumb, actions = [], children }: { breadcrumb?: string; actions?: ActionKey[]; children: ReactNode }) {
-  const { persistent } = useLearner()
+function Screen({ breadcrumb: crumb, actions = [], viewing = null, children }: { breadcrumb?: string; actions?: ActionKey[]; viewing?: ModuleId | null; children: ReactNode }) {
+  const { learner } = useLearner()
   const navigate = useNavigate()
   const sandboxHref = useHref(paths.sandbox())
   const readinessHref = useHref(paths.readiness())
@@ -44,19 +45,25 @@ function Screen({ breadcrumb: crumb, actions = [], children }: { breadcrumb?: st
     <AppShell
       title={shellCopy.appTitle}
       breadcrumb={crumb}
-      status={persistent ? startCopy.savedPill : startCopy.notSavedPill}
       actions={actions.map((a) => known[a])}
+      sidebar={<LessonSidebar completed={learner.completedModules} current={learner.currentModule} viewing={viewing} hrefOf={(id) => paths.module(id)} />}
     >
       {children}
     </AppShell>
   )
 }
 
+/** The former path page (/path): the sidebar shows the path now, so open the current lesson (D159). */
+function CurrentLesson() {
+  const { learner } = useLearner()
+  return <Navigate to={paths.module(learner.currentModule)} replace />
+}
+
 function ModuleRoute() {
   const id = parseModuleId(useParams().moduleId)
   if (id === null) return <Navigate to={paths.start()} replace />
   return (
-    <Screen breadcrumb={breadcrumb(moduleLabel(id))} actions={id === 'C1' ? [] : BOTH}>
+    <Screen breadcrumb={breadcrumb(moduleLabel(id))} actions={id === 'C1' ? [] : BOTH} viewing={id}>
       <Module id={id} />
     </Screen>
   )
@@ -72,7 +79,7 @@ function ActivityRoute() {
 
   // The only activity path left is C1's BST refresher (app-routing); it shows no actions.
   return (
-    <Screen breadcrumb={breadcrumb(moduleLabel(id), activityLabel(id, activity))} actions={[]}>
+    <Screen breadcrumb={breadcrumb(moduleLabel(id), activityLabel(id, activity))} actions={[]} viewing={id}>
       <Refresher />
     </Screen>
   )
@@ -82,7 +89,7 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path={patterns.start} element={<Screen><Start /></Screen>} />
-      <Route path={patterns.hub} element={<Screen breadcrumb={breadcrumb(screenCopy.crumbs.hub)} actions={BOTH}><Hub /></Screen>} />
+      <Route path={patterns.legacyPath} element={<CurrentLesson />} />
       <Route path={patterns.module} element={<ModuleRoute />} />
       <Route path={patterns.warmUpResult} element={<Navigate to={paths.module('C1')} replace />} />
       <Route path={patterns.activity} element={<ActivityRoute />} />
