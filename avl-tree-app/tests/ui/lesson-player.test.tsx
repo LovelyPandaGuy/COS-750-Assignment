@@ -33,6 +33,9 @@ const at = (lesson: string, id: string) => {
 }
 const region = (r: ReturnType<typeof open>, cls: string) => r.container.querySelector(`.${cls}`) as HTMLElement
 const node = (root: Element, key: number) => root.querySelector(`[data-key="${key}"]`) as SVGGElement
+/** A text field of one screen in the live content, so the expected wording follows the JSON (D92). */
+const textOf = (lesson: string, id: string, field: 'text' | 'caption' | 'showRule'): string =>
+  String((lessonById(lesson)!.screens.find((s) => s.id === id) as Record<string, unknown>)[field])
 
 describe('lesson-player: a lesson plays its screens in order (ID 3.2)', () => {
   it('first screen', () => {
@@ -108,7 +111,7 @@ describe('lesson-player: controls in one place (ID 8.2)', () => {
     fireEvent.click(b)
     expect(b).toHaveAttribute('aria-expanded', 'true')
     expect(panel).toBeVisible()
-    expect(panel).toHaveTextContent('bf = height of right branch − height of left branch. An empty branch has height −1.')
+    expect(panel).toHaveTextContent(textOf('c3', 'c3-s05', 'showRule'))
     fireEvent.click(b)
     expect(b).toHaveAttribute('aria-expanded', 'false')
   })
@@ -162,7 +165,7 @@ describe('lesson-player: the summary recaps the objectives (Gagné 9)', () => {
     const r = at('c3', 'c3-s13')
     const recap = r.container.querySelector('.lesson-recap') as HTMLElement
     expect(within(recap).getByRole('heading', { name: lessonCopy.recapHeading })).toBeInTheDocument()
-    expect(recap).toHaveTextContent('Calculate heights and balance factors, and decide whether a tree is an AVL tree (LO2).')
+    expect(recap).toHaveTextContent(textOf('c3', 'c3-s02', 'text'))
     expect(r.container.querySelectorAll('.lesson-box li')).toHaveLength(3)
   })
 })
@@ -200,7 +203,7 @@ describe('lesson-blocks: one component per content screen type (ID 8.1)', () => 
 
   it('written rule with a tree: rule in main, tree supporting', () => {
     const r = at('c3', 'c3-s05')
-    expect(region(r, 'lesson-main')).toHaveTextContent('The balance factor of a node is bf = h(right) − h(left).')
+    expect(region(r, 'lesson-main')).toHaveTextContent(textOf('c3', 'c3-s05', 'text'))
     expect(region(r, 'lesson-main').querySelector('svg')).toBeNull()
     expect(region(r, 'lesson-support').querySelector('svg')).not.toBeNull()
   })
@@ -208,13 +211,13 @@ describe('lesson-blocks: one component per content screen type (ID 8.1)', () => 
   it('diagram: tree in main, caption directly under it', () => {
     const r = at('c3', 'c3-s04')
     expect(region(r, 'lesson-main').querySelector('svg')).not.toBeNull()
-    expect(region(r, 'lesson-caption')).toHaveTextContent('10, 30 and 50 are leaves (height 0). 40 has height 1. The root 20 has height 2.')
+    expect(region(r, 'lesson-caption')).toHaveTextContent(textOf('c3', 'c3-s04', 'caption'))
   })
 
   it('objectives block', () => {
     at('c3', 'c3-s02')
     expect(screen.getByRole('heading', { level: 2, name: lessonCopy.objectivesHeading })).toBeInTheDocument() // the screen heading (D168)
-    expect(screen.getByText('Calculate heights and balance factors, and decide whether a tree is an AVL tree (LO2).')).toBeInTheDocument()
+    expect(screen.getByText(textOf('c3', 'c3-s02', 'text'))).toBeInTheDocument()
   })
 
   it('case chart from conventions.json (ID 7.3)', () => {
@@ -301,7 +304,7 @@ describe('lesson-blocks and step-replay: animations from the engine (ID 7.2, 8.2
       const items = within(screen.getByRole('region', { name: /^pseudocode/i })).getAllByRole('listitem')
       lit.push(items.findIndex((li) => li.getAttribute('aria-current') === 'step') + 1)
     }
-    expect(seen).toEqual(['30 > 20: go right.', '30 < 40: go left.', '30 = 30: found.'])
+    expect(seen).toEqual(['30 is larger than 20, so the search goes right.', '30 is smaller than 40, so the search goes left.', '30 equals 30, so the key is found.'])
     expect(lit).toEqual([8, 7, 5])
   })
 
@@ -325,7 +328,7 @@ describe('lesson-blocks and step-replay: animations from the engine (ID 7.2, 8.2
     expect(r.container.querySelectorAll('.lesson-role-steps li')).toHaveLength(3)
     stepAll(r)
     const inorder = r.container.querySelector('.lesson-inorder')!
-    expect(inorder).toHaveTextContent('In-order before: 20, 30, 40, 50, 60, 80, 90. After: 20, 30, 40, 50, 60, 80, 90. The BST order is unchanged.')
+    expect(inorder).toHaveTextContent('The in-order sequence before the rotation is 20, 30, 40, 50, 60, 80, 90. After the rotation it is 20, 30, 40, 50, 60, 80, 90, so the BST order is unchanged.')
     expect(r.container.querySelector('.tree-description')!.textContent).toMatch(/^Root 80 .*Left child 30 of 80/)
   })
 
@@ -336,7 +339,7 @@ describe('lesson-blocks and step-replay: animations from the engine (ID 7.2, 8.2
       fireEvent.click(btn(a.next))
       seen.push(region(r, 'lesson-caption').textContent!)
     }
-    expect(seen).toEqual(['50 is a leaf: remove it.', 'Node 40: bf = −1 − 0 = −1.', 'Node 20: bf = 1 − 0 = +1.', 'Every node has a balance factor of −1, 0 or +1.'])
+    expect(seen).toEqual(['50 is a leaf, so it is removed.', 'Node 40 now has a balance factor of −1 − 0 = −1.', 'Node 20 now has a balance factor of 1 − 0 = +1.', 'Every node now has a balance factor of −1, 0 or +1.'])
   })
 
   it('What changed? at the end (ID 8.1 Kolb)', () => {
@@ -345,7 +348,7 @@ describe('lesson-blocks and step-replay: animations from the engine (ID 7.2, 8.2
     stepAll(r)
     expect(screen.getByRole('heading', { name: a.whatChanged })).toBeInTheDocument()
     fireEvent.click(btn(a.reveal))
-    expect(r.container.querySelector('.lesson-what-changed')).toHaveTextContent('The single rotation only moves the problem: C now has balance factor +2.')
+    expect(r.container.querySelector('.lesson-what-changed')).toHaveTextContent(textOf('c5', 'c5-s08', 'caption'))
   })
 
   it('Replay step re-runs the current step', () => {

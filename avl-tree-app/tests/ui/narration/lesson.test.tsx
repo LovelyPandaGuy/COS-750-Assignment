@@ -62,7 +62,7 @@ describe('D146 reads the visible screen in order, words from the screen only', (
   it('a closed hint is not read; once opened it is', () => {
     const e = fakeEngine()
     renderNarrated({ lesson: 'c2', screenId: 'c2-s10', engine: e, attempts: allChecks() })
-    const hint = 'This checks that you can link insertion order to tree height'
+    const hint = (lessonById('c2')!.screens.find((s) => s.id === 'c2-s10') as unknown as { task: { hint: string } }).task.hint
     read()
     expect(spokenText(e)).not.toContain(hint)
     fireEvent.click(btn(narrationCopy.stop))

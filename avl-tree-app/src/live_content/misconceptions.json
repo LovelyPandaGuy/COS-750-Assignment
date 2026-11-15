@@ -2,89 +2,89 @@
   "misconceptions": [
     {
       "id": "misc-bst-always-balanced",
-      "description": "Thinks a BST stays balanced whatever the insertion order, so search is always O(log n).",
+      "description": "The student thinks that a BST stays balanced whatever the insertion order, so search is always O(log n).",
       "lessons": [
         "c2",
         "c8",
         "c9"
       ],
-      "appResponse": "The student builds a chain themselves in C2, and the step counter shows n comparisons.",
+      "appResponse": "The student builds a chain in C2, and the step counter shows n comparisons.",
       "lectureQuestion": "Why does sorted input turn a BST into a chain, and what does that do to search?"
     },
     {
       "id": "misc-order-irrelevant",
-      "description": "Thinks the shape of a BST does not depend on the order in which keys are inserted.",
+      "description": "The student thinks that the shape of a BST does not depend on the order in which the keys are inserted.",
       "lessons": [
         "c2"
       ],
-      "appResponse": "Side-by-side trees built from the same keys in two orders (A D E F Z and E A D F Z).",
+      "appResponse": "The app shows two trees side by side, built from the same keys in two orders (A D E F Z and E A D F Z).",
       "lectureQuestion": "How does the insertion order decide the shape of a BST?"
     },
     {
       "id": "misc-unsorted-means-balanced",
-      "description": "Thinks any insertion order that is not sorted gives a balanced BST.",
+      "description": "The student thinks that any insertion order that is not sorted gives a balanced BST.",
       "lessons": [
         "c2"
       ],
-      "appResponse": "A zig-zag order (1, 7, 2, 6, …) is shown building a chain of the same height as sorted input.",
+      "appResponse": "The app shows a zig-zag order (1, 7, 2, 6, …) that builds a chain of the same height as sorted input.",
       "lectureQuestion": "Which insertion orders give a tall BST, apart from sorted ones?"
     },
     {
       "id": "misc-worst-case-average",
-      "description": "Confuses the worst case with the average case.",
+      "description": "The student confuses the worst case with the average case.",
       "lessons": [
         "c2"
       ],
-      "appResponse": "Feedback separates the worst case (the bottom of the chain) from an average search.",
+      "appResponse": "The feedback separates the worst case, which is a search to the bottom of the chain, from an average search.",
       "lectureQuestion": "What is the difference between worst-case and average-case cost for BST search?"
     },
     {
       "id": "misc-avl-sorts-input",
-      "description": "Thinks an AVL tree stays balanced by sorting the keys before inserting them.",
+      "description": "The student thinks that an AVL tree stays balanced by sorting the keys before inserting them.",
       "lessons": [
         "c2"
       ],
-      "appResponse": "C5 opens with the slides’ point that rebuilding from sorted data is expensive, and rotations avoid it.",
+      "appResponse": "C5 opens with the point from the slides that rebuilding from sorted data is expensive, and that rotations avoid this cost.",
       "lectureQuestion": "How do rotations keep a tree balanced without sorting the data first?"
     },
     {
       "id": "misc-avl-can-chain",
-      "description": "Thinks an AVL tree can still become a chain, for example with sorted input.",
+      "description": "The student thinks that an AVL tree can still become a chain, for example with sorted input.",
       "lessons": [
         "c2",
         "c3",
         "c4",
         "c9"
       ],
-      "appResponse": "The C2 preview and the C6 challenge insert sorted keys into an AVL tree and get a balanced tree.",
+      "appResponse": "The C2 preview and the C6 challenge insert sorted keys into an AVL tree, and the result is a balanced tree.",
       "lectureQuestion": "What stops an AVL tree from becoming a chain when keys arrive in sorted order?"
     },
     {
       "id": "misc-height-counts-nodes",
-      "description": "Counts nodes instead of edges when finding a height.",
+      "description": "The student counts nodes instead of edges when finding a height.",
       "lessons": [
         "c1",
         "c2",
         "c3"
       ],
-      "appResponse": "Feedback counts the edges on the path, and the conventions card shows that a leaf has height 0.",
+      "appResponse": "The feedback counts the edges on the path, and the conventions card shows that a leaf has height 0.",
       "lectureQuestion": "Why does the course count height in edges, so that a leaf has height 0?"
     },
     {
       "id": "misc-empty-height",
-      "description": "Gives an empty branch height 0 (or confuses a leaf with an empty branch).",
+      "description": "The student gives an empty branch a height of 0, or confuses a leaf with an empty branch.",
       "lessons": [
         "c3",
         "c6",
         "c7",
         "c9"
       ],
-      "appResponse": "Feedback restates that an empty branch has height −1, one less than a leaf.",
+      "appResponse": "The feedback restates that an empty branch has height −1, which is one less than a leaf.",
       "lectureQuestion": "Why is the height of an empty subtree −1?"
     },
     {
       "id": "misc-bf-sign",
-      "description": "Uses h(left) − h(right) for the balance factor, so the sign is reversed.",
+      "description": "The student uses h(left) − h(right) for the balance factor, so the sign is reversed.",
       "lessons": [
         "c3",
         "c5",
@@ -92,46 +92,46 @@
         "c7",
         "c9"
       ],
-      "appResponse": "Feedback restates bf = h(right) − h(left) with the node’s own numbers.",
+      "appResponse": "The feedback restates bf = h(right) − h(left) with the node's own numbers.",
       "lectureQuestion": "Which sign convention does the lecture use for balance factors, and what does a negative value mean?"
     },
     {
       "id": "misc-root-only",
-      "description": "Checks balance only at the root.",
+      "description": "The student checks the balance only at the root.",
       "lessons": [
         "c3",
         "c5"
       ],
-      "appResponse": "“Spot the problem” trees with a balanced root and a deeper violation.",
+      "appResponse": "The app shows “Spot the problem” trees in which the root is balanced but a node lower down is not.",
       "lectureQuestion": "Why must the AVL rule hold at every node, not just at the root?"
     },
     {
       "id": "misc-balanced-means-full",
-      "description": "Thinks “balanced” means every level is full, or that the height is exactly log₂ n.",
+      "description": "The student thinks that “balanced” means that every level is full, or that the height is exactly log₂ n.",
       "lessons": [
         "c2",
         "c3",
         "c4",
         "c5"
       ],
-      "appResponse": "Shows valid AVL trees that are not full; requiring equal heights everywhere would be too rigid.",
+      "appResponse": "The app shows valid AVL trees that are not full, and it explains that requiring equal heights everywhere would be too rigid.",
       "lectureQuestion": "Why does the AVL rule allow a height difference of 1 instead of requiring equal heights?"
     },
     {
       "id": "misc-search-uses-bf",
-      "description": "Thinks AVL search uses balance factors to choose a path.",
+      "description": "The student thinks that AVL search uses balance factors to choose a path.",
       "lessons": [
         "c2",
         "c4",
         "c8",
         "c9"
       ],
-      "appResponse": "The pseudocode has no balance-factor step; a caption explains that balance only limits the length of the path.",
+      "appResponse": "The pseudocode has no balance-factor step, and a caption explains that balance only limits the length of the path.",
       "lectureQuestion": "If search ignores balance factors, how does balance make search faster?"
     },
     {
       "id": "misc-search-is-traversal",
-      "description": "Thinks a search visits every node, or both branches, like a traversal.",
+      "description": "The student thinks that a search visits every node, or both branches, like a traversal.",
       "lessons": [
         "c1",
         "c4",
@@ -142,7 +142,7 @@
     },
     {
       "id": "misc-search-stops-early",
-      "description": "Stops a search before reaching the key or an empty branch, for example as soon as the key is smaller than a node.",
+      "description": "The student stops a search before it reaches the key or an empty branch, for example as soon as the key is smaller than a node.",
       "lessons": [
         "c4"
       ],
@@ -151,7 +151,7 @@
     },
     {
       "id": "misc-comparisons-equal-height",
-      "description": "Thinks the most comparisons a search can need equals the height (one too few).",
+      "description": "The student thinks that the most comparisons a search can need equals the height, which is one too few.",
       "lessons": [
         "c4"
       ],
@@ -160,7 +160,7 @@
     },
     {
       "id": "misc-traversal-order",
-      "description": "Thinks an in-order traversal lists keys in insertion order or level by level.",
+      "description": "The student thinks that an in-order traversal lists the keys in insertion order or level by level.",
       "lessons": [
         "c5"
       ],
@@ -169,59 +169,59 @@
     },
     {
       "id": "misc-rotation-breaks-order",
-      "description": "Thinks a rotation can break the BST order.",
+      "description": "The student thinks that a rotation can break the BST order.",
       "lessons": [
         "c5"
       ],
-      "appResponse": "In-order check before and after each rotation.",
+      "appResponse": "The app shows the in-order sequence before and after each rotation, so the student can see that it does not change.",
       "lectureQuestion": "Why does a rotation never change the in-order sequence?"
     },
     {
       "id": "misc-rotation-direction",
-      "description": "Mixes up left and right rotations.",
+      "description": "The student mixes up left and right rotations.",
       "lessons": [
         "c5",
         "c6",
         "c9"
       ],
-      "appResponse": "The animation labels which node moves up and which moves down; captions say “rotate C around G”.",
+      "appResponse": "The animation labels which node moves up and which moves down, and the captions say “Rotate C around G”.",
       "lectureQuestion": "In a right rotation, which node moves up and which moves down?"
     },
     {
       "id": "misc-single-for-inside",
-      "description": "Uses a single rotation for an inside case (Case 2 or 3).",
+      "description": "The student uses a single rotation for an inside case (Case 2 or 3).",
       "lessons": [
         "c5",
         "c6",
         "c9"
       ],
-      "appResponse": "An animation shows the single rotation failing.",
+      "appResponse": "An animation shows that a single rotation does not fix an inside case.",
       "lectureQuestion": "Why does a single rotation not fix the inside cases?"
     },
     {
       "id": "misc-double-order",
-      "description": "Does the two rotations of a double rotation in the wrong order, or about the wrong nodes.",
+      "description": "The student does the two rotations of a double rotation in the wrong order, or about the wrong nodes.",
       "lessons": [
         "c5",
         "c6",
         "c9"
       ],
-      "appResponse": "The worked example shows that the first rotation (about n’s child) turns Case 2 into Case 1.",
+      "appResponse": "The worked example shows that the first rotation, about the child of n, turns Case 2 into Case 1.",
       "lectureQuestion": "In a Left-Right double rotation, why is the first rotation about n.left?"
     },
     {
       "id": "misc-case-inside-outside",
-      "description": "Confuses inside and outside cases, and uses a double rotation where one rotation is enough.",
+      "description": "The student confuses the inside and outside cases, and uses a double rotation where one rotation is enough.",
       "lessons": [
         "c5",
         "c6"
       ],
-      "appResponse": "The case chart marks Cases 1 and 4 as outside and Cases 2 and 3 as inside.",
+      "appResponse": "The case chart marks Cases 1 and 4 as outside cases and Cases 2 and 3 as inside cases.",
       "lectureQuestion": "How can you tell from the path to the new key whether a case is inside or outside?"
     },
     {
       "id": "misc-verify-order-only",
-      "description": "Checks only BST order (or only balance) when verifying a tree after a rotation.",
+      "description": "The student checks only the BST order, or only the balance, when verifying a tree after a rotation.",
       "lessons": [
         "c5"
       ],
@@ -230,28 +230,28 @@
     },
     {
       "id": "misc-rebalance-wrong-node",
-      "description": "Rebalances at the root or at the new node instead of at the first unbalanced node.",
+      "description": "The student rebalances at the root or at the new node instead of at the first unbalanced node.",
       "lessons": [
         "c5",
         "c6",
         "c9"
       ],
-      "appResponse": "“Click the node” questions; feedback highlights the path back up.",
+      "appResponse": "The student answers “Click the node” questions, and the feedback highlights the path from the new key back up to the root.",
       "lectureQuestion": "Why is rebalancing done at the first unbalanced node on the way up?"
     },
     {
       "id": "misc-multiple-fixes",
-      "description": "Thinks an insertion may need rebalancing at several ancestors.",
+      "description": "The student thinks that an insertion may need rebalancing at several ancestors.",
       "lessons": [
         "c6",
         "c9"
       ],
-      "appResponse": "A diagram shows that the fixed subtree has the same height as before the insertion.",
+      "appResponse": "A diagram shows that the fixed subtree has the same height as it had before the insertion.",
       "lectureQuestion": "Why is one fix always enough after an insertion?"
     },
     {
       "id": "misc-new-key-not-leaf",
-      "description": "Thinks a new key can be placed somewhere other than an empty leaf position, for example at the root.",
+      "description": "The student thinks that a new key can be placed somewhere other than an empty leaf position, for example at the root.",
       "lessons": [
         "c1",
         "c6"
@@ -261,28 +261,28 @@
     },
     {
       "id": "misc-bst-order-reversed",
-      "description": "Goes right for a smaller key or left for a larger key.",
+      "description": "The student goes right for a smaller key or left for a larger key.",
       "lessons": [
         "c1",
         "c4",
         "c6",
         "c9"
       ],
-      "appResponse": "Each comparison is captioned with < or > and the direction.",
+      "appResponse": "Each comparison has a caption that says whether the key is smaller or larger and which way the search goes.",
       "lectureQuestion": "Which way does a search go when the key is smaller than the node?"
     },
     {
       "id": "misc-bst-local-check",
-      "description": "Checks the BST rule only between a parent and its children, not for the whole subtree.",
+      "description": "The student checks the BST rule only between a parent and its children, not for the whole subtree.",
       "lessons": [
         "c1"
       ],
-      "appResponse": "Feedback points to the ancestor whose subtree the key is in.",
+      "appResponse": "The feedback points to the ancestor whose subtree contains the key.",
       "lectureQuestion": "Why must every key in the left subtree be smaller than the node, not just the left child?"
     },
     {
       "id": "misc-tree-terms",
-      "description": "Mixes up tree terms such as parent, child, sibling and leaf.",
+      "description": "The student mixes up tree terms such as parent, child, sibling and leaf.",
       "lessons": [
         "c1",
         "c2",
@@ -293,7 +293,7 @@
     },
     {
       "id": "misc-delete-shifts-nodes",
-      "description": "Thinks other nodes move when a leaf is removed.",
+      "description": "The student thinks that other nodes move when a leaf is removed.",
       "lessons": [
         "c7"
       ],
@@ -302,7 +302,7 @@
     },
     {
       "id": "misc-delete-no-rebalance",
-      "description": "Thinks deleting a leaf can never unbalance the tree.",
+      "description": "The student thinks that deleting a leaf can never unbalance the tree.",
       "lessons": [
         "c7"
       ],
@@ -311,25 +311,25 @@
     },
     {
       "id": "misc-delete-update-parent-only",
-      "description": "Updates only the parent’s balance factor after a deletion.",
+      "description": "The student updates only the parent's balance factor after a deletion.",
       "lessons": [
         "c7"
       ],
-      "appResponse": "The animation updates balance factors all the way up to the root.",
+      "appResponse": "The animation updates the balance factors all the way up to the root.",
       "lectureQuestion": "Why must balance factors be checked all the way up to the root after a deletion?"
     },
     {
       "id": "misc-avl-for-everything",
-      "description": "Chooses an AVL tree even when the data is rarely searched by key or does not need to be in order.",
+      "description": "The student chooses an AVL tree even when the data is rarely searched by key or does not need to be kept in order.",
       "lessons": [
         "c8"
       ],
-      "appResponse": "Scenario cards include cases (a log, a queue) where a simpler structure is better.",
+      "appResponse": "The scenario cards include cases, such as a log and a queue, where a simpler structure is better.",
       "lectureQuestion": "When is a simpler structure a better choice than an AVL tree?"
     },
     {
       "id": "misc-avl-no-cost",
-      "description": "Thinks an AVL tree costs nothing extra compared with a plain BST.",
+      "description": "The student thinks that an AVL tree costs nothing extra compared with a plain BST.",
       "lessons": [
         "c8",
         "c9"
@@ -339,12 +339,12 @@
     },
     {
       "id": "misc-ignores-search-cost",
-      "description": "Prefers a structure with cheap updates even when searches far outnumber updates.",
+      "description": "The student prefers a structure with cheap updates even when searches far outnumber updates.",
       "lessons": [
         "c8",
         "c9"
       ],
-      "appResponse": "Scenario cards state how often data is searched and how often it changes.",
+      "appResponse": "The scenario cards state how often the data is searched and how often it changes.",
       "lectureQuestion": "How do you weigh search cost against update cost when choosing a structure?"
     }
   ]

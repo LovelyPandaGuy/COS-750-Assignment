@@ -5,33 +5,33 @@
       "title": "Structural Savant",
       "minShare": 1.0,
       "band": "high",
-      "message": "Every criterion met. You know this structure inside out."
+      "message": "Every criterion is met. You know this structure inside out."
     },
     {
       "rank": "A",
       "title": "AVL Ace",
       "minShare": 0.66,
       "band": "high",
-      "message": "Strong work: you have mastered this lesson."
+      "message": "Strong work. You have mastered this lesson."
     },
     {
       "rank": "B",
       "title": "BST Boss",
       "minShare": 0.5,
       "band": "middle",
-      "message": "You’ve got the main idea. A quick review will lock it in."
+      "message": "You have the main idea, and a quick review will lock it in."
     },
     {
       "rank": "C",
       "title": "Complexity Cadet",
       "minShare": 0,
       "band": "low",
-      "message": "You’re on your way. A worked example will help the key idea click."
+      "message": "You are on your way. A worked example will help the key idea click."
     }
   ],
   "masteryRank": "A",
-  "scoring": "share of the lesson’s criteria met; a criterion is met if its question is right on the first attempt or the re-attempt",
-  "overallTitle": "C9: share of all criteria met across the readiness questions",
+  "scoring": "The title comes from the share of the lesson's criteria that are met. A criterion is met if its question is answered correctly on the first attempt or on the re-attempt.",
+  "overallTitle": "In C9, the overall title comes from the share of all criteria met across the readiness questions.",
   "confetti": {
     "default": "on",
     "canTurnOff": true,
@@ -47,7 +47,7 @@
   "certificateText": {
     "heading": "Certificate of completion",
     "body": "{studentName} completed {lessonsCompleted} of 9 lessons of the COS212 AVL tree app and earned the title {title}.",
-    "footer": "Generated on {date}. The name is not stored by the app.",
-    "bonusNote": "Proposal: completed lessons could earn a bonus of up to 5% on the COS212 module mark, at the module coordinator’s discretion."
+    "footer": "This certificate was generated on {date}. The app does not store the name.",
+    "bonusNote": "It is proposed that completed lessons could earn a bonus of up to 5% on the COS212 module mark, at the module coordinator's discretion."
   }
 }

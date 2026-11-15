@@ -1,6 +1,7 @@
 import { fireEvent, screen, within } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 import { describe, expect, it } from 'vitest'
+import { CONVENTIONS } from '../../src/engine/conventions'
 import { lessonCopy } from '../../src/content/lesson'
 import { loadContent, lessonById } from '../../src/live/load'
 import type { Attempt, LearnerState } from '../../src/state/learnerState'
@@ -13,6 +14,15 @@ import { backendWith, progressState, renderRoutes } from './learner-fixtures'
 const c = lessonCopy.controls
 const q = lessonCopy.questions
 const content = loadContent().content!
+
+// Expected wording is read from the live content (D92), so a wording change in the JSON does not break these tests.
+const verdictRight = (CONVENTIONS.feedback as unknown as { verdictCorrect: string }).verdictCorrect
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+/** The text of one option of a check question. */
+const checkOption = (questionId: string, optionId: string): string =>
+  (content.checks.questions.find((x) => x.id === questionId) as unknown as { options: { id: string; text: string }[] }).options.find((o) => o.id === optionId)!.text
+/** A field of one lesson screen (or of its task). */
+const screenOf = (lesson: string, id: string) => lessonById(lesson)!.screens.find((s) => s.id === id) as unknown as { options: string[]; task: { hint: string } }
 
 const right = (questionId: string): Attempt => ({ questionId, at: '2026-11-14T10:00:00.000Z', answer: null, correct: true, hintsUsed: 0, attempt: 1 })
 const state = (attempts: Attempt[] = []): LearnerState => progressState({ attempts })
@@ -32,7 +42,7 @@ const field = (label: string | RegExp) => screen.getByRole('textbox', { name: la
 const feedback = () => screen.getByRole('status', { name: q.feedbackLabel })
 const node = (root: Element, key: number) => root.querySelector(`[data-key="${key}"]`) as SVGGElement
 const sure = () => fireEvent.click(radio('Sure'))
-const wrongC2 = 'The tree is balanced, because the keys are placed one after another'
+const wrongC2 = checkOption('chk2-01', 'a')
 const rightC2 = /chain of height 5/
 const check = () => fireEvent.click(btn(q.checkAnswer))
 
@@ -82,7 +92,7 @@ describe('lesson-questions: values are typed as the ID writes them', () => {
     fireEvent.click(btn('Try again'))
     fireEvent.change(field('Node 10: balance factor'), { target: { value: '+4' } })
     check()
-    expect(feedback()).toHaveTextContent("That’s right.")
+    expect(feedback()).toHaveTextContent(verdictRight)
   })
 
   it('unreadable: a prompt and no attempt', () => {
@@ -149,7 +159,7 @@ describe('lesson-questions: the tree builder (ID 8.3, D3)', () => {
     }
     sure()
     check()
-    expect(feedback()).toHaveTextContent("That’s right.")
+    expect(feedback()).toHaveTextContent(verdictRight)
   })
 })
 
@@ -171,12 +181,12 @@ describe('lesson-questions: predict screens (ID 8.1)', () => {
     openAt('c4', 'c4-s01')
     fireEvent.click(radio('5'))
     fireEvent.click(btn(q.reveal))
-    expect(screen.getByRole('status')).toHaveTextContent("That’s right.")
+    expect(screen.getByRole('status')).toHaveTextContent(verdictRight)
   })
 
   it('conceptual prediction', () => {
     openAt('c6', 'c6-s01')
-    fireEvent.click(radio('Nothing: the tree is fine'))
+    fireEvent.click(radio(screenOf('c6', 'c6-s01').options[0]))
     fireEvent.click(btn(q.reveal))
     expect(screen.getByRole('status')).toHaveTextContent('Not quite.')
     expect(btn(c.next)).toBeEnabled()
@@ -199,7 +209,7 @@ describe('lesson-player: hint follows the screen’s question (ID 9.4)', () => {
   it('hint on a practice screen counts as used', () => {
     const r = openAt('c3', 'c3-s11')
     fireEvent.click(btn(c.hint))
-    expect(r.container.querySelector('.lesson-hint-panel')).toHaveTextContent('This checks heights and balance factors')
+    expect(r.container.querySelector('.lesson-hint-panel')).toHaveTextContent(screenOf('c3', 'c3-s11').task.hint)
     fireEvent.change(field('Node 10: balance factor'), { target: { value: '4' } })
     check()
     expect(r.stored().attempts.at(-1)).toMatchObject({ questionId: 'c3-s11-task', hintsUsed: 1 })
@@ -316,7 +326,7 @@ describe('check-feedback (ID 10.1)', () => {
 
   it('wrong answer: four parts in order', () => {
     openAt('c6', 'c6-s10', earlierC6)
-    fireEvent.click(radio('Right rotation about n'))
+    fireEvent.click(radio(checkOption('chk6-02', 'b')))
     sure()
     check()
     const text = feedback().textContent!
@@ -331,7 +341,7 @@ describe('check-feedback (ID 10.1)', () => {
     fireEvent.click(radio(rightC2))
     sure()
     check()
-    expect(feedback()).toHaveTextContent(/That’s right\..*Each key is larger.*Review: why BSTs go lopsided.*Next question/)
+    expect(feedback()).toHaveTextContent(new RegExp(`${escapeRe(verdictRight)}.*Each key is larger.*Review: why BSTs go lopsided.*Next question`))
   })
 
   it('no misconception recognised: the general explanation', () => {

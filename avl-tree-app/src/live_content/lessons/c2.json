@@ -26,8 +26,8 @@
         "subSkill": "imbalance-effect",
         "level": "understand",
         "concept": "lopsided-bst",
-        "stem": "Insert 10, 20, 30, 40, 50 into an empty BST, in that order. For each key, click the empty branch where it belongs.",
-        "hint": "This checks that you can link insertion order to tree height and search cost: a search needs at most one comparison per level.",
+        "stem": "Insert 10, 20, 30, 40 and 50 into an empty BST, in that order. For each key, click the empty branch where it belongs.",
+        "hint": "This question checks whether you can link the insertion order to the height of the tree and the cost of a search. A search needs at most one comparison for each level.",
         "tree": {
           "insert": [],
           "rebalance": false
@@ -74,7 +74,7 @@
           "incorrect": "Each key is larger than every key before it, so it always goes right. The tree has become a chain."
         }
       },
-      "text": "Before any theory, try this."
+      "text": "Try this before any theory."
     },
     {
       "id": "c2-s02",
@@ -101,7 +101,7 @@
       ],
       "answer": "5",
       "answerFrom": "engine",
-      "reveal": "5: one comparison for every node on the way down, because the tree is a chain."
+      "reveal": "It takes 5 comparisons, one for every node on the way down, because the tree is a chain."
     },
     {
       "id": "c2-s03",
@@ -117,7 +117,7 @@
         "Up to 1,000,000"
       ],
       "answer": "Up to 1,000,000",
-      "reveal": "Up to 1,000,000. Sorted input turns a BST into a linked list, so search is no faster than walking a list."
+      "reveal": "One search could need up to 1,000,000 comparisons. Sorted input turns a BST into a linked list, so search is no faster than walking along a list."
     },
     {
       "id": "c2-s04",
@@ -126,7 +126,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Goal for this lesson",
-      "text": "By the end of this lesson you can explain why a plain BST can become slow, and how an AVL tree keeps search fast (LO1)."
+      "text": "By the end of this lesson, you will be able to explain why a plain BST can become slow and how an AVL tree keeps search fast."
     },
     {
       "id": "c2-s05",
@@ -148,13 +148,13 @@
         "level": "understand",
         "concept": "lopsided-bst",
         "stem": "What is the height of a tree?",
-        "hint": "This reminds you of node height from the BST lectures: count edges, not nodes.",
+        "hint": "This question reminds you of node height from the BST lectures. Count the edges, not the nodes.",
         "options": [
           {
             "id": "a",
             "text": "The number of nodes in the tree",
             "misconceptionId": "misc-height-counts-nodes",
-            "explanation": "Height counts edges on the longest path down, not nodes. A chain of 5 nodes has height 4."
+            "explanation": "Height counts the edges on the longest path down, not the nodes. A chain of 5 nodes has height 4."
           },
           {
             "id": "b",
@@ -164,8 +164,8 @@
           },
           {
             "id": "c",
-            "text": "The height of its root: the number of edges on the longest path from the root down to a leaf",
-            "explanation": "Right. The height of the tree is the height of its root, counted in edges."
+            "text": "The height of its root, which is the number of edges on the longest path from the root down to a leaf",
+            "explanation": "The height of a tree is the height of its root, counted in edges."
           }
         ],
         "correctOptionId": "c"
@@ -178,7 +178,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Order of insertion matters",
-      "text": "The same five keys, inserted in two different orders (A D E F Z and E A D F Z), as on the COS212 slides.",
+      "text": "The same five keys are inserted in two different orders, A D E F Z and E A D F Z, as on the COS212 slides.",
       "tree": {
         "insert": [
           "A",
@@ -195,11 +195,11 @@
       },
       "caption": "Finding Z takes 5 comparisons in the chain and 3 in the bushy tree. The step counter shows the difference.",
       "steps": [
-        "Z > A: go right.",
-        "Z > D: go right.",
-        "Z > E: go right.",
-        "Z > F: go right.",
-        "Z = Z: found."
+        "Z is larger than A, so the search goes right.",
+        "Z is larger than D, so the search goes right.",
+        "Z is larger than E, so the search goes right.",
+        "Z is larger than F, so the search goes right.",
+        "Z equals Z, so the key is found."
       ],
       "result": "A(·, D(·, E(·, F(·, Z))))",
       "compareWith": {
@@ -218,9 +218,9 @@
           "key": "Z"
         },
         "steps": [
-          "Z > E: go right.",
-          "Z > F: go right.",
-          "Z = Z: found."
+          "Z is larger than E, so the search goes right.",
+          "Z is larger than F, so the search goes right.",
+          "Z equals Z, so the key is found."
         ]
       }
     },
@@ -234,10 +234,10 @@
       "points": [
         "A search makes at most one comparison per level, so it needs at most height + 1 comparisons.",
         "Ideally, each comparison rules out about half of the remaining keys.",
-        "A logarithm counts how many times n can be halved: 1,000,000 halves down to 1 in about 20 steps, so log₂ 1,000,000 ≈ 20.",
-        "In a chain, each comparison rules out only one key. The worst case is O(n)."
+        "A logarithm counts how many times n can be halved. 1,000,000 halves down to 1 in about 20 steps, so log₂ 1,000,000 ≈ 20.",
+        "In a chain, each comparison rules out only one key, so the worst case is O(n)."
       ],
-      "showRule": "Comparisons ≤ height + 1. Balanced tree: about log₂ n. Chain: n."
+      "showRule": "A search needs at most height + 1 comparisons. In a balanced tree this is about log₂ n, and in a chain it is n."
     },
     {
       "id": "c2-s08",
@@ -257,11 +257,11 @@
         "rebalance": false
       },
       "steps": [
-        "10 is the root.",
-        "20 > 10, so 20 goes right.",
-        "30 > 10 and 30 > 20, so 30 goes right again.",
+        "10 becomes the root.",
+        "20 is larger than 10, so the search goes right.",
+        "30 is larger than 10 and larger than 20, so 30 goes right again.",
         "Every new key is the largest so far, so its search always goes right and ends at the bottom of the chain.",
-        "The height is n − 1 = 4, and finding 50 takes 5 comparisons. With n keys the worst case is n comparisons: O(n)."
+        "The height is n − 1 = 4, and finding 50 takes 5 comparisons. With n keys, the worst case is n comparisons, which is O(n)."
       ],
       "hint": "A BST is only as fast as it is short."
     },
@@ -284,8 +284,8 @@
       "show": [
         "balanceFactor"
       ],
-      "text": "An AVL tree checks balance after every insertion and fixes it with a rotation. With the same keys, 10, 20, 30, 40, 50, it ends up with 20 at the root and only 3 levels, so finding 50 takes 3 comparisons. The next lessons show how.",
-      "caption": "Same keys, same order: 20(10, 40(30, 50)), height 2."
+      "text": "An AVL tree checks the balance after every insertion and fixes it with a rotation. With the same keys, 10, 20, 30, 40 and 50, it ends up with 20 at the root and only 3 levels, so finding 50 takes 3 comparisons. The next lessons show how.",
+      "caption": "With the same keys in the same order, the AVL tree is 20(10, 40(30, 50)), which has height 2."
     },
     {
       "id": "c2-s10",
@@ -310,30 +310,30 @@
         "level": "understand",
         "concept": "lopsided-bst",
         "stem": "Which insertion order of the keys 1 to 7 gives the shortest BST?",
-        "hint": "This checks that you can link insertion order to tree height and search cost: a search needs at most one comparison per level.",
+        "hint": "This question checks whether you can link the insertion order to the height of the tree and the cost of a search. A search needs at most one comparison for each level.",
         "options": [
           {
             "id": "a",
             "text": "1, 2, 3, 4, 5, 6, 7",
             "misconceptionId": "misc-bst-always-balanced",
-            "explanation": "Sorted input makes every key go right: a chain of height 6."
+            "explanation": "Sorted input makes every key go right, which gives a chain of height 6."
           },
           {
             "id": "b",
             "text": "7, 6, 5, 4, 3, 2, 1",
             "misconceptionId": "misc-bst-always-balanced",
-            "explanation": "Reverse-sorted input makes every key go left: also a chain of height 6."
+            "explanation": "Reverse-sorted input makes every key go left, which also gives a chain of height 6."
           },
           {
             "id": "c",
             "text": "4, 2, 6, 1, 3, 5, 7",
-            "explanation": "Right. The middle key goes in first, then the middles of each half: a full tree of height 2."
+            "explanation": "The middle key goes in first, and then the middle key of each half. The result is a full tree of height 2."
           },
           {
             "id": "d",
             "text": "1, 7, 2, 6, 3, 5, 4",
             "misconceptionId": "misc-unsorted-means-balanced",
-            "explanation": "This order is mixed, but each key still lands below the one before it: a zig-zag chain of height 6."
+            "explanation": "This order is mixed, but each key still lands below the one before it. The result is a zig-zag chain of height 6."
           }
         ],
         "correctOptionId": "c"
@@ -362,7 +362,7 @@
         "level": "understand",
         "concept": "lopsided-bst",
         "stem": "A BST holds 1,000,000 keys that were inserted in sorted order. What is the most comparisons one search might need?",
-        "hint": "This checks that you can link insertion order to tree height and search cost: a search needs at most one comparison per level.",
+        "hint": "This question checks whether you can link the insertion order to the height of the tree and the cost of a search. A search needs at most one comparison for each level.",
         "options": [
           {
             "id": "a",
@@ -374,12 +374,12 @@
             "id": "b",
             "text": "About 500,000",
             "misconceptionId": "misc-worst-case-average",
-            "explanation": "500,000 is closer to an average. The question asks for the worst case: the bottom of the chain."
+            "explanation": "500,000 is closer to an average search. The question asks about the worst case, which is a search that reaches the bottom of the chain."
           },
           {
             "id": "c",
             "text": "1,000,000",
-            "explanation": "Right. The tree is a chain of 1,000,000 levels, so searching for the largest key visits every node."
+            "explanation": "The tree is a chain of 1,000,000 levels, so a search for the largest key visits every node."
           }
         ],
         "correctOptionId": "c"
@@ -394,7 +394,7 @@
       "title": "Lesson check",
       "checkId": "chk2",
       "optional": false,
-      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
+      "text": "This check has one question for each assessment criterion of the lesson's objective. You can re-attempt each question once, and the Hint button is always available."
     },
     {
       "id": "c2-s13",
@@ -422,24 +422,24 @@
         "level": "understand",
         "concept": "lopsided-bst",
         "stem": "Student numbers are issued in increasing order and added to a plain BST as students register. What happens to lookups over time?",
-        "hint": "This checks that you can link insertion order to tree height and search cost: a search needs at most one comparison per level.",
+        "hint": "This question checks whether you can link the insertion order to the height of the tree and the cost of a search. A search needs at most one comparison for each level.",
         "options": [
           {
             "id": "a",
-            "text": "They stay O(log n), because a BST halves the search space at every step",
+            "text": "They stay O(log n), because a BST halves the search space at every step.",
             "misconceptionId": "misc-bst-always-balanced",
             "explanation": "A BST only halves the search space when it is balanced. Increasing numbers make it a chain."
           },
           {
             "id": "b",
-            "text": "They get slower: each new number is the largest so far, so the tree grows into a chain and search tends towards O(n)",
-            "explanation": "Right. This is the sorted-input problem from this lesson, in a real setting."
+            "text": "They get slower. Each new number is the largest so far, so the tree grows into a chain and search tends towards O(n).",
+            "explanation": "This is the sorted-input problem from this lesson, in a real setting."
           },
           {
             "id": "c",
-            "text": "Nothing changes: the shape of a BST does not depend on the order of insertion",
+            "text": "Nothing changes, because the shape of a BST does not depend on the order of insertion.",
             "misconceptionId": "misc-order-irrelevant",
-            "explanation": "The shape depends on the order: sorted input gives a chain, mixed input usually gives a bushy tree."
+            "explanation": "The shape depends on the order. Sorted input gives a chain, and mixed input usually gives a bushy tree."
           }
         ],
         "correctOptionId": "b"

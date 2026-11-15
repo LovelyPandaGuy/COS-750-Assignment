@@ -27,14 +27,14 @@
       "show": [
         "balanceFactor"
       ],
-      "text": "A was just inserted, and node G now has balance factor −2. How would you fix it?",
+      "text": "A has just been inserted, and node G now has a balance factor of −2. How would you fix it?",
       "options": [
         "Move A somewhere else",
         "Sort all the keys and rebuild the tree",
         "Lift C up and let G move down"
       ],
       "answer": "Lift C up and let G move down",
-      "reveal": "Rebuilding from sorted keys works but needs sorting every time a key is added. A rotation fixes the balance locally, by moving a child up and its parent down, without breaking the BST order."
+      "reveal": "Rebuilding from sorted keys works, but it needs sorting every time a key is added. A rotation fixes the balance locally, by moving a child up and its parent down, without breaking the BST order."
     },
     {
       "id": "c5-s02",
@@ -43,7 +43,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Goal",
-      "text": "Identify and perform the single or double rotation that restores AVL balance (LO4)."
+      "text": "By the end of this lesson, you will be able to identify and perform the single or double rotation that restores AVL balance."
     },
     {
       "id": "c5-s03",
@@ -65,24 +65,24 @@
         "level": "apply",
         "concept": "rotation",
         "stem": "An in-order traversal of a BST lists the keys in which order?",
-        "hint": "This checks that you can verify a result: the in-order keys must still be sorted, and every balance factor must be −1, 0 or +1.",
+        "hint": "This question checks whether you can verify a result. The in-order keys must still be sorted, and every balance factor must be −1, 0 or +1.",
         "options": [
           {
             "id": "a",
             "text": "Sorted order",
-            "explanation": "Right. That is why an in-order check can show that a rotation kept the BST order."
+            "explanation": "That is why an in-order check can show that a rotation kept the BST order."
           },
           {
             "id": "b",
-            "text": "The order they were inserted",
+            "text": "The order in which they were inserted",
             "misconceptionId": "misc-traversal-order",
-            "explanation": "In-order means left subtree, node, right subtree, which gives sorted order whatever the insertion order."
+            "explanation": "In-order means the left subtree, then the node, then the right subtree. This gives sorted order, whatever the insertion order was."
           },
           {
             "id": "c",
             "text": "Level by level, from the root down",
             "misconceptionId": "misc-traversal-order",
-            "explanation": "That is breadth-first (level-order) traversal."
+            "explanation": "That is a breadth-first, or level-order, traversal."
           }
         ],
         "correctOptionId": "a"
@@ -95,7 +95,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Right rotation, step by step",
-      "text": "A single rotation swaps the roles of a child and its parent without breaking the BST order. Here child C = 30 rotates around parent P = 50, whose parent is G = 80.",
+      "text": "A single rotation swaps the roles of a child and its parent without breaking the BST order. Here the child C (30) rotates around its parent P (50), whose own parent is G (80).",
       "tree": {
         "insert": [
           80,
@@ -117,14 +117,14 @@
           }
         ]
       },
-      "caption": "Right rotation: the parent becomes the right child of its left child.",
+      "caption": "In a right rotation, the parent becomes the right child of its left child.",
       "steps": [
-        "Rotate 30 around 50: right rotation about 50."
+        "Rotate 30 around 50. This is a right rotation about 50."
       ],
       "result": "80(30(20, 50(40, 60)), 90)",
       "roleSteps": [
-        "1. The grandparent G (80) of child C (30) becomes C’s parent, replacing P (50).",
-        "2. The right subtree of C (40) becomes the left subtree of P (50).",
+        "1. The grandparent G (80) of the child C (30) becomes the parent of C, replacing P (50).",
+        "2. The right subtree of C, which is 40, becomes the left subtree of P (50).",
         "3. C (30) takes P (50) as its right child."
       ],
       "inorderCheck": true
@@ -136,7 +136,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Left rotation",
-      "text": "The mirror image: child 40 rotates around parent 20.",
+      "text": "This is the mirror image. The child 40 rotates around its parent 20.",
       "tree": {
         "insert": [
           20,
@@ -157,14 +157,14 @@
           }
         ]
       },
-      "caption": "Left rotation: the parent becomes the left child of its right child.",
+      "caption": "In a left rotation, the parent becomes the left child of its right child.",
       "steps": [
-        "Rotate 40 around 20: left rotation about 20."
+        "Rotate 40 around 20. This is a left rotation about 20."
       ],
       "result": "40(20(10, 30), 50(·, 60))",
       "roleSteps": [
-        "1. 40 takes 20’s place at the top of this subtree.",
-        "2. The left subtree of 40 (30) becomes the right subtree of 20.",
+        "1. 40 takes the place of 20 at the top of this subtree.",
+        "2. The left subtree of 40, which is 30, becomes the right subtree of 20.",
         "3. 40 takes 20 as its left child."
       ],
       "inorderCheck": true
@@ -178,13 +178,13 @@
       "title": "The four cases",
       "chart": "cases",
       "points": [
-        "Case 1 (LL): the new key is in the left subtree of the left child of n. Fix: right rotation about n.",
-        "Case 2 (LR): right subtree of the left child. Fix: left rotation about n.left, then right rotation about n.",
-        "Case 3 (RL): left subtree of the right child. Fix: right rotation about n.right, then left rotation about n.",
-        "Case 4 (RR): right subtree of the right child. Fix: left rotation about n.",
-        "Cases 1 and 4 are on the “outside” and need one rotation. Cases 2 and 3 are on the “inside” and need two (a double rotation)."
+        "In Case 1 (LL), the new key is in the left subtree of the left child of n. The fix is a right rotation about n.",
+        "In Case 2 (LR), the new key is in the right subtree of the left child of n. The fix is a left rotation about n.left, followed by a right rotation about n.",
+        "In Case 3 (RL), the new key is in the left subtree of the right child of n. The fix is a right rotation about n.right, followed by a left rotation about n.",
+        "In Case 4 (RR), the new key is in the right subtree of the right child of n. The fix is a left rotation about n.",
+        "Cases 1 and 4 are on the “outside” and need one rotation. Cases 2 and 3 are on the “inside” and need two rotations, which together are called a double rotation."
       ],
-      "showRule": "Outside (LL, RR): single rotation. Inside (LR, RL): double rotation."
+      "showRule": "The outside cases (LL and RR) need a single rotation. The inside cases (LR and RL) need a double rotation."
     },
     {
       "id": "c5-s07",
@@ -193,7 +193,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Case 1: one right rotation",
-      "text": "Back to the opening tree. A went into the left subtree of G’s left child C: Case 1.",
+      "text": "This is the opening tree again. A went into the left subtree of C, the left child of G, so this is Case 1.",
       "tree": {
         "insert": [
           "G",
@@ -207,18 +207,18 @@
         "name": "insert",
         "key": "A"
       },
-      "caption": "Rotate C around G: a single right rotation about the unbalanced node.",
+      "caption": "Rotate C around G. This is a single right rotation about the unbalanced node.",
       "steps": [
-        "A < G: go left.",
-        "A < C: go left.",
-        "A < B: go left.",
-        "A goes in the empty left branch of B.",
-        "Node B: bf = −1 − 0 = −1.",
-        "Node C: bf = 0 − 1 = −1.",
-        "Node G: bf = 0 − 2 = −2.",
-        "Node G has balance factor −2: it is the first unbalanced node, n. Case 1 (LL).",
-        "Rotate C around G: right rotation about G.",
-        "Every node has a balance factor of −1, 0 or +1."
+        "A is smaller than G, so the search goes left.",
+        "A is smaller than C, so the search goes left.",
+        "A is smaller than B, so the search goes left.",
+        "A goes into the empty left branch of B.",
+        "Node B now has a balance factor of −1 − 0 = −1.",
+        "Node C now has a balance factor of 0 − 1 = −1.",
+        "Node G now has a balance factor of 0 − 2 = −2.",
+        "Node G has a balance factor of −2, so it is the first unbalanced node, n. This is Case 1 (LL).",
+        "Rotate C around G. This is a right rotation about G.",
+        "Every node now has a balance factor of −1, 0 or +1."
       ],
       "result": "C(B(A, ·), G(D, H))",
       "inorderCheck": true
@@ -230,7 +230,7 @@
       "merrillPhase": "demonstration",
       "representation": "animated-tree",
       "title": "Why one rotation is not always enough",
-      "text": "Here E went into the right subtree of G’s left child: Case 2, an inside case. Watch what a single right rotation does.",
+      "text": "Here E went into the right subtree of C, the left child of G, so this is Case 2, an inside case. Watch what a single right rotation does.",
       "tree": {
         "insert": [
           "G",
@@ -251,9 +251,9 @@
           }
         ]
       },
-      "caption": "The single rotation only moves the problem: C now has balance factor +2.",
+      "caption": "The single rotation only moves the problem, because C now has a balance factor of +2.",
       "steps": [
-        "Rotate C around G: right rotation about G."
+        "Rotate C around G. This is a right rotation about G."
       ],
       "result": "C(B, G(D(·, E), H))",
       "show": [
@@ -267,7 +267,7 @@
       "merrillPhase": "demonstration",
       "representation": "worked-example",
       "title": "Case 2: the double rotation",
-      "text": "First a left rotation about n.left (C), which turns Case 2 into Case 1. Then a right rotation about n (G).",
+      "text": "First, a left rotation about n.left, which is C, turns Case 2 into Case 1. Then a right rotation about n, which is G, fixes the tree.",
       "tree": {
         "insert": [
           "G",
@@ -292,10 +292,10 @@
           }
         ]
       },
-      "caption": "Rotate D around C, then rotate D around G.",
+      "caption": "Rotate D around C, and then rotate D around G.",
       "steps": [
-        "Rotate D around C: left rotation about C.",
-        "Rotate D around G: right rotation about G."
+        "Rotate D around C. This is a left rotation about C.",
+        "Rotate D around G. This is a right rotation about G."
       ],
       "result": "D(C(B, ·), G(E, H))",
       "inorderCheck": true,
@@ -325,8 +325,8 @@
         "subSkill": "perform-rotation",
         "level": "apply",
         "concept": "rotation",
-        "stem": "6 was just inserted, and the tree is out of balance. Select the unbalanced node and choose the rotation that fixes it.",
-        "hint": "This checks that you can carry out the rotation(s): the child moves up around its parent, and its inner subtree changes sides.",
+        "stem": "6 has just been inserted, and the tree is out of balance. Select the unbalanced node and choose the rotation that fixes it.",
+        "hint": "This question checks whether you can carry out the rotation or rotations. The child moves up around its parent, and the child's inner subtree changes sides.",
         "tree": {
           "insert": [
             5,
@@ -389,17 +389,17 @@
           {
             "pattern": "rotated-wrong-direction",
             "misconceptionId": "misc-rotation-direction",
-            "feedback": "Rotate towards the shorter branch: if n’s left branch is too tall, the final rotation about n is a right rotation; if its right branch is too tall, a left rotation."
+            "feedback": "Rotate towards the shorter branch. If n's left branch is too tall, the final rotation about n is a right rotation. If n's right branch is too tall, it is a left rotation."
           },
           {
             "pattern": "rotated-at-root",
             "misconceptionId": "misc-rebalance-wrong-node",
-            "feedback": "Fix the first unbalanced node on the way up from the new key (8), not the root."
+            "feedback": "Fix the first unbalanced node on the way up from the new key. That node is 8, not the root."
           }
         ],
         "feedback": {
-          "correct": "Node 8 is n (bf −2). 6 went into the left subtree of 8’s left child, so this is Case 1: a single right rotation about 8. The textbook shows this example in Figure 4.32.",
-          "incorrect": "Node 8 is n (bf −2). 6 went into the left subtree of 8’s left child, so this is Case 1: a single right rotation about 8. The textbook shows this example in Figure 4.32."
+          "correct": "Node 8 is n, with a balance factor of −2. 6 went into the left subtree of the left child of 8, so this is Case 1, and a single right rotation about 8 fixes it. The textbook shows this example in Figure 4.32.",
+          "incorrect": "Node 8 is n, with a balance factor of −2. 6 went into the left subtree of the left child of 8, so this is Case 1, and a single right rotation about 8 fixes it. The textbook shows this example in Figure 4.32."
         }
       }
     },
@@ -425,8 +425,8 @@
         "subSkill": "perform-rotation",
         "level": "apply",
         "concept": "rotation",
-        "stem": "15 was just inserted. Find n and perform the rotation(s).",
-        "hint": "This checks that you can carry out the rotation(s): the child moves up around its parent, and its inner subtree changes sides.",
+        "stem": "15 has just been inserted. Find n and perform the rotation or rotations.",
+        "hint": "This question checks whether you can carry out the rotation or rotations. The child moves up around its parent, and the child's inner subtree changes sides.",
         "tree": {
           "insert": [
             4,
@@ -498,22 +498,22 @@
           {
             "pattern": "double-wrong-order",
             "misconceptionId": "misc-double-order",
-            "feedback": "For an inside case, rotate about n’s child first (this turns it into an outside case), then about n."
+            "feedback": "For an inside case, rotate about n's child first, which turns it into an outside case. Then rotate about n."
           },
           {
             "pattern": "rotated-wrong-direction",
             "misconceptionId": "misc-rotation-direction",
-            "feedback": "Rotate towards the shorter branch: if n’s left branch is too tall, the final rotation about n is a right rotation; if its right branch is too tall, a left rotation."
+            "feedback": "Rotate towards the shorter branch. If n's left branch is too tall, the final rotation about n is a right rotation. If n's right branch is too tall, it is a left rotation."
           },
           {
             "pattern": "rotated-at-root",
             "misconceptionId": "misc-rebalance-wrong-node",
-            "feedback": "Fix the first unbalanced node on the way up from the new key (7), not the root."
+            "feedback": "Fix the first unbalanced node on the way up from the new key. That node is 7, not the root."
           }
         ],
         "feedback": {
-          "correct": "Node 7 is n (bf +2). 15 went into the left subtree of 7’s right child (16): Case 3. Right rotation about 16, then left rotation about 7. This is the textbook’s running example.",
-          "incorrect": "Node 7 is n (bf +2). 15 went into the left subtree of 7’s right child (16): Case 3. Right rotation about 16, then left rotation about 7. This is the textbook’s running example."
+          "correct": "Node 7 is n, with a balance factor of +2. 15 went into the left subtree of 16, the right child of 7, so this is Case 3. The fix is a right rotation about 16, followed by a left rotation about 7. This is the textbook's running example.",
+          "incorrect": "Node 7 is n, with a balance factor of +2. 15 went into the left subtree of 16, the right child of 7, so this is Case 3. The fix is a right rotation about 16, followed by a left rotation about 7. This is the textbook's running example."
         }
       }
     },
@@ -540,7 +540,7 @@
         "level": "apply",
         "concept": "rotation",
         "stem": "Here is the tree after your rotations. How can you check that it is correct?",
-        "hint": "This checks that you can verify a result: the in-order keys must still be sorted, and every balance factor must be −1, 0 or +1.",
+        "hint": "This question checks whether you can verify a result. The in-order keys must still be sorted, and every balance factor must be −1, 0 or +1.",
         "tree": {
           "insert": [
             4,
@@ -557,20 +557,20 @@
         "options": [
           {
             "id": "a",
-            "text": "Check that the in-order keys are still sorted and that every balance factor is −1, 0 or +1",
-            "explanation": "Right. A rotation must keep the BST order and restore the AVL rule."
+            "text": "Check that the in-order keys are still sorted and that every balance factor is −1, 0 or +1.",
+            "explanation": "A rotation must keep the BST order and restore the AVL rule."
           },
           {
             "id": "b",
-            "text": "Check only that the in-order keys are still sorted",
+            "text": "Check only that the in-order keys are still sorted.",
             "misconceptionId": "misc-verify-order-only",
-            "explanation": "A sorted in-order shows the BST order is kept, but not that the tree is balanced."
+            "explanation": "Sorted in-order keys show that the BST order is kept, but not that the tree is balanced."
           },
           {
             "id": "c",
-            "text": "Check only the balance factor of the root",
+            "text": "Check only the balance factor of the root.",
             "misconceptionId": "misc-root-only",
-            "explanation": "Every node must have bf −1, 0 or +1, not just the root."
+            "explanation": "Every node must have a balance factor of −1, 0 or +1, not just the root."
           }
         ],
         "correctOptionId": "a"
@@ -585,7 +585,7 @@
       "title": "Lesson check",
       "checkId": "chk5",
       "optional": false,
-      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
+      "text": "This check has one question for each assessment criterion of the lesson's objective. You can re-attempt each question once, and the Hint button is always available."
     },
     {
       "id": "c5-s14",
@@ -596,8 +596,8 @@
       "title": "Summary",
       "points": [
         "A rotation moves a child up around its parent and keeps the in-order sequence.",
-        "Outside cases (1 and 4): one rotation. Inside cases (2 and 3): two rotations.",
-        "Always check the result: in-order still sorted, every bf −1, 0 or +1."
+        "The outside cases (1 and 4) need one rotation, and the inside cases (2 and 3) need two.",
+        "Always check the result. The in-order keys must still be sorted, and every balance factor must be −1, 0 or +1."
       ],
       "format": "short-box"
     }

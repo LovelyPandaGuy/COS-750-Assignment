@@ -121,10 +121,10 @@ describe('D19 event log', () => {
     // align-sandbox-explanations (D161): a heading, then every step in the lessons' captions.
     expect(first.querySelector('.sandbox-log-heading')).toHaveTextContent('Inserted 7')
     expect([...first.querySelectorAll('li')].map((li) => li.textContent)).toEqual([
-      '7 > 6: go right.',
-      '7 goes in the empty right branch of 6.',
-      'Node 6: bf = 0 − (−1) = +1.',
-      'Every node has a balance factor of −1, 0 or +1.',
+      '7 is larger than 6, so the search goes right.',
+      '7 goes into the empty right branch of 6.',
+      'Node 6 now has a balance factor of 0 − (−1) = +1.',
+      'Every node now has a balance factor of −1, 0 or +1.',
       copy.noRotation,
     ])
   })
@@ -170,7 +170,7 @@ describe('D163 replay the last change', () => {
     insertKeys(6, 7)
     fireEvent.click(button(copy.replay))
     const shown = sentences()
-    expect(shown.at(-1)).toBe('Node 6: bf = 0 − (−1) = +1.')
+    expect(shown.at(-1)).toBe('Node 6 now has a balance factor of 0 − (−1) = +1.')
     expect(shown.some((t) => /rotat/i.test(t))).toBe(false)
   })
 
@@ -183,8 +183,8 @@ describe('D163 replay the last change', () => {
     const replay = container.querySelector('.replay') as HTMLElement
     expect(replay.querySelector('[data-key="10"]')).not.toBeNull()
     const shown = sentences()
-    expect(shown[0]).toBe('10 is a leaf: remove it.')
-    expect(shown).toContain('Rotate 40 around 20: left rotation about 20.')
+    expect(shown[0]).toBe('10 is a leaf, so it is removed.')
+    expect(shown).toContain('Rotate 40 around 20. This is a left rotation about 20.')
     expect(replay.querySelector('[data-key="10"]')).toBeNull()
     expect(screen.queryByRole('region', { name: /^pseudocode/i })).toBeNull()
   })

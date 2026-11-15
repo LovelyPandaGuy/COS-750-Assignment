@@ -207,7 +207,7 @@ describe('D19 D161 event log: every step in the lessons\' captions', () => {
   it('rebalancing off: 7 after 6, the plain insert captions', () => {
     const s = run([off, ...ins(6, 7)])
     expect(s.log[0]).toMatchObject({ kind: 'insert', key: 7, rebalancing: false })
-    expect(steps(s.log[0])).toEqual(['7 > 6: go right.', '7 goes in the empty right branch of 6.', 'Node 6: bf = 0 − (−1) = +1.', 'Every node has a balance factor of −1, 0 or +1.'])
+    expect(steps(s.log[0])).toEqual(['7 is larger than 6, so the search goes right.', '7 goes into the empty right branch of 6.', 'Node 6 now has a balance factor of 0 − (−1) = +1.', 'Every node now has a balance factor of −1, 0 or +1.'])
     expect(sandboxCopy.heading(s.log[0])).toBe('Inserted 7')
     expect(sandboxCopy.noRotation).toBe('Rebalancing is off, so no rotation is made.')
   })
@@ -218,14 +218,14 @@ describe('D19 D161 event log: every step in the lessons\' captions', () => {
 
   it('rebalancing on: inserting 30 after 10, 20 gives exactly the C6 captions', () => {
     expect(steps(run(ins(10, 20, 30)).log[0])).toEqual([
-      '30 > 10: go right.',
-      '30 > 20: go right.',
-      '30 goes in the empty right branch of 20.',
-      'Node 20: bf = 0 − (−1) = +1.',
-      'Node 10: bf = 1 − (−1) = +2.',
-      'Node 10 has balance factor +2: it is the first unbalanced node, n. Case 4 (RR).',
-      'Rotate 20 around 10: left rotation about 10.',
-      'Every node has a balance factor of −1, 0 or +1.',
+      '30 is larger than 10, so the search goes right.',
+      '30 is larger than 20, so the search goes right.',
+      '30 goes into the empty right branch of 20.',
+      'Node 20 now has a balance factor of 0 − (−1) = +1.',
+      'Node 10 now has a balance factor of 1 − (−1) = +2.',
+      'Node 10 has a balance factor of +2, so it is the first unbalanced node, n. This is Case 4 (RR).',
+      'Rotate 20 around 10. This is a left rotation about 10.',
+      'Every node now has a balance factor of −1, 0 or +1.',
     ])
   })
 
@@ -233,11 +233,11 @@ describe('D19 D161 event log: every step in the lessons\' captions', () => {
     const s = run([...ins(20, 10, 40, 30, 50), { type: 'delete', key: 10 }])
     expect(sandboxCopy.heading(s.log[0])).toBe('Deleted 10')
     expect(steps(s.log[0])).toEqual([
-      '10 is a leaf: remove it.',
-      'Node 20: bf = 1 − (−1) = +2.',
-      'Node 20 has balance factor +2: it is unbalanced.',
-      'Rotate 40 around 20: left rotation about 20.',
-      'Every node has a balance factor of −1, 0 or +1.',
+      '10 is a leaf, so it is removed.',
+      'Node 20 now has a balance factor of 1 − (−1) = +2.',
+      'Node 20 has a balance factor of +2, so it is unbalanced.',
+      'Rotate 40 around 20. This is a left rotation about 20.',
+      'Every node now has a balance factor of −1, 0 or +1.',
     ])
   })
 
