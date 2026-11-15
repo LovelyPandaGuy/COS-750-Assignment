@@ -135,7 +135,7 @@ export const lessonCopy = {
     listenHeading: 'Listen for in the lecture',
     ownHeading: 'Your own questions',
     noneYet: 'None yet.',
-    answerFirst: 'Answer the readiness questions first. Your report appears here.',
+    answerFirst: 'Answer the readiness questions first.',
     setDone: 'Every question is answered. Press Next for your report.',
     ownLabel: 'Your question for the lecture',
     ownSave: 'Save question',
