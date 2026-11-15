@@ -20,7 +20,7 @@
         "An AVL tree"
       ],
       "answer": "An AVL tree",
-      "reveal": "An unsorted list makes every lookup O(n). A plain BST would grow into a chain because the numbers arrive in increasing order. An AVL tree rebalances after each insertion, so every lookup stays O(log n)."
+      "reveal": "An unsorted list makes every lookup O(n). A plain BST would grow into a chain, because the numbers arrive in increasing order. An AVL tree rebalances after each insertion, so every lookup stays O(log n)."
     },
     {
       "id": "c8-s02",
@@ -29,7 +29,7 @@
       "merrillPhase": "problem",
       "representation": "text",
       "title": "Goal",
-      "text": "Identify practical applications of AVL trees and justify the choice from their properties (LO6)."
+      "text": "By the end of this lesson, you will be able to identify practical applications of AVL trees and justify your choice based on their properties."
     },
     {
       "id": "c8-s03",
@@ -51,18 +51,18 @@
         "level": "evaluate",
         "concept": "applications",
         "stem": "What is the worst-case search cost in a plain BST with n keys?",
-        "hint": "This checks that you can justify the choice from the AVL tree’s properties: guaranteed O(log n) search, at the cost of extra work on updates.",
+        "hint": "This question checks whether you can justify the choice from the properties of an AVL tree. It guarantees O(log n) search, at the cost of extra work on updates.",
         "options": [
           {
             "id": "a",
             "text": "O(n)",
-            "explanation": "Right. A plain BST can become a chain."
+            "explanation": "A plain BST can become a chain."
           },
           {
             "id": "b",
             "text": "O(log n)",
             "misconceptionId": "misc-bst-always-balanced",
-            "explanation": "O(log n) is the cost in a balanced tree. A plain BST has no balance guarantee."
+            "explanation": "O(log n) is the cost in a balanced tree, and a plain BST has no balance guarantee."
           }
         ],
         "correctOptionId": "a"
@@ -76,10 +76,10 @@
       "representation": "written-rule",
       "title": "When an AVL tree is a good fit",
       "points": [
-        "The data must stay in sorted order: an in-order traversal lists it sorted at any time.",
+        "The data must stay in sorted order, and an in-order traversal lists it in sorted order at any time.",
         "The data is searched often, and a guaranteed O(log n) search matters more than the extra work on updates.",
         "Keys may arrive in sorted or nearly sorted order, which would turn a plain BST into a chain.",
-        "Examples: a word list for a spell checker, an index of student numbers, a contacts list kept in alphabetical order."
+        "Good examples are a word list for a spell checker, an index of student numbers and a contacts list kept in alphabetical order."
       ]
     },
     {
@@ -90,10 +90,10 @@
       "representation": "written-rule",
       "title": "What it costs",
       "points": [
-        "Space: every node stores its height (or balance factor).",
-        "Time: insertion and deletion do extra work to update balance factors and rotate.",
-        "This is a time and space trade-off: balanced trees take longer on updates but protect against the worst case.",
-        "Red-Black trees are another balanced tree with a looser balance rule; you may meet them later."
+        "Each node uses extra space, because it stores its height or balance factor.",
+        "Insertion and deletion take extra time, because they update balance factors and rotate.",
+        "This is a time and space trade-off. Balanced trees take longer on updates, but they protect against the worst case.",
+        "Red-Black trees are another kind of balanced tree, with a looser balance rule. You may meet them later."
       ]
     },
     {
@@ -104,11 +104,11 @@
       "representation": "worked-example",
       "title": "Worked example: a contacts list",
       "steps": [
-        "Is the data searched often? Yes: names are looked up all day.",
-        "Must it stay in order? Yes: the list is shown alphabetically, and an in-order traversal gives that.",
-        "Can keys arrive sorted? Yes: contacts are often imported from an alphabetical file, which would make a plain BST a chain.",
-        "How often is it updated? A few contacts a day, so the extra rotation work is small.",
-        "Conclusion: an AVL tree fits. It keeps names sorted and guarantees O(log n) lookups, at a small cost on updates."
+        "Is the data searched often? Yes, because names are looked up all day.",
+        "Must it stay in order? Yes, because the list is shown alphabetically, and an in-order traversal gives that order.",
+        "Can keys arrive sorted? Yes, because contacts are often imported from an alphabetical file, which would make a plain BST a chain.",
+        "How often is it updated? Only a few contacts are added each day, so the extra rotation work is small.",
+        "An AVL tree fits. It keeps the names sorted and guarantees O(log n) lookups, at a small cost on updates."
       ]
     },
     {
@@ -133,25 +133,25 @@
         "subSkill": "select-application",
         "level": "evaluate",
         "concept": "applications",
-        "stem": "A spell checker loads 200,000 words once from a dictionary file sorted A to Z, then looks up every word you type. Is an AVL tree a good choice?",
-        "hint": "This checks that you can recognise a good fit for an AVL tree: data searched often that must stay in sorted order.",
+        "stem": "A spell checker loads 200,000 words once from a dictionary file sorted from A to Z, and then it looks up every word you type. Is an AVL tree a good choice?",
+        "hint": "This question checks whether you can recognise a good fit for an AVL tree. An AVL tree suits data that is searched often and must stay in sorted order.",
         "options": [
           {
             "id": "a",
-            "text": "No: a plain BST is just as fast here, because the words are already sorted",
+            "text": "No. A plain BST is just as fast here, because the words are already sorted.",
             "misconceptionId": "misc-bst-always-balanced",
-            "explanation": "Sorted input is the worst case for a plain BST: every word goes right, giving a chain of 200,000 levels."
+            "explanation": "Sorted input is the worst case for a plain BST. Every word goes right, which gives a chain of 200,000 levels."
           },
           {
             "id": "b",
-            "text": "Yes: lookups are frequent, and the sorted file would turn a plain BST into a chain, while an AVL tree keeps lookups O(log n)",
-            "explanation": "Right. The sorted input is exactly the case the AVL rule protects against."
+            "text": "Yes. Lookups are frequent, and the sorted file would turn a plain BST into a chain. An AVL tree keeps lookups O(log n).",
+            "explanation": "The sorted input is exactly the case that the AVL rule protects against."
           },
           {
             "id": "c",
-            "text": "Yes, because AVL search uses the balance factors to find words faster",
+            "text": "Yes, because AVL search uses the balance factors to find words faster.",
             "misconceptionId": "misc-search-uses-bf",
-            "explanation": "The choice is right, but the reason is not: search ignores balance factors. Balance keeps the tree short."
+            "explanation": "The choice is right, but the reason is not. A search ignores balance factors, and balance only keeps the tree short."
           }
         ],
         "correctOptionId": "b"
@@ -180,24 +180,24 @@
         "level": "evaluate",
         "concept": "applications",
         "stem": "A system appends a record to a log every second, and the whole log is read from start to end once a day. Is an AVL tree a good choice?",
-        "hint": "This checks that you can recognise a good fit for an AVL tree: data searched often that must stay in sorted order.",
+        "hint": "This question checks whether you can recognise a good fit for an AVL tree. An AVL tree suits data that is searched often and must stay in sorted order.",
         "options": [
           {
             "id": "a",
-            "text": "Yes: an AVL tree is always the best structure for storing data",
+            "text": "Yes. An AVL tree is always the best structure for storing data.",
             "misconceptionId": "misc-avl-for-everything",
             "explanation": "No structure is best for everything. Here the balancing work buys nothing, because nobody searches by key."
           },
           {
             "id": "b",
-            "text": "Yes: an AVL tree costs nothing extra compared with a list",
+            "text": "Yes. An AVL tree costs nothing extra compared with a list.",
             "misconceptionId": "misc-avl-no-cost",
             "explanation": "Every insertion updates balance factors and may rotate, and every node stores a height."
           },
           {
             "id": "c",
-            "text": "No: nothing is searched by key, so a simple list that appends at the end does the job without the balancing work",
-            "explanation": "Right. An AVL tree pays off only when searches by key are frequent."
+            "text": "No. Nothing is searched by key, so a simple list that appends at the end does the job without the balancing work.",
+            "explanation": "An AVL tree pays off only when searches by key are frequent."
           }
         ],
         "correctOptionId": "c"
@@ -212,7 +212,7 @@
       "title": "Lesson check",
       "checkId": "chk8",
       "optional": false,
-      "text": "One question for each assessment criterion of this lesson’s objective. Each question allows one re-attempt, and the hint is always available."
+      "text": "This check has one question for each assessment criterion of the lesson's objective. You can re-attempt each question once, and the Hint button is always available."
     },
     {
       "id": "c8-s10",
@@ -223,7 +223,7 @@
       "title": "Summary",
       "points": [
         "Choose an AVL tree for sorted data that is searched often, especially if keys can arrive in order.",
-        "The price: a height in every node and extra work on every update.",
+        "The price is a height in every node and extra work on every update.",
         "If data is rarely searched by key, a simpler structure is better."
       ],
       "format": "short-box"
