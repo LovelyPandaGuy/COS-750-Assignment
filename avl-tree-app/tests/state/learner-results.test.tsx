@@ -54,10 +54,34 @@ describe('completing a module', () => {
     expect(seen.learner.currentModule).toBe('C3')
     expect(boot(backend).initial.state.completedModules).toEqual(['C1', 'C2'])
   })
-  it('leaves currentModule alone when it was another module', () => {
+  // fix-sidebar-current-lesson / lesson-checks "Finishing the check completes the lesson" (FR-LRN-05, D164):
+  // the current module is the first lesson, C1 to C9, not yet completed; unchanged when all nine are done.
+  it('completed out of order: the current lesson stays on the first gap', () => {
+    mount(backendWith(progressState({ currentModule: 'C1', completedModules: [], attempts: [] })))
+    act(() => seen.completeModule('C2'))
+    act(() => seen.completeModule('C3'))
+    expect(seen.learner.currentModule).toBe('C1')
+  })
+  it('filling the gap skips completed lessons', () => {
+    mount(backendWith(progressState({ currentModule: 'C1', completedModules: ['C2', 'C3'], attempts: [] })))
+    act(() => seen.completeModule('C1'))
+    expect(seen.learner.currentModule).toBe('C4')
+  })
+  it('the current lesson moves back to the first gap', () => {
     mount(backendWith(progressState({ currentModule: 'C5', completedModules: ['C1'], attempts: [] })))
     act(() => seen.completeModule('C2'))
-    expect(seen.learner.currentModule).toBe('C5')
+    expect(seen.learner.currentModule).toBe('C3')
+  })
+  it('only C7 left: the current lesson is C7', () => {
+    mount(backendWith(progressState({ currentModule: 'C7', completedModules: ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C8'], attempts: [] })))
+    act(() => seen.completeModule('C9'))
+    expect(seen.learner.currentModule).toBe('C7')
+  })
+  it('all lessons done: the current lesson stays C9', () => {
+    mount(backendWith(progressState({ currentModule: 'C9', completedModules: ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8'], attempts: [] })))
+    act(() => seen.completeModule('C9'))
+    expect(seen.learner.completedModules).toHaveLength(9)
+    expect(seen.learner.currentModule).toBe('C9')
   })
   it('writes nothing for a repeat', () => {
     const { backend } = mount()
